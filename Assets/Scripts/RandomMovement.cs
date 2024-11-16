@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-public class PlayerMovement : MonoBehaviour
+public class RandomMovement : MonoBehaviour
 {
     private float moveSpeed = 20.0f;
     private float changeInterval = 1.0f;
@@ -28,7 +30,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void GenerateNewDirection()
     {
-        // Generate a new random direction
-        randomDirection = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+        randomDirection = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f).normalized;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "bounds")
+        {
+            Debug.Log("Hit Bound");
+            randomDirection = -1 * randomDirection;
+        }
     }
 }
