@@ -422,7 +422,7 @@ GameObject:
   - component: {fileID: 601400795}
   - component: {fileID: 601400794}
   m_Layer: 0
-  m_Name: Screenshot 2024-11-14 203435
+  m_Name: Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -506,7 +506,7 @@ GameObject:
   - component: {fileID: 1393349522}
   - component: {fileID: 1393349521}
   m_Layer: 0
-  m_Name: Screenshot 2024-11-14 204212
+  m_Name: Albert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -613,7 +613,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000019073, y: 0}
+  m_AnchoredPosition: {x: 1021, y: 624.1}
   m_SizeDelta: {x: 568.9078, y: 191.7904}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1437010144
@@ -636,7 +636,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Hey! It's Set Up!
+  m_text: Battle Sim
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
