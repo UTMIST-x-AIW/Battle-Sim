@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class RandomMovement : MonoBehaviour
 {
-    private float moveSpeed = 20.0f;
+    private float moveSpeed = 50.0f;
     private float changeInterval = 1.0f;
 
     private Vector2 randomDirection;
@@ -28,16 +28,16 @@ public class RandomMovement : MonoBehaviour
         }
     }
 
-    private void GenerateNewDirection()
+    void GenerateNewDirection()
     {
-        randomDirection = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f).normalized;
+        float randomAngle = Random.Range(0f, Mathf.PI * 2);
+        randomDirection = new Vector3(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle), 0f);
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "bounds")
         {
-            Debug.Log("Hit Bound");
             randomDirection = -1 * randomDirection;
         }
     }
