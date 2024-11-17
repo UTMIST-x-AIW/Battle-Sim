@@ -30,10 +30,7 @@ public class RandomMovement : MonoBehaviour
 
     void GenerateNewDirection()
     {
-        // Generate a random angle in radians
         float randomAngle = Random.Range(0f, Mathf.PI * 2);
-
-        // Convert angle to a direction vector on the unit circle
         randomDirection = new Vector3(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle), 0f);
     }
 
