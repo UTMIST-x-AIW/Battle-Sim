@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 45963892514160313}
   - component: {fileID: 9051075579340002801}
   - component: {fileID: 1565541929456196122}
-  - component: {fileID: 3910555185911288434}
   - component: {fileID: 8743925172388403392}
+  - component: {fileID: 7139208845097298274}
   m_Layer: 0
   m_Name: Kai
   m_TagString: Player
@@ -132,18 +132,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 4.36, y: 4.36}
   m_EdgeRadius: 0
---- !u!114 &3910555185911288434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2137421764701232692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9907bc72233d54d3eb8ba64c9bd31c23, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!50 &8743925172388403392
 Rigidbody2D:
   serializedVersion: 4
@@ -171,3 +159,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &7139208845097298274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2137421764701232692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9907bc72233d54d3eb8ba64c9bd31c23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

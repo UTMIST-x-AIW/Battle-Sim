@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class RandomMovement : MonoBehaviour
 {
-    private float moveSpeed = 200.0f;
+    private float moveSpeed = 50.0f;
     private float changeInterval = 1.0f;
 
     private Vector2 randomDirection;
