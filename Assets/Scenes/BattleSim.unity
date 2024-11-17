@@ -770,7 +770,7 @@ Transform:
   m_GameObject: {fileID: 883839427}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.787249, y: 130.73486, z: -3.6358175}
+  m_LocalPosition: {x: -30.787249, y: 130.73486, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1939,6 +1939,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kai
       objectReference: {fileID: 0}
+    - target: {fileID: 9051075579340002801, guid: 220c2423dda974f43a444cd0aa4ed959, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051075579340002801, guid: 220c2423dda974f43a444cd0aa4ed959, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -2101850657
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2108,11 +2116,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1758886327002011634, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -138
+      value: -126.9
       objectReference: {fileID: 0}
     - target: {fileID: 1758886327002011634, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -10
+      value: 26.5
       objectReference: {fileID: 0}
     - target: {fileID: 1758886327002011634, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2149,6 +2157,14 @@ PrefabInstance:
     - target: {fileID: 2503739261107526821, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
       propertyPath: m_Name
       value: Albert
+      objectReference: {fileID: 0}
+    - target: {fileID: 8887460150695072848, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8887460150695072848, guid: d8d149d15a3294633b55c85be16d73ff, type: 3}
+      propertyPath: m_SortingLayerID
+      value: -2101850657
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
