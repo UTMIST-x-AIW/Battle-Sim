@@ -20,7 +20,7 @@ public class SwordSwing : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !isSwinging)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && !isSwinging)
         {
             isSwinging = true;
             swingTime = 0f;

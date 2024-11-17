@@ -9,7 +9,7 @@ public class CameraControl : MonoBehaviour
     public GameObject mainCanvas;
     public GameObject playerCanvas;
 
-    private float followDistance = 10f;
+    private float followDistance = 100f;
     private float followSpeed = 5f;
 
     private Transform currentPlayer;
@@ -30,30 +30,11 @@ public class CameraControl : MonoBehaviour
         {
             HandlePlayerClick();
         }
-    }
-
-    private void HandlePlayerClick()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                currentPlayer = hit.transform;
-                ActivatePlayerCamera();
-            }
-        }
-    }
-
-    private void FollowPlayer()
-    {
-        Vector3 targetPosition = currentPlayer.position - currentPlayer.forward * followDistance;
-        targetPosition.y = currentPlayer.position.y;
-        playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, targetPosition, followSpeed * Time.deltaTime);
         
-        playerCamera.transform.LookAt(currentPlayer);
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ActivateMainCamera();
+        }
     }
 
     private void ActivateMainCamera()
@@ -71,5 +52,29 @@ public class CameraControl : MonoBehaviour
         mainCanvas.SetActive(false);
         playerCamera.gameObject.SetActive(true);
         playerCanvas.SetActive(true);
+    }
+    
+    private void HandlePlayerClick()
+    {
+        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                currentPlayer = hit.transform;
+                ActivatePlayerCamera();
+            }
+        }
+    }
+
+    private void FollowPlayer()
+    {
+        Vector3 targetPosition = currentPlayer.position - currentPlayer.forward * followDistance;
+        targetPosition.y = currentPlayer.position.y;
+        playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, targetPosition, followSpeed * Time.deltaTime);
+        
+        playerCamera.transform.LookAt(currentPlayer);
     }
 }
