@@ -41,7 +41,6 @@ public class RandomMovement : MonoBehaviour
     {
         if (other.gameObject.tag == "bounds")
         {
-            Debug.Log("Hit Bound trigger");
             randomDirection = -1 * randomDirection;
         }
     }
