@@ -8,9 +8,11 @@ public class PlayerAttack : MonoBehaviour
     private float attackCooldown = 1f;
     private float attackTimer = 0f;
 
+    private int maxColliders = 3;
+
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && attackTimer <= 0f)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && attackTimer <= 0f)
         {
             Attack();
             attackTimer = attackCooldown;
@@ -26,17 +28,21 @@ public class PlayerAttack : MonoBehaviour
     {
         GameObject closestPlayer = null;
         float closestDistance = attackRange;
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        Collider[] colliders = new Collider[maxColliders];
+        int numColliders = Physics.OverlapSphereNonAlloc(transform.position, attackRange, colliders);
 
-        foreach (Collider2D collider in colliders)
+        foreach (Collider other in colliders)
         {
-            if (collider.CompareTag("Player") && collider.gameObject != gameObject)
+            if (other != null)
             {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < closestDistance)
+                if (other.gameObject.CompareTag("Player") && other.gameObject != gameObject)
                 {
-                    closestDistance = distance;
-                    closestPlayer = collider.gameObject;
+                    float distance = Vector2.Distance(transform.position, other.transform.position);
+                    if (distance < closestDistance)
+                    {
+                        closestDistance = distance;
+                        closestPlayer = other.gameObject;
+                    }
                 }
             }
         }

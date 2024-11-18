@@ -19,7 +19,7 @@ public class RandomMovement : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(randomDirection * moveSpeed * Time.deltaTime);
+        transform.Translate(randomDirection * (moveSpeed * Time.deltaTime));
         timer += Time.deltaTime;
         if (timer >= changeInterval)
         {
@@ -34,9 +34,9 @@ public class RandomMovement : MonoBehaviour
         randomDirection = new Vector3(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle), 0f);
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "bounds")
+        if (other.CompareTag("bounds"))
         {
             randomDirection = -1 * randomDirection;
         }

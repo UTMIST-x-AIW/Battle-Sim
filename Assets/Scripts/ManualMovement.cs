@@ -9,13 +9,13 @@ public class ManualMovement : MonoBehaviour
     private float recoilTimer = 0f;
 
     private Vector2 movement;
-    private Rigidbody2D rb;
+    private Rigidbody rb;
     private bool canMove = true;
     private Vector2 lastDirection;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -42,7 +42,7 @@ public class ManualMovement : MonoBehaviour
         rb.velocity = movement * moveSpeed;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("bounds"))
         {
