@@ -6,39 +6,68 @@ using Random = UnityEngine.Random;
 
 public class RandomMovement : MonoBehaviour
 {
-    private float moveSpeed = 50.0f;
-    private float changeInterval = 1.0f;
-
     private Vector2 randomDirection;
-    private float timer;
+    private float moveSpeed = 50f;
+    private float recoilDuration = 0.5f;
+    private float recoilTimer = 0f;
+
+    private Vector2 movement;
+    private Rigidbody rb;
+    private bool canMove = true;
+    private Vector2 lastDirection;
+
+    private float newDirectionTimer = 0f;
+    private float newDirectionFrequency = 1f;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         GenerateNewDirection();
     }
 
     void Update()
     {
-        transform.Translate(randomDirection * (moveSpeed * Time.deltaTime));
-        timer += Time.deltaTime;
-        if (timer >= changeInterval)
-        {
-            timer = 0;
-            GenerateNewDirection();
-        }
-    }
 
-    void GenerateNewDirection()
-    {
-        float randomAngle = Random.Range(0f, Mathf.PI * 2);
-        randomDirection = new Vector3(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle), 0f);
+        if (recoilTimer > 0)
+        {
+            recoilTimer -= Time.deltaTime;
+            movement = -lastDirection;
+        }
+        else
+        {
+            canMove = true;
+        }
+        if (canMove)
+        {
+            movement = randomDirection.normalized;
+            lastDirection = movement;
+
+            newDirectionTimer += Time.deltaTime;
+
+            if (newDirectionTimer > newDirectionFrequency)
+            {
+                GenerateNewDirection();
+                newDirectionTimer = 0f;
+            }
+        }
+
+        rb.velocity = movement * moveSpeed;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("bounds"))
         {
-            randomDirection = -1 * randomDirection;
+            canMove = false;
+            recoilTimer = recoilDuration;
+            rb.velocity = Vector2.zero;
+            GenerateNewDirection();
         }
+    }
+    
+    void GenerateNewDirection()
+    {
+        float randomAngle = Random.Range(0f, Mathf.PI * 2);
+        randomDirection = new Vector3(Mathf.Cos(randomAngle), Mathf.Sin(randomAngle), 0f);
     }
 }
