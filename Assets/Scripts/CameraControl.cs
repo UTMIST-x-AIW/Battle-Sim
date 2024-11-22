@@ -75,6 +75,6 @@ public class CameraControl : MonoBehaviour
         targetPosition.y = currentPlayer.position.y;
         playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, targetPosition, followSpeed * Time.deltaTime);
         
-        playerCamera.transform.LookAt(currentPlayer);
+        //playerCamera.transform.LookAt(currentPlayer);
     }
 }

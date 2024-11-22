@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ManualMovement : MonoBehaviour
 {
-    private float moveSpeed = 50f;
+    private float moveSpeed = 2500f;
     private float recoilDuration = 0.5f;
     private float recoilTimer = 0f;
 
@@ -39,7 +39,10 @@ public class ManualMovement : MonoBehaviour
             lastDirection = movement;
         }
 
-        rb.velocity = movement * moveSpeed;
+        rb.AddForce(movement*moveSpeed);
+
+        // Frictional Force
+        rb.AddForce(-rb.velocity);
     }
 
     private void OnTriggerEnter(Collider other)
