@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SwordSwing : MonoBehaviour
 {
-    private float attackCooldown = 1f;
+    [SerializeField] private float attackCooldown = 1f;
     private bool isSwinging = false;
     private float swingTime = 0f;
     private Quaternion initialRotation;

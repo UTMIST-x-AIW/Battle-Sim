@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class ManualMovement : MonoBehaviour
 {
-    private float moveSpeed = 50f;
+    [SerializeField] private float moveSpeed = 50f;
+    [SerializeField] private float smoothing = 0.1f;
+    //[SerializeField] private float frictionValue = 2f;
     private float recoilDuration = 0.5f;
     private float recoilTimer = 0f;
 
@@ -12,7 +14,8 @@ public class ManualMovement : MonoBehaviour
     private Rigidbody rb;
     private bool canMove = true;
     private Vector2 lastDirection;
-    
+    private Vector2 velocity = Vector2.zero;
+
     private bool isFacingRight = true;
 
     void Start()
@@ -38,15 +41,15 @@ public class ManualMovement : MonoBehaviour
             movement.y = Input.GetAxisRaw("Vertical");
 
             movement = movement.normalized;
+            Vector2 targetDirection = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+            velocity = Vector2.Lerp(velocity, targetDirection * moveSpeed, Time.deltaTime / smoothing); ;
+            rb.velocity = velocity;
+
             lastDirection = movement;
             
             HandleFlipping();
         }
 
-        rb.AddForce(movement*moveSpeed);
-
-        // Frictional Force
-        rb.AddForce(-rb.velocity);
     }
 
     private void OnTriggerEnter(Collider other)

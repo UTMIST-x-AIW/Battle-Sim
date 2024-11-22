@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CameraControl : MonoBehaviour
 {
@@ -21,10 +23,6 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
-        if (currentPlayer != null)
-        {
-            FollowPlayer();
-        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -34,6 +32,14 @@ public class CameraControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             ActivateMainCamera();
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (currentPlayer != null)
+        {
+            FollowPlayer();
         }
     }
 
@@ -71,10 +77,11 @@ public class CameraControl : MonoBehaviour
 
     private void FollowPlayer()
     {
+        Vector3 cameraVelocity = playerCamera.velocity;
+
         Vector3 targetPosition = currentPlayer.position - currentPlayer.forward * followDistance;
         targetPosition.y = currentPlayer.position.y;
         playerCamera.transform.position = Vector3.Lerp(playerCamera.transform.position, targetPosition, followSpeed * Time.deltaTime);
-        
         //playerCamera.transform.LookAt(currentPlayer);
     }
 }
