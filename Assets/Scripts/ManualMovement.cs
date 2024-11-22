@@ -12,6 +12,8 @@ public class ManualMovement : MonoBehaviour
     private Rigidbody rb;
     private bool canMove = true;
     private Vector2 lastDirection;
+    
+    private bool isFacingRight = true;
 
     void Start()
     {
@@ -37,6 +39,8 @@ public class ManualMovement : MonoBehaviour
 
             movement = movement.normalized;
             lastDirection = movement;
+            
+            HandleFlipping();
         }
 
         rb.AddForce(movement*moveSpeed);
@@ -53,5 +57,25 @@ public class ManualMovement : MonoBehaviour
             recoilTimer = recoilDuration;
             rb.velocity = Vector2.zero;
         }
+    }
+    
+    private void HandleFlipping()
+    {
+        if (movement.x < 0 && isFacingRight)
+        {
+            Flip();
+        }
+        else if (movement.x > 0 && !isFacingRight)
+        {
+            Flip();
+        }
+    }
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 currentScale = transform.localScale;
+        currentScale.x *= -1;
+        transform.localScale = currentScale;
     }
 }
