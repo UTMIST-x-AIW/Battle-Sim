@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ManualMovement : MonoBehaviour
 {
-    private float moveSpeed = 2500f;
+    private float moveSpeed = 50f;
     private float recoilDuration = 0.5f;
     private float recoilTimer = 0f;
 

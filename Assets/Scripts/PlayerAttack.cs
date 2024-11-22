@@ -5,14 +5,14 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     private float attackRange = 25f;
-    private float attackCooldown = 1f;
+    [SerializeField] private float attackCooldown = 1f;
     private float attackTimer = 0f;
 
     private int maxColliders = 3;
 
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && attackTimer <= 0f)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && attackTimer <= 0f)
         {
             Attack();
             attackTimer = attackCooldown;

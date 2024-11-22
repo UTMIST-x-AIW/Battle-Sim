@@ -9,7 +9,7 @@ public class SwordSwing : MonoBehaviour
     private Quaternion targetRotation;
     private Transform swordTransform;
     private Transform pivotTransform;
-    private float swingSpeedScale = 2f; 
+    [SerializeField] private float swingSpeedScale = 2f; 
 
     void Start()
     {
@@ -20,7 +20,7 @@ public class SwordSwing : MonoBehaviour
 
     void Update()
     {
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && !isSwinging)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && !isSwinging)
         {
             isSwinging = true;
             swingTime = 0f;
