@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +18,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -88,11 +88,21 @@
       <workItem from="1731791958237" duration="4427000" />
       <workItem from="1731798829315" duration="16825000" />
     </task>
+    <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
+      <option name="closed" value="true" />
+      <created>1732409160869</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1732409160869</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityProjectDiscoverer">
     <option name="hasUnityReference" value="true" />
@@ -103,5 +113,7 @@
   <component name="VcsManagerConfiguration">
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks." />
   </component>
 </project>
