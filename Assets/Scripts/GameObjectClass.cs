@@ -3,15 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameObjectClass : MonoBehaviour
+public abstract class GameObjectClass : MonoBehaviour
 {
-    enum type
-    {
-        Albert,
-        Kai,
-        Tree,
-        Rock
-    }
+ 
     public Animator animator {get; private set;}
     
     private int HP;
@@ -44,7 +38,7 @@ public class GameObjectClass : MonoBehaviour
     private Dictionary<string, int> inventoryItems = new Dictionary<string, int>();
 
     // Add an item to the inventory
-    public void AddItem(string itemName, int quantity = 1)
+    public void Collecting(string itemName, int quantity = 1)
     {
         if (inventoryItems.ContainsKey(itemName))
         {
@@ -57,7 +51,7 @@ public class GameObjectClass : MonoBehaviour
     }
 
     // Remove an item from the inventory
-    public void RemoveItem(string itemName, int quantity = 1)
+    public void Losing(string itemName, int quantity = 1)
     {
         if (inventoryItems.ContainsKey(itemName))
         {
@@ -75,7 +69,7 @@ public class GameObjectClass : MonoBehaviour
 
     #region Spawning Animation
     
-    void PalyingSpawning()
+    void PlayingSpawning()
     {
         animator.Play("Spawn"); // Play the spawn animation of the object
         // Each of the gameobjects will have a different spawn animation that will be named Spawn

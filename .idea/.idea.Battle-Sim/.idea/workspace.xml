@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
+    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Images/rock1.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/rock1.png.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +22,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Hero Born/Assets/Scripts/BulletBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
@@ -27,18 +33,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "GameObject__class",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;GameObject__class&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.17f1\Editor\Unity.exe" />
@@ -87,6 +93,8 @@
       <updated>1731791957604</updated>
       <workItem from="1731791958237" duration="4427000" />
       <workItem from="1731798829315" duration="16825000" />
+      <workItem from="1736635437827" duration="288000" />
+      <workItem from="1736635815737" duration="2172000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
@@ -96,7 +104,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732409160869</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added the spawn and death animations">
+      <option name="closed" value="true" />
+      <created>1732411231627</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1732411231627</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -114,6 +130,7 @@
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks." />
+    <MESSAGE value="Added the spawn and death animations" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added the spawn and death animations" />
   </component>
 </project>
