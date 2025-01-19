@@ -1,22 +1,23 @@
-Shader "Unlit/NewUnlitShader"
+Shader "Unlit/NewUnlitShader 1"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _Multiplier ("Multiplier" , Range(1,3)) = 1
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
-
+        Tags {
+            "Queue"="Transparent"
+            "RenderType"="Transparent"
+        }
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-
             #include "UnityCG.cginc"
 
             struct appdata
@@ -28,29 +29,26 @@ Shader "Unlit/NewUnlitShader"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            float _Multiplier;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            float4 frag (v2f i) : SV_Target
             {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+                float4 col = tex2D(_MainTex, i.uv);
+                
+                return float4(pow(col.xyz,_Multiplier),1);
             }
             ENDCG
         }
