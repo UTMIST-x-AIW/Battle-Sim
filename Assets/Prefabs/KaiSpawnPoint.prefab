@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 2124127527934630602}
   - component: {fileID: 1671349625295664069}
   - component: {fileID: 5321968516197894032}
-  - component: {fileID: -4463683707887606451}
+  - component: {fileID: 3813567066916183111}
   m_Layer: 0
-  m_Name: SpawnPoint
-  m_TagString: Untagged
+  m_Name: KaiSpawnPoint
+  m_TagString: KaiSpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -107,7 +107,7 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &-4463683707887606451
+--- !u!114 &3813567066916183111
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,8 +121,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   KaiPrefab: {fileID: 8705751162746639239, guid: 0d6c87afa86cccd4094d38ccbe817065, type: 3}
   AlbertPrefab: {fileID: 97759648320744754, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
-  spawnResolution: 7
-  KaiParent: {fileID: 0}
-  AlbertParent: {fileID: 0}
-  targetObject: {fileID: 0}
   pixelCoordinate: {x: 0.5, y: 0.5}
+  MaxNumofSpawns: 30
+  SpawnInterval: 0

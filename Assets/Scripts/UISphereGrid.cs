@@ -15,8 +15,8 @@ public class UISphereGrid : MonoBehaviour
     
     [Header("Texture Settings")]
     #region Texture Variables
-    [SerializeField] 
-    Material samplingMaterial;
+    [SerializeField] Material KaiMaterial;
+    [SerializeField] Material AlbertMaterial;
     [SerializeField, Range(0,0.05f)] float TextureSize;
     [SerializeField] bool ShowTexture;
     [SerializeField] GameObject FullTexture;
@@ -26,31 +26,28 @@ public class UISphereGrid : MonoBehaviour
     
     [Header("Point Settings")]
     #region Point Variables
-    [SerializeField]
-    Transform SpawnPoint;
+    [SerializeField] Transform KaiSpawnPoint;
+    [SerializeField] Transform AlbertSpawnPoint;
     [SerializeField, Range(0, 0.8f)] 
     float pointSize = 0.2f;
     #endregion
-    public void LoadMapper()
+    
+    public void LoadAlbertMap()
     {
-        if (this.gameObject.transform.childCount > 0)
+        if (GameObject.Find("AlbertSpawnPoint(Clone)") != null && AlbertSpawnMapBool)
         {
-            foreach (Transform child in this.gameObject.transform) child.gameObject.SetActive(true);
+            foreach (Transform child in this.transform)
+            {
+                if (child.name == "AlbertSpawnPoint(Clone)") child.gameObject.GetComponent<MeshRenderer>().enabled = true;
+           }
             return;
         }
+       
         BoundsInt bounds = tilemap.cellBounds;
-        samplingMaterial.SetFloat("_TextureSamplingScale", TextureSize);
-        if (KaiSpawnMapBool)
-        {
-            samplingMaterial.SetInt("_KaiSpawnMapEnabled", 1);
-            if (ShowTexture) FullTexture.SetActive(true);
-        }
-        if (AlbertSpawnMapBool)
-        {
-            samplingMaterial.SetInt("_AlbertSpawnMapEnabled", 1);
-            if (ShowTexture) FullTexture.SetActive(true);
-
-        }
+        AlbertMaterial.SetFloat("_TextureSamplingScale", TextureSize);
+        AlbertMaterial.SetInt("_AlbertSpawnMapEnabled", 1);
+        if (ShowTexture) FullTexture.SetActive(true);
+        //KaiMaterial.SetInt("_KaiSpawnMapEnabled", 0);
         for (int x = (int)bounds.xMin; x < (int)bounds.xMax; x++)
         {
             for (int y = (int)bounds.yMin; y < (int)bounds.yMax; y++)
@@ -60,10 +57,43 @@ public class UISphereGrid : MonoBehaviour
                 if (tile != null)
                 {
                 Vector3 position =tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
-                Transform point = Instantiate(SpawnPoint, position, Quaternion.identity);
+                Transform point = Instantiate(AlbertSpawnPoint, position, Quaternion.identity);
                 point.localScale = new Vector3(pointSize, pointSize, 1);
                 point.gameObject.SetActive(true);
                 point.SetParent(this.transform, true);
+                }
+            }
+        }
+    }
+    public void LoadKaiMap()
+    {
+        if (GameObject.Find("KaiSpawnPoint(Clone)") != null && KaiSpawnMapBool) 
+        {
+            foreach (Transform child in this.transform)
+            {
+                if (child.name == "KaiSpawnPoint(Clone)") child.gameObject.GetComponent<MeshRenderer>().enabled = true;
+            }
+            return;
+        }
+
+        BoundsInt bounds = tilemap.cellBounds;
+        KaiMaterial.SetFloat("_TextureSamplingScale", TextureSize);
+        KaiMaterial.SetInt("_KaiSpawnMapEnabled", 1);
+        if (ShowTexture) FullTexture.SetActive(true);
+      //  AlbertMaterial.SetInt("_AlbertSpawnMapEnabled",0);
+        for (int x = (int)bounds.xMin; x < (int)bounds.xMax; x++)
+        {
+            for (int y = (int)bounds.yMin; y < (int)bounds.yMax; y++)
+            {
+                Vector3Int gridPosition = new Vector3Int(x, y, 0);
+                TileBase tile = tilemap.GetTile(gridPosition);
+                if (tile != null)
+                {
+                    Vector3 position =tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
+                    Transform point = Instantiate(KaiSpawnPoint, position, Quaternion.identity);
+                    point.localScale = new Vector3(pointSize, pointSize, 1);
+                    point.gameObject.SetActive(true);
+                    point.SetParent(this.transform, true);
                 }
             }
         }
@@ -75,8 +105,8 @@ public class UISphereGrid : MonoBehaviour
         {
             DestroyImmediate(this.transform.GetChild(0).gameObject);
         }
-        samplingMaterial.SetInt("_AlbertSpawnMapEnabled", 0);
-        samplingMaterial.SetInt("_KaiSpawnMapEnabled", 0);
+        AlbertMaterial.SetInt("_AlbertSpawnMapEnabled", 0);
+        KaiMaterial.SetInt("_KaiSpawnMapEnabled", 0);
         FullTexture.gameObject.SetActive(false);
     }
 
@@ -86,7 +116,7 @@ public class UISphereGrid : MonoBehaviour
         int counter = 0;
         for (int i = 0; i < this.transform.childCount; i++)
         {
-            this.gameObject.transform.GetChild(counter).gameObject.SetActive(false);
+            this.gameObject.transform.GetChild(counter).GetComponent<MeshRenderer>().enabled = false;
             counter++;
         }
         FullTexture.gameObject.SetActive(false);   

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit_SamplerShader
-  m_Shader: {fileID: 4800000, guid: daa6fbe103de88544b2b594f65820588, type: 3}
+  m_Name: Unlit_KaiSpawnerShader
+  m_Shader: {fileID: 4800000, guid: 08b57caaa427cef47850be9a42fff1a2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -29,6 +29,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SecondTex:
         m_Texture: {fileID: 2800000, guid: 2e9523abc95895344b1fd5a601d1f2b7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpawnTex:
+        m_Texture: {fileID: 2800000, guid: 303b08471a62e6d4f8c974eaca443382, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - albert_map_tex:
@@ -44,7 +48,7 @@ Material:
     - _KaiSpawnMapEnabled: 0
     m_Floats:
     - _AlbertSpawnMapEnabled: 0
-    - _KaiSpawnMapEnabled: 0
+    - _KaiSpawnMapEnabled: 1
     - _TextureSamplingScale: 0.0033
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}

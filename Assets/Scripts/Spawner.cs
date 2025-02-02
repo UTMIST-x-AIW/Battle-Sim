@@ -3,26 +3,26 @@ using UnityEngine;
 
 public class TextureSpawner : MonoBehaviour
 {
-    public Transform KaiPrefab; 
+    public Transform KaiPrefab;
     public Transform AlbertPrefab;
     private Color color;
-    private  Transform KaiParent;
+    private Transform KaiParent;
     private Transform AlbertParent;
-    public GameObject targetObject; // The GameObject whose color you want to check
-    public Vector2 pixelCoordinate = new Vector2(0.5f, 0.5f); // Normalized coordinate (0-1) to sample the color
-
+    private Vector2 pixelCoordinate = new Vector2(0.5f, 0.5f); // Normalized coordinate (0-1) to sample the color
     private RenderTexture renderTexture;
     GameObject KaiParent_GameObject;
     GameObject AlbertParent_GameObject;
-    [SerializeField, Range(0,100)] private int MaxNumofSpawns;
-    [SerializeField, Range(1,10)] private int SpawnInterval;
-    
+    [SerializeField, Range(0, 100)] private int MaxNumofSpawns;
+    [SerializeField, Range(1, 10)] private int SpawnInterval;
+    Material SpawnMaterial;
+
     private Camera renderCamera;
+
     void Start()
     {
         KaiParent_GameObject = GameObject.Find("Kai's Parent");
         AlbertParent_GameObject = GameObject.Find("Albert's Parent");
-        targetObject = this.gameObject;
+        SpawnMaterial = gameObject.GetComponent<MeshRenderer>().material;
         KaiParent = KaiParent_GameObject.GetComponent<Transform>();
         AlbertParent = AlbertParent_GameObject.GetComponent<Transform>();
         renderTexture = new RenderTexture(256, 256, 24);
@@ -31,7 +31,7 @@ public class TextureSpawner : MonoBehaviour
         renderCamera.enabled = false;
         renderCamera.targetTexture = renderTexture;
 
-        color = GetObjectColor(targetObject);
+        color = GetObjectColor(this.gameObject);
         OnDestroy();
     }
 
@@ -41,7 +41,7 @@ public class TextureSpawner : MonoBehaviour
         if (AlbertParent_GameObject.transform.childCount == MaxNumofSpawns) return;
         StartCoroutine(CalculateSpawnPoints());
     }
-    
+
     Color GetObjectColor(GameObject obj)
     {
         // Position the camera to fit the object
@@ -79,30 +79,41 @@ public class TextureSpawner : MonoBehaviour
             renderTexture.Release();
             Destroy(renderTexture);
         }
+
         if (renderCamera != null)
         {
             Destroy(renderCamera.gameObject);
         }
     }
+
     IEnumerator CalculateSpawnPoints()
     {
-       
-        float spawnProbability = 0.001f*color.grayscale; // Grayscale value (0-1)
+
+        float spawnProbability = 0.001f * color.grayscale; // Grayscale value (0-1)
 
         // Randomly spawn based on the probability
         if (Random.value < spawnProbability)
         {
-            bool _canSpawn = true;
-            if (_canSpawn)
+            if (SpawnMaterial.shader.name == "Unlit/KaiShader")
             {
-                Transform kai = Instantiate(KaiPrefab, this.transform.position, Quaternion.identity);
-                Transform albert = Instantiate(AlbertPrefab, this.transform.position, Quaternion.identity);
-                kai.SetParent(KaiParent, true);
-                albert.SetParent(AlbertParent, true);
-                _canSpawn = false;
+                if (SpawnMaterial.GetInt("_KaiSpawnMapEnabled") == 1)
+                {
+                    Transform Kai = Instantiate(KaiPrefab, this.transform.position, Quaternion.identity);
+                    Kai.SetParent(KaiParent, true);
+                }
+
             }
+            else if (SpawnMaterial.shader.name == "Unlit/AlbertShader")
+            {
+                if (SpawnMaterial.GetInt("_AlbertSpawnMapEnabled") == 1)
+                {
+                    Transform albert = Instantiate(AlbertPrefab, this.transform.position, Quaternion.identity);
+                    albert.SetParent(AlbertParent, true);
+                }
+            }
+
+            yield return new WaitForSeconds(SpawnInterval);
         }
-        yield return new WaitForSeconds(SpawnInterval);
 
     }
 }
