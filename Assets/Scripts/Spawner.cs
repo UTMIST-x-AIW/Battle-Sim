@@ -15,6 +15,7 @@ public class TextureSpawner : MonoBehaviour
     GameObject KaiParent_GameObject;
     GameObject AlbertParent_GameObject;
     [SerializeField, Range(0,100)] private int MaxNumofSpawns;
+    [SerializeField, Range(1,10)] private int SpawnInterval;
     
     private Camera renderCamera;
     void Start()
@@ -101,7 +102,7 @@ public class TextureSpawner : MonoBehaviour
                 _canSpawn = false;
             }
         }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(SpawnInterval);
 
     }
 }

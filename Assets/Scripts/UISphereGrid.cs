@@ -65,10 +65,6 @@ public class UISphereGrid : MonoBehaviour
             }
         }
     }
-   // public void OnValidate() {
-     //   LoadMapper();
-   // }
-    
 
     public void KillChildren()
     {
