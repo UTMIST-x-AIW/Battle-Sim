@@ -1,15 +1,10 @@
+using System.Collections;
 using UnityEngine;
 
 public class TextureSpawner : MonoBehaviour
 {
     public Transform KaiPrefab; 
     public Transform AlbertPrefab;
-    // Prefab to spawn
-  //  public Transform AlbertPrefab; // Prefab to spawn
-    //public int spawnResolution = 10; // How many spawn points to check per axis
-
-    private Material SpawnMap;
-    private int SpawnCounter = 1;
     private Color color;
     private  Transform KaiParent;
     private Transform AlbertParent;
@@ -19,7 +14,7 @@ public class TextureSpawner : MonoBehaviour
     private RenderTexture renderTexture;
     GameObject KaiParent_GameObject;
     GameObject AlbertParent_GameObject;
-
+    [SerializeField, Range(0,100)] private int MaxNumofSpawns;
     
     private Camera renderCamera;
     void Start()
@@ -31,7 +26,6 @@ public class TextureSpawner : MonoBehaviour
         AlbertParent = AlbertParent_GameObject.GetComponent<Transform>();
         renderTexture = new RenderTexture(256, 256, 24);
         renderTexture.Create();
-        // Create a temporary camera to render the object
         renderCamera = new GameObject("RenderCamera").AddComponent<Camera>();
         renderCamera.enabled = false;
         renderCamera.targetTexture = renderTexture;
@@ -42,8 +36,8 @@ public class TextureSpawner : MonoBehaviour
 
     void LateUpdate()
     {
-        if (KaiParent_GameObject.transform.childCount == 50) return;
-        if (AlbertParent_GameObject.transform.childCount == 50) return;
+        if (KaiParent_GameObject.transform.childCount == MaxNumofSpawns) return;
+        if (AlbertParent_GameObject.transform.childCount == MaxNumofSpawns) return;
         StartCoroutine(CalculateSpawnPoints());
     }
     
@@ -89,7 +83,7 @@ public class TextureSpawner : MonoBehaviour
             Destroy(renderCamera.gameObject);
         }
     }
-    void CalculateSpawnPoints()
+    IEnumerator CalculateSpawnPoints()
     {
        
         float spawnProbability = 0.001f*color.grayscale; // Grayscale value (0-1)
@@ -97,14 +91,17 @@ public class TextureSpawner : MonoBehaviour
         // Randomly spawn based on the probability
         if (Random.value < spawnProbability)
         {
-            if (SpawnCounter != 2)
+            bool _canSpawn = true;
+            if (_canSpawn)
             {
-                Transform Kai = Instantiate(KaiPrefab, this.transform.position, Quaternion.identity);
-                Transform Albert = Instantiate(AlbertPrefab, this.transform.position, Quaternion.identity);
-                Kai.SetParent(KaiParent, true);
-                Albert.SetParent(AlbertParent, true);
-                SpawnCounter++;
+                Transform kai = Instantiate(KaiPrefab, this.transform.position, Quaternion.identity);
+                Transform albert = Instantiate(AlbertPrefab, this.transform.position, Quaternion.identity);
+                kai.SetParent(KaiParent, true);
+                albert.SetParent(AlbertParent, true);
+                _canSpawn = false;
             }
         }
+        yield return new WaitForSeconds(2f);
+
     }
 }
