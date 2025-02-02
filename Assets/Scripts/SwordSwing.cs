@@ -45,4 +45,14 @@ public class SwordSwing : MonoBehaviour
             }
         }
     }
+    
+    public void TriggerSwing()
+    {
+        if (!isSwinging)
+        {
+            isSwinging = true;
+            swingTime = 0f;
+            targetRotation = Quaternion.Euler(0, 0, -179); // Adjust target rotation as needed
+        }
+    }
 }
