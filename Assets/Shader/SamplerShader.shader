@@ -2,10 +2,15 @@ Shader "Unlit/SamplerShader"
 {
     Properties
     {
-     [NoScaleOffset]
-        _MainTex ("Texture", 2D) = "white" {}
-        _Color ("Color", Color) = (0,1,0,1)
-       [HideInInspector] _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
+         [NoScaleOffset]
+         albert_map_tex ("Albert Spawn Map", 2D) = "white" {}
+        [NoScaleOffset]
+        kai_map_tex ("Kai Spawn Map", 2D) = "white" {}
+        [HideInInspector]
+        _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
+        _AlbertSpawnMapEnabled("Albert Spawn Map Enabled",Int) = 0
+        _KaiSpawnMapEnabled("Kai Spawn Map Enabled", Int) = 0
+        
     }
     SubShader
     {
@@ -33,9 +38,12 @@ Shader "Unlit/SamplerShader"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D _MainTex;
-            float4 _Color;
+            sampler2D albert_map_tex;
+            sampler2D kai_map_tex;
             float  _TextureSamplingScale;
+            int _AlbertSpawnMapEnabled;
+            int _KaiSpawnMapEnabled;
+            
 
             v2f vert (appdata v)
             {
@@ -48,8 +56,18 @@ Shader "Unlit/SamplerShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.worldPos*_TextureSamplingScale);
-                return col;
+                if (_KaiSpawnMapEnabled == 1 && _AlbertSpawnMapEnabled == 1) {
+                    _AlbertSpawnMapEnabled = 0;
+                    _KaiSpawnMapEnabled = 0;
+                }else if (_AlbertSpawnMapEnabled == 1){
+                    fixed4 col = tex2D(albert_map_tex,  i.worldPos*_TextureSamplingScale);
+                    return col;
+                }else if(_KaiSpawnMapEnabled == 1)
+                {
+                    fixed4 col = tex2D(kai_map_tex, i.worldPos*_TextureSamplingScale*30);
+                    return col;    
+                }
+                return 0;
             }
             ENDCG
         }

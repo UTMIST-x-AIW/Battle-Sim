@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Point.prefab" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Point.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/UISphereGrid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UISphereGrid.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shader/SamplerShader.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/SamplerShader.shader" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_SamplerShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/Unlit_SamplerShader.mat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,7 +121,7 @@
       <workItem from="1737851697512" duration="3606000" />
       <workItem from="1737872764832" duration="550000" />
       <workItem from="1738454051308" duration="11000" />
-      <workItem from="1738457024108" duration="7586000" />
+      <workItem from="1738457024108" duration="15862000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
