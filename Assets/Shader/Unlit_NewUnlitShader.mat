@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AnotherTex:
-        m_Texture: {fileID: 2800000, guid: cc9f23924c5b17a42a9e42061ba8c414, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -41,6 +41,7 @@ Material:
     - _Adder: 0.319
     - _EnableExternalAlpha: 0
     - _Multiplier: 1.5
+    - _PowerFactor: 1.172
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}

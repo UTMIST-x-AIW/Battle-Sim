@@ -6,42 +6,22 @@
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Ground.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Ground.prefab.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/Albert.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/Albert.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/Kai.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/Kai.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/rock1.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/rock1.prefab.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Images/Streak 1 - 256x256.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/Streak 1 - 256x256.png.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Albert.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Albert.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Albert.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Albert.prefab.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Kai.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Kai.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Kai.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Kai.prefab.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/rock1.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/rock1.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/rock1.prefab.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/rock1.prefab.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Point.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Point.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/SavedMesh.asset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/SavedMesh.asset.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaderw.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaderw/NewUnlitShader.shader" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaderw/NewUnlitShader.shader.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaderw/Unlit_NewUnlitShader.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shaderw/Unlit_NewUnlitShader.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Sprites/Tiles/Untitled_Artwork 1.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Sprites/Tiles/Untitled_Artwork 1.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Sprites/Tiles/Untitled_Artwork 6.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Sprites/Tiles/Untitled_Artwork 6.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree.prefab" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree.prefab.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/diffuse.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/diffuse.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/normal_specular.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/normal_specular.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/shadow.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/shadow.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/translucency_gloss.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Tree_Textures/translucency_gloss.png.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RandomMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RandomMovement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/UISphereGrid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/UISphereGrid.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shader/NewUnlitShader.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/NewUnlitShader.shader" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_NewUnlitShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/Unlit_NewUnlitShader.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_SamplerShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/Unlit_SamplerShader.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +37,8 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/raycasting-explained-main/raycasting-explained-main/Assets/Scripts/RaycastDemo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Hero Born/Assets/Scripts/BulletBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -71,19 +53,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "Standalone Player.Start Unity.executor": "Run",
-    "git-widget-placeholder": "GameObject__class",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Standalone Player.Start Unity.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;GameObject__class&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Standalone Player.Start Unity">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.17f1\Editor\Unity.exe" />
@@ -139,6 +121,17 @@
       <workItem from="1736981260794" duration="304000" />
       <workItem from="1737228291906" duration="12849000" />
       <workItem from="1737249501066" duration="14921000" />
+      <workItem from="1737266924588" duration="868000" />
+      <workItem from="1737323516614" duration="337000" />
+      <workItem from="1737329024505" duration="1975000" />
+      <workItem from="1737413441582" duration="222000" />
+      <workItem from="1737413772320" duration="172000" />
+      <workItem from="1737848694401" duration="2000" />
+      <workItem from="1737848718979" duration="2385000" />
+      <workItem from="1737851697512" duration="3606000" />
+      <workItem from="1737872764832" duration="550000" />
+      <workItem from="1738454051308" duration="11000" />
+      <workItem from="1738457024108" duration="6263000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />

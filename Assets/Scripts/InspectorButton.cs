@@ -15,16 +15,21 @@ public class InspectorButton : Editor
         // Add a button
         UISphereGrid script = (UISphereGrid)target;
 
-        if (GUILayout.Button("Make the Bastards"))
+        if (GUILayout.Button("Make the points"))
         {
             script.LoadMapper();
         }
         
-        if (GUILayout.Button("Kill the Bastards"))
+        if (GUILayout.Button("Destroy the points"))
         {
             script.KillChildren();
         }
        
+        if (GUILayout.Button("Hide the points"))
+        {
+            script.HideChildren();
+        }
+
         
     }
 }

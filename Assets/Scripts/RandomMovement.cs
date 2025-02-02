@@ -1,44 +1,78 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class RandomMovement : MonoBehaviour
+public class ManualMovement : MonoBehaviour
 {
-    private float moveSpeed = 20.0f;
-    private float changeInterval = 1.0f;
+    private float moveSpeed = 50f;
+    private float recoilDuration = 0.5f;
+    private float recoilTimer = 0f;
 
-    private Vector2 randomDirection;
-    private float timer;
+    private Vector2 movement;
+    private Rigidbody rb;
+    private bool canMove = true;
+    private Vector2 lastDirection;
+    
+    private bool isFacingRight = true;
 
     void Start()
     {
-        GenerateNewDirection();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        transform.Translate(randomDirection * moveSpeed * Time.deltaTime);
-        timer += Time.deltaTime;
-        if (timer >= changeInterval)
+
+        if (recoilTimer > 0)
         {
-            timer = 0;
-            GenerateNewDirection();
+            recoilTimer -= Time.deltaTime;
+            movement = -lastDirection;
+        }
+        else
+        {
+            canMove = true;
+        }
+        if (canMove)
+        {
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
+
+            movement = movement.normalized;
+            lastDirection = movement;
+            
+            HandleFlipping();
+        }
+
+        rb.velocity = movement * moveSpeed;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("bounds"))
+        {
+            canMove = false;
+            recoilTimer = recoilDuration;
+            rb.velocity = Vector2.zero;
+        }
+    }
+    
+    private void HandleFlipping()
+    {
+        if (movement.x < 0 && isFacingRight)
+        {
+            Flip();
+        }
+        else if (movement.x > 0 && !isFacingRight)
+        {
+            Flip();
         }
     }
 
-    private void GenerateNewDirection()
+    private void Flip()
     {
-        randomDirection = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f).normalized;
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.tag == "bounds")
-        {
-            Debug.Log("Hit Bound");
-            randomDirection = -1 * randomDirection;
-        }
+        isFacingRight = !isFacingRight;
+        Vector3 currentScale = transform.localScale;
+        currentScale.x *= -1;
+        transform.localScale = currentScale;
     }
 }

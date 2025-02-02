@@ -4,10 +4,8 @@ Shader "Unlit/NewUnlitShader"
 {
     Properties
     {
-       _MainTex ("Texture", 2D) = "white" {}
-       _AnotherTex ("Texture", 2D) = "white" {}
-       _Multiplier ("Multiplier", Range(0,10))=0
-       _Adder ("Adder", Range(0,1))=0.1
+      [NoScaleOffset] _MainTex ("Texture", 2D) = "white" {}
+       _PowerFactor ("Power Factor", Range(1,2))=1
     }
     SubShader
     {
@@ -40,9 +38,7 @@ Shader "Unlit/NewUnlitShader"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            sampler2D _AnotherTex;
-            float _Multiplier;
-            float _Adder;
+            float _PowerFactor;
             
 
             v2f vert (appdata v)
@@ -57,7 +53,7 @@ Shader "Unlit/NewUnlitShader"
             fixed4 frag (v2f i) : SV_Target
             {
                 float4 col = tex2D(_MainTex, i.uv);   
-                return col;
+                return pow(col,_PowerFactor);
             }
             ENDCG
         }

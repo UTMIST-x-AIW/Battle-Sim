@@ -2,15 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class UISphereGrid : MonoBehaviour
 {
+    [Header("Tilemap Settings")]
     #region TileMap Variables
     public Tilemap tilemap;
     private BoundsInt bounds;
     #endregion
     
+    [Header("Texture Settings")]
     #region Texture Variables
     [SerializeField] 
     Material samplingMaterial;
@@ -19,12 +22,14 @@ public class UISphereGrid : MonoBehaviour
     float TextureSize;
 
     [SerializeField] 
-    bool ShowViewer;
-    [SerializeField] Transform viewer;
+    bool ShowTexture;
+    [SerializeField] Transform LookAtTexture;
     #endregion
     
+    [FormerlySerializedAs("startPosition")]
+    [Header("Point Settings")]
     [SerializeField]
-    Transform startPosition;  
+    Transform Point;  
     [SerializeField, Range(0, 0.8f)] 
     float pointSize = 0.2f;
 
@@ -32,12 +37,13 @@ public class UISphereGrid : MonoBehaviour
     {
         if (this.gameObject.transform.childCount > 0)
         {
-            KillChildren();
+            foreach (Transform child in this.gameObject.transform) child.gameObject.SetActive(true);
+            return;
         }
 
-        if (ShowViewer)
+        if (ShowTexture)
         {
-            viewer.gameObject.SetActive(true);
+            LookAtTexture.gameObject.SetActive(true);
         }
         BoundsInt bounds = tilemap.cellBounds;
         samplingMaterial.SetFloat("_TextureSamplingScale", TextureSize);
@@ -50,26 +56,37 @@ public class UISphereGrid : MonoBehaviour
                 TileBase tile = tilemap.GetTile(gridPosition);
                 if (tile != null)
                 {
-                Vector3 position =    tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
-                Transform point = Instantiate(startPosition, position, Quaternion.identity);
+                Vector3 position =tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
+                Transform point = Instantiate(Point, position, Quaternion.identity);
                 point.localScale = new Vector3(pointSize, pointSize, 1);
                 point.gameObject.SetActive(true);
                 point.SetParent(this.transform, true);
                 }
             }
         }
-        
     }
+   // public void OnValidate() {
+     //   LoadMapper();
+   // }
     
 
     public void KillChildren()
     {
-        
-        while (this.gameObject.transform.childCount > 0)
+        while (this.transform.childCount > 0)
         {
-            DestroyImmediate(this.gameObject.transform.GetChild(0).gameObject);
+            DestroyImmediate(this.transform.GetChild(0).gameObject);
         }
+    }
 
-        viewer.gameObject.SetActive(false);
+    public void HideChildren()
+    {
+        if (this.gameObject.transform.childCount == 0) return;
+        int counter = 0;
+        for (int i = 0; i < this.transform.childCount; i++)
+        {
+            this.gameObject.transform.GetChild(counter).gameObject.SetActive(false);
+            counter++;
+        }
+        LookAtTexture.gameObject.SetActive(false);   
     }
 }
