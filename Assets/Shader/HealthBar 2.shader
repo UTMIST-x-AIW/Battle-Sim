@@ -1,4 +1,4 @@
-Shader "Unlit/HealthBar 2"
+Shader "Custom/HealthBar"
 {
     Properties
     {
