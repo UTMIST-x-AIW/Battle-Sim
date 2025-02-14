@@ -7,6 +7,12 @@ public class Creature : MonoBehaviour
     public float energy = 5f;
     public float reproduction = 0f;
     
+    // Movement settings
+    public float moveSpeed = 5f;
+    public float rotateSpeed = 180f;
+    public float movementEnergyCost = 1f;
+    public float rotationEnergyCost = 0.5f;
+    
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -19,12 +25,21 @@ public class Creature : MonoBehaviour
     private void Start()
     {
         observer = gameObject.AddComponent<CreatureObserver>();
+        
+        // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
         if (rb == null)
         {
             rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0f; // No gravity in 2D top-down
         }
+        
+        // Configure Rigidbody2D
+        rb.gravityScale = 0f;
+        rb.drag = 1f;
+        rb.angularDrag = 1f;
+        rb.constraints = RigidbodyConstraints2D.None;
+        rb.collisionDetection = CollisionDetectionMode2D.Continuous;
+        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -65,22 +80,54 @@ public class Creature : MonoBehaviour
         outputs[0] = Mathf.Clamp(outputs[0], -1f, 1f);
         outputs[1] = Mathf.Clamp(outputs[1], -1f, 1f);
         
-        // Update energy based on movement
-        energy = Mathf.Max(0, energy - Mathf.Abs(outputs[0]) * Time.deltaTime);
-        
-        // Apply movement using Rigidbody2D
-        Vector2 movement = transform.right * outputs[0];
-        rb.velocity = movement * 5f; // Scale movement speed
-        rb.angularVelocity = outputs[1] * 180f; // Convert to degrees/sec
-        
         return outputs;
     }
     
-    private void Update()
+    private void FixedUpdate()
     {
         if (brain != null)
         {
-            GetActions();
+            float[] actions = GetActions();
+            
+            // Calculate movement
+            float forwardSpeed = actions[0] * moveSpeed;
+            float rotationSpeed = actions[1] * rotateSpeed;
+            
+            // Apply movement if we have enough energy
+            if (energy > 0)
+            {
+                // Calculate energy costs
+                float moveCost = Mathf.Abs(forwardSpeed) * movementEnergyCost * Time.fixedDeltaTime;
+                float rotateCost = Mathf.Abs(rotationSpeed) * rotationEnergyCost * Time.fixedDeltaTime;
+                float totalEnergyCost = moveCost + rotateCost;
+                
+                if (totalEnergyCost <= energy)
+                {
+                    // Apply forward movement
+                    Vector2 movement = (Vector2)(transform.right * forwardSpeed);
+                    rb.velocity = movement;
+                    
+                    // Apply rotation
+                    rb.angularVelocity = rotationSpeed;
+                    
+                    // Deduct energy
+                    energy = Mathf.Max(0, energy - totalEnergyCost);
+                }
+                else
+                {
+                    // Not enough energy for full movement, use what we have
+                    float energyRatio = energy / totalEnergyCost;
+                    rb.velocity = (Vector2)(transform.right * forwardSpeed * energyRatio);
+                    rb.angularVelocity = rotationSpeed * energyRatio;
+                    energy = 0;
+                }
+            }
+            else
+            {
+                // No energy, stop movement
+                rb.velocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
         }
     }
 } 

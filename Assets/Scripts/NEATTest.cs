@@ -9,6 +9,7 @@ public class NEATTest : MonoBehaviour
     private GameObject kai;
     private Creature albertCreature;
     private CreatureObserver observer;
+    private const float MAX_WAIT_TIME = 5f; // Maximum time to wait for initialization
     
     // Expected values for our test case
     private readonly float[] expectedObservations = new float[] {
@@ -26,14 +27,27 @@ public class NEATTest : MonoBehaviour
     void Start()
     {
         SetupTest();
-        // Wait one frame for everything to initialize
-        StartCoroutine(RunTestAfterInit());
+        StartCoroutine(WaitForInitialization());
     }
     
-    IEnumerator RunTestAfterInit()
+    IEnumerator WaitForInitialization()
     {
-        // Wait for next frame to ensure all components are initialized
-        yield return null;
+        float waitTime = 0f;
+        
+        // Wait until observer is initialized or timeout
+        while (observer == null && waitTime < MAX_WAIT_TIME)
+        {
+            observer = albert.GetComponent<CreatureObserver>();
+            waitTime += Time.deltaTime;
+            yield return null;
+        }
+        
+        if (observer == null)
+        {
+            Debug.LogError("Failed to initialize observer after " + MAX_WAIT_TIME + " seconds");
+            yield break;
+        }
+        
         RunTest();
     }
     
@@ -54,9 +68,6 @@ public class NEATTest : MonoBehaviour
         
         // Initialize Albert with test network
         albertCreature.InitializeNetwork(network);
-        
-        // Wait for observer to be added by Start()
-        observer = albert.GetComponent<CreatureObserver>();
     }
     
     NEAT.Genome.Genome CreateTestGenome()
@@ -89,12 +100,14 @@ public class NEATTest : MonoBehaviour
             return;
         }
         
+        Debug.Log("Starting test with initialized observer...");
+        
         // Get observations
         float[] observations = observer.GetObservations(albertCreature);
         
         // Verify observations
         bool observationsCorrect = VerifyObservations(observations);
-        Debug.Log($"Observations Test: {(observationsCorrect ? "PASSED" : "FAILED")}");
+        Debug.Log(string.Format("Observations Test: {0}", observationsCorrect ? "PASSED" : "FAILED"));
         LogObservations(observations);
         
         // Run one neural network step
@@ -102,7 +115,7 @@ public class NEATTest : MonoBehaviour
         
         // Verify actions are in correct range (-1 to 1)
         bool actionsInRange = VerifyActionRanges(actions);
-        Debug.Log($"Action Ranges Test: {(actionsInRange ? "PASSED" : "FAILED")}");
+        Debug.Log(string.Format("Action Ranges Test: {0}", actionsInRange ? "PASSED" : "FAILED"));
         LogActions(actions);
         
         // Let it run for 2 seconds
