@@ -177,8 +177,8 @@ MonoBehaviour:
   maxEnergy: 5
   moveSpeed: 5
   rotateSpeed: 180
-  movementEnergyCost: 0.02
-  rotationEnergyCost: 0.01
+  movementEnergyCost: 0.002
+  rotationEnergyCost: 0.001
   energyRegenRate: 2
   energyRegenDelay: 0.3
   type: 0
