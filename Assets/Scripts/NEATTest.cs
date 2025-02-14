@@ -3,8 +3,10 @@ using System.Collections;
 
 public class NEATTest : MonoBehaviour
 {
-    public GameObject creaturePrefab;  // Assign in inspector
-    
+    public GameObject albertCreaturePrefab;  // Assign in inspector
+    public GameObject kaiCreaturePrefab;  // Assign in inspector
+
+
     private GameObject albert;
     private GameObject kai;
     private Creature albertCreature;
@@ -54,8 +56,8 @@ public class NEATTest : MonoBehaviour
     void SetupTest()
     {
         // Spawn test creatures
-        albert = Instantiate(creaturePrefab, Vector3.zero, Quaternion.identity);
-        kai = Instantiate(creaturePrefab, new Vector3(3, 0, 0), Quaternion.identity);
+        albert = Instantiate(albertCreaturePrefab, Vector3.zero, Quaternion.identity);
+        kai = Instantiate(kaiCreaturePrefab, new Vector3(3, 0, 0), Quaternion.identity);
         
         // Setup components
         albertCreature = albert.GetComponent<Creature>();
