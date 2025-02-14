@@ -2,16 +2,21 @@ using UnityEngine;
 
 public class Creature : MonoBehaviour
 {
-    // Basic stats
+    [Header("Basic Stats")]
     public float health = 3f;
     public float energy = 5f;
     public float reproduction = 0f;
+    public float maxEnergy = 5f;
     
-    // Movement settings
+    [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float rotateSpeed = 180f;
-    public float movementEnergyCost = 1f;
-    public float rotationEnergyCost = 0.5f;
+    
+    [Header("Energy Settings")]
+    public float movementEnergyCost = 0.2f;
+    public float rotationEnergyCost = 0.1f;
+    public float energyRegenRate = 0.5f;  // Energy regenerated per second when stationary
+    public float energyRegenDelay = 0.5f; // Time to wait before regenerating energy after movement
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -21,13 +26,15 @@ public class Creature : MonoBehaviour
     private NEAT.NN.FeedForwardNetwork brain;
     private CreatureObserver observer;
     private Rigidbody2D rb;
+    private float lastMovementTime;
     
     private void Awake()
     {
         // Initialize stats
         health = 3f;
-        energy = 5f;
+        energy = maxEnergy;
         reproduction = 0f;
+        lastMovementTime = -energyRegenDelay; // Allow immediate regen at start
     }
     
     private void Start()
@@ -93,6 +100,14 @@ public class Creature : MonoBehaviour
         return outputs;
     }
     
+    private void RegenerateEnergy()
+    {
+        if (Time.time - lastMovementTime >= energyRegenDelay)
+        {
+            energy = Mathf.Min(maxEnergy, energy + energyRegenRate * Time.fixedDeltaTime);
+        }
+    }
+    
     private void FixedUpdate()
     {
         if (brain != null)
@@ -104,7 +119,7 @@ public class Creature : MonoBehaviour
             float rotationSpeed = actions[1] * rotateSpeed;
             
             // Debug movement values
-            Debug.Log(string.Format("Movement - Energy: {0}, Forward: {1}, Rotation: {2}", 
+            Debug.Log(string.Format("Movement - Energy: {0:F2}, Forward: {1:F2}, Rotation: {2:F2}", 
                 energy, forwardSpeed, rotationSpeed));
             
             // Apply movement if we have enough energy
@@ -127,8 +142,14 @@ public class Creature : MonoBehaviour
                     // Deduct energy
                     energy = Mathf.Max(0, energy - totalEnergyCost);
                     
+                    // Update last movement time
+                    if (Mathf.Abs(forwardSpeed) > 0.01f || Mathf.Abs(rotationSpeed) > 0.01f)
+                    {
+                        lastMovementTime = Time.time;
+                    }
+                    
                     // Debug energy consumption
-                    Debug.Log(string.Format("Energy consumed: {0} (Move: {1}, Rotate: {2})", 
+                    Debug.Log(string.Format("Energy consumed: {0:F3} (Move: {1:F3}, Rotate: {2:F3})", 
                         totalEnergyCost, moveCost, rotateCost));
                 }
                 else
@@ -138,6 +159,7 @@ public class Creature : MonoBehaviour
                     rb.velocity = (Vector2)(transform.right * forwardSpeed * energyRatio);
                     rb.angularVelocity = rotationSpeed * energyRatio;
                     energy = 0;
+                    lastMovementTime = Time.time;
                 }
             }
             else
@@ -145,6 +167,12 @@ public class Creature : MonoBehaviour
                 // No energy, stop movement
                 rb.velocity = Vector2.zero;
                 rb.angularVelocity = 0f;
+            }
+            
+            // Regenerate energy when not moving
+            if (rb.velocity.magnitude < 0.01f && Mathf.Abs(rb.angularVelocity) < 0.01f)
+            {
+                RegenerateEnergy();
             }
         }
     }
