@@ -22,6 +22,14 @@ public class Creature : MonoBehaviour
     private CreatureObserver observer;
     private Rigidbody2D rb;
     
+    private void Awake()
+    {
+        // Initialize stats
+        health = 3f;
+        energy = 5f;
+        reproduction = 0f;
+    }
+    
     private void Start()
     {
         observer = gameObject.AddComponent<CreatureObserver>();
@@ -38,8 +46,10 @@ public class Creature : MonoBehaviour
         rb.drag = 1f;
         rb.angularDrag = 1f;
         rb.constraints = RigidbodyConstraints2D.None;
-        rb.collisionDetection = CollisionDetectionMode2D.Continuous;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        
+        // Debug initial state
+        Debug.Log(string.Format("Creature initialized - Energy: {0}, Health: {1}", energy, health));
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -93,6 +103,10 @@ public class Creature : MonoBehaviour
             float forwardSpeed = actions[0] * moveSpeed;
             float rotationSpeed = actions[1] * rotateSpeed;
             
+            // Debug movement values
+            Debug.Log(string.Format("Movement - Energy: {0}, Forward: {1}, Rotation: {2}", 
+                energy, forwardSpeed, rotationSpeed));
+            
             // Apply movement if we have enough energy
             if (energy > 0)
             {
@@ -112,6 +126,10 @@ public class Creature : MonoBehaviour
                     
                     // Deduct energy
                     energy = Mathf.Max(0, energy - totalEnergyCost);
+                    
+                    // Debug energy consumption
+                    Debug.Log(string.Format("Energy consumed: {0} (Move: {1}, Rotate: {2})", 
+                        totalEnergyCost, moveCost, rotateCost));
                 }
                 else
                 {
