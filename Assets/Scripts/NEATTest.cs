@@ -26,6 +26,14 @@ public class NEATTest : MonoBehaviour
     void Start()
     {
         SetupTest();
+        // Wait one frame for everything to initialize
+        StartCoroutine(RunTestAfterInit());
+    }
+    
+    IEnumerator RunTestAfterInit()
+    {
+        // Wait for next frame to ensure all components are initialized
+        yield return null;
         RunTest();
     }
     
@@ -47,6 +55,7 @@ public class NEATTest : MonoBehaviour
         // Initialize Albert with test network
         albertCreature.InitializeNetwork(network);
         
+        // Wait for observer to be added by Start()
         observer = albert.GetComponent<CreatureObserver>();
     }
     
@@ -74,6 +83,12 @@ public class NEATTest : MonoBehaviour
     
     void RunTest()
     {
+        if (observer == null)
+        {
+            Debug.LogError("Observer not initialized yet!");
+            return;
+        }
+        
         // Get observations
         float[] observations = observer.GetObservations(albertCreature);
         
@@ -119,14 +134,14 @@ public class NEATTest : MonoBehaviour
         string log = "Observations:\n";
         for (int i = 0; i < observations.Length; i++)
         {
-            log += $"[{i}] Expected: {expectedObservations[i]:F2}, Got: {observations[i]:F2}\n";
+            log += string.Format("[{0}] Expected: {1:F2}, Got: {2:F2}\n", i, expectedObservations[i], observations[i]);
         }
         Debug.Log(log);
     }
     
     void LogActions(float[] actions)
     {
-        Debug.Log($"Actions: Forward = {actions[0]:F2}, Angular = {actions[1]:F2}");
+        Debug.Log(string.Format("Actions: Forward = {0:F2}, Angular = {1:F2}", actions[0], actions[1]));
     }
     
     IEnumerator RunMovementTest()
@@ -138,12 +153,12 @@ public class NEATTest : MonoBehaviour
         
         // Verify energy depletion
         bool energyDepleted = albertCreature.energy < initialEnergy;
-        Debug.Log($"Energy Depletion Test: {(energyDepleted ? "PASSED" : "FAILED")}");
-        Debug.Log($"Energy: {albertCreature.energy:F2} (Started at {initialEnergy:F2})");
+        Debug.Log(string.Format("Energy Depletion Test: {0}", energyDepleted ? "PASSED" : "FAILED"));
+        Debug.Log(string.Format("Energy: {0:F2} (Started at {1:F2})", albertCreature.energy, initialEnergy));
         
         // Verify position changed
         bool positionChanged = albert.transform.position != initialPosition;
-        Debug.Log($"Movement Test: {(positionChanged ? "PASSED" : "FAILED")}");
-        Debug.Log($"Position: {albert.transform.position} (Started at {initialPosition})");
+        Debug.Log(string.Format("Movement Test: {0}", positionChanged ? "PASSED" : "FAILED"));
+        Debug.Log(string.Format("Position: {0} (Started at {1})", albert.transform.position, initialPosition));
     }
 } 
