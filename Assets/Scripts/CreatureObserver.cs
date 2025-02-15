@@ -8,7 +8,7 @@ public class CreatureObserver : MonoBehaviour
     public float[] GetObservations(Creature self)
     {
         float[] obs = new float[9];
-        bool shouldLog = !hasLoggedOnce && self.gameObject == transform.parent.gameObject;
+        bool shouldLog = !hasLoggedOnce && self.gameObject == gameObject;
         
         // Basic stats
         obs[0] = self.health;
