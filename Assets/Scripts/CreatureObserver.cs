@@ -13,8 +13,12 @@ public class CreatureObserver : MonoBehaviour
         obs[1] = self.energy;
         obs[2] = self.reproduction;
         
+        Debug.Log(string.Format("Basic Stats - Health: {0:F2}, Energy: {1:F2}, Reproduction: {2:F2}", 
+            obs[0], obs[1], obs[2]));
+        
         // Get nearby creatures
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
+        Debug.Log(string.Format("Found {0} colliders within {1} unit radius", nearbyColliders.Length, DETECTION_RADIUS));
         
         Vector2 sameTypeSum = Vector2.zero;
         float sameTypeAbsSum = 0f;
@@ -23,22 +27,36 @@ public class CreatureObserver : MonoBehaviour
         
         foreach (var collider in nearbyColliders)
         {
-            if (collider.gameObject == gameObject) continue;
+            if (collider.gameObject == gameObject) 
+            {
+                Debug.Log("Skipping self in collider check");
+                continue;
+            }
             
             Creature other = collider.GetComponent<Creature>();
-            if (other == null) continue;
+            if (other == null)
+            {
+                Debug.Log("Found collider without Creature component");
+                continue;
+            }
             
             Vector2 relativePos = (Vector2)(other.transform.position - transform.position);
+            Debug.Log(string.Format("Found creature of type {0} at relative position ({1:F2}, {2:F2}), distance: {3:F2}", 
+                other.type, relativePos.x, relativePos.y, relativePos.magnitude));
             
             if (other.type == self.type)
             {
                 sameTypeSum += relativePos;
                 sameTypeAbsSum += relativePos.magnitude;
+                Debug.Log(string.Format("Same type - Updated sum to ({0:F2}, {1:F2}), abs sum to {2:F2}", 
+                    sameTypeSum.x, sameTypeSum.y, sameTypeAbsSum));
             }
             else
             {
                 oppositeTypeSum += relativePos;
                 oppositeTypeAbsSum += relativePos.magnitude;
+                Debug.Log(string.Format("Opposite type - Updated sum to ({0:F2}, {1:F2}), abs sum to {2:F2}", 
+                    oppositeTypeSum.x, oppositeTypeSum.y, oppositeTypeAbsSum));
             }
         }
         
@@ -48,11 +66,17 @@ public class CreatureObserver : MonoBehaviour
         if (obs[4] < 0) obs[4] += 2 * Mathf.PI;
         obs[5] = sameTypeAbsSum;
         
+        Debug.Log(string.Format("Same Type Final - Vector Magnitude: {0:F2}, Direction: {1:F2} rad, Absolute Sum: {2:F2}", 
+            obs[3], obs[4], obs[5]));
+        
         // Opposite type observations
         obs[6] = oppositeTypeSum.magnitude;
         obs[7] = Mathf.Atan2(oppositeTypeSum.y, oppositeTypeSum.x);
         if (obs[7] < 0) obs[7] += 2 * Mathf.PI;
         obs[8] = oppositeTypeAbsSum;
+        
+        Debug.Log(string.Format("Opposite Type Final - Vector Magnitude: {0:F2}, Direction: {1:F2} rad, Absolute Sum: {2:F2}", 
+            obs[6], obs[7], obs[8]));
         
         return obs;
     }
