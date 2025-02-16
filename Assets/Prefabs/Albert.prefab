@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   maxHealth: 100
-  range: 5
+  range: 1.5
   moveSpeed: 5
   attackCooldown: 5
   damage: 50
@@ -207,7 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1850f59182bea4c1a820654112253794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 1
+  attackRange: 1.5
   attackCooldown: 5
 --- !u!1001 &4035482147293919484
 PrefabInstance:

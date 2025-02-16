@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    public float attackRange = 1f;
+    public float attackRange = 1.5f;
     [SerializeField] public float attackCooldown = 5f; // Cooldown time in seconds
     private float attackTimer = 0f; // Timer to track cooldown
 
@@ -105,14 +105,14 @@ public class PlayerAttack : MonoBehaviour
         int numPoints = 50;
         float angleStep = 360f / numPoints;
         Vector3 startPoint = new Vector3(
-            transform.position.x + Mathf.Cos(0) * attackRange, transform.position.y + Mathf.Sin(0) * attackRange, 0);
+            transform.position.x + Mathf.Cos(0) * (attackRange- 0.5f), transform.position.y + Mathf.Sin(0) * (attackRange- 0.5f), 0);
     
         for (int i = 1; i <= numPoints; i++)
         {
             float angle = angleStep * i * Mathf.Deg2Rad;
             Vector3 nextPoint = new Vector3(
                 transform.position.x + Mathf.Cos(
-                    angle) * attackRange, transform.position.y + Mathf.Sin(angle) * attackRange, 0);
+                    angle) * (attackRange- 0.5f), transform.position.y + Mathf.Sin(angle) * (attackRange- 0.5f), 0);
             Gizmos.DrawLine(startPoint, nextPoint);
             startPoint = nextPoint;
         }

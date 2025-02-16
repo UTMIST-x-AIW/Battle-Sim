@@ -6,7 +6,7 @@ public class Stats : MonoBehaviour
 {
     public float health = 100f;
     public float maxHealth = 100f;
-    public float range = 1f;
+    public float range = 1.5f;
     public float moveSpeed = 5f;
     public float attackCooldown = 5f;
     public float damage = 50f;
