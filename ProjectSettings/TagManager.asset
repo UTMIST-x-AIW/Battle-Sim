@@ -8,6 +8,9 @@ TagManager:
   - river
   - AlbertSpawnPoint
   - KaiSpawnPoint
+  - food
+  - rock
+  - tree
   layers:
   - Default
   - TransparentFX

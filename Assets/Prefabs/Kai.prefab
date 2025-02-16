@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 3130592719429128891}
   - component: {fileID: 1264017740285178349}
   - component: {fileID: -8045445636293568946}
+  - component: {fileID: -6812397022466022227}
   m_Layer: 0
   m_Name: Kai
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -119,7 +120,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0064280033, y: -0.21887434}
+  m_Offset: {x: 0.0064280033, y: -0.00973022}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -130,7 +131,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.72112703, y: 0.28285766}
+  m_Size: {x: 0.72112703, y: 0.7011459}
   m_EdgeRadius: 0
 --- !u!50 &-8045445636293568946
 Rigidbody2D:
@@ -159,6 +160,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-6812397022466022227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732040975953563953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af40352fe967427184f38f33349f0b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  maxHealth: 100
+  range: 5
+  moveSpeed: 5
+  attackCooldown: 5
+  damage: 25
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -181,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7101802247461871357, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.53
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7101802247461871357, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_LocalRotation.w
