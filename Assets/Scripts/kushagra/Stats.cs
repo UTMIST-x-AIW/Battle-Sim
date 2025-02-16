@@ -4,45 +4,48 @@ using UnityEngine;
 
 public class Stats : MonoBehaviour
 {
-    public int health = 100;
-    public int maxHealth = 100;
-    public int range = 1;
-    public int moveSpeed = 5;
-    public int attackCooldown = 5;
-    public int damage = 25;
+    public float health = 100f;
+    public float maxHealth = 100f;
+    public float range = 1f;
+    public float moveSpeed = 5f;
+    public float attackCooldown = 5f;
+    public float damage = 50f;
 
-    public void UpdateHealth(int value)
+    public void UpdateHealth(float value)
     {
         health += value;
-        health = Mathf.Clamp(health, 0, maxHealth);
+        health = Mathf.Clamp(health, 0f, maxHealth);
     }
 
-    public void UpdateMaxHealth(int value)
+    public void UpdateMaxHealth(float value)
     {
         maxHealth += value;
-        health += value;
+        health += (health * (maxHealth/(maxHealth-value)));
         health = Mathf.Clamp(health, 0, maxHealth);
+        
+        Transform healthBar = gameObject.transform.Find("HealthBar");
+        healthBar.localScale = new Vector3((maxHealth/(maxHealth-value)), 0.2f, 1f);
     }
 
-    public void UpdateRange(int value)
+    public void UpdateRange(float value)
     {
         range += value;
         range = Mathf.Max(range, 0);
     }
 
-    public void UpdateMoveSpeed(int value)
+    public void UpdateMoveSpeed(float value)
     {
         moveSpeed += value;
         moveSpeed = Mathf.Max(moveSpeed, 0);
     }
     
-    public void UpdateAttackCooldown(int value)
+    public void UpdateAttackCooldown(float value)
     {
         attackCooldown -= value;
         attackCooldown = Mathf.Max(attackCooldown, 0);
     }
 
-    public void UpdateDamage(int value)
+    public void UpdateDamage(float value)
     {
         damage += value;
         damage = Mathf.Max(damage, 0);

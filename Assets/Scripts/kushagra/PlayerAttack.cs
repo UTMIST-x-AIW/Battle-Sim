@@ -10,6 +10,10 @@ public class PlayerAttack : MonoBehaviour
 
     private int maxColliders = 3;
 
+    private float rockBreakHpIncrease = 50f;
+    private float treeCutCooldownReduction = 1f;
+    private float playerKillDamageIncrease = 25f;
+
     void Update()
     {
         // Decrease the attack timer over time
@@ -38,15 +42,22 @@ public class PlayerAttack : MonoBehaviour
             if (other != null && other.gameObject.CompareTag("rock") && other.gameObject != gameObject)
             {
                 Destroy(other.gameObject);
-                gameObject.GetComponent<Stats>().UpdateMaxHealth(50);
+                gameObject.GetComponent<Stats>().UpdateMaxHealth(rockBreakHpIncrease);
+                
+                Transform healthBar = gameObject.transform.Find("HealthBar");
+                Material healthMaterial = healthBar.GetComponent<Renderer>().material;
+                float healthPercentage = Mathf.Clamp01(
+                    (float) gameObject.GetComponent<Stats>().health / gameObject.GetComponent<Stats>().maxHealth);
+                Debug.Log("New Health: " + healthPercentage);
+                healthMaterial.SetFloat("_Health", healthPercentage);
             }
             
             if (other != null && other.gameObject.CompareTag("tree") && other.gameObject != gameObject)
             {
                 Destroy(other.gameObject);
-                gameObject.GetComponent<Stats>().UpdateAttackCooldown(1);
-                attackCooldown -= 1f;
-                gameObject.GetComponentInChildren<Sword>().attackCooldown -= 1f;
+                gameObject.GetComponent<Stats>().UpdateAttackCooldown(treeCutCooldownReduction);
+                attackCooldown -= treeCutCooldownReduction;
+                gameObject.GetComponentInChildren<Sword>().attackCooldown -= treeCutCooldownReduction;
             }
             
             if (other != null && other.gameObject.CompareTag("Player") && other.gameObject != gameObject)
@@ -62,8 +73,25 @@ public class PlayerAttack : MonoBehaviour
 
         if (closestPlayer != null)
         {
-            Destroy(closestPlayer);
-            Debug.Log($"Attacked and destroyed {closestPlayer.name}");
+            closestPlayer.GetComponent<Stats>().UpdateHealth(-1 * gameObject.GetComponent<Stats>().damage);
+            
+            Transform healthBar = closestPlayer.gameObject.transform.Find("HealthBar");
+            Material healthMaterial = healthBar.GetComponent<Renderer>().material;
+            float healthPercentage = Mathf.Clamp01(
+                (float) closestPlayer.GetComponent<Stats>().health / closestPlayer.GetComponent<Stats>().maxHealth);
+            Debug.Log("New Health: " + healthPercentage);
+            healthMaterial.SetFloat("_Health", healthPercentage);
+            
+            if (closestPlayer.GetComponent<Stats>().health <= 0)
+            {
+                Destroy(closestPlayer);
+                Debug.Log($"Attacked and destroyed {closestPlayer.name}");
+                gameObject.GetComponent<Stats>().UpdateDamage(playerKillDamageIncrease);
+            }
+            else
+            {
+                Debug.Log($"Attacked {closestPlayer.name}");
+            }
         }
         else
         {

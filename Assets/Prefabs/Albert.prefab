@@ -180,7 +180,7 @@ MonoBehaviour:
   range: 5
   moveSpeed: 5
   attackCooldown: 5
-  damage: 25
+  damage: 50
 --- !u!114 &562923446820042650
 MonoBehaviour:
   m_ObjectHideFlags: 0

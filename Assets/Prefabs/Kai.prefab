@@ -177,7 +177,7 @@ MonoBehaviour:
   range: 5
   moveSpeed: 5
   attackCooldown: 5
-  damage: 25
+  damage: 50
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
