@@ -87,46 +87,45 @@ public class Stats : MonoBehaviour
 
     private void MakeTank()
     {
-        // if (!hasUpgradedClass)
-        // {
+        if (!hasUpgradedClass)
+        {
             hasUpgradedClass = true;
             gameObject.transform.localScale = new Vector3(-1f, 1f, 1f) * tankScaling;
             gameObject.GetComponent<DebugMovement>().sizeScaling = tankScaling;
-        // }
+        }
     }
     
     private void MakeScout()
     {
-        // if (!hasUpgradedClass)
-        // {
+        if (!hasUpgradedClass)
+        {
             hasUpgradedClass = true;
             gameObject.transform.localScale = new Vector3(-1f, 1f, 1f)* 0.67f;
             gameObject.GetComponent<DebugMovement>().sizeScaling = 0.67f;
-        // }
+        }
     }
     
     private void MakeSwordsman()
     {
-        // if (!hasUpgradedClass)
-        // {
+        if (!hasUpgradedClass)
+        {
             hasUpgradedClass = true;
             basicSword.SetActive(false);
             upgradedBow.SetActive(false);
             upgradedSword.SetActive(true);
-        // }
+        }
     }
     
     private void MakeArcher()
     {
-        // if (!hasUpgradedClass)
-        // {
+        if (!hasUpgradedClass)
+        {
             hasUpgradedClass = true;
-            // TODO
             basicSword.SetActive(false);
             upgradedSword.SetActive(false);
             upgradedBow.SetActive(true);
-            
-        // }
+            // TODO
+        }
     }
     
     
