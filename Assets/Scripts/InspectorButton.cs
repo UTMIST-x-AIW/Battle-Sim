@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
-
+#endif
 [CustomEditor(typeof(UISphereGrid))]
 
 public class InspectorButton : Editor
 {
+    #if UNITY_EDITOR
     public override void OnInspectorGUI()
     {
         // Draw the default Inspector
@@ -36,4 +38,5 @@ public class InspectorButton : Editor
 
         
     }
+    #endif
 }

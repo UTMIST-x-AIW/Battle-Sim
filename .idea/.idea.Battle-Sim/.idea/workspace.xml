@@ -6,16 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/HealthBar.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/HealthBar.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Line.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Line.prefab" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/HealthBar 2.shader" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/HealthBar 2.shader" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/HealthBar 2.shader.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/HealthBar 2.shader.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_AlbertSpawnerShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/Unlit_AlbertSpawnerShader.mat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_HealthBar 2.mat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_HealthBar 2.mat.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Shader/Unlit_KaiSpawnerShader.mat" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Shader/Unlit_KaiSpawnerShader.mat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Spawner.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Spawner.cs.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,20 +45,20 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "Standalone Player.Start Unity.executor": "Run",
-    "git-widget-placeholder": "GameObject__class",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "editor.preferences.completion",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Standalone Player.Start Unity.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;GameObject__class&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.completion&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Standalone Player.Start Unity">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.17f1\Editor\Unity.exe" />
@@ -134,6 +131,11 @@
       <workItem from="1739051798670" duration="376000" />
       <workItem from="1739056629717" duration="8435000" />
       <workItem from="1739085339423" duration="18394000" />
+      <workItem from="1739616846454" duration="2751000" />
+      <workItem from="1739624277874" duration="3230000" />
+      <workItem from="1739633810559" duration="145000" />
+      <workItem from="1739640676953" duration="121000" />
+      <workItem from="1739640908923" duration="64000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />

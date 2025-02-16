@@ -17,8 +17,10 @@ public class DebugMovement : MonoBehaviour
     // Update is called once per frame
      void Update()
     {
-        Vector2 movementdir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        if (movementdir != Vector2.zero) lastdirection = movementdir;
+        Vector2 movementdir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")); 
+        
+        lastdirection = movementdir;
+        Debug.Log(movementdir + ": " + lastdirection);
         _vInput = Input.GetAxis("Vertical") * MoveSpeed;
         _hInput = Input.GetAxis("Horizontal") * MoveSpeed; 
         this.transform.Translate(Vector3.up * _vInput * Time.deltaTime);
