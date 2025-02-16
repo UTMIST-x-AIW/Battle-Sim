@@ -8,6 +8,8 @@ public class DebugMovement : MonoBehaviour
     private float _vInput;
     private float _hInput;
 
+    public float sizeScaling = 1f;
+
     [SerializeField]
     public float MoveSpeed = 5f;
 
@@ -29,8 +31,8 @@ public class DebugMovement : MonoBehaviour
 
         // Flip the player when moving left or right
         if (_hInput < 0)
-            this.transform.localScale = new Vector3(-1f, 1f, 1f);  // Flip to the left
+            this.transform.localScale = new Vector3(-1f, 1f, 1f) * sizeScaling;  // Flip to the left
         else if (_hInput > 0)
-            this.transform.localScale = new Vector3(1f, 1f, 1f);   // Flip to the right
+            this.transform.localScale = new Vector3(1f, 1f, 1f) * sizeScaling;   // Flip to the right
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class FoodPickup : MonoBehaviour
 {
-    public int speedIncrease = 5;
+    public float speedIncrease = 2.5f;
 
     private void OnTriggerEnter2D(Collider2D other)
     {

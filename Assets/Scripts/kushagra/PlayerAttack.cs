@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     public float attackRange = 1.5f;
-    [SerializeField] public float attackCooldown = 5f; // Cooldown time in seconds
-    private float attackTimer = 0f; // Timer to track cooldown
+    // [SerializeField] public float attackCooldown = 3f; // Cooldown time in seconds
+    // private float attackTimer = 0f; // Timer to track cooldown
 
     private int maxColliders = 3;
 
@@ -16,21 +16,21 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        // Decrease the attack timer over time
-        if (attackTimer > 0f)
-        {
-            attackTimer -= Time.deltaTime;
-        }
-
-        // Check for attack input and ensure cooldown is over
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && attackTimer <= 0f)
-        {
-            Attack();
-            attackTimer = attackCooldown; // Reset the timer after an attack
-        }
+        // // Decrease the attack timer over time
+        // if (attackTimer > 0f)
+        // {
+        //     attackTimer -= Time.deltaTime;
+        // }
+        //
+        // // Check for attack input and ensure cooldown is over
+        // if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && attackTimer <= 0f)
+        // {
+        //     // Attack();
+        //     attackTimer = attackCooldown; // Reset the timer after an attack
+        // }
     }
 
-    void Attack()
+    public void Attack()
     {
         GameObject closestPlayer = null;
         float closestDistance = attackRange;
@@ -48,7 +48,6 @@ public class PlayerAttack : MonoBehaviour
                 Material healthMaterial = healthBar.GetComponent<Renderer>().material;
                 float healthPercentage = Mathf.Clamp01(
                     (float) gameObject.GetComponent<Stats>().health / gameObject.GetComponent<Stats>().maxHealth);
-                Debug.Log("New Health: " + healthPercentage);
                 healthMaterial.SetFloat("_Health", healthPercentage);
             }
             
@@ -56,7 +55,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 Destroy(other.gameObject);
                 gameObject.GetComponent<Stats>().UpdateAttackCooldown(treeCutCooldownReduction);
-                attackCooldown -= treeCutCooldownReduction;
+                // attackCooldown -= treeCutCooldownReduction;
                 gameObject.GetComponentInChildren<Sword>().attackCooldown -= treeCutCooldownReduction;
             }
             
@@ -79,7 +78,6 @@ public class PlayerAttack : MonoBehaviour
             Material healthMaterial = healthBar.GetComponent<Renderer>().material;
             float healthPercentage = Mathf.Clamp01(
                 (float) closestPlayer.GetComponent<Stats>().health / closestPlayer.GetComponent<Stats>().maxHealth);
-            Debug.Log("New Health: " + healthPercentage);
             healthMaterial.SetFloat("_Health", healthPercentage);
             
             if (closestPlayer.GetComponent<Stats>().health <= 0)

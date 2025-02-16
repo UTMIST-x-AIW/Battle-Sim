@@ -176,7 +176,7 @@ MonoBehaviour:
   maxHealth: 100
   range: 1.5
   moveSpeed: 5
-  attackCooldown: 5
+  attackCooldown: 3
   damage: 50
 --- !u!1001 &6497524986097735374
 PrefabInstance:
