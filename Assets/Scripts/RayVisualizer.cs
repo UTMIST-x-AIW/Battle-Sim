@@ -25,6 +25,7 @@ public class MultiRayShooter : MonoBehaviour
         for (int i = 0; i < lineCount; i++)
         {
             GameObject line = Instantiate(linePrefab);
+            line.hideFlags = HideFlags.HideInHierarchy;
             lines.Add(line);
         }
     }
@@ -32,7 +33,6 @@ public class MultiRayShooter : MonoBehaviour
     void Update()
     {
         Vector2 CharacterMovDir = characterMovement.lastdirection;
-        Debug.Log(CharacterMovDir);
         if (characterMovement != null)
         {
             UpdateTargetRotations(characterMovement.lastdirection);
@@ -68,14 +68,7 @@ public class MultiRayShooter : MonoBehaviour
             if (fadeOn) Fade(line, fadeDuration);
         }
     }
-    
-    void SmoothRotation(Vector3 direction)
-    {
-        for (int i = 0; i < lines.Count; i++)
-        {
-           
-        }
-    }
+
     
     void SetLineProperties(LineRenderer line, Vector3 start, Vector3 end, Color constColor)
     {

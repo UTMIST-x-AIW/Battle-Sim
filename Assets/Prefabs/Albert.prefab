@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6247316799585061308}
   - component: {fileID: 6449710608649445337}
   - component: {fileID: 2666509316153106925}
+  - component: {fileID: 5084968862088147877}
   m_Layer: 0
   m_Name: Albert
   m_TagString: Untagged
@@ -100,8 +101,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementdir: {x: 0, y: 0, z: 0}
-  rayColor: {r: 1, g: 0, b: 0, a: 1}
+  MoveSpeed: 5
+  lastdirection: {x: 0, y: 0}
 --- !u!61 &6449710608649445337
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -174,6 +175,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &5084968862088147877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7896111451434077960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineCount: 6
+  SpreadAngle: 30
+  LineDistance: 8
+  linewidth: 0.065
+  linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
+  fadeOn: 1
+  fadeDuration: 111
+  lineColor: {r: 0.98742133, g: 0.027945718, b: 0.027945718, a: 1}
 --- !u!1001 &5208001705850349615
 PrefabInstance:
   m_ObjectHideFlags: 0

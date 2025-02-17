@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3130592719429128891}
   - component: {fileID: 1264017740285178349}
   - component: {fileID: -8045445636293568946}
+  - component: {fileID: 3725860248335649992}
+  - component: {fileID: 3752400893969112301}
   m_Layer: 0
   m_Name: Kai
   m_TagString: Untagged
@@ -159,6 +161,40 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &3725860248335649992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732040975953563953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoveSpeed: 4.05
+  lastdirection: {x: 0, y: 0}
+--- !u!114 &3752400893969112301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732040975953563953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lineCount: 6
+  SpreadAngle: 30
+  LineDistance: 8
+  linewidth: 0.065
+  linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
+  fadeOn: 1
+  fadeDuration: 111
+  lineColor: {r: 0.98742133, g: 0.027945718, b: 0.027945718, a: 1}
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
