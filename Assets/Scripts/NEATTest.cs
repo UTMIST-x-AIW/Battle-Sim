@@ -18,12 +18,12 @@ public class NEATTest : MonoBehaviour
         3.0f,   // Health
         5.0f,   // Energy
         0.0f,   // Reproduction
-        3.162f, // Same type magnitude (vector sum ≈ √10)
-        1.893f, // Same type direction (≈ 108.4 degrees)
-        5.414f, // Same type absolute sum
-        5.385f, // Different type magnitude (vector sum ≈ √29)
-        0.381f, // Different type direction (≈ 21.8 degrees)
-        5.828f  // Different type absolute sum
+        0.0f,   // Same type magnitude (no other Alberts)
+        0.0f,   // Same type direction (no other Alberts)
+        0.0f,   // Same type absolute sum (no other Alberts)
+        3.0f,   // Different type magnitude (one Kai 3 units away)
+        0.0f,   // Different type direction (Kai at 0 degrees)
+        3.0f    // Different type absolute sum
     };
     
     void Start()
@@ -60,14 +60,8 @@ public class NEATTest : MonoBehaviour
         mainAlbertCreature = mainAlbert.GetComponent<Creature>();
         mainAlbertCreature.type = Creature.CreatureType.Albert;
         
-        // Spawn other Alberts
-        SpawnCreature(albertCreaturePrefab, new Vector3(1, 1, 0), Creature.CreatureType.Albert);   // √2 units away at 45°
-        SpawnCreature(albertCreaturePrefab, new Vector3(-2, 0, 0), Creature.CreatureType.Albert);  // 2 units away at 180°
-        SpawnCreature(albertCreaturePrefab, new Vector3(0, 2, 0), Creature.CreatureType.Albert);   // 2 units away at 90°
-        
-        // Spawn Kais
-        SpawnCreature(kaiCreaturePrefab, new Vector3(3, 0, 0), Creature.CreatureType.Kai);        // 3 units away at 0°
-        SpawnCreature(kaiCreaturePrefab, new Vector3(2, 2, 0), Creature.CreatureType.Kai);        // √8 units away at 45°
+        // Spawn one Kai
+        SpawnCreature(kaiCreaturePrefab, new Vector3(3, 0, 0), Creature.CreatureType.Kai);  // 3 units to the right
         
         // Create test neural network with fixed weights
         var genome = CreateTestGenome();
@@ -86,15 +80,15 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes
+        // Add input nodes (back to 9 inputs)
         for (int i = 0; i < 9; i++)
         {
             genome.AddNode(new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input));
         }
         
         // Add output nodes
-        genome.AddNode(new NEAT.Genes.NodeGene(9, NEAT.Genes.NodeType.Output));  // Forward velocity
-        genome.AddNode(new NEAT.Genes.NodeGene(10, NEAT.Genes.NodeType.Output)); // Angular velocity
+        genome.AddNode(new NEAT.Genes.NodeGene(9, NEAT.Genes.NodeType.Output));   // Forward velocity
+        genome.AddNode(new NEAT.Genes.NodeGene(10, NEAT.Genes.NodeType.Output));  // Angular velocity
         
         // Add some basic connections with fixed weights
         genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 9, 0.5f));   // Health to forward velocity

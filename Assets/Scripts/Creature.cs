@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Creature : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class Creature : MonoBehaviour
     public float energy = 5f;
     public float reproduction = 0f;
     public float maxEnergy = 5f;
+    // public float maxReproduction = 5f;
+    public float maxReproduction = 1f;
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
@@ -17,6 +20,11 @@ public class Creature : MonoBehaviour
     public float rotationEnergyCost = 0.1f;
     public float energyRegenRate = 0.5f;  // Energy regenerated per second when stationary
     public float energyRegenDelay = 0.5f; // Time to wait before regenerating energy after movement
+    
+    [Header("Reproduction Settings")]
+    public float reproductionRate = 0.1f;  // Points gained per second
+    public float mutationRate = 0.1f;      // Probability of mutation per gene
+    public float mutationRange = 0.5f;     // Maximum change during mutation
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -97,6 +105,12 @@ public class Creature : MonoBehaviour
         outputs[0] = Mathf.Clamp(outputs[0], -1f, 1f);
         outputs[1] = Mathf.Clamp(outputs[1], -1f, 1f);
         
+        // Log actions only for main Albert
+        if (type == CreatureType.Albert && transform.position == Vector3.zero)
+        {
+            Debug.Log(string.Format("Actions: [{0:F3}, {1:F3}]", outputs[0], outputs[1]));
+        }
+        
         return outputs;
     }
     
@@ -105,6 +119,75 @@ public class Creature : MonoBehaviour
         if (Time.time - lastMovementTime >= energyRegenDelay)
         {
             energy = Mathf.Min(maxEnergy, energy + energyRegenRate * Time.fixedDeltaTime);
+        }
+    }
+    
+    private void UpdateReproduction()
+    {
+        // Only accumulate reproduction points if we have some energy
+        if (energy > 0)
+        {
+            reproduction += reproductionRate * Time.fixedDeltaTime;
+            
+            // Check if ready to reproduce
+            if (reproduction >= maxReproduction)
+            {
+                Reproduce();
+            }
+        }
+    }
+    
+    private void Reproduce()
+    {
+        if (brain == null) return;
+
+        // Create a new genome with a unique key based on timestamp
+        int newKey = (int)(Time.time * 1000) % 1000000;
+        var genome = new NEAT.Genome.Genome(newKey);
+
+        // Get nodes and connections from the brain's network
+        var nodes = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var connections = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+
+        // Clone nodes and connections
+        foreach (var node in nodes.Values)
+        {
+            genome.AddNode((NEAT.Genes.NodeGene)node.Clone());
+        }
+        foreach (var conn in connections.Values)
+        {
+            var clonedConn = (NEAT.Genes.ConnectionGene)conn.Clone();
+            
+            // Apply mutations to connection weights
+            if (Random.value < mutationRate)
+            {
+                clonedConn.Weight += Random.Range(-mutationRange, mutationRange);
+                clonedConn.Weight = Mathf.Clamp((float)clonedConn.Weight, -1f, 1f);
+            }
+            
+            genome.AddConnection(clonedConn);
+        }
+        
+        // Create offspring
+        GameObject offspring = Instantiate(gameObject, transform.position, transform.rotation);
+        Creature offspringCreature = offspring.GetComponent<Creature>();
+        
+        // Initialize offspring with mutated brain
+        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        offspringCreature.InitializeNetwork(network);
+        offspringCreature.type = type;
+        
+        // Reset reproduction points
+        reproduction = 0f;
+        
+        // Offset offspring slightly to avoid overlap
+        Vector2 offset = Random.insideUnitCircle.normalized;
+        offspring.transform.position += (Vector3)offset;
+        
+        if (isMainAlbert)
+        {
+            Debug.Log(string.Format("Reproduction event! Offspring created at position offset: ({0:F2}, {1:F2})", 
+                offset.x, offset.y));
         }
     }
     
@@ -174,6 +257,14 @@ public class Creature : MonoBehaviour
             {
                 RegenerateEnergy();
             }
+            
+            // Update reproduction
+            UpdateReproduction();
         }
+    }
+    
+    private bool isMainAlbert
+    {
+        get { return type == CreatureType.Albert && transform.position == Vector3.zero; }
     }
 } 
