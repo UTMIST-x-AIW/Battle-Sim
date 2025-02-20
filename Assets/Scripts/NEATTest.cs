@@ -80,20 +80,33 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (back to 9 inputs)
-        for (int i = 0; i < 9; i++)
+        // Add input nodes (11 inputs):
+        // 0: health
+        // 1: energy
+        // 2: reproduction
+        // 3,4: same type x,y
+        // 5: same type count
+        // 6,7: opposite type x,y
+        // 8: opposite type count
+        // 9,10: current direction x,y
+        for (int i = 0; i < 11; i++)
         {
             genome.AddNode(new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input));
         }
         
-        // Add output nodes
-        genome.AddNode(new NEAT.Genes.NodeGene(9, NEAT.Genes.NodeType.Output));   // Forward velocity
-        genome.AddNode(new NEAT.Genes.NodeGene(10, NEAT.Genes.NodeType.Output));  // Angular velocity
+        // Add output nodes (x,y velocity)
+        genome.AddNode(new NEAT.Genes.NodeGene(11, NEAT.Genes.NodeType.Output));  // Horizontal velocity
+        genome.AddNode(new NEAT.Genes.NodeGene(12, NEAT.Genes.NodeType.Output));  // Vertical velocity
         
         // Add some basic connections with fixed weights
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 9, 0.5f));   // Health to forward velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 9, -0.5f));  // Energy to forward velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 6, 10, 0.5f));  // Opposite type magnitude to angular velocity
+        // Health to horizontal velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 11, -0.5f));
+        // Energy to vertical velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 12, -0.5f));
+        // Same type x position to horizontal velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, 11, 0.5f));
+        // Same type y position to vertical velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, 12, 0.5f));
         
         return genome;
     }

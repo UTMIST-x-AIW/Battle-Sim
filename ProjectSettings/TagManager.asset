@@ -6,6 +6,7 @@ TagManager:
   tags:
   - bounds
   - river
+  - Floor
   layers:
   - Default
   - TransparentFX

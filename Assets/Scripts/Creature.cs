@@ -20,14 +20,12 @@ public class Creature : MonoBehaviour
     private float lifetime = 0f;        // How long the creature has lived
     
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;
-    public float rotateSpeed = 180f;
+    public float moveSpeed = 5f;  // Maximum speed in any direction
     
     [Header("Energy Settings")]
-    public float movementEnergyCost = 0.2f;
-    public float rotationEnergyCost = 0.1f;
-    public float energyRegenRate = 0.5f;  // Energy regenerated per second when stationary
-    public float energyRegenDelay = 0.5f; // Time to wait before regenerating energy after movement
+    public float movementEnergyCost = 0.2f;  // Energy cost per unit of total velocity
+    public float energyRegenRate = 0.5f;     // Energy regenerated per second when stationary
+    public float energyRegenDelay = 0.5f;    // Time to wait before regenerating energy after movement
     
     [Header("Reproduction Settings")]
     public float reproductionRate = 0.1f;  // Points gained per second
@@ -308,32 +306,52 @@ public class Creature : MonoBehaviour
         {
             float[] actions = GetActions();
             
-            // Calculate movement
-            float forwardSpeed = actions[0] * moveSpeed;
-            float rotationSpeed = actions[1] * rotateSpeed;
+            // Actions[0] is horizontal velocity, actions[1] is vertical velocity
+            Vector2 desiredVelocity = new Vector2(actions[0], actions[1]) * moveSpeed;
             
             // Apply movement if we have enough energy
             if (energy > 0)
             {
-                // Calculate energy costs
-                float moveCost = Mathf.Abs(forwardSpeed) * movementEnergyCost * Time.fixedDeltaTime;
-                float rotateCost = Mathf.Abs(rotationSpeed) * rotationEnergyCost * Time.fixedDeltaTime;
-                float totalEnergyCost = moveCost + rotateCost;
+                // Calculate energy cost based on total velocity
+                float velocityMagnitude = desiredVelocity.magnitude;
+                float energyCost = velocityMagnitude * movementEnergyCost * Time.fixedDeltaTime;
                 
-                if (totalEnergyCost <= energy)
+                if (energyCost <= energy)
                 {
-                    // Apply forward movement
-                    Vector2 movement = (Vector2)(transform.right * forwardSpeed);
-                    rb.velocity = movement;
+                    // Check if the desired position would be within bounds
+                    Vector2 currentPos = rb.position;
+                    Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
                     
-                    // Apply rotation
-                    rb.angularVelocity = rotationSpeed;
+                    // Get the floor bounds
+                    PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
+                    if (floorCollider != null)
+                    {
+                        // Get the sprite's bottom center point
+                        Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
+                        
+                        // Check if the bottom center point would be inside the floor bounds
+                        if (floorCollider.OverlapPoint(bottomCenter))
+                        {
+                            // Apply movement
+                            rb.velocity = desiredVelocity;
+                        }
+                        else
+                        {
+                            // Stop at the current position
+                            rb.velocity = Vector2.zero;
+                        }
+                    }
+                    else
+                    {
+                        // If no floor collider found, just apply movement
+                        rb.velocity = desiredVelocity;
+                    }
                     
                     // Deduct energy
-                    energy = Mathf.Max(0, energy - totalEnergyCost);
+                    energy = Mathf.Max(0, energy - energyCost);
                     
                     // Update last movement time
-                    if (Mathf.Abs(forwardSpeed) > 0.01f || Mathf.Abs(rotationSpeed) > 0.01f)
+                    if (velocityMagnitude > 0.01f)
                     {
                         lastMovementTime = Time.time;
                     }
@@ -341,9 +359,8 @@ public class Creature : MonoBehaviour
                 else
                 {
                     // Not enough energy for full movement, use what we have
-                    float energyRatio = energy / totalEnergyCost;
-                    rb.velocity = (Vector2)(transform.right * forwardSpeed * energyRatio);
-                    rb.angularVelocity = rotationSpeed * energyRatio;
+                    float energyRatio = energy / energyCost;
+                    rb.velocity = desiredVelocity * energyRatio;
                     energy = 0;
                     lastMovementTime = Time.time;
                 }
@@ -352,11 +369,10 @@ public class Creature : MonoBehaviour
             {
                 // No energy, stop movement
                 rb.velocity = Vector2.zero;
-                rb.angularVelocity = 0f;
             }
             
             // Regenerate energy when not moving
-            if (rb.velocity.magnitude < 0.01f && Mathf.Abs(rb.angularVelocity) < 0.01f)
+            if (rb.velocity.magnitude < 0.01f)
             {
                 RegenerateEnergy();
             }

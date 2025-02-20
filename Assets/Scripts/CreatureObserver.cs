@@ -15,7 +15,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[9];  // Back to 9 observations
+        float[] obs = new float[11];  // Now 11 observations (2 components per vector instead of magnitude+angle)
         
         // Basic stats
         obs[0] = self.health;
@@ -51,17 +51,19 @@ public class CreatureObserver : MonoBehaviour
             }
         }
         
-        // Same type observations
-        obs[3] = sameTypeSum.magnitude;
-        obs[4] = Mathf.Atan2(sameTypeSum.y, sameTypeSum.x);
-        if (obs[4] < 0) obs[4] += 2 * Mathf.PI;
+        // Same type observations (x,y components and absolute sum)
+        obs[3] = sameTypeSum.x;
+        obs[4] = sameTypeSum.y;
         obs[5] = sameTypeAbsSum;
         
-        // Opposite type observations
-        obs[6] = oppositeTypeSum.magnitude;
-        obs[7] = Mathf.Atan2(oppositeTypeSum.y, oppositeTypeSum.x);
-        if (obs[7] < 0) obs[7] += 2 * Mathf.PI;
+        // Opposite type observations (x,y components and absolute sum)
+        obs[6] = oppositeTypeSum.x;
+        obs[7] = oppositeTypeSum.y;
         obs[8] = oppositeTypeAbsSum;
+        
+        // Add normalized direction vector (helps with orientation)
+        obs[9] = transform.right.x;   // Current x direction
+        obs[10] = transform.right.y;  // Current y direction
         
         return obs;
     }
