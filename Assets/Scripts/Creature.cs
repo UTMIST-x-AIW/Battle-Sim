@@ -9,8 +9,15 @@ public class Creature : MonoBehaviour
     public float energy = 5f;
     public float reproduction = 0f;
     public float maxEnergy = 5f;
+    public float maxHealth = 3f;
     // public float maxReproduction = 5f;
     public float maxReproduction = 1f;
+    
+    [Header("Aging Settings")]
+    public float agingStartTime = 10f;  // Time in seconds before aging starts
+    public float agingRate = 0.1f;      // Base rate of aging damage
+    public float agingExponent = 1.5f;  // How quickly aging accelerates
+    private float lifetime = 0f;        // How long the creature has lived
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
@@ -49,9 +56,10 @@ public class Creature : MonoBehaviour
     private void Awake()
     {
         // Initialize stats
-        health = 3f;
+        health = maxHealth;
         energy = maxEnergy;
         reproduction = 0f;
+        lifetime = 0f;
         lastMovementTime = -energyRegenDelay; // Allow immediate regen at start
     }
     
@@ -280,6 +288,22 @@ public class Creature : MonoBehaviour
     
     private void FixedUpdate()
     {
+        // Update lifetime and apply aging damage
+        lifetime += Time.fixedDeltaTime;
+        if (lifetime > agingStartTime)
+        {
+            float agingTime = lifetime - agingStartTime;
+            float agingDamage = agingRate * Mathf.Pow(agingTime, agingExponent) * Time.fixedDeltaTime;
+            health = Mathf.Max(0, health - agingDamage);
+            
+            // Die if health reaches 0
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+
         if (brain != null)
         {
             float[] actions = GetActions();
