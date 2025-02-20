@@ -451,4 +451,48 @@ public class Creature : MonoBehaviour
         }
     }
     
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check if we collided with another creature
+        Creature otherCreature = collision.gameObject.GetComponent<Creature>();
+        if (otherCreature != null && otherCreature.type != type)
+        {
+            // Check if healths are approximately equal (within 0.1)
+            if (Mathf.Abs(health - otherCreature.health) < 0.1f)
+            {
+                // Both creatures take half damage
+                float damage = health / 2f;  // Use either health value since they're equal
+                health = Mathf.Max(0, health - damage);
+                otherCreature.health = Mathf.Max(0, otherCreature.health - damage);
+                
+                // If the damage killed either creature, destroy them
+                if (health <= 0)
+                {
+                    Destroy(gameObject);
+                }
+                if (otherCreature.health <= 0)
+                {
+                    Destroy(otherCreature.gameObject);
+                }
+            }
+            // Only handle the collision once (let the creature with higher health handle it)
+            else if (health > otherCreature.health)
+            {
+                // Calculate damage as half of the killed creature's health
+                float damage = otherCreature.health / 2f;
+                
+                // Apply damage to surviving creature
+                health = Mathf.Max(0, health - damage);
+                
+                // Kill the creature with lower health
+                Destroy(otherCreature.gameObject);
+                
+                // If the damage killed us too, destroy ourselves
+                if (health <= 0)
+                {
+                    Destroy(gameObject);
+                }
+            }
+        }
+    }
 } 
