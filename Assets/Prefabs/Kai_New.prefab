@@ -175,14 +175,19 @@ MonoBehaviour:
   energy: 5
   reproduction: 0
   maxEnergy: 5
+  maxHealth: 3
   maxReproduction: 1
+  agingStartTime: 10
+  agingRate: 0.1
+  agingExponent: 1.5
   moveSpeed: 5
-  rotateSpeed: 180
   movementEnergyCost: 0.002
-  rotationEnergyCost: 0.001
   energyRegenRate: 2
   energyRegenDelay: 0.3
   reproductionRate: 0.1
-  mutationRate: 0.1
+  weightMutationRate: 0.8
   mutationRange: 0.5
-  type: 0
+  addNodeRate: 0.2
+  addConnectionRate: 0.5
+  deleteConnectionRate: 0.2
+  type: 1

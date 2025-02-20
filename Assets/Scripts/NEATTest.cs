@@ -1,74 +1,31 @@
 using UnityEngine;
-using System.Collections;
 
 public class NEATTest : MonoBehaviour
 {
+    [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
-    public GameObject kaiCreaturePrefab;  // Assign in inspector
-
-
-    private GameObject mainAlbert;
-    private Creature mainAlbertCreature;
-    private CreatureObserver observer;
-    private const float MAX_WAIT_TIME = 5f; // Maximum time to wait for initialization
-    private bool hasLoggedObservations = false;
+    public GameObject kaiCreaturePrefab;    // Assign in inspector
     
-    // Expected values for our complex test case
-    private readonly float[] expectedObservations = new float[] {
-        3.0f,   // Health
-        5.0f,   // Energy
-        0.0f,   // Reproduction
-        0.0f,   // Same type x
-        0.0f,   // Same type y
-        0.0f,   // Same type absolute sum
-        3.0f,   // Different type x (Kai at 3 units to the right)
-        0.0f,   // Different type y
-        3.0f,   // Different type absolute sum
-        1.0f,   // Current direction x (facing right)
-        0.0f    // Current direction y
-    };
+    [Header("Network Settings")]
+    public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
     
     void Start()
     {
-        SetupTest();
-        StartCoroutine(WaitForInitialization());
-    }
-    
-    IEnumerator WaitForInitialization()
-    {
-        float waitTime = 0f;
-        
-        // Wait until observer is initialized or timeout
-        while (observer == null && waitTime < MAX_WAIT_TIME)
+        // Spawn initial Alberts near (-5, 5)
+        for (int i = 0; i < 3; i++)
         {
-            observer = mainAlbert.GetComponent<CreatureObserver>();
-            waitTime += Time.deltaTime;
-            yield return null;
+            Vector3 position = new Vector3(-5, 5, 0) + Random.insideUnitSphere * 2f;
+            position.z = 0;  // Ensure z is 0
+            SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert);
         }
         
-        if (observer == null)
+        // Spawn initial Kais near (5, -5)
+        for (int i = 0; i < 3; i++)
         {
-            Debug.LogError("Failed to initialize observer after " + MAX_WAIT_TIME + " seconds");
-            yield break;
+            Vector3 position = new Vector3(5, -5, 0) + Random.insideUnitSphere * 2f;
+            position.z = 0;  // Ensure z is 0
+            SpawnCreature(kaiCreaturePrefab, position, Creature.CreatureType.Kai);
         }
-        
-        RunTest();
-    }
-    
-    void SetupTest()
-    {
-        // Spawn main Albert (our test subject)
-        mainAlbert = Instantiate(albertCreaturePrefab, Vector3.zero, Quaternion.identity);
-        mainAlbertCreature = mainAlbert.GetComponent<Creature>();
-        mainAlbertCreature.type = Creature.CreatureType.Albert;
-        
-        // Spawn one Kai
-        SpawnCreature(kaiCreaturePrefab, new Vector3(3, 0, 0), Creature.CreatureType.Kai);  // 3 units to the right
-        
-        // Create test neural network with fixed weights
-        var genome = CreateTestGenome();
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
-        mainAlbertCreature.InitializeNetwork(network);
     }
     
     private void SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type)
@@ -76,9 +33,17 @@ public class NEATTest : MonoBehaviour
         var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
+        
+        // Create initial neural network
+        var genome = CreateInitialGenome();
+        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        creatureComponent.InitializeNetwork(network);
+        
+        // Pass the max hidden layers setting to the creature
+        creatureComponent.maxHiddenLayers = maxHiddenLayers;
     }
     
-    NEAT.Genome.Genome CreateTestGenome()
+    NEAT.Genome.Genome CreateInitialGenome()
     {
         var genome = new NEAT.Genome.Genome(0);
         
@@ -93,14 +58,21 @@ public class NEATTest : MonoBehaviour
         // 9,10: current direction x,y
         for (int i = 0; i < 11; i++)
         {
-            genome.AddNode(new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input));
+            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            node.Layer = 0;  // Input layer
+            genome.AddNode(node);
         }
         
         // Add output nodes (x,y velocity)
-        genome.AddNode(new NEAT.Genes.NodeGene(11, NEAT.Genes.NodeType.Output));  // Horizontal velocity
-        genome.AddNode(new NEAT.Genes.NodeGene(12, NEAT.Genes.NodeType.Output));  // Vertical velocity
+        var outputNode1 = new NEAT.Genes.NodeGene(11, NEAT.Genes.NodeType.Output);
+        var outputNode2 = new NEAT.Genes.NodeGene(12, NEAT.Genes.NodeType.Output);
+        outputNode1.Layer = 2;  // Output layer
+        outputNode2.Layer = 2;  // Output layer
+        genome.AddNode(outputNode1);
+        genome.AddNode(outputNode2);
         
         // Add some basic connections with fixed weights
+        // Only connect from input layer (0) to output layer (2)
         // Health to horizontal velocity
         genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 11, -0.5f));
         // Energy to vertical velocity
@@ -115,94 +87,5 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 10, 12, 0.3f));
         
         return genome;
-    }
-    
-    void RunTest()
-    {
-        if (observer == null)
-        {
-            Debug.LogError("Observer not initialized yet!");
-            return;
-        }
-        
-        if (!hasLoggedObservations)
-        {
-            Debug.Log("Starting complex test scenario observations...");
-            
-            float[] observations = observer.GetObservations(mainAlbertCreature);
-            
-            bool observationsCorrect = VerifyObservations(observations);
-            Debug.Log(string.Format("Observations Test: {0}", observationsCorrect ? "PASSED" : "FAILED"));
-            LogObservations(observations);
-            
-            hasLoggedObservations = true;
-        }
-        
-        // Run one neural network step
-        float[] actions = mainAlbertCreature.GetActions();
-        
-        // Verify actions are in correct range (-1 to 1)
-        bool actionsInRange = VerifyActionRanges(actions);
-        if (!hasLoggedObservations)
-        {
-            Debug.Log(string.Format("Action Ranges Test: {0}", actionsInRange ? "PASSED" : "FAILED"));
-            LogActions(actions);
-        }
-        
-        // Let it run for 2 seconds
-        StartCoroutine(RunMovementTest());
-    }
-    
-    bool VerifyObservations(float[] observations)
-    {
-        if (observations.Length != expectedObservations.Length) return false;
-        
-        for (int i = 0; i < observations.Length; i++)
-        {
-            if (Mathf.Abs(observations[i] - expectedObservations[i]) > 0.1f)
-                return false;
-        }
-        
-        return true;
-    }
-    
-    bool VerifyActionRanges(float[] actions)
-    {
-        return actions.Length == 2 &&
-               actions[0] >= -1f && actions[0] <= 1f &&
-               actions[1] >= -1f && actions[1] <= 1f;
-    }
-    
-    void LogObservations(float[] observations)
-    {
-        string log = "Observations:\n";
-        for (int i = 0; i < observations.Length; i++)
-        {
-            log += string.Format("[{0}] Expected: {1:F2}, Got: {2:F2}\n", i, expectedObservations[i], observations[i]);
-        }
-        Debug.Log(log);
-    }
-    
-    void LogActions(float[] actions)
-    {
-        Debug.Log(string.Format("Actions: Forward = {0:F2}, Angular = {1:F2}", actions[0], actions[1]));
-    }
-    
-    IEnumerator RunMovementTest()
-    {
-        float initialEnergy = mainAlbertCreature.energy;
-        Vector3 initialPosition = mainAlbert.transform.position;
-        
-        yield return new WaitForSeconds(2.0f);
-        
-        // Verify energy depletion
-        bool energyDepleted = mainAlbertCreature.energy < initialEnergy;
-        Debug.Log(string.Format("Energy Depletion Test: {0}", energyDepleted ? "PASSED" : "FAILED"));
-        Debug.Log(string.Format("Energy: {0:F2} (Started at {1:F2})", mainAlbertCreature.energy, initialEnergy));
-        
-        // Verify position changed
-        bool positionChanged = mainAlbert.transform.position != initialPosition;
-        Debug.Log(string.Format("Movement Test: {0}", positionChanged ? "PASSED" : "FAILED"));
-        Debug.Log(string.Format("Position: {0} (Started at {1})", mainAlbert.transform.position, initialPosition));
     }
 } 

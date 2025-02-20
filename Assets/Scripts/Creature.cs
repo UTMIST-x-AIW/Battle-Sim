@@ -35,6 +35,9 @@ public class Creature : MonoBehaviour
     public float addConnectionRate = 0.5f;    // Chance of adding a new connection
     public float deleteConnectionRate = 0.2f; // Chance of deleting a connection
     
+    [Header("Network Settings")]
+    public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed (set by NEATTest)
+    
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -190,38 +193,63 @@ public class Creature : MonoBehaviour
         // 2. Add node mutation (configurable chance)
         if (Random.value < addNodeRate && genome.Connections.Count > 0)
         {
-            // Choose a random connection to split
-            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-            var connToSplit = connList[Random.Range(0, connList.Count)];
-            connToSplit.Enabled = false;
-
-            // Create new node
-            int newNodeKey = genome.Nodes.Count;
-            var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+            // Check if we've reached the maximum number of hidden layers
+            int maxCurrentLayer = 0;
+            foreach (var node in genome.Nodes.Values)
+            {
+                if (node.Type == NEAT.Genes.NodeType.Hidden)
+                {
+                    maxCurrentLayer = Mathf.Max(maxCurrentLayer, node.Layer);
+                }
+            }
             
-            // Set layer between input and output
-            var inputNode = genome.Nodes[connToSplit.InputKey];
-            var outputNode = genome.Nodes[connToSplit.OutputKey];
-            newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-            if (newNode.Layer == inputNode.Layer) newNode.Layer++;
-            
-            genome.AddNode(newNode);
+            // Only proceed if we haven't reached the max hidden layers
+            if (maxCurrentLayer < maxHiddenLayers + 1) // +1 because layer 0 is input
+            {
+                // Choose a random connection to split
+                var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+                var connToSplit = connList[Random.Range(0, connList.Count)];
+                connToSplit.Enabled = false;
 
-            // Add two new connections
-            var conn1 = new NEAT.Genes.ConnectionGene(
-                genome.Connections.Count,
-                connToSplit.InputKey,
-                newNodeKey,
-                1.0);
+                // Create new node
+                int newNodeKey = genome.Nodes.Count;
+                var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+                
+                // Set layer between input and output nodes
+                var inputNode = genome.Nodes[connToSplit.InputKey];
+                var outputNode = genome.Nodes[connToSplit.OutputKey];
+                newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+                
+                // If the layer would be the same as the input layer, increment it
+                if (newNode.Layer <= inputNode.Layer)
+                {
+                    // Check if incrementing would exceed max layers
+                    if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
+                    {
+                        // Skip this mutation if it would exceed max layers
+                        return;
+                    }
+                    newNode.Layer = inputNode.Layer + 1;
+                }
+                
+                genome.AddNode(newNode);
 
-            var conn2 = new NEAT.Genes.ConnectionGene(
-                genome.Connections.Count + 1,
-                newNodeKey,
-                connToSplit.OutputKey,
-                connToSplit.Weight);
+                // Add two new connections
+                var conn1 = new NEAT.Genes.ConnectionGene(
+                    genome.Connections.Count,
+                    connToSplit.InputKey,
+                    newNodeKey,
+                    1.0);
 
-            genome.AddConnection(conn1);
-            genome.AddConnection(conn2);
+                var conn2 = new NEAT.Genes.ConnectionGene(
+                    genome.Connections.Count + 1,
+                    newNodeKey,
+                    connToSplit.OutputKey,
+                    connToSplit.Weight);
+
+                genome.AddConnection(conn1);
+                genome.AddConnection(conn2);
+            }
         }
 
         // 3. Add connection mutation (configurable chance)
@@ -233,7 +261,10 @@ public class Creature : MonoBehaviour
                 var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
                 var targetNode = nodeList[Random.Range(0, nodeList.Count)];
 
-                // Skip invalid connections
+                // Skip invalid connections:
+                // - Must be from a lower layer to a higher layer
+                // - Cannot connect input to input or output to output
+                // - Cannot connect to input or from output
                 if (sourceNode.Layer >= targetNode.Layer ||
                     sourceNode.Type == NEAT.Genes.NodeType.Output ||
                     targetNode.Type == NEAT.Genes.NodeType.Input)
