@@ -166,16 +166,57 @@ public class Creature : MonoBehaviour
         // Apply mutations
         ApplyMutations(genome);
 
-        // Keep trying to spawn until successful or dead
-        bool spawnSuccessful = false;
+        // Get floor collider
         PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
+        WaitForSeconds spawnDelay = new WaitForSeconds(0.3f);
+        bool spawnSuccessful = false;
+        Vector2 validPosition = Vector2.zero;
         
-        WaitForSeconds spawnDelay = new WaitForSeconds(0.3f);  // Create delay object once
-        
+        // Try to find a valid spawn position first
         while (!spawnSuccessful && health > 0)
         {
-            // Create offspring
-            GameObject offspring = Instantiate(gameObject, transform.position, transform.rotation);
+            // Get random offset (slightly larger range for more spread)
+            Vector2 spawnOffset = Random.insideUnitCircle * 2f;
+            Vector2 potentialPosition = (Vector2)transform.position + spawnOffset;
+            
+            if (floorCollider != null)
+            {
+                // Calculate where the bottom center would be (need to create a temporary sprite to get bounds)
+                GameObject tempSprite = new GameObject("TempSprite");
+                tempSprite.transform.position = potentialPosition;
+                SpriteRenderer tempRenderer = tempSprite.AddComponent<SpriteRenderer>();
+                tempRenderer.sprite = GetComponent<SpriteRenderer>().sprite;
+                
+                Vector2 bottomCenter = new Vector2(
+                    potentialPosition.x,
+                    potentialPosition.y - tempRenderer.bounds.extents.y
+                );
+                
+                Destroy(tempSprite);  // Clean up temporary object
+                
+                if (floorCollider.OverlapPoint(bottomCenter))
+                {
+                    validPosition = potentialPosition;
+                    spawnSuccessful = true;
+                }
+                else
+                {
+                    yield return spawnDelay;  // Wait before trying next position
+                }
+            }
+            else
+            {
+                // If no floor collider found, any position is valid
+                validPosition = potentialPosition;
+                spawnSuccessful = true;
+            }
+        }
+        
+        // Only create the offspring if we found a valid position
+        if (spawnSuccessful)
+        {
+            // Create offspring at the valid position
+            GameObject offspring = Instantiate(gameObject, validPosition, Quaternion.identity);
             Creature offspringCreature = offspring.GetComponent<Creature>();
             
             // Initialize offspring with mutated brain
@@ -183,44 +224,11 @@ public class Creature : MonoBehaviour
             offspringCreature.InitializeNetwork(network);
             offspringCreature.type = type;
             
-            if (floorCollider != null)
-            {
-                // Get random offset (slightly larger range for more spread)
-                Vector2 spawnOffset = Random.insideUnitCircle * 2f;
-                Vector2 potentialPosition = (Vector2)transform.position + spawnOffset;
-                
-                // Check if the bottom center of the sprite would be inside the floor
-                Vector2 bottomCenter = new Vector2(
-                    potentialPosition.x,
-                    potentialPosition.y - offspring.GetComponent<SpriteRenderer>().bounds.extents.y
-                );
-                
-                if (floorCollider.OverlapPoint(bottomCenter))
-                {
-                    offspring.transform.position = potentialPosition;
-                    spawnSuccessful = true;
-                    reproduction = 0f;  // Reset reproduction points on success
-                }
-                else
-                {
-                    // Failed spawn attempt, destroy offspring and wait before trying again
-                    Destroy(offspring);
-                    yield return spawnDelay;  // Wait 0.3 seconds before next attempt
-                }
-            }
-            else
-            {
-                // If no floor collider found, just offset slightly
-                Vector2 offset = Random.insideUnitCircle.normalized;
-                offspring.transform.position += (Vector3)offset;
-                spawnSuccessful = true;
-                reproduction = 0f;
-            }
+            reproduction = 0f;  // Reset reproduction points on success
         }
-        
-        // If we died trying, reset reproduction progress
-        if (!spawnSuccessful)
+        else
         {
+            // If we couldn't find a valid position, reset reproduction progress
             reproduction = 0f;
         }
     }
