@@ -17,9 +17,11 @@ public class NetworkVisualizer : MonoBehaviour
     public float edgeMargin = 40f;      // Margin from panel edges
     
     private Dictionary<int, Vector2> nodePositions = new Dictionary<int, Vector2>();
+    private Dictionary<int, Image> nodeImages = new Dictionary<int, Image>();
     private List<RectTransform> connectionObjects = new List<RectTransform>();
     private Creature selectedCreature;
     private CameraController cameraController;
+    private Dictionary<int, double> lastNodeValues = new Dictionary<int, double>();
     
     void Start()
     {
@@ -69,6 +71,53 @@ public class NetworkVisualizer : MonoBehaviour
                 if (cameraController != null)
                 {
                     cameraController.ResetCamera();
+                }
+            }
+        }
+        
+        // Update node colors if we have a selected creature
+        if (selectedCreature != null && networkPanel.gameObject.activeSelf)
+        {
+            UpdateNodeColors();
+        }
+    }
+    
+    void UpdateNodeColors()
+    {
+        var brain = selectedCreature.GetBrain();
+        if (brain == null) return;
+        
+        // Get the current node values using reflection
+        var nodeValuesField = brain.GetType().GetField("_nodeValues", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (nodeValuesField == null) return;
+        
+        var nodeValues = nodeValuesField.GetValue(brain) as Dictionary<int, double>;
+        if (nodeValues == null) return;
+        
+        // Update the color of each node based on its value
+        foreach (var kvp in nodeValues)
+        {
+            int nodeId = kvp.Key;
+            double value = kvp.Value;
+            
+            if (nodeImages.TryGetValue(nodeId, out Image image))
+            {
+                // Store the value for debugging
+                lastNodeValues[nodeId] = value;
+                
+                // Convert value to color (green for positive, red for negative, white for zero)
+                float absValue = Mathf.Abs((float)value);
+                if (value > 0)
+                {
+                    image.color = Color.Lerp(Color.white, Color.green, Mathf.Min(1, absValue));
+                }
+                else if (value < 0)
+                {
+                    image.color = Color.Lerp(Color.white, Color.red, Mathf.Min(1, absValue));
+                }
+                else
+                {
+                    image.color = Color.white;
                 }
             }
         }
@@ -199,24 +248,14 @@ public class NetworkVisualizer : MonoBehaviour
         GameObject nodeObj = Instantiate(nodePrefab, networkPanel);
         RectTransform rect = nodeObj.GetComponent<RectTransform>();
         rect.anchoredPosition = nodePositions[node.Key];
-        rect.sizeDelta = new Vector2(nodeSize, nodeSize);  // Set node size
+        rect.sizeDelta = new Vector2(nodeSize, nodeSize);
         
-        // Set node color based on type
+        // Store the image component for later updates
         Image image = nodeObj.GetComponent<Image>();
         if (image != null)
         {
-            switch (node.Type)
-            {
-                case NodeType.Input:
-                    image.color = new Color(0.7f, 0.9f, 1f);
-                    break;
-                case NodeType.Output:
-                    image.color = new Color(0.7f, 1f, 0.7f);
-                    break;
-                default:
-                    image.color = Color.white;
-                    break;
-            }
+            nodeImages[node.Key] = image;
+            image.color = Color.white;  // Start with white
         }
         
         // Add node ID text
@@ -224,10 +263,8 @@ public class NetworkVisualizer : MonoBehaviour
         if (text != null)
         {
             text.text = node.Key.ToString();
-            text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);  // Scale font size with node
+            text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);
         }
-        
-        Debug.Log($"Drew node {node.Key} of type {node.Type} at position {rect.anchoredPosition}");
     }
     
     void DrawConnection(ConnectionGene connection)
@@ -274,7 +311,9 @@ public class NetworkVisualizer : MonoBehaviour
         }
         
         nodePositions.Clear();
+        nodeImages.Clear();
         connectionObjects.Clear();
+        lastNodeValues.Clear();
     }
     
     void HideNetwork()
