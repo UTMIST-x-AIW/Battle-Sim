@@ -12,12 +12,11 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[14];  // Now 14 observations (added 3 for cherries)
+        float[] obs = new float[13];  // Now 13 observations (removed energy)
         
         // Basic stats
         obs[0] = self.health;
-        obs[1] = self.energy;
-        obs[2] = self.reproduction;
+        obs[1] = self.reproduction;
         
         // Get nearby objects
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
@@ -59,23 +58,23 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Same type observations (x,y components and absolute sum)
-        obs[3] = sameTypeSum.x;
-        obs[4] = sameTypeSum.y;
-        obs[5] = sameTypeAbsSum;
+        obs[2] = sameTypeSum.x;
+        obs[3] = sameTypeSum.y;
+        obs[4] = sameTypeAbsSum;
         
         // Opposite type observations (x,y components and absolute sum)
-        obs[6] = oppositeTypeSum.x;
-        obs[7] = oppositeTypeSum.y;
-        obs[8] = oppositeTypeAbsSum;
+        obs[5] = oppositeTypeSum.x;
+        obs[6] = oppositeTypeSum.y;
+        obs[7] = oppositeTypeAbsSum;
         
         // Cherry observations (x,y components and absolute sum)
-        obs[9] = cherrySum.x;
-        obs[10] = cherrySum.y;
-        obs[11] = cherryAbsSum;
+        obs[8] = cherrySum.x;
+        obs[9] = cherrySum.y;
+        obs[10] = cherryAbsSum;
         
         // Add normalized direction vector (helps with orientation)
-        obs[12] = transform.right.x;   // Current x direction
-        obs[13] = transform.right.y;   // Current y direction
+        obs[11] = transform.right.x;   // Current x direction
+        obs[12] = transform.right.y;   // Current y direction
         
         return obs;
     }

@@ -41,18 +41,17 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (14 inputs):
+        // Add input nodes (13 inputs):
         // 0: health
-        // 1: energy
-        // 2: reproduction
-        // 3,4: same type x,y
-        // 5: same type absolute sum
-        // 6,7: opposite type x,y
-        // 8: opposite type absolute sum
-        // 9,10: cherry x,y
-        // 11: cherry absolute sum
-        // 12,13: current direction x,y
-        for (int i = 0; i < 14; i++)
+        // 1: reproduction
+        // 2,3: same type x,y
+        // 4: same type absolute sum
+        // 5,6: opposite type x,y
+        // 7: opposite type absolute sum
+        // 8,9: cherry x,y
+        // 10: cherry absolute sum
+        // 11,12: current direction x,y
+        for (int i = 0; i < 13; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -60,8 +59,8 @@ public class NEATTest : MonoBehaviour
         }
         
         // Add output nodes (x,y velocity)
-        var outputNode1 = new NEAT.Genes.NodeGene(14, NEAT.Genes.NodeType.Output);
-        var outputNode2 = new NEAT.Genes.NodeGene(15, NEAT.Genes.NodeType.Output);
+        var outputNode1 = new NEAT.Genes.NodeGene(13, NEAT.Genes.NodeType.Output);
+        var outputNode2 = new NEAT.Genes.NodeGene(14, NEAT.Genes.NodeType.Output);
         outputNode1.Layer = 2;  // Output layer
         outputNode2.Layer = 2;  // Output layer
         genome.AddNode(outputNode1);
@@ -70,21 +69,21 @@ public class NEATTest : MonoBehaviour
         // Add some basic connections with fixed weights
         // Only connect from input layer (0) to output layer (2)
         // Health to horizontal velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 14, -0.5f));
-        // Energy to vertical velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 15, -0.5f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 13, -0.5f));
+        // Reproduction to vertical velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 14, -0.5f));
         // Same type x position to horizontal velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, 14, 0.5f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 2, 13, 0.5f));
         // Same type y position to vertical velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, 15, 0.5f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 3, 14, 0.5f));
         // Cherry x position to horizontal velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 9, 14, 0.5f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 8, 13, 0.5f));
         // Cherry y position to vertical velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 10, 15, 0.5f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 9, 14, 0.5f));
         // Current direction x to horizontal velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 12, 14, 0.3f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 11, 13, 0.3f));
         // Current direction y to vertical velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 13, 15, 0.3f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 12, 14, 0.3f));
         
         return genome;
     }

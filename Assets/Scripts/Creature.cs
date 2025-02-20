@@ -7,11 +7,8 @@ public class Creature : MonoBehaviour
 {
     [Header("Basic Stats")]
     public float health = 3f;
-    public float energy = 5f;
     public float reproduction = 0f;
-    public float maxEnergy = 5f;
     public float maxHealth = 3f;
-    // public float maxReproduction = 5f;
     public float maxReproduction = 1f;
     
     [Header("Aging Settings")]
@@ -22,11 +19,6 @@ public class Creature : MonoBehaviour
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;  // Maximum speed in any direction
-    
-    [Header("Energy Settings")]
-    public float movementEnergyCost = 0.2f;  // Energy cost per unit of total velocity
-    public float energyRegenRate = 0.5f;     // Energy regenerated per second when stationary
-    public float energyRegenDelay = 0.5f;    // Time to wait before regenerating energy after movement
     
     [Header("Reproduction Settings")]
     public float reproductionRate = 0.1f;  // Points gained per second
@@ -47,7 +39,6 @@ public class Creature : MonoBehaviour
     private NEAT.NN.FeedForwardNetwork brain;
     private CreatureObserver observer;
     private Rigidbody2D rb;
-    private float lastMovementTime;
     
     // Add method to get brain
     public NEAT.NN.FeedForwardNetwork GetBrain()
@@ -59,10 +50,8 @@ public class Creature : MonoBehaviour
     {
         // Initialize stats
         health = maxHealth;
-        energy = maxEnergy;
         reproduction = 0f;
         lifetime = 0f;
-        lastMovementTime = -energyRegenDelay; // Allow immediate regen at start
     }
     
     private void Start()
@@ -125,26 +114,14 @@ public class Creature : MonoBehaviour
         return outputs;
     }
     
-    private void RegenerateEnergy()
-    {
-        if (Time.time - lastMovementTime >= energyRegenDelay)
-        {
-            energy = Mathf.Min(maxEnergy, energy + energyRegenRate * Time.fixedDeltaTime);
-        }
-    }
-    
     private void UpdateReproduction()
     {
-        // Only accumulate reproduction points if we have some energy
-        if (energy > 0)
+        reproduction += reproductionRate * Time.fixedDeltaTime;
+        
+        // Check if ready to reproduce
+        if (reproduction >= maxReproduction)
         {
-            reproduction += reproductionRate * Time.fixedDeltaTime;
-            
-            // Check if ready to reproduce
-            if (reproduction >= maxReproduction)
-            {
-                StartCoroutine(TryReproduce());
-            }
+            StartCoroutine(TryReproduce());
         }
     }
     
@@ -387,72 +364,33 @@ public class Creature : MonoBehaviour
             // Actions[0] is horizontal velocity, actions[1] is vertical velocity
             Vector2 desiredVelocity = new Vector2(actions[0], actions[1]) * moveSpeed;
             
-            // Apply movement if we have enough energy
-            if (energy > 0)
+            // Check if the desired position would be within bounds
+            Vector2 currentPos = rb.position;
+            Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
+            
+            // Get the floor bounds
+            PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
+            if (floorCollider != null)
             {
-                // Calculate energy cost based on total velocity
-                float velocityMagnitude = desiredVelocity.magnitude;
-                float energyCost = velocityMagnitude * movementEnergyCost * Time.fixedDeltaTime;
+                // Get the sprite's bottom center point
+                Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
                 
-                if (energyCost <= energy)
+                // Check if the bottom center point would be inside the floor bounds
+                if (floorCollider.OverlapPoint(bottomCenter))
                 {
-                    // Check if the desired position would be within bounds
-                    Vector2 currentPos = rb.position;
-                    Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
-                    
-                    // Get the floor bounds
-                    PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
-                    if (floorCollider != null)
-                    {
-                        // Get the sprite's bottom center point
-                        Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
-                        
-                        // Check if the bottom center point would be inside the floor bounds
-                        if (floorCollider.OverlapPoint(bottomCenter))
-                        {
-                            // Apply movement
-                            rb.velocity = desiredVelocity;
-                        }
-                        else
-                        {
-                            // Stop at the current position
-                            rb.velocity = Vector2.zero;
-                        }
-                    }
-                    else
-                    {
-                        // If no floor collider found, just apply movement
-                        rb.velocity = desiredVelocity;
-                    }
-                    
-                    // Deduct energy
-                    energy = Mathf.Max(0, energy - energyCost);
-                    
-                    // Update last movement time
-                    if (velocityMagnitude > 0.01f)
-                    {
-                        lastMovementTime = Time.time;
-                    }
+                    // Apply movement
+                    rb.velocity = desiredVelocity;
                 }
                 else
                 {
-                    // Not enough energy for full movement, use what we have
-                    float energyRatio = energy / energyCost;
-                    rb.velocity = desiredVelocity * energyRatio;
-                    energy = 0;
-                    lastMovementTime = Time.time;
+                    // Stop at the current position
+                    rb.velocity = Vector2.zero;
                 }
             }
             else
             {
-                // No energy, stop movement
-                rb.velocity = Vector2.zero;
-            }
-            
-            // Regenerate energy when not moving
-            if (rb.velocity.magnitude < 0.01f)
-            {
-                RegenerateEnergy();
+                // If no floor collider found, just apply movement
+                rb.velocity = desiredVelocity;
             }
             
             // Update reproduction
