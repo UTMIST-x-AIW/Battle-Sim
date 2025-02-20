@@ -53,20 +53,24 @@ public class NetworkVisualizer : MonoBehaviour
         {
             // Cast a ray from the camera to the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
             
-            if (hit.collider != null)
+            bool foundCreature = false;
+            foreach (var hit in hits)
             {
                 Creature creature = hit.collider.GetComponent<Creature>();
                 if (creature != null)
                 {
                     Debug.Log($"Selected creature of type: {creature.type}");
                     SelectCreature(creature);
+                    foundCreature = true;
+                    break;
                 }
             }
-            else
+            
+            // If we didn't click on a creature, hide the network and reset camera
+            if (!foundCreature)
             {
-                // Click on empty space, hide the panel and reset camera
                 HideNetwork();
                 if (cameraController != null)
                 {
