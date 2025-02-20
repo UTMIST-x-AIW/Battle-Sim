@@ -190,18 +190,34 @@ public class NetworkVisualizer : MonoBehaviour
         float panelWidth = panelSize.x;
         float panelHeight = panelSize.y;
         
-        // Group nodes by type
+        // Group nodes by type and layer
         var inputNodes = new List<NodeGene>();
-        var hiddenNodes = new List<NodeGene>();
+        var hiddenNodes = new Dictionary<int, List<NodeGene>>();  // Layer -> nodes
+        var biasNodes = new Dictionary<int, NodeGene>();  // Layer -> bias node
         var outputNodes = new List<NodeGene>();
         
+        // Find max layer for hidden nodes
+        int maxHiddenLayer = 1;
         foreach (var node in nodes.Values)
         {
             switch (node.Type)
             {
-                case NodeType.Input: inputNodes.Add(node); break;
-                case NodeType.Hidden: hiddenNodes.Add(node); break;
-                case NodeType.Output: outputNodes.Add(node); break;
+                case NodeType.Input:
+                    inputNodes.Add(node);
+                    break;
+                case NodeType.Hidden:
+                    if (!hiddenNodes.ContainsKey(node.Layer))
+                        hiddenNodes[node.Layer] = new List<NodeGene>();
+                    hiddenNodes[node.Layer].Add(node);
+                    maxHiddenLayer = Mathf.Max(maxHiddenLayer, node.Layer);
+                    break;
+                case NodeType.Bias:
+                    biasNodes[node.Layer] = node;
+                    maxHiddenLayer = Mathf.Max(maxHiddenLayer, node.Layer);
+                    break;
+                case NodeType.Output:
+                    outputNodes.Add(node);
+                    break;
             }
         }
         
@@ -230,17 +246,37 @@ public class NetworkVisualizer : MonoBehaviour
             );
         }
         
-        // Position hidden nodes in the middle
-        if (hiddenNodes.Count > 0)
+        // Position hidden and bias nodes in layers
+        if (maxHiddenLayer > 0)
         {
-            float hiddenSpacing = verticalSpace / (hiddenNodes.Count + 1);
-            for (int i = 0; i < hiddenNodes.Count; i++)
+            float layerSpacing = (panelWidth - nodeSize) / (maxHiddenLayer + 1);
+            
+            // For each layer
+            for (int layer = 1; layer <= maxHiddenLayer; layer++)
             {
-                var node = hiddenNodes[i];
-                nodePositions[node.Key] = new Vector2(
-                    panelWidth / 2,
-                    -edgeMargin - hiddenSpacing * (i + 1)
-                );
+                float layerX = nodeSize/2 + layer * layerSpacing;
+                
+                // Position hidden nodes in this layer
+                var layerNodes = hiddenNodes.ContainsKey(layer) ? hiddenNodes[layer] : new List<NodeGene>();
+                float nodeSpacing = verticalSpace / (layerNodes.Count + 2);  // +2 to leave space for bias node
+                for (int i = 0; i < layerNodes.Count; i++)
+                {
+                    var node = layerNodes[i];
+                    nodePositions[node.Key] = new Vector2(
+                        layerX,
+                        -edgeMargin - nodeSpacing * (i + 1)
+                    );
+                }
+                
+                // Position bias node at the top of the layer if it exists
+                if (biasNodes.ContainsKey(layer))
+                {
+                    var biasNode = biasNodes[layer];
+                    nodePositions[biasNode.Key] = new Vector2(
+                        layerX,
+                        -edgeMargin  // At the top of the layer
+                    );
+                }
             }
         }
     }
@@ -259,7 +295,23 @@ public class NetworkVisualizer : MonoBehaviour
         if (image != null)
         {
             nodeImages[node.Key] = image;
-            image.color = Color.white;  // Start with white
+            
+            // Set initial color based on node type
+            switch (node.Type)
+            {
+                case NodeType.Input:
+                    image.color = Color.cyan;
+                    break;
+                case NodeType.Output:
+                    image.color = Color.yellow;
+                    break;
+                case NodeType.Bias:
+                    image.color = new Color(1f, 0.7f, 0.7f);  // Light pink for bias nodes
+                    break;
+                default:
+                    image.color = Color.white;
+                    break;
+            }
         }
         
         // Add node ID text
