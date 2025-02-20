@@ -10,6 +10,12 @@ public class NetworkVisualizer : MonoBehaviour
     public GameObject nodePrefab;       // Prefab for network nodes (should be a UI element)
     public GameObject connectionPrefab;  // Prefab for connections (should be a UI line element)
     
+    [Header("Layout Settings")]
+    public Vector2 panelOffset = new Vector2(20, 20);  // Offset from top-left corner
+    public Vector2 panelSize = new Vector2(300, 200);  // Size of the panel
+    public float nodeSize = 30f;        // Size of node circles
+    public float edgeMargin = 40f;      // Margin from panel edges
+    
     private Dictionary<int, Vector2> nodePositions = new Dictionary<int, Vector2>();
     private List<RectTransform> connectionObjects = new List<RectTransform>();
     private Creature selectedCreature;
@@ -18,7 +24,16 @@ public class NetworkVisualizer : MonoBehaviour
     {
         // Hide panel initially
         if (networkPanel != null)
+        {
             networkPanel.gameObject.SetActive(false);
+            
+            // Set panel position and size
+            networkPanel.anchorMin = new Vector2(0, 1);  // Anchor to top-left
+            networkPanel.anchorMax = new Vector2(0, 1);
+            networkPanel.pivot = new Vector2(0, 1);      // Pivot at top-left
+            networkPanel.anchoredPosition = panelOffset;
+            networkPanel.sizeDelta = panelSize;
+        }
     }
     
     void Update()
@@ -101,10 +116,8 @@ public class NetworkVisualizer : MonoBehaviour
     
     void CalculateNodePositions(Dictionary<int, NodeGene> nodes, Dictionary<int, ConnectionGene> connections)
     {
-        float panelWidth = networkPanel.rect.width;
-        float panelHeight = networkPanel.rect.height;
-        
-        Debug.Log($"Panel dimensions: {panelWidth}x{panelHeight}");
+        float panelWidth = panelSize.x;
+        float panelHeight = panelSize.y;
         
         // Group nodes by type
         var inputNodes = new List<NodeGene>();
@@ -121,32 +134,42 @@ public class NetworkVisualizer : MonoBehaviour
             }
         }
         
-        Debug.Log($"Node counts - Input: {inputNodes.Count}, Hidden: {hiddenNodes.Count}, Output: {outputNodes.Count}");
+        // Calculate vertical spacing
+        float verticalSpace = panelHeight - edgeMargin;  // Only subtract top margin
         
         // Position input nodes on the left
-        float inputSpacing = panelHeight / (inputNodes.Count + 1);
+        float inputSpacing = verticalSpace / (inputNodes.Count + 1);
         for (int i = 0; i < inputNodes.Count; i++)
         {
             var node = inputNodes[i];
-            nodePositions[node.Key] = new Vector2(50, -inputSpacing * (i + 1));
+            nodePositions[node.Key] = new Vector2(
+                nodeSize/2,  // Half node size from left edge
+                -edgeMargin - inputSpacing * (i + 1)
+            );
         }
         
         // Position output nodes on the right
-        float outputSpacing = panelHeight / (outputNodes.Count + 1);
+        float outputSpacing = verticalSpace / (outputNodes.Count + 1);
         for (int i = 0; i < outputNodes.Count; i++)
         {
             var node = outputNodes[i];
-            nodePositions[node.Key] = new Vector2(panelWidth - 50, -outputSpacing * (i + 1));
+            nodePositions[node.Key] = new Vector2(
+                panelWidth - nodeSize/2,  // Half node size from right edge
+                -edgeMargin - outputSpacing * (i + 1)
+            );
         }
         
         // Position hidden nodes in the middle
         if (hiddenNodes.Count > 0)
         {
-            float hiddenSpacing = panelHeight / (hiddenNodes.Count + 1);
+            float hiddenSpacing = verticalSpace / (hiddenNodes.Count + 1);
             for (int i = 0; i < hiddenNodes.Count; i++)
             {
                 var node = hiddenNodes[i];
-                nodePositions[node.Key] = new Vector2(panelWidth / 2, -hiddenSpacing * (i + 1));
+                nodePositions[node.Key] = new Vector2(
+                    panelWidth / 2,
+                    -edgeMargin - hiddenSpacing * (i + 1)
+                );
             }
         }
     }
@@ -158,6 +181,7 @@ public class NetworkVisualizer : MonoBehaviour
         GameObject nodeObj = Instantiate(nodePrefab, networkPanel);
         RectTransform rect = nodeObj.GetComponent<RectTransform>();
         rect.anchoredPosition = nodePositions[node.Key];
+        rect.sizeDelta = new Vector2(nodeSize, nodeSize);  // Set node size
         
         // Set node color based on type
         Image image = nodeObj.GetComponent<Image>();
@@ -182,6 +206,7 @@ public class NetworkVisualizer : MonoBehaviour
         if (text != null)
         {
             text.text = node.Key.ToString();
+            text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);  // Scale font size with node
         }
         
         Debug.Log($"Drew node {node.Key} of type {node.Type} at position {rect.anchoredPosition}");
