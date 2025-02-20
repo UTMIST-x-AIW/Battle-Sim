@@ -17,8 +17,7 @@ public class Creature : MonoBehaviour
     
     [Header("Aging Settings")]
     public float agingStartTime = 10f;  // Time in seconds before aging starts
-    public float agingRate = 0.1f;      // Base rate of aging damage
-    public float agingExponent = 1.5f;  // How quickly aging accelerates
+    public float agingRate = 0.03f;      // Base rate of aging damage (increased from 0.01 to compensate for linear aging)
     private float lifetime = 0f;        // How long the creature has lived
     
     [Header("Movement Settings")]
@@ -423,7 +422,8 @@ public class Creature : MonoBehaviour
         if (lifetime > agingStartTime)
         {
             float agingTime = lifetime - agingStartTime;
-            float agingDamage = agingRate * Mathf.Pow(agingTime, agingExponent) * Time.fixedDeltaTime;
+            // Linear aging damage calculation (removed the Pow function)
+            float agingDamage = agingRate * agingTime * Time.fixedDeltaTime;
             health = Mathf.Max(0, health - agingDamage);
             
             // Die if health reaches 0

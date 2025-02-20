@@ -12,12 +12,12 @@ public class NEATTest : MonoBehaviour
     void Start()
     {
         // Spawn one Albert near (-5, 5)
-        Vector3 albertPosition = new Vector3(-13, 7, 0) + Random.insideUnitSphere * 2f;
+        Vector3 albertPosition = new Vector3(-12, 6, 0) + Random.insideUnitSphere * 2f;
         albertPosition.z = 0;  // Ensure z is 0
         SpawnCreature(albertCreaturePrefab, albertPosition, Creature.CreatureType.Albert);
         
         // Spawn one Kai near (5, -5)
-        Vector3 kaiPosition = new Vector3(13, -7, 0) + Random.insideUnitSphere * 2f;
+        Vector3 kaiPosition = new Vector3(12, -6, 0) + Random.insideUnitSphere * 2f;
         kaiPosition.z = 0;  // Ensure z is 0
         SpawnCreature(kaiCreaturePrefab, kaiPosition, Creature.CreatureType.Kai);
     }
