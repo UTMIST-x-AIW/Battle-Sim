@@ -18,12 +18,14 @@ public class NEATTest : MonoBehaviour
         3.0f,   // Health
         5.0f,   // Energy
         0.0f,   // Reproduction
-        0.0f,   // Same type magnitude (no other Alberts)
-        0.0f,   // Same type direction (no other Alberts)
-        0.0f,   // Same type absolute sum (no other Alberts)
-        3.0f,   // Different type magnitude (one Kai 3 units away)
-        0.0f,   // Different type direction (Kai at 0 degrees)
-        3.0f    // Different type absolute sum
+        0.0f,   // Same type x
+        0.0f,   // Same type y
+        0.0f,   // Same type absolute sum
+        3.0f,   // Different type x (Kai at 3 units to the right)
+        0.0f,   // Different type y
+        3.0f,   // Different type absolute sum
+        1.0f,   // Current direction x (facing right)
+        0.0f    // Current direction y
     };
     
     void Start()
@@ -85,9 +87,9 @@ public class NEATTest : MonoBehaviour
         // 1: energy
         // 2: reproduction
         // 3,4: same type x,y
-        // 5: same type count
+        // 5: same type absolute sum
         // 6,7: opposite type x,y
-        // 8: opposite type count
+        // 8: opposite type absolute sum
         // 9,10: current direction x,y
         for (int i = 0; i < 11; i++)
         {
@@ -107,6 +109,10 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, 11, 0.5f));
         // Same type y position to vertical velocity
         genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, 12, 0.5f));
+        // Current direction x to horizontal velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 9, 11, 0.3f));
+        // Current direction y to vertical velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 10, 12, 0.3f));
         
         return genome;
     }

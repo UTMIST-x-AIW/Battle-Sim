@@ -19,6 +19,7 @@ public class NetworkVisualizer : MonoBehaviour
     private Dictionary<int, Vector2> nodePositions = new Dictionary<int, Vector2>();
     private List<RectTransform> connectionObjects = new List<RectTransform>();
     private Creature selectedCreature;
+    private CameraController cameraController;
     
     void Start()
     {
@@ -33,6 +34,13 @@ public class NetworkVisualizer : MonoBehaviour
             networkPanel.pivot = new Vector2(0, 1);      // Pivot at top-left
             networkPanel.anchoredPosition = panelOffset;
             networkPanel.sizeDelta = panelSize;
+        }
+        
+        // Get camera controller
+        cameraController = Camera.main.GetComponent<CameraController>();
+        if (cameraController == null)
+        {
+            cameraController = Camera.main.gameObject.AddComponent<CameraController>();
         }
     }
     
@@ -56,8 +64,12 @@ public class NetworkVisualizer : MonoBehaviour
             }
             else
             {
-                // Click on empty space, hide the panel
+                // Click on empty space, hide the panel and reset camera
                 HideNetwork();
+                if (cameraController != null)
+                {
+                    cameraController.ResetCamera();
+                }
             }
         }
     }
@@ -66,6 +78,12 @@ public class NetworkVisualizer : MonoBehaviour
     {
         selectedCreature = creature;
         ShowNetwork();
+        
+        // Set camera to follow the selected creature
+        if (cameraController != null)
+        {
+            cameraController.SetTarget(creature.transform);
+        }
     }
     
     void ShowNetwork()
