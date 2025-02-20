@@ -177,7 +177,6 @@ MonoBehaviour:
   maxReproduction: 1
   agingStartTime: 10
   agingRate: 0.01
-  agingExponent: 1.1
   moveSpeed: 2
   reproductionRate: 0.1
   weightMutationRate: 0.8

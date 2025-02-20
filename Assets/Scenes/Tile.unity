@@ -25666,8 +25666,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cherryPrefab: {fileID: 4324742716123573730, guid: 3f83485339e6340198bac3fea30aa976, type: 3}
-  spawnInterval: 2
-  maxCherries: 20
+  spawnInterval: 1
+  maxCherries: 80
 --- !u!4 &776339020
 Transform:
   m_ObjectHideFlags: 0

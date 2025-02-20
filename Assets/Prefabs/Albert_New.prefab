@@ -172,22 +172,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
-  energy: 5
   reproduction: 0
-  maxEnergy: 5
   maxHealth: 3
   maxReproduction: 1
   agingStartTime: 10
-  agingRate: 0.1
-  agingExponent: 1.5
-  moveSpeed: 5
-  movementEnergyCost: 0.2
-  energyRegenRate: 0.5
-  energyRegenDelay: 0.3
+  agingRate: 0.01
+  moveSpeed: 2
   reproductionRate: 0.1
   weightMutationRate: 0.8
   mutationRange: 0.5
   addNodeRate: 0.2
   addConnectionRate: 0.5
   deleteConnectionRate: 0.2
+  maxHiddenLayers: 10
   type: 0
