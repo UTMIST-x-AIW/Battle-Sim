@@ -5,6 +5,10 @@ using System.Collections;
 
 public class Creature : MonoBehaviour
 {
+    // Add static counter at the top of the class
+    private static int totalCreatures = 0;
+    private static readonly int maxCreatures = 20;
+
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
@@ -52,6 +56,10 @@ public class Creature : MonoBehaviour
         health = maxHealth;
         reproduction = 0f;
         lifetime = 0f;
+        
+        // Increment counter when creature is created
+        totalCreatures++;
+        Debug.Log($"Creature created. Total creatures: {totalCreatures}");
     }
     
     private void Start()
@@ -127,6 +135,14 @@ public class Creature : MonoBehaviour
     
     private IEnumerator TryReproduce()
     {
+        // Check population limit first
+        if (totalCreatures >= maxCreatures)
+        {
+            Debug.Log($"Max creatures ({maxCreatures}) reached, preventing reproduction");
+            reproduction = 0f; // Reset reproduction progress
+            yield break;
+        }
+
         if (brain == null) yield break;
 
         // Create a new genome with a unique key based on timestamp
@@ -494,5 +510,12 @@ public class Creature : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Decrement counter when creature is destroyed
+        totalCreatures--;
+        Debug.Log($"Creature destroyed. Total creatures: {totalCreatures}");
     }
 } 
