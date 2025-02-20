@@ -49,6 +49,9 @@ public class Creature : MonoBehaviour
         return brain;
     }
     
+    // Add at the top with other private fields
+    private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
+
     private void Awake()
     {
         // Initialize stats
@@ -123,26 +126,38 @@ public class Creature : MonoBehaviour
     
     private void UpdateReproduction()
     {
-        reproduction += reproductionRate * Time.fixedDeltaTime;
-        
-        // Check if ready to reproduce
-        if (reproduction >= maxReproduction)
+        // Only accumulate reproduction points and try to reproduce if not already reproducing
+        if (!isReproducing)
         {
-            StartCoroutine(TryReproduce());
+            reproduction += reproductionRate * Time.fixedDeltaTime;
+            
+            // Check if ready to reproduce
+            if (reproduction >= maxReproduction)
+            {
+                StartCoroutine(TryReproduce());
+            }
         }
     }
     
     private IEnumerator TryReproduce()
     {
+        // Set flag to prevent multiple reproduction attempts
+        isReproducing = true;
+        
         // Check population limit first
         if (totalCreatures >= maxCreatures)
         {
             Debug.Log($"Max creatures ({maxCreatures}) reached, preventing reproduction");
             reproduction = 0f; // Reset reproduction progress
+            isReproducing = false; // Reset flag
             yield break;
         }
 
-        if (brain == null) yield break;
+        if (brain == null)
+        {
+            isReproducing = false; // Reset flag
+            yield break;
+        }
 
         // Create a new genome with a unique key based on timestamp
         int newKey = (int)(Time.time * 1000) % 1000000;
@@ -230,6 +245,9 @@ public class Creature : MonoBehaviour
             // If we couldn't find a valid position, reset reproduction progress
             reproduction = 0f;
         }
+
+        // Reset flag at the end, whether successful or not
+        isReproducing = false;
     }
     
     private void ApplyMutations(NEAT.Genome.Genome genome)
