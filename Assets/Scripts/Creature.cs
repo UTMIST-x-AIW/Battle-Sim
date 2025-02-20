@@ -460,8 +460,4 @@ public class Creature : MonoBehaviour
         }
     }
     
-    private bool isMainAlbert
-    {
-        get { return type == CreatureType.Albert && transform.position == Vector3.zero; }
-    }
 } 
