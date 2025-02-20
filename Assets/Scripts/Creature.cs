@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class Creature : MonoBehaviour
 {
@@ -142,14 +143,14 @@ public class Creature : MonoBehaviour
             // Check if ready to reproduce
             if (reproduction >= maxReproduction)
             {
-                Reproduce();
+                StartCoroutine(TryReproduce());
             }
         }
     }
     
-    private void Reproduce()
+    private IEnumerator TryReproduce()
     {
-        if (brain == null) return;
+        if (brain == null) yield break;
 
         // Create a new genome with a unique key based on timestamp
         int newKey = (int)(Time.time * 1000) % 1000000;
@@ -170,7 +171,69 @@ public class Creature : MonoBehaviour
         }
 
         // Apply mutations
+        ApplyMutations(genome);
+
+        // Keep trying to spawn until successful or dead
+        bool spawnSuccessful = false;
+        PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
         
+        WaitForSeconds spawnDelay = new WaitForSeconds(0.3f);  // Create delay object once
+        
+        while (!spawnSuccessful && health > 0)
+        {
+            // Create offspring
+            GameObject offspring = Instantiate(gameObject, transform.position, transform.rotation);
+            Creature offspringCreature = offspring.GetComponent<Creature>();
+            
+            // Initialize offspring with mutated brain
+            var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+            offspringCreature.InitializeNetwork(network);
+            offspringCreature.type = type;
+            
+            if (floorCollider != null)
+            {
+                // Get random offset (slightly larger range for more spread)
+                Vector2 spawnOffset = Random.insideUnitCircle * 2f;
+                Vector2 potentialPosition = (Vector2)transform.position + spawnOffset;
+                
+                // Check if the bottom center of the sprite would be inside the floor
+                Vector2 bottomCenter = new Vector2(
+                    potentialPosition.x,
+                    potentialPosition.y - offspring.GetComponent<SpriteRenderer>().bounds.extents.y
+                );
+                
+                if (floorCollider.OverlapPoint(bottomCenter))
+                {
+                    offspring.transform.position = potentialPosition;
+                    spawnSuccessful = true;
+                    reproduction = 0f;  // Reset reproduction points on success
+                }
+                else
+                {
+                    // Failed spawn attempt, destroy offspring and wait before trying again
+                    Destroy(offspring);
+                    yield return spawnDelay;  // Wait 0.3 seconds before next attempt
+                }
+            }
+            else
+            {
+                // If no floor collider found, just offset slightly
+                Vector2 offset = Random.insideUnitCircle.normalized;
+                offspring.transform.position += (Vector3)offset;
+                spawnSuccessful = true;
+                reproduction = 0f;
+            }
+        }
+        
+        // If we died trying, reset reproduction progress
+        if (!spawnSuccessful)
+        {
+            reproduction = 0f;
+        }
+    }
+    
+    private void ApplyMutations(NEAT.Genome.Genome genome)
+    {
         // 1. Weight mutations (configurable chance for each connection)
         foreach (var conn in genome.Connections.Values)
         {
@@ -297,22 +360,6 @@ public class Creature : MonoBehaviour
             var connToDelete = connList[Random.Range(0, connList.Count)];
             genome.Connections.Remove(connToDelete.Key);
         }
-
-        // Create offspring
-        GameObject offspring = Instantiate(gameObject, transform.position, transform.rotation);
-        Creature offspringCreature = offspring.GetComponent<Creature>();
-        
-        // Initialize offspring with mutated brain
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
-        offspringCreature.InitializeNetwork(network);
-        offspringCreature.type = type;
-        
-        // Reset reproduction points
-        reproduction = 0f;
-        
-        // Offset offspring slightly to avoid overlap
-        Vector2 offset = Random.insideUnitCircle.normalized;
-        offspring.transform.position += (Vector3)offset;
     }
     
     private void FixedUpdate()
