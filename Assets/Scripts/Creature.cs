@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Creature : MonoBehaviour
 {
@@ -23,8 +24,11 @@ public class Creature : MonoBehaviour
     
     [Header("Reproduction Settings")]
     public float reproductionRate = 0.1f;  // Points gained per second
-    public float mutationRate = 0.1f;      // Probability of mutation per gene
-    public float mutationRange = 0.5f;     // Maximum change during mutation
+    public float weightMutationRate = 0.8f;  // Chance of mutating each connection weight
+    public float mutationRange = 0.5f;       // Maximum weight change during mutation
+    public float addNodeRate = 0.2f;         // Chance of adding a new node
+    public float addConnectionRate = 0.5f;    // Chance of adding a new connection
+    public float deleteConnectionRate = 0.2f; // Chance of deleting a connection
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -153,18 +157,110 @@ public class Creature : MonoBehaviour
         }
         foreach (var conn in connections.Values)
         {
-            var clonedConn = (NEAT.Genes.ConnectionGene)conn.Clone();
-            
-            // Apply mutations to connection weights
-            if (Random.value < mutationRate)
-            {
-                clonedConn.Weight += Random.Range(-mutationRange, mutationRange);
-                clonedConn.Weight = Mathf.Clamp((float)clonedConn.Weight, -1f, 1f);
-            }
-            
-            genome.AddConnection(clonedConn);
+            genome.AddConnection((NEAT.Genes.ConnectionGene)conn.Clone());
         }
+
+        // Apply mutations
         
+        // 1. Weight mutations (configurable chance for each connection)
+        foreach (var conn in genome.Connections.Values)
+        {
+            if (Random.value < weightMutationRate)
+            {
+                if (Random.value < 0.9f)
+                {
+                    // Perturb weight
+                    conn.Weight += Random.Range(-mutationRange, mutationRange);
+                    conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
+                }
+                else
+                {
+                    // Assign new random weight
+                    conn.Weight = Random.Range(-1f, 1f);
+                }
+            }
+        }
+
+        // 2. Add node mutation (configurable chance)
+        if (Random.value < addNodeRate && genome.Connections.Count > 0)
+        {
+            // Choose a random connection to split
+            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+            var connToSplit = connList[Random.Range(0, connList.Count)];
+            connToSplit.Enabled = false;
+
+            // Create new node
+            int newNodeKey = genome.Nodes.Count;
+            var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+            
+            // Set layer between input and output
+            var inputNode = genome.Nodes[connToSplit.InputKey];
+            var outputNode = genome.Nodes[connToSplit.OutputKey];
+            newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+            if (newNode.Layer == inputNode.Layer) newNode.Layer++;
+            
+            genome.AddNode(newNode);
+
+            // Add two new connections
+            var conn1 = new NEAT.Genes.ConnectionGene(
+                genome.Connections.Count,
+                connToSplit.InputKey,
+                newNodeKey,
+                1.0);
+
+            var conn2 = new NEAT.Genes.ConnectionGene(
+                genome.Connections.Count + 1,
+                newNodeKey,
+                connToSplit.OutputKey,
+                connToSplit.Weight);
+
+            genome.AddConnection(conn1);
+            genome.AddConnection(conn2);
+        }
+
+        // 3. Add connection mutation (configurable chance)
+        if (Random.value < addConnectionRate)
+        {
+            for (int tries = 0; tries < 5; tries++) // Try 5 times to find valid connection
+            {
+                var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+                var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
+                var targetNode = nodeList[Random.Range(0, nodeList.Count)];
+
+                // Skip invalid connections
+                if (sourceNode.Layer >= targetNode.Layer ||
+                    sourceNode.Type == NEAT.Genes.NodeType.Output ||
+                    targetNode.Type == NEAT.Genes.NodeType.Input)
+                {
+                    continue;
+                }
+
+                // Check if connection already exists
+                bool exists = genome.Connections.Values.Any(c =>
+                    c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
+
+                if (!exists)
+                {
+                    var newConn = new NEAT.Genes.ConnectionGene(
+                        genome.Connections.Count,
+                        sourceNode.Key,
+                        targetNode.Key,
+                        Random.Range(-1f, 1f));
+
+                    genome.AddConnection(newConn);
+                    break;
+                }
+            }
+        }
+
+        // 4. Delete connection mutation (configurable chance)
+        if (Random.value < deleteConnectionRate && genome.Connections.Count > 1)
+        {
+            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+            var connToDelete = connList[Random.Range(0, connList.Count)];
+            genome.Connections.Remove(connToDelete.Key);
+        }
+
         // Create offspring
         GameObject offspring = Instantiate(gameObject, transform.position, transform.rotation);
         Creature offspringCreature = offspring.GetComponent<Creature>();

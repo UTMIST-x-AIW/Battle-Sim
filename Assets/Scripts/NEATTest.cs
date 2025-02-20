@@ -91,9 +91,9 @@ public class NEATTest : MonoBehaviour
         genome.AddNode(new NEAT.Genes.NodeGene(10, NEAT.Genes.NodeType.Output));  // Angular velocity
         
         // Add some basic connections with fixed weights
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 9, -0.5f));   // Health to forward velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 9, 0.5f));   // Health to forward velocity
         genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 9, -0.5f));  // Energy to forward velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 6, 10, 0f));  // Opposite type magnitude to angular velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 6, 10, 0.5f));  // Opposite type magnitude to angular velocity
         
         return genome;
     }
