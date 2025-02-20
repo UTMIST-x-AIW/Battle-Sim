@@ -175,10 +175,14 @@ MonoBehaviour:
   energy: 5
   reproduction: 0
   maxEnergy: 5
+  maxReproduction: 1
   moveSpeed: 5
   rotateSpeed: 180
   movementEnergyCost: 0.002
   rotationEnergyCost: 0.001
   energyRegenRate: 2
   energyRegenDelay: 0.3
+  reproductionRate: 0.1
+  mutationRate: 0.1
+  mutationRange: 0.5
   type: 0

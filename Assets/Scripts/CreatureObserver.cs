@@ -63,12 +63,6 @@ public class CreatureObserver : MonoBehaviour
         if (obs[7] < 0) obs[7] += 2 * Mathf.PI;
         obs[8] = oppositeTypeAbsSum;
         
-        if (isMainAlbert)
-        {
-            string obsStr = string.Join(", ", obs);
-            Debug.Log(string.Format("Timestep {0} - Observations: [{1}]", timestep++, obsStr));
-        }
-        
         return obs;
     }
 } 

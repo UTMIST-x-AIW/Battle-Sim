@@ -36,6 +36,12 @@ public class Creature : MonoBehaviour
     private Rigidbody2D rb;
     private float lastMovementTime;
     
+    // Add method to get brain
+    public NEAT.NN.FeedForwardNetwork GetBrain()
+    {
+        return brain;
+    }
+    
     private void Awake()
     {
         // Initialize stats
@@ -62,9 +68,6 @@ public class Creature : MonoBehaviour
         rb.angularDrag = 1f;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        
-        // Debug initial state
-        Debug.Log(string.Format("Creature initialized - Energy: {0}, Health: {1}", energy, health));
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -104,12 +107,6 @@ public class Creature : MonoBehaviour
         // Ensure outputs are in range [-1, 1]
         outputs[0] = Mathf.Clamp(outputs[0], -1f, 1f);
         outputs[1] = Mathf.Clamp(outputs[1], -1f, 1f);
-        
-        // Log actions only for main Albert
-        if (type == CreatureType.Albert && transform.position == Vector3.zero)
-        {
-            Debug.Log(string.Format("Actions: [{0:F3}, {1:F3}]", outputs[0], outputs[1]));
-        }
         
         return outputs;
     }
@@ -183,12 +180,6 @@ public class Creature : MonoBehaviour
         // Offset offspring slightly to avoid overlap
         Vector2 offset = Random.insideUnitCircle.normalized;
         offspring.transform.position += (Vector3)offset;
-        
-        if (isMainAlbert)
-        {
-            Debug.Log(string.Format("Reproduction event! Offspring created at position offset: ({0:F2}, {1:F2})", 
-                offset.x, offset.y));
-        }
     }
     
     private void FixedUpdate()
@@ -200,10 +191,6 @@ public class Creature : MonoBehaviour
             // Calculate movement
             float forwardSpeed = actions[0] * moveSpeed;
             float rotationSpeed = actions[1] * rotateSpeed;
-            
-            // Debug movement values
-            Debug.Log(string.Format("Movement - Energy: {0:F2}, Forward: {1:F2}, Rotation: {2:F2}", 
-                energy, forwardSpeed, rotationSpeed));
             
             // Apply movement if we have enough energy
             if (energy > 0)
@@ -230,10 +217,6 @@ public class Creature : MonoBehaviour
                     {
                         lastMovementTime = Time.time;
                     }
-                    
-                    // Debug energy consumption
-                    Debug.Log(string.Format("Energy consumed: {0:F3} (Move: {1:F3}, Rotate: {2:F3})", 
-                        totalEnergyCost, moveCost, rotateCost));
                 }
                 else
                 {
