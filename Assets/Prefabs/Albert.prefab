@@ -103,6 +103,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 5
   lastdirection: {x: 0, y: 0}
+  z: 0
+  GroundHeight: 0
+  velocity: {x: 0, y: 0, z: 0}
+  gravity: 9.8
+  Tilemap: {fileID: 0}
 --- !u!61 &6449710608649445337
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -173,7 +178,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &5084968862088147877
 MonoBehaviour:

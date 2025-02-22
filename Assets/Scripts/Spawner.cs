@@ -1,10 +1,12 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class TextureSpawner : MonoBehaviour
 {
     public Transform KaiPrefab;
     public Transform AlbertPrefab;
+    [SerializeField] Transform[] prefabs;
     private Color color;
     private Transform KaiParent;
     private Transform AlbertParent;
@@ -17,7 +19,6 @@ public class TextureSpawner : MonoBehaviour
     Material SpawnMaterial;
 
     private Camera renderCamera;
-
     void Start()
     {
         KaiParent_GameObject = GameObject.Find("Kai's Parent");

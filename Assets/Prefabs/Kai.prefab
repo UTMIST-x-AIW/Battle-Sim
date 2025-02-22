@@ -145,21 +145,21 @@ Rigidbody2D:
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
+  m_UseAutoMass: 1
+  m_Mass: 0.2039763
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3725860248335649992
 MonoBehaviour:
@@ -175,6 +175,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MoveSpeed: 4.05
   lastdirection: {x: 0, y: 0}
+  z: 0
+  GroundHeight: 0
+  velocity: {x: 0, y: 0, z: 0}
+  gravity: 9.8
+  Tilemap: {fileID: 0}
 --- !u!114 &3752400893969112301
 MonoBehaviour:
   m_ObjectHideFlags: 0
