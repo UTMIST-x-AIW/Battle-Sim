@@ -4,28 +4,27 @@ using UnityEngine;
 
 public class TextureSpawner : MonoBehaviour
 {
-    public Transform KaiPrefab;
-    public Transform AlbertPrefab;
-    [SerializeField] Transform[] prefabs;
+    [SerializeField] Transform Prefab;
     private Color color;
-    private Transform KaiParent;
-    private Transform AlbertParent;
+    private Transform Parent_Transform = null;
     private Vector2 pixelCoordinate = new Vector2(0.5f, 0.5f); // Normalized coordinate (0-1) to sample the color
     private RenderTexture renderTexture;
-    GameObject KaiParent_GameObject;
-    GameObject AlbertParent_GameObject;
+    GameObject Parent_GameObject;
     [SerializeField, Range(0, 100)] private int MaxNumofSpawns;
     [SerializeField, Range(1, 10)] private int SpawnInterval;
     Material SpawnMaterial;
+    
 
     private Camera renderCamera;
     void Start()
     {
-        KaiParent_GameObject = GameObject.Find("Kai's Parent");
-        AlbertParent_GameObject = GameObject.Find("Albert's Parent");
+        Parent_GameObject = GameObject.Find(Prefab.name+ " SpawnedObjectsContainer");
+        if (Parent_GameObject == null)
+        {
+            Parent_GameObject = new GameObject(Prefab.name + " SpawnedObjectsContainer");
+        }
+        Parent_Transform = Parent_GameObject.transform;
         SpawnMaterial = gameObject.GetComponent<MeshRenderer>().material;
-        KaiParent = KaiParent_GameObject.GetComponent<Transform>();
-        AlbertParent = AlbertParent_GameObject.GetComponent<Transform>();
         renderTexture = new RenderTexture(256, 256, 24);
         renderTexture.Create();
         renderCamera = new GameObject("RenderCamera").AddComponent<Camera>();
@@ -38,8 +37,12 @@ public class TextureSpawner : MonoBehaviour
 
     void LateUpdate()
     {
-        if (KaiParent_GameObject.transform.childCount == MaxNumofSpawns) return;
-        if (AlbertParent_GameObject.transform.childCount == MaxNumofSpawns) return;
+        if (Parent_GameObject == null || Parent_Transform == null)
+        {
+            Debug.LogError("Parent GameObject or Transform is null!");
+            return;
+        }
+        if (Parent_GameObject.transform.childCount == MaxNumofSpawns) return;
         StartCoroutine(CalculateSpawnPoints());
     }
 
@@ -99,8 +102,8 @@ public class TextureSpawner : MonoBehaviour
             {
                 if (SpawnMaterial.GetInt("_KaiSpawnMapEnabled") == 1)
                 {
-                    Transform Kai = Instantiate(KaiPrefab, this.transform.position, Quaternion.identity);
-                    Kai.SetParent(KaiParent, true);
+                    Transform Kai = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                    Kai.SetParent(Parent_GameObject.transform, true);
                 }
 
             }
@@ -108,13 +111,21 @@ public class TextureSpawner : MonoBehaviour
             {
                 if (SpawnMaterial.GetInt("_AlbertSpawnMapEnabled") == 1)
                 {
-                    Transform albert = Instantiate(AlbertPrefab, this.transform.position, Quaternion.identity);
-                    albert.SetParent(AlbertParent, true);
+                    Transform Albert = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                    Albert.SetParent(Parent_Transform, true);
                 }
             }
 
             yield return new WaitForSeconds(SpawnInterval);
         }
 
+    }
+    private void OnDisable()
+    {
+        while (Parent_Transform.childCount > 0)
+        {
+            DestroyImmediate(Parent_Transform.GetChild(0));
+        }
+        Destroy(Parent_GameObject);
     }
 }

@@ -13,13 +13,13 @@ public class DebugMovement : MonoBehaviour
     float MoveSpeed = 5f;
 
     public Vector2 lastdirection;
-    private Dictionary<Vector2Int, float> elevation = new Dictionary<Vector2Int, float>();
-    public float z = 0;
-    public float GroundHeight;
-    public Vector3 velocity;
-    public float gravity = 9.8f;
-    public Tilemap Tilemap;
-    Transform character;
+    //private Dictionary<Vector2Int, float> elevation = new Dictionary<Vector2Int, float>();
+    //public float z = 0;
+    //public float GroundHeight;
+    //public Vector3 velocity;
+    //public float gravity = 9.8f;
+    //public Tilemap Tilemap;
+    //Transform character;
 
     //private void Awake()
     //{
@@ -31,7 +31,7 @@ public class DebugMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        z = transform.position.y;
+        //z = transform.position.y;
         Vector2 movementdir = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
         lastdirection = movementdir;
@@ -39,7 +39,7 @@ public class DebugMovement : MonoBehaviour
         _hInput = Input.GetAxis("Horizontal") * MoveSpeed;
         this.transform.Translate(Vector3.up * _vInput * Time.deltaTime);
         this.transform.Translate(Vector3.right * _hInput * Time.deltaTime);
-        velocity = (Vector3.right * _hInput * Time.deltaTime + Vector3.up * _vInput * Time.deltaTime).normalized;
+        //velocity = (Vector3.right * _hInput * Time.deltaTime + Vector3.up * _vInput * Time.deltaTime).normalized;
         //GravitySim();
     }
 // Wanted to simulate gravity; I will make do it another day

@@ -4,6 +4,7 @@ Shader "Unlit/KaiShader"
     [NoScaleOffset] kai_map_tex ("Kai Spawn Map", 2D) = "white" {}
         [HideInInspector]
         _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
+
         _KaiSpawnMapEnabled("Kai Spawn Map Enabled", Int) = 0
         
     }

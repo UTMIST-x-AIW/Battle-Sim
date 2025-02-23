@@ -64,6 +64,13 @@ public class UISphereGrid : MonoBehaviour
                 }
             }
         }
+        if (Application.isPlaying && this.transform.childCount >0)
+        {
+            foreach (Transform child in this.transform)
+            {
+                child.gameObject.GetComponent<MeshFilter>().mesh = null;
+            }
+        }
     }
     public void LoadKaiMap()
     {
@@ -95,6 +102,13 @@ public class UISphereGrid : MonoBehaviour
                     point.gameObject.SetActive(true);
                     point.SetParent(this.transform, true);
                 }
+            }
+        }
+        if (Application.isPlaying && this.transform.childCount > 0)
+        {
+            foreach (Transform child in this.transform)
+            {
+                child.gameObject.GetComponent<MeshFilter>().mesh = null;
             }
         }
     }

@@ -3,10 +3,11 @@ Shader "Unlit/AlbertShader"
     Properties
     {
          [NoScaleOffset]
-         albert_map_tex ("Albert Spawn Map", 2D) = "white" {}
+         albert_map_tex ("Spawn Map", 2D) = "white" {}
         [HideInInspector]
         _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
-        _AlbertSpawnMapEnabled("Albert Spawn Map Enabled",Int) = 0
+
+        _AlbertSpawnMapEnabled("Spawn Map Enabled",Int) = 0
         
     }
     SubShader

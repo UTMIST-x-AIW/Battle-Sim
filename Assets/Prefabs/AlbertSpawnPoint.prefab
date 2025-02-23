@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 23637527115522491}
-  - component: {fileID: 2124127527934630602}
+  - component: {fileID: 7026094615635299754}
   - component: {fileID: 1671349625295664069}
-  - component: {fileID: 5321968516197894032}
   - component: {fileID: -4463683707887606451}
   m_Layer: 0
   m_Name: AlbertSpawnPoint
@@ -35,7 +34,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2124127527934630602
+--- !u!33 &7026094615635299754
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -85,28 +84,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &5321968516197894032
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7087277867213570158}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &-4463683707887606451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,7 +96,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968ef5293c9f8364ca501140cd0583f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  KaiPrefab: {fileID: 8705751162746639239, guid: 0d6c87afa86cccd4094d38ccbe817065, type: 3}
-  AlbertPrefab: {fileID: 97759648320744754, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
+  Prefab: {fileID: 97759648320744754, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   MaxNumofSpawns: 8
   SpawnInterval: 4

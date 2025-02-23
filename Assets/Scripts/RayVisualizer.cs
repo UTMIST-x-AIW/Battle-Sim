@@ -5,7 +5,7 @@ using System.Collections;
 
 public class MultiRayShooter : MonoBehaviour
 {
-    [SerializeField] int lineCount = 5;
+    [SerializeField] int lineCount = 0;
     [SerializeField] float SpreadAngle = 30f;
     [SerializeField] float LineDistance = 10f;
     [SerializeField, Range(0.05f, 0.1f)] float linewidth = 0.06f;
@@ -16,7 +16,6 @@ public class MultiRayShooter : MonoBehaviour
     
     private DebugMovement characterMovement;
     private List<GameObject> lines = new List<GameObject>();
-    private float rotationSpeed = 5f;
     
 
     void Start()
