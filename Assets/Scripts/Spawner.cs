@@ -115,17 +115,22 @@ public class TextureSpawner : MonoBehaviour
                     Albert.SetParent(Parent_Transform, true);
                 }
             }
+            else if (SpawnMaterial.shader.name == "Unlit/ObjectShader")
+            {
+                    Transform Object = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                    Object.SetParent(Parent_Transform, true);
+            }
 
             yield return new WaitForSeconds(SpawnInterval);
         }
 
     }
-    private void OnDisable()
-    {
-        while (Parent_Transform.childCount > 0)
-        {
-            DestroyImmediate(Parent_Transform.GetChild(0));
-        }
-        Destroy(Parent_GameObject);
-    }
+    //private void OnDisable()
+    //{
+    //    while (Parent_Transform.childCount > 0)
+    //    {
+    //        DestroyImmediate(Parent_Transform.GetChild(0).gameObject);
+    //    }
+    //    Destroy(Parent_GameObject);
+    //}
 }

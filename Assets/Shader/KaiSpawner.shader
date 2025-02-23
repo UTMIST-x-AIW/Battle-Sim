@@ -34,10 +34,8 @@ Shader "Unlit/KaiShader"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D albert_map_tex;
             sampler2D kai_map_tex;
             float  _TextureSamplingScale;
-            int _AlbertSpawnMapEnabled;
             int _KaiSpawnMapEnabled;
             
 

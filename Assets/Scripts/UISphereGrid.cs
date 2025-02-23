@@ -10,9 +10,10 @@ public class UISphereGrid : MonoBehaviour
     [Header("Tilemap Settings")]
     #region TileMap Variables
     public Tilemap tilemap;
-    private BoundsInt bounds;
+    private int bounds;
+    List<Vector3> tilePosList = new List<Vector3>();
     #endregion
-    
+
     [Header("Texture Settings")]
     #region Texture Variables
     [SerializeField] Material KaiMaterial;
@@ -31,7 +32,10 @@ public class UISphereGrid : MonoBehaviour
     [SerializeField, Range(0, 0.8f)] 
     float pointSize = 0.2f;
     #endregion
-    
+    public void Start()
+    {
+        tilePosList = tilePos();
+    }
     public void LoadAlbertMap()
     {
         if (GameObject.Find("AlbertSpawnPoint(Clone)") != null && AlbertSpawnMapBool)
@@ -43,27 +47,20 @@ public class UISphereGrid : MonoBehaviour
             return;
         }
        
-        BoundsInt bounds = tilemap.cellBounds;
+        //BoundsInt bounds = tilemap.cellBounds;
         AlbertMaterial.SetFloat("_TextureSamplingScale", TextureSize);
         AlbertMaterial.SetInt("_AlbertSpawnMapEnabled", 1);
         if (ShowTexture) FullTexture.SetActive(true);
         //KaiMaterial.SetInt("_KaiSpawnMapEnabled", 0);
-        for (int x = (int)bounds.xMin; x < (int)bounds.xMax; x++)
+         foreach (Vector3 position in tilePosList)
         {
-            for (int y = (int)bounds.yMin; y < (int)bounds.yMax; y++)
-            {
-                Vector3Int gridPosition = new Vector3Int(x, y, 0);
-                TileBase tile = tilemap.GetTile(gridPosition);
-                if (tile != null)
-                {
-                Vector3 position =tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
-                Transform point = Instantiate(AlbertSpawnPoint, position, Quaternion.identity);
-                point.localScale = new Vector3(pointSize, pointSize, 1);
-                point.gameObject.SetActive(true);
-                point.SetParent(this.transform, true);
-                }
-            }
+            Transform point = Instantiate(AlbertSpawnPoint, position, Quaternion.identity);
+            point.localScale = new Vector3(pointSize, pointSize, 1);
+            point.gameObject.SetActive(true);
+            point.SetParent(this.transform, true);
         }
+                
+                
         if (Application.isPlaying && this.transform.childCount >0)
         {
             foreach (Transform child in this.transform)
@@ -83,26 +80,16 @@ public class UISphereGrid : MonoBehaviour
             return;
         }
 
-        BoundsInt bounds = tilemap.cellBounds;
         KaiMaterial.SetFloat("_TextureSamplingScale", TextureSize);
         KaiMaterial.SetInt("_KaiSpawnMapEnabled", 1);
         if (ShowTexture) FullTexture.SetActive(true);
-      //  AlbertMaterial.SetInt("_AlbertSpawnMapEnabled",0);
-        for (int x = (int)bounds.xMin; x < (int)bounds.xMax; x++)
+        //  AlbertMaterial.SetInt("_AlbertSpawnMapEnabled",0);
+        foreach (Vector3 position in tilePosList)
         {
-            for (int y = (int)bounds.yMin; y < (int)bounds.yMax; y++)
-            {
-                Vector3Int gridPosition = new Vector3Int(x, y, 0);
-                TileBase tile = tilemap.GetTile(gridPosition);
-                if (tile != null)
-                {
-                    Vector3 position =tilemap.CellToWorld(gridPosition) + new Vector3(0,0.5f,-0.1f); 
-                    Transform point = Instantiate(KaiSpawnPoint, position, Quaternion.identity);
-                    point.localScale = new Vector3(pointSize, pointSize, 1);
-                    point.gameObject.SetActive(true);
-                    point.SetParent(this.transform, true);
-                }
-            }
+            Transform point = Instantiate(KaiSpawnPoint, position, Quaternion.identity);
+            point.localScale = new Vector3(pointSize, pointSize, 1);
+            point.gameObject.SetActive(true);
+            point.SetParent(this.transform, true);
         }
         if (Application.isPlaying && this.transform.childCount > 0)
         {
@@ -112,7 +99,24 @@ public class UISphereGrid : MonoBehaviour
             }
         }
     }
-
+    private List<Vector3> tilePos()
+    {
+        List<Vector3> tilePosList = new List<Vector3>(bounds*bounds);
+        for (int x = -bounds; x < bounds; x++)
+        {
+            for (int y = -bounds; y < bounds; y++)
+            {
+                Vector3Int gridPosition = new Vector3Int(x, y, 0);
+                TileBase tile = tilemap.GetTile(gridPosition);
+                if (tile != null)
+                {
+                    Vector3 position = tilemap.CellToWorld(gridPosition) + new Vector3(0, 0.5f, -0.1f);
+                    tilePosList.Add(position);
+                }
+            }
+        }
+        return tilePosList;
+    }
     public void KillChildren()
     {
         while (this.transform.childCount > 0)

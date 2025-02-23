@@ -63,6 +63,7 @@ public class MultiRayShooter : MonoBehaviour
             );
             Vector2 endPos =  new Vector2(transform.position.x,transform.position.y) +
                              rayDir * LineDistance;
+
             SetLineProperties(line, transform.position, endPos, lineColor);
             if (fadeOn) Fade(line, fadeDuration);
         }

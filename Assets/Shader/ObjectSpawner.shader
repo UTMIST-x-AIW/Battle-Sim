@@ -1,0 +1,64 @@
+Shader "Unlit/ObjectShader"
+{
+    Properties{
+        [NoScaleOffset] 
+        object_map_tex ("Object Spawn Map", 2D) = "white" {}
+        [HideInInspector]
+        _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
+        [HideInInspector]
+        _ObjectSpawnMapEnabled("Object Spawn Map Enabled", Int) = 0
+        
+    }
+    SubShader
+    {
+        Tags { "RenderType" = "Opaque" }
+                
+        Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float3 worldPos : TEXCOORD0;
+                float2 uv : TEXCOORD1;
+                float4 vertex : SV_POSITION;
+            };
+
+            sampler2D object_map_tex;
+            float  _TextureSamplingScale;
+            int _ObjectSpawnMapEnabled;
+            
+
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.worldPos = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).xyz;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
+                return o;
+            }
+
+            fixed4 frag (v2f i) : SV_Target
+            {
+                if(_ObjectSpawnMapEnabled == 1)
+                {
+                    fixed4 col = tex2D(object_map_tex, i.worldPos*_TextureSamplingScale*30);
+                    return col;    
+                }
+                return 0;
+            }
+            ENDCG
+        }
+    }
+}
