@@ -10,7 +10,7 @@ public class UISphereGrid : MonoBehaviour
     [Header("Tilemap Settings")]
     #region TileMap Variables
     public Tilemap tilemap;
-    private int bounds;
+    [SerializeField] int bounds = 50;
     List<Vector3> tilePosList = new List<Vector3>();
     #endregion
 
@@ -34,7 +34,7 @@ public class UISphereGrid : MonoBehaviour
     #endregion
     public void Start()
     {
-        tilePosList = tilePos();
+        
     }
     public void LoadAlbertMap()
     {
@@ -46,7 +46,14 @@ public class UISphereGrid : MonoBehaviour
            }
             return;
         }
-       
+        //foreach (Vector3 pos in tilePosList)
+        //{
+        //    Debug.Log(pos);
+
+        //}
+        if (tilePosList.Count <= 0)  tilePosList = tilePos();
+
+
         //BoundsInt bounds = tilemap.cellBounds;
         AlbertMaterial.SetFloat("_TextureSamplingScale", TextureSize);
         AlbertMaterial.SetInt("_AlbertSpawnMapEnabled", 1);
@@ -79,6 +86,8 @@ public class UISphereGrid : MonoBehaviour
             }
             return;
         }
+        if (tilePosList.Count <= 0) tilePosList = tilePos();
+
 
         KaiMaterial.SetFloat("_TextureSamplingScale", TextureSize);
         KaiMaterial.SetInt("_KaiSpawnMapEnabled", 1);
@@ -138,5 +147,10 @@ public class UISphereGrid : MonoBehaviour
             counter++;
         }
         FullTexture.gameObject.SetActive(false);   
+    }
+
+    private void OnDisable()
+    {
+        tilePosList.Clear();
     }
 }

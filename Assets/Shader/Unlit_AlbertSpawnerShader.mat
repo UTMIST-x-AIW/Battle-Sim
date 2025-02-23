@@ -51,7 +51,7 @@ Material:
     - _AlbertSpawnMapEnabled: 0
     - _KaiSpawnMapEnabled: 0
     m_Floats:
-    - _AlbertSpawnMapEnabled: 1
+    - _AlbertSpawnMapEnabled: 0
     - _KaiSpawnMapEnabled: 0
     - _SpawnMapEnabled: 0
     - _TextureSamplingScale: 0.0033
