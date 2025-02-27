@@ -1,10 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class TextureSpawner : MonoBehaviour
 {
-    [SerializeField] Transform Prefab;
+    [SerializeField] GameObject Prefab;
     private Color color;
     private Transform Parent_Transform = null;
     private Vector2 pixelCoordinate = new Vector2(0.5f, 0.5f); // Normalized coordinate (0-1) to sample the color
@@ -13,16 +14,15 @@ public class TextureSpawner : MonoBehaviour
     [SerializeField, Range(0, 100)] private int MaxNumofSpawns;
     [SerializeField, Range(1, 10)] private int SpawnInterval;
     Material SpawnMaterial;
+    [SerializeField] bool start_spawning = false;
+    private Dictionary<GameObject, Color> colorcache = new Dictionary<GameObject, Color>();
     
 
     private Camera renderCamera;
-    void Start()
+    private void Awake()
     {
-        Parent_GameObject = GameObject.Find(Prefab.name+ " SpawnedObjectsContainer");
-        if (Parent_GameObject == null)
-        {
-            Parent_GameObject = new GameObject(Prefab.name + " SpawnedObjectsContainer");
-        }
+        Parent_GameObject = GameObject.Find(Prefab.name+ " SpawnsContainer");
+        if (Parent_GameObject == null)   Parent_GameObject = new GameObject(Prefab.name + " SpawnsContainer");
         Parent_Transform = Parent_GameObject.transform;
         SpawnMaterial = gameObject.GetComponent<MeshRenderer>().material;
         renderTexture = new RenderTexture(256, 256, 24);
@@ -30,12 +30,16 @@ public class TextureSpawner : MonoBehaviour
         renderCamera = new GameObject("RenderCamera").AddComponent<Camera>();
         renderCamera.enabled = false;
         renderCamera.targetTexture = renderTexture;
+    }
+    void Start()
+    {
 
-        color = GetObjectColor(this.gameObject);
+        color = GetObjectColorFromShader(this.gameObject, transform.position);
+        if (start_spawning) StartCoroutine(MakeSpawnPoints());
         OnDestroy();
     }
 
-    void LateUpdate()
+    void Update()
     {
         if (Parent_GameObject == null || Parent_Transform == null)
         {
@@ -43,37 +47,23 @@ public class TextureSpawner : MonoBehaviour
             return;
         }
         if (Parent_GameObject.transform.childCount == MaxNumofSpawns) return;
-        StartCoroutine(CalculateSpawnPoints());
     }
 
-    Color GetObjectColor(GameObject obj)
+    Color GetObjectColorFromShader(GameObject obj, Vector2 uvCoords)
     {
-        // Position the camera to fit the object
-        Bounds bounds = obj.GetComponent<Renderer>().bounds;
-        renderCamera.transform.position = bounds.center + Vector3.forward * bounds.size.magnitude;
-        renderCamera.transform.LookAt(bounds.center);
+        Renderer renderer = GetComponent<Renderer>();
+        Material material = renderer.material;
+        Texture2D texture2D = material.mainTexture as Texture2D;
 
-        // Render the object to the RenderTexture
-        renderCamera.Render();
-        renderCamera.hideFlags = HideFlags.HideAndDontSave;
-
-        // Read the pixel color from the RenderTexture
-        RenderTexture.active = renderTexture;
-        Texture2D texture2D = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGBA32, false);
-        texture2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
-        texture2D.Apply();
-
-        // Sample the color at the specified normalized coordinate
-        int pixelX = Mathf.FloorToInt(pixelCoordinate.x * renderTexture.width);
-        int pixelY = Mathf.FloorToInt(pixelCoordinate.y * renderTexture.height);
-        Color pixelColor = texture2D.GetPixel(pixelX, pixelY);
-
-        // Clean up
-        RenderTexture.active = null;
-        Destroy(texture2D);
-
-        return pixelColor;
+        if (texture2D != null)
+        {
+            Color pixelcolor = texture2D.GetPixelBilinear(uvCoords.x, uvCoords.y);
+            return pixelcolor;
+        }
+        return Color.red;
     }
+
+
 
     void OnDestroy()
     {
@@ -90,40 +80,45 @@ public class TextureSpawner : MonoBehaviour
         }
     }
 
-    IEnumerator CalculateSpawnPoints()
+    IEnumerator MakeSpawnPoints()
     {
-
+        Debug.Log("Color greyscales: "+ color.grayscale);
         float spawnProbability = 0.001f * color.grayscale; // Grayscale value (0-1)
+        Debug.Log("Spawn Probability: "+ spawnProbability);
+        float t = Random.value;
+        Debug.Log("Random value " + t);
 
         // Randomly spawn based on the probability
-        if (Random.value < spawnProbability)
+        if (t < spawnProbability)
         {
+
             if (SpawnMaterial.shader.name == "Unlit/KaiShader")
             {
                 if (SpawnMaterial.GetInt("_KaiSpawnMapEnabled") == 1)
                 {
-                    Transform Kai = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                    Kai.SetParent(Parent_GameObject.transform, true);
+                    GameObject Kai = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                    Debug.Log("Kai was instantiated");
+                    Kai.transform.SetParent(Parent_GameObject.transform, true);
                 }
-
             }
             else if (SpawnMaterial.shader.name == "Unlit/AlbertShader")
             {
                 if (SpawnMaterial.GetInt("_AlbertSpawnMapEnabled") == 1)
                 {
-                    Transform Albert = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                    Albert.SetParent(Parent_Transform, true);
+                    GameObject Albert = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                    Debug.Log("Albert was instantiated");
+                    Albert.transform.SetParent(Parent_Transform, true);
                 }
             }
             else if (SpawnMaterial.shader.name == "Unlit/ObjectShader")
             {
-                    Transform Object = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                    Object.SetParent(Parent_Transform, true);
+                GameObject Object = Instantiate(Prefab, this.transform.position, Quaternion.identity);
+                Debug.Log($"{Prefab.name} was instantiated");
+                Object.transform.SetParent(Parent_Transform, true);
             }
 
             yield return new WaitForSeconds(SpawnInterval);
         }
-
     }
     //private void OnDisable()
     //{

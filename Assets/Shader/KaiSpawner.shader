@@ -1,7 +1,7 @@
 Shader "Unlit/KaiShader"
 {
     Properties{
-    [NoScaleOffset] kai_map_tex ("Kai Spawn Map", 2D) = "white" {}
+    [NoScaleOffset] _MainTex ("Kai Spawn Map", 2D) = "white" {}
         [HideInInspector]
         _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
 
@@ -34,7 +34,7 @@ Shader "Unlit/KaiShader"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D kai_map_tex;
+            sampler2D _MainTex;
             float  _TextureSamplingScale;
             int _KaiSpawnMapEnabled;
             
@@ -52,7 +52,7 @@ Shader "Unlit/KaiShader"
             {
                 if(_KaiSpawnMapEnabled == 1)
                 {
-                    fixed4 col = tex2D(kai_map_tex, i.worldPos*_TextureSamplingScale*30);
+                    fixed4 col = tex2D(_MainTex, i.worldPos*_TextureSamplingScale*30);
                     return col;    
                 }
                 return 0;

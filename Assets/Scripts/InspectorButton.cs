@@ -4,18 +4,17 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-[CustomEditor(typeof(UISphereGrid))]
-
+[CustomEditor(typeof(UIQuadGrid))]
+#if UNITY_EDITOR
 public class InspectorButton : Editor
 {
-    #if UNITY_EDITOR
     public override void OnInspectorGUI()
     {
         // Draw the default Inspector
         DrawDefaultInspector();
             
         // Add a button
-        UISphereGrid script = (UISphereGrid)target;
+        UIQuadGrid script = (UIQuadGrid)target;
 
         if (GUILayout.Button("Make the Albert Spawn points"))
         {
@@ -35,8 +34,6 @@ public class InspectorButton : Editor
         {
             script.HideChildren();
         }
-
-        
     }
-    #endif
 }
+#endif

@@ -5,14 +5,15 @@ using System.Collections;
 
 public class MultiRayShooter : MonoBehaviour
 {
-    [SerializeField] int lineCount = 0;
+    [SerializeField] int _rayCount = 0;
     [SerializeField] float SpreadAngle = 30f;
-    [SerializeField] float LineDistance = 10f;
-    [SerializeField, Range(0.05f, 0.1f)] float linewidth = 0.06f;
+    [SerializeField] float _rayDistance = 10f;
+    [SerializeField, Range(0.05f, 0.1f)] float _raywidth = 0.06f;
     [SerializeField] GameObject linePrefab;
     [SerializeField] private bool fadeOn;
     [SerializeField, Min(0)] private int fadeDuration = 100;
     [SerializeField] Color lineColor = Color.white;
+    [SerializeField] LayerMask layer;
     
     private DebugMovement characterMovement;
     private List<GameObject> lines = new List<GameObject>();
@@ -21,7 +22,7 @@ public class MultiRayShooter : MonoBehaviour
     void Start()
     {
         characterMovement = GetComponent<DebugMovement>();
-        for (int i = 0; i < lineCount; i++)
+        for (int i = 0; i < _rayCount; i++)
         {
             GameObject line = Instantiate(linePrefab);
             line.hideFlags = HideFlags.HideInHierarchy;
@@ -49,21 +50,26 @@ public class MultiRayShooter : MonoBehaviour
         
         direction.Normalize();
         float halfSpread = SpreadAngle / 2f;
-        for (int i = 0; i < lineCount; i++)
+        for (int i = 0; i < _rayCount; i++)
         {
-            float t = lineCount > 1 ? i / (float)(lineCount - 1) : 0.5f;
-            float angle = Mathf.Lerp(-halfSpread, halfSpread, t);
-            Quaternion resultantRotation =  Quaternion.Euler(0,0,angle);
+            float t = _rayCount > 1 ? i / (float)(_rayCount - 1) : 0.5f;
+            float rotation_angle = Mathf.Lerp(-halfSpread, halfSpread, t);
+            Quaternion resultantRotation =  Quaternion.Euler(0,0,rotation_angle);
             Transform LineTransform = lines[i].transform;
             LineRenderer line = lines[i].GetComponent<LineRenderer>();
-            float angleRad = angle * Mathf.Deg2Rad;
+            float angleRad = rotation_angle * Mathf.Deg2Rad;
             Vector2 rayDir = new Vector2(
                 direction.x * Mathf.Cos(angleRad) - direction.y * Mathf.Sin(angleRad),
                 direction.x * Mathf.Sin(angleRad) + direction.y * Mathf.Cos(angleRad)
             );
             Vector2 endPos =  new Vector2(transform.position.x,transform.position.y) +
-                             rayDir * LineDistance;
-
+                             rayDir * _rayDistance;
+            Ray ray = new Ray(transform.position, rayDir);
+            RaycastHit2D hit = Physics2D.Raycast(this.transform.position, endPos,_rayDistance,layer.value);
+            if (hit)
+            {
+                Debug.Log(hit.collider.gameObject.name + " was hit.");
+            }
             SetLineProperties(line, transform.position, endPos, lineColor);
             if (fadeOn) Fade(line, fadeDuration);
         }
@@ -73,8 +79,8 @@ public class MultiRayShooter : MonoBehaviour
     void SetLineProperties(LineRenderer line, Vector3 start, Vector3 end, Color constColor)
     {
         line.SetPositions(new Vector3[] { start, end });
-        line.startWidth = linewidth;
-        line.endWidth = linewidth;
+        line.startWidth = _raywidth;
+        line.endWidth = _raywidth;
         line.material.color = constColor; 
     }
 

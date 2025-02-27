@@ -39,6 +39,8 @@ public class DebugMovement : MonoBehaviour
         _hInput = Input.GetAxis("Horizontal") * MoveSpeed;
         this.transform.Translate(Vector3.up * _vInput * Time.deltaTime);
         this.transform.Translate(Vector3.right * _hInput * Time.deltaTime);
+        //Rigidbody2D rb = this.GetComponent<Rigidbody2D>();
+        //rb.MovePosition(rb.position + movementdir * MoveSpeed * Time.fixedDeltaTime);
         //velocity = (Vector3.right * _hInput * Time.deltaTime + Vector3.up * _vInput * Time.deltaTime).normalized;
         //GravitySim();
     }

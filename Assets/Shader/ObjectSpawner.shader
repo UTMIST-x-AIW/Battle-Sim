@@ -2,7 +2,7 @@ Shader "Unlit/ObjectShader"
 {
     Properties{
         [NoScaleOffset] 
-        object_map_tex ("Object Spawn Map", 2D) = "white" {}
+        _MainTex ("Object Spawn Map", 2D) = "white" {}
         [HideInInspector]
         _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
         [HideInInspector]
@@ -35,7 +35,7 @@ Shader "Unlit/ObjectShader"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D object_map_tex;
+            sampler2D _MainTex;
             float  _TextureSamplingScale;
             int _ObjectSpawnMapEnabled;
             
@@ -53,8 +53,8 @@ Shader "Unlit/ObjectShader"
             {
                 if(_ObjectSpawnMapEnabled == 1)
                 {
-                    fixed4 col = tex2D(object_map_tex, i.worldPos*_TextureSamplingScale*30);
-                    return col;    
+                    fixed4 col = tex2D(_MainTex, i.worldPos*_TextureSamplingScale*30);
+                    return col;
                 }
                 return 0;
             }

@@ -3,7 +3,7 @@ Shader "Unlit/AlbertShader"
     Properties
     {
          [NoScaleOffset]
-         albert_map_tex ("Spawn Map", 2D) = "white" {}
+         _MainTex ("Spawn Map", 2D) = "white" {}
         [HideInInspector]
         _TextureSamplingScale("Sampling Scale", Range(0,0.1))=0.01
 
@@ -36,7 +36,7 @@ Shader "Unlit/AlbertShader"
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D albert_map_tex;
+            sampler2D _MainTex;
             float  _TextureSamplingScale;
             int _AlbertSpawnMapEnabled;
             
@@ -53,7 +53,7 @@ Shader "Unlit/AlbertShader"
             fixed4 frag (v2f i) : SV_Target
             {
                 if (_AlbertSpawnMapEnabled == 1){
-                    fixed4 col = tex2D(albert_map_tex,  i.worldPos*_TextureSamplingScale);
+                    fixed4 col = tex2D(_MainTex,  i.worldPos*_TextureSamplingScale);
                     return col;
                 }
                 return 0;

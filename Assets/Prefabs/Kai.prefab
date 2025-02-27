@@ -75,9 +75,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1965130115
-  m_SortingLayer: 4
-  m_SortingOrder: 0
+  m_SortingLayerID: -1522186117
+  m_SortingLayer: 2
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 2afb03a92018f488497b3471d098968b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -143,7 +143,7 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4732040975953563953}
   m_BodyType: 0
-  m_Simulated: 1
+  m_Simulated: 0
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
   m_Mass: 0.2039763
@@ -173,13 +173,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 4.05
+  MoveSpeed: 5
   lastdirection: {x: 0, y: 0}
-  z: 0
-  GroundHeight: 0
-  velocity: {x: 0, y: 0, z: 0}
-  gravity: 9.8
-  Tilemap: {fileID: 0}
 --- !u!114 &3752400893969112301
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,13 +188,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lineCount: 6
-  SpreadAngle: 30
+  SpreadAngle: 96.8
   LineDistance: 8
   linewidth: 0.065
   linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
   fadeOn: 1
   fadeDuration: 111
   lineColor: {r: 0.98742133, g: 0.027945718, b: 0.027945718, a: 1}
+  layer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
