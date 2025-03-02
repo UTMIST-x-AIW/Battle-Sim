@@ -99,4 +99,4 @@ MonoBehaviour:
   Prefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   MaxNumofSpawns: 8
   SpawnInterval: 4
-  start_spawning: 0
+  start_spawning: 1

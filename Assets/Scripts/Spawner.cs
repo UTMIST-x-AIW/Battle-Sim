@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TextureSpawner : MonoBehaviour
+public class Spawner : MonoBehaviour
 {
     [SerializeField] GameObject Prefab;
     private Color color;
@@ -25,18 +25,12 @@ public class TextureSpawner : MonoBehaviour
         if (Parent_GameObject == null)   Parent_GameObject = new GameObject(Prefab.name + " SpawnsContainer");
         Parent_Transform = Parent_GameObject.transform;
         SpawnMaterial = gameObject.GetComponent<MeshRenderer>().material;
-        renderTexture = new RenderTexture(256, 256, 24);
-        renderTexture.Create();
-        renderCamera = new GameObject("RenderCamera").AddComponent<Camera>();
-        renderCamera.enabled = false;
-        renderCamera.targetTexture = renderTexture;
     }
     void Start()
     {
 
         color = GetObjectColorFromShader(this.gameObject, transform.position);
         if (start_spawning) StartCoroutine(MakeSpawnPoints());
-        OnDestroy();
     }
 
     void Update()
@@ -64,21 +58,6 @@ public class TextureSpawner : MonoBehaviour
     }
 
 
-
-    void OnDestroy()
-    {
-        // Clean up the RenderTexture and temporary camera
-        if (renderTexture != null)
-        {
-            renderTexture.Release();
-            Destroy(renderTexture);
-        }
-
-        if (renderCamera != null)
-        {
-            Destroy(renderCamera.gameObject);
-        }
-    }
 
     IEnumerator MakeSpawnPoints()
     {

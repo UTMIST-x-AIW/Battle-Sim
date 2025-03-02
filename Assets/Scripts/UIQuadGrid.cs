@@ -12,6 +12,7 @@ public class UIQuadGrid : MonoBehaviour
     public Tilemap tilemap;
     [SerializeField] int bounds = 50;
     List<Vector3> tilePosList = new List<Vector3>();
+    bool RedoTilemap = true;
     #endregion
 
     [Header("Texture Settings")]
@@ -34,7 +35,15 @@ public class UIQuadGrid : MonoBehaviour
     #endregion
     public void Start()
     {
-        
+        MaketilePosList();
+    }
+    private void Update()
+    {
+        if (RedoTilemap) MaketilePosList();
+    }
+    private void LateUpdate()
+    {
+        RedoTilemap = true;
     }
     public void LoadAlbertMap()
     {
@@ -51,7 +60,7 @@ public class UIQuadGrid : MonoBehaviour
         //    Debug.Log(pos);
 
         //}
-        if (tilePosList.Count <= 0)  tilePosList = MaketilePosList();
+       if (tilePosList.Count <= 0)  tilePosList = MaketilePosList();
 
 
         //BoundsInt bounds = tilemap.cellBounds;
@@ -108,6 +117,7 @@ public class UIQuadGrid : MonoBehaviour
             }
         }
     }
+
     private List<Vector3> MaketilePosList()
     {
         List<Vector3> tilePosList = new List<Vector3>(bounds*bounds);
@@ -124,6 +134,7 @@ public class UIQuadGrid : MonoBehaviour
                 }
             }
         }
+        RedoTilemap = false;
         return tilePosList;
     }
     public void KillChildren()
