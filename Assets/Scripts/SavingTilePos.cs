@@ -9,7 +9,7 @@ public class SavingTilePos : MonoBehaviour
     public TilePosData tiledata;
     [SerializeField] Tilemap[] tilemaps;
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
         tiledata.Initialize(tilemaps[0],50);
     }

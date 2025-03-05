@@ -15,6 +15,11 @@ public class TilePosData : ScriptableObject
     }
 
     public IReadOnlyList<TilePos> TilePositions => _tilePositions;
+    void Start()
+    {
+        Debug.Log($"TilePosData initialized with {TilePositions?.Count} positions.");
+    }
+
 
     public void Initialize(Tilemap tilemap, int boundsize)
     {

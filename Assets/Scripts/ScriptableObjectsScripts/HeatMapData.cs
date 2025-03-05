@@ -1,27 +1,27 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using Unity.Collections;
 
 [CreateAssetMenu(fileName = "NewHeatMap", menuName = "HeatMap/Grid HeatMap")]
 public class HeatMapData : ScriptableObject
 {
     public TilePosData tilePosData;
 
-    
     public Dictionary<Vector2, float> heatmap = new Dictionary<Vector2, float>();
+
     [Serializable]
-    public struct HeatMapEntry
+    public class HeatMapEntry  
     {
-        [ReadOnly]
-        public  Vector2 position;  // Key
-        [ReadOnly]
-        public float value;       // Value
+        public Vector2 position;
+        public float value;
     }
+
     [SerializeField] private List<HeatMapEntry> heatMapEntries = new List<HeatMapEntry>();
+
     private void OnEnable()
     {
-        if (heatmap == null || heatmap.Count == 0 || tilePosData == null || tilePosData.TilePositions == null)
+        LoadHeatmap(); 
+        if (heatMapEntries == null)
         {
             Initialize();
         }
@@ -31,13 +31,17 @@ public class HeatMapData : ScriptableObject
     {
         heatmap.Clear();
         heatMapEntries.Clear();
-        foreach(var tile in tilePosData.TilePositions)
+
+        if (tilePosData == null || tilePosData.TilePositions == null)
+        {
+            Debug.LogError("TilePosData is not initialized!");
+            return;
+        }
+
+        foreach (var tile in tilePosData.TilePositions)
         {
             heatmap[tile.pos] = 0f; // Default values
-            HeatMapEntry heatMapEntry = new HeatMapEntry();
-            heatMapEntry.position = tile.pos;
-            heatMapEntry.value = 0f;
-            heatMapEntries.Add(heatMapEntry);
+            heatMapEntries.Add(new HeatMapEntry { position = tile.pos, value = 0f });
         }
         Debug.Log("Heatmap Initialized!");
     }
@@ -49,28 +53,44 @@ public class HeatMapData : ScriptableObject
 
     public float GetValue(Vector2 valuePos)
     {
-        if (heatmap.ContainsKey(valuePos)){
-            return heatmap[valuePos];
-        }
-        return 0f;
+        return heatmap.TryGetValue(valuePos, out float value) ? value : 0f;
     }
 
-    public void SetValue(Vector2 valuepos, float value)
+    public void SetValue(Vector2 valuePos, float value)
     {
-        heatmap[valuepos] = Mathf.Max(0, Mathf.Clamp(value, 0, 100));
-        HeatMapEntry heatMapEntry = new HeatMapEntry();
-        heatMapEntry.position = valuepos;
-        heatMapEntry.value = value;
-        foreach (var mapEntry in heatMapEntries)
+        value = Mathf.Clamp(value, 0, 100); 
+        if (heatmap.ContainsKey(valuePos))
         {
-            if (mapEntry.position == valuepos)
+            heatmap[valuePos] = value;
+        }
+        else
+        {
+            heatmap.Add(valuePos, value);
+        }
+
+        bool found = false;
+        for (int i = 0; i < heatMapEntries.Count; i++)
+        {
+            if (heatMapEntries[i].position == valuePos)
             {
-                heatMapEntries.Remove(mapEntry);
-                heatMapEntries.Add(heatMapEntry);
-                return;
+                heatMapEntries[i].value = value;
+                found = true;
+                break;
             }
         }
-        heatMapEntries.Add(heatMapEntry);
 
+        if (!found)
+        {
+            heatMapEntries.Add(new HeatMapEntry { position = valuePos, value = value });
+        }
+    }
+
+    private void LoadHeatmap()
+    {
+        heatmap.Clear();
+        foreach (var entry in heatMapEntries)
+        {
+            heatmap[entry.position] = entry.value;
+        }
     }
 }

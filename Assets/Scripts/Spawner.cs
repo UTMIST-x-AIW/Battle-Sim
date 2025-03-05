@@ -5,106 +5,90 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] GameObject Prefab;
-    private Color color;
-    private Transform Parent_Transform = null;
-    private Vector2 pixelCoordinate = new Vector2(0.5f, 0.5f); // Normalized coordinate (0-1) to sample the color
-    private RenderTexture renderTexture;
-    GameObject Parent_GameObject;
-    [SerializeField, Range(0, 100)] private int MaxNumofSpawns;
-    [SerializeField, Range(1, 10)] private int SpawnInterval;
-    Material SpawnMaterial;
-    [SerializeField] bool start_spawning = false;
-    private Dictionary<GameObject, Color> colorcache = new Dictionary<GameObject, Color>();
-    
+    [SerializeField] private GameObject prefab; // Prefab to spawn
+    [SerializeField] private HeatMapData heatmapData; // Heatmap data for spawn probabilities
+    [SerializeField, Range(0.1f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
+    [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
 
-    private Camera renderCamera;
-    private void Awake()
-    {
-        Parent_GameObject = GameObject.Find(Prefab.name+ " SpawnsContainer");
-        if (Parent_GameObject == null)   Parent_GameObject = new GameObject(Prefab.name + " SpawnsContainer");
-        Parent_Transform = Parent_GameObject.transform;
-        SpawnMaterial = gameObject.GetComponent<MeshRenderer>().material;
-    }
-    void Start()
-    {
+    private GameObject prefabParent; // Parent object for organizing spawned prefabs
 
-        color = GetObjectColorFromShader(this.gameObject, transform.position);
-        if (start_spawning) StartCoroutine(MakeSpawnPoints());
-    }
-
-    void Update()
+    private void OnEnable()
     {
-        if (Parent_GameObject == null || Parent_Transform == null)
+        // Validate required references
+        if (prefab == null || heatmapData == null)
         {
-            Debug.LogError("Parent GameObject or Transform is null!");
-            return;
+            Debug.LogError("Error: Prefab or HeatMapData are uninitialized", this);
+            enabled = false; // Disable the script if critical references are missing
         }
-        if (Parent_GameObject.transform.childCount == MaxNumofSpawns) return;
     }
 
-    Color GetObjectColorFromShader(GameObject obj, Vector2 uvCoords)
+    private void Start()
     {
-        Renderer renderer = GetComponent<Renderer>();
-        Material material = renderer.material;
-        Texture2D texture2D = material.mainTexture as Texture2D;
+        // Create a parent object to organize spawned prefabs
+        prefabParent = GameObject.Find($"{prefab.name} Parent");
+        if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
+        StartCoroutine(Spawning());
+    }
 
-        if (texture2D != null)
+    private IEnumerator Spawning()
+    {
+        // Ensure tile positions are available
+        if (heatmapData.tilePosData == null || heatmapData.tilePosData.TilePositions == null)
         {
-            Color pixelcolor = texture2D.GetPixelBilinear(uvCoords.x, uvCoords.y);
-            return pixelcolor;
+            Debug.LogError("Error: TilePosData or TilePositions are uninitialized", this);
+            yield break;
         }
-        return Color.red;
-    }
+        List<TilePosData.TilePos> tilePositions = heatmapData.tilePosData.TilePositions.ToList();
+        Shuffle(tilePositions);
 
-
-
-    IEnumerator MakeSpawnPoints()
-    {
-        Debug.Log("Color greyscales: "+ color.grayscale);
-        float spawnProbability = 0.001f * color.grayscale; // Grayscale value (0-1)
-        Debug.Log("Spawn Probability: "+ spawnProbability);
-        float t = Random.value;
-        Debug.Log("Random value " + t);
-
-        // Randomly spawn based on the probability
-        if (t < spawnProbability)
+        // Continue spawning until the maximum number of spawns is reached
+        while (prefabParent.transform.childCount < maxNumOfSpawns)
         {
-
-            if (SpawnMaterial.shader.name == "Unlit/KaiShader")
+            // Iterate through all tile positions
+            
+            foreach (var tile in tilePositions)
             {
-                if (SpawnMaterial.GetInt("_KaiSpawnMapEnabled") == 1)
+                // Exit if the maximum number of spawns is reached
+                if (prefabParent.transform.childCount >= maxNumOfSpawns)
                 {
-                    GameObject Kai = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                    Debug.Log("Kai was instantiated");
-                    Kai.transform.SetParent(Parent_GameObject.transform, true);
+                    yield break;
+                }
+
+                // Calculate spawn probability and compare with a random value
+                float spawnProbability = heatmapData.GetValue(tile.pos);
+                float randomVal = Random.Range(0f, 100f);
+
+                if (spawnProbability > randomVal)
+                {
+                    // Spawn the prefab at the tile's position
+                    SpawnPrefab(tile.pos);
+
+                    // Wait for the specified interval before the next spawn attempt
+                    yield return new WaitForSeconds(spawnInterval);
                 }
             }
-            else if (SpawnMaterial.shader.name == "Unlit/AlbertShader")
-            {
-                if (SpawnMaterial.GetInt("_AlbertSpawnMapEnabled") == 1)
-                {
-                    GameObject Albert = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                    Debug.Log("Albert was instantiated");
-                    Albert.transform.SetParent(Parent_Transform, true);
-                }
-            }
-            else if (SpawnMaterial.shader.name == "Unlit/ObjectShader")
-            {
-                GameObject Object = Instantiate(Prefab, this.transform.position, Quaternion.identity);
-                Debug.Log($"{Prefab.name} was instantiated");
-                Object.transform.SetParent(Parent_Transform, true);
-            }
 
-            yield return new WaitForSeconds(SpawnInterval);
+            // Yield control to the engine after checking all tiles
+            yield return null;
         }
     }
-    //private void OnDisable()
-    //{
-    //    while (Parent_Transform.childCount > 0)
-    //    {
-    //        DestroyImmediate(Parent_Transform.GetChild(0).gameObject);
-    //    }
-    //    Destroy(Parent_GameObject);
-    //}
+
+    private void SpawnPrefab(Vector2 position)
+    {
+        // Instantiate the prefab and set its parent
+        GameObject spawnedPrefab = Instantiate(prefab, position, Quaternion.identity);
+        spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+
+        // Optional: Log the spawn for debugging
+        Debug.Log($"Spawned {prefab.name} at {position}");
+    }
+    void Shuffle<T>(List<T> list)
+    {
+        int n = list.Count;
+        for (int i = n - 1; i >0; i--)
+        {
+            int j = Random.Range(0, i - 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+    }
 }

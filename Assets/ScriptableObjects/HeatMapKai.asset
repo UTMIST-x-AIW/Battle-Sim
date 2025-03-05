@@ -12,4 +12,2143 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 405e3ea9724fd444f9c3fff6628963d5, type: 3}
   m_Name: HeatMapKai
   m_EditorClassIdentifier: 
-  tilePosData: {fileID: 0}
+  tilePosData: {fileID: 11400000, guid: e9ecbcb9a0165d5428ef5e0f08d630e0, type: 2}
+  heatMapEntries:
+  - position: {x: 3, y: -8}
+    value: 0
+  - position: {x: 2.5, y: -7.75}
+    value: 0
+  - position: {x: 2, y: -7.5}
+    value: 0
+  - position: {x: 1.5, y: -7.25}
+    value: 0
+  - position: {x: 1, y: -7}
+    value: 0
+  - position: {x: 0.5, y: -6.75}
+    value: 0
+  - position: {x: 0, y: -6.5}
+    value: 0
+  - position: {x: -0.5, y: -6.25}
+    value: 0
+  - position: {x: -1, y: -6}
+    value: 0
+  - position: {x: -1.5, y: -5.75}
+    value: 0
+  - position: {x: -2, y: -5.5}
+    value: 0
+  - position: {x: -2.5, y: -5.25}
+    value: 0
+  - position: {x: -3, y: -5}
+    value: 0
+  - position: {x: -3.5, y: -4.75}
+    value: 0
+  - position: {x: -4, y: -4.5}
+    value: 0
+  - position: {x: -4.5, y: -4.25}
+    value: 0
+  - position: {x: -5, y: -4}
+    value: 0
+  - position: {x: -5.5, y: -3.75}
+    value: 0
+  - position: {x: -6, y: -3.5}
+    value: 0
+  - position: {x: -6.5, y: -3.25}
+    value: 0
+  - position: {x: -7, y: -3}
+    value: 0
+  - position: {x: -7.5, y: -2.75}
+    value: 0
+  - position: {x: -8, y: -2.5}
+    value: 0
+  - position: {x: -8.5, y: -2.25}
+    value: 0
+  - position: {x: -9, y: -2}
+    value: 0
+  - position: {x: -9.5, y: -1.75}
+    value: 0
+  - position: {x: -10, y: -1.5}
+    value: 0
+  - position: {x: -10.5, y: -1.25}
+    value: 0
+  - position: {x: -11, y: -1}
+    value: 0
+  - position: {x: -11.5, y: -0.75}
+    value: 0
+  - position: {x: -12, y: -0.5}
+    value: 0
+  - position: {x: -12.5, y: -0.25}
+    value: 0
+  - position: {x: -13, y: 0}
+    value: 0
+  - position: {x: -13.5, y: 0.25}
+    value: 0
+  - position: {x: -14, y: 0.5}
+    value: 0
+  - position: {x: -14.5, y: 0.75}
+    value: 0
+  - position: {x: -15, y: 1}
+    value: 0
+  - position: {x: -15.5, y: 1.25}
+    value: 0
+  - position: {x: -16, y: 1.5}
+    value: 0
+  - position: {x: -16.5, y: 1.75}
+    value: 0
+  - position: {x: -17, y: 2}
+    value: 0
+  - position: {x: -17.5, y: 2.25}
+    value: 0
+  - position: {x: -18, y: 2.5}
+    value: 0
+  - position: {x: -18.5, y: 2.75}
+    value: 0
+  - position: {x: -19, y: 3}
+    value: 0
+  - position: {x: -19.5, y: 3.25}
+    value: 0
+  - position: {x: -20, y: 3.5}
+    value: 0
+  - position: {x: -20.5, y: 3.75}
+    value: 0
+  - position: {x: -21, y: 4}
+    value: 0
+  - position: {x: -21.5, y: 4.25}
+    value: 0
+  - position: {x: -22, y: 4.5}
+    value: 0
+  - position: {x: -22.5, y: 4.75}
+    value: 0
+  - position: {x: -23, y: 5}
+    value: 0
+  - position: {x: -23.5, y: 5.25}
+    value: 0
+  - position: {x: -24, y: 5.5}
+    value: 0
+  - position: {x: -24.5, y: 5.75}
+    value: 0
+  - position: {x: -25, y: 6}
+    value: 0
+  - position: {x: 3.5, y: -7.75}
+    value: 0
+  - position: {x: 3, y: -7.5}
+    value: 0
+  - position: {x: 2.5, y: -7.25}
+    value: 0
+  - position: {x: 2, y: -7}
+    value: 0
+  - position: {x: 1.5, y: -6.75}
+    value: 0
+  - position: {x: 1, y: -6.5}
+    value: 0
+  - position: {x: 0.5, y: -6.25}
+    value: 0
+  - position: {x: 0, y: -6}
+    value: 0
+  - position: {x: -0.5, y: -5.75}
+    value: 0
+  - position: {x: -1, y: -5.5}
+    value: 0
+  - position: {x: -1.5, y: -5.25}
+    value: 0
+  - position: {x: -2, y: -5}
+    value: 0
+  - position: {x: -2.5, y: -4.75}
+    value: 0
+  - position: {x: -3, y: -4.5}
+    value: 0
+  - position: {x: -3.5, y: -4.25}
+    value: 0
+  - position: {x: -4, y: -4}
+    value: 0
+  - position: {x: -4.5, y: -3.75}
+    value: 0
+  - position: {x: -5, y: -3.5}
+    value: 0
+  - position: {x: -5.5, y: -3.25}
+    value: 0
+  - position: {x: -6, y: -3}
+    value: 0
+  - position: {x: -6.5, y: -2.75}
+    value: 0
+  - position: {x: -7, y: -2.5}
+    value: 0
+  - position: {x: -7.5, y: -2.25}
+    value: 0
+  - position: {x: -8, y: -2}
+    value: 0
+  - position: {x: -8.5, y: -1.75}
+    value: 0
+  - position: {x: -9, y: -1.5}
+    value: 0
+  - position: {x: -9.5, y: -1.25}
+    value: 0
+  - position: {x: -10, y: -1}
+    value: 0
+  - position: {x: -10.5, y: -0.75}
+    value: 0
+  - position: {x: -11, y: -0.5}
+    value: 0
+  - position: {x: -11.5, y: -0.25}
+    value: 0
+  - position: {x: -12, y: 0}
+    value: 0
+  - position: {x: -12.5, y: 0.25}
+    value: 0
+  - position: {x: -13, y: 0.5}
+    value: 0
+  - position: {x: -13.5, y: 0.75}
+    value: 0
+  - position: {x: -14, y: 1}
+    value: 0
+  - position: {x: -14.5, y: 1.25}
+    value: 0
+  - position: {x: -15, y: 1.5}
+    value: 0
+  - position: {x: -15.5, y: 1.75}
+    value: 0
+  - position: {x: -16, y: 2}
+    value: 0
+  - position: {x: -16.5, y: 2.25}
+    value: 0
+  - position: {x: -17, y: 2.5}
+    value: 0
+  - position: {x: -17.5, y: 2.75}
+    value: 0
+  - position: {x: -18, y: 3}
+    value: 0
+  - position: {x: -18.5, y: 3.25}
+    value: 0
+  - position: {x: -19, y: 3.5}
+    value: 0
+  - position: {x: -19.5, y: 3.75}
+    value: 0
+  - position: {x: -20, y: 4}
+    value: 0
+  - position: {x: -20.5, y: 4.25}
+    value: 0
+  - position: {x: -21, y: 4.5}
+    value: 0
+  - position: {x: -21.5, y: 4.75}
+    value: 0
+  - position: {x: -22, y: 5}
+    value: 0
+  - position: {x: -22.5, y: 5.25}
+    value: 0
+  - position: {x: -23, y: 5.5}
+    value: 0
+  - position: {x: -23.5, y: 5.75}
+    value: 0
+  - position: {x: -24, y: 6}
+    value: 0
+  - position: {x: -24.5, y: 6.25}
+    value: 0
+  - position: {x: 4, y: -7.5}
+    value: 0
+  - position: {x: 3.5, y: -7.25}
+    value: 0
+  - position: {x: 3, y: -7}
+    value: 0
+  - position: {x: 2.5, y: -6.75}
+    value: 0
+  - position: {x: 2, y: -6.5}
+    value: 0
+  - position: {x: 1.5, y: -6.25}
+    value: 0
+  - position: {x: 1, y: -6}
+    value: 0
+  - position: {x: 0.5, y: -5.75}
+    value: 0
+  - position: {x: 0, y: -5.5}
+    value: 0
+  - position: {x: -0.5, y: -5.25}
+    value: 0
+  - position: {x: -1, y: -5}
+    value: 0
+  - position: {x: -1.5, y: -4.75}
+    value: 0
+  - position: {x: -2, y: -4.5}
+    value: 0
+  - position: {x: -2.5, y: -4.25}
+    value: 0
+  - position: {x: -3, y: -4}
+    value: 0
+  - position: {x: -3.5, y: -3.75}
+    value: 0
+  - position: {x: -4, y: -3.5}
+    value: 0
+  - position: {x: -4.5, y: -3.25}
+    value: 0
+  - position: {x: -5, y: -3}
+    value: 0
+  - position: {x: -5.5, y: -2.75}
+    value: 0
+  - position: {x: -6, y: -2.5}
+    value: 0
+  - position: {x: -6.5, y: -2.25}
+    value: 0
+  - position: {x: -7, y: -2}
+    value: 0
+  - position: {x: -7.5, y: -1.75}
+    value: 0
+  - position: {x: -8, y: -1.5}
+    value: 0
+  - position: {x: -8.5, y: -1.25}
+    value: 0
+  - position: {x: -9, y: -1}
+    value: 0
+  - position: {x: -9.5, y: -0.75}
+    value: 0
+  - position: {x: -10, y: -0.5}
+    value: 0
+  - position: {x: -10.5, y: -0.25}
+    value: 0
+  - position: {x: -11, y: 0}
+    value: 0
+  - position: {x: -11.5, y: 0.25}
+    value: 0
+  - position: {x: -12, y: 0.5}
+    value: 0
+  - position: {x: -12.5, y: 0.75}
+    value: 0
+  - position: {x: -13, y: 1}
+    value: 0
+  - position: {x: -13.5, y: 1.25}
+    value: 0
+  - position: {x: -14, y: 1.5}
+    value: 0
+  - position: {x: -14.5, y: 1.75}
+    value: 0
+  - position: {x: -15, y: 2}
+    value: 0
+  - position: {x: -15.5, y: 2.25}
+    value: 0
+  - position: {x: -16, y: 2.5}
+    value: 0
+  - position: {x: -16.5, y: 2.75}
+    value: 0
+  - position: {x: -17, y: 3}
+    value: 0
+  - position: {x: -17.5, y: 3.25}
+    value: 0
+  - position: {x: -18, y: 3.5}
+    value: 0
+  - position: {x: -18.5, y: 3.75}
+    value: 0
+  - position: {x: -19, y: 4}
+    value: 0
+  - position: {x: -19.5, y: 4.25}
+    value: 0
+  - position: {x: -20, y: 4.5}
+    value: 0
+  - position: {x: -20.5, y: 4.75}
+    value: 0
+  - position: {x: -21, y: 5}
+    value: 0
+  - position: {x: -21.5, y: 5.25}
+    value: 0
+  - position: {x: -22, y: 5.5}
+    value: 0
+  - position: {x: -22.5, y: 5.75}
+    value: 0
+  - position: {x: -23, y: 6}
+    value: 0
+  - position: {x: -23.5, y: 6.25}
+    value: 0
+  - position: {x: -24, y: 6.5}
+    value: 0
+  - position: {x: 1, y: -5.5}
+    value: 0
+  - position: {x: 0.5, y: -5.25}
+    value: 0
+  - position: {x: 0, y: -5}
+    value: 0
+  - position: {x: -0.5, y: -4.75}
+    value: 0
+  - position: {x: -1, y: -4.5}
+    value: 2.7582426
+  - position: {x: -1.5, y: -4.25}
+    value: 8.9453
+  - position: {x: -2, y: -4}
+    value: 0
+  - position: {x: -2.5, y: -3.75}
+    value: 0
+  - position: {x: -3, y: -3.5}
+    value: 0
+  - position: {x: -3.5, y: -3.25}
+    value: 0
+  - position: {x: -4, y: -3}
+    value: 0
+  - position: {x: -4.5, y: -2.75}
+    value: 0
+  - position: {x: -5, y: -2.5}
+    value: 0
+  - position: {x: -5.5, y: -2.25}
+    value: 0
+  - position: {x: -6, y: -2}
+    value: 0
+  - position: {x: -6.5, y: -1.75}
+    value: 0
+  - position: {x: -7, y: -1.5}
+    value: 0
+  - position: {x: -7.5, y: -1.25}
+    value: 0
+  - position: {x: -8, y: -1}
+    value: 0
+  - position: {x: -8.5, y: -0.75}
+    value: 0
+  - position: {x: -9, y: -0.5}
+    value: 0
+  - position: {x: -9.5, y: -0.25}
+    value: 0
+  - position: {x: -10, y: 0}
+    value: 0
+  - position: {x: -10.5, y: 0.25}
+    value: 0
+  - position: {x: -11, y: 0.5}
+    value: 0
+  - position: {x: -11.5, y: 0.75}
+    value: 0
+  - position: {x: -12, y: 1}
+    value: 0
+  - position: {x: -12.5, y: 1.25}
+    value: 0
+  - position: {x: -13, y: 1.5}
+    value: 0
+  - position: {x: -13.5, y: 1.75}
+    value: 0
+  - position: {x: -14, y: 2}
+    value: 0
+  - position: {x: -14.5, y: 2.25}
+    value: 0
+  - position: {x: -15, y: 2.5}
+    value: 0
+  - position: {x: -15.5, y: 2.75}
+    value: 0
+  - position: {x: -16, y: 3}
+    value: 0
+  - position: {x: -16.5, y: 3.25}
+    value: 0
+  - position: {x: -17, y: 3.5}
+    value: 0
+  - position: {x: -17.5, y: 3.75}
+    value: 0
+  - position: {x: -18, y: 4}
+    value: 0
+  - position: {x: -18.5, y: 4.25}
+    value: 0
+  - position: {x: -19, y: 4.5}
+    value: 0
+  - position: {x: -19.5, y: 4.75}
+    value: 0
+  - position: {x: -20, y: 5}
+    value: 0
+  - position: {x: -20.5, y: 5.25}
+    value: 0
+  - position: {x: -21, y: 5.5}
+    value: 0
+  - position: {x: -21.5, y: 5.75}
+    value: 0
+  - position: {x: -22, y: 6}
+    value: 0
+  - position: {x: -22.5, y: 6.25}
+    value: 0
+  - position: {x: -23, y: 6.5}
+    value: 0
+  - position: {x: -23.5, y: 6.75}
+    value: 0
+  - position: {x: 1.5, y: -5.25}
+    value: 0
+  - position: {x: 1, y: -5}
+    value: 0
+  - position: {x: 0.5, y: -4.75}
+    value: 0
+  - position: {x: 0, y: -4.5}
+    value: 0.025491595
+  - position: {x: -0.5, y: -4.25}
+    value: 1.3318962
+  - position: {x: -1, y: -4}
+    value: 24.706024
+  - position: {x: -1.5, y: -3.75}
+    value: 11.485549
+  - position: {x: -2, y: -3.5}
+    value: 0.043986917
+  - position: {x: -2.5, y: -3.25}
+    value: 0.17776847
+  - position: {x: -3, y: -3}
+    value: 3.6574874
+  - position: {x: -3.5, y: -2.75}
+    value: 17.651335
+  - position: {x: -4, y: -2.5}
+    value: 0.064601064
+  - position: {x: -4.5, y: -2.25}
+    value: 0
+  - position: {x: -5, y: -2}
+    value: 0
+  - position: {x: -5.5, y: -1.75}
+    value: 0
+  - position: {x: -6, y: -1.5}
+    value: 0
+  - position: {x: -6.5, y: -1.25}
+    value: 0
+  - position: {x: -7, y: -1}
+    value: 0
+  - position: {x: -7.5, y: -0.75}
+    value: 0
+  - position: {x: -8, y: -0.5}
+    value: 0
+  - position: {x: -8.5, y: -0.25}
+    value: 0
+  - position: {x: -9, y: 0}
+    value: 0
+  - position: {x: -9.5, y: 0.25}
+    value: 0
+  - position: {x: -10, y: 0.5}
+    value: 0
+  - position: {x: -10.5, y: 0.75}
+    value: 0
+  - position: {x: -11, y: 1}
+    value: 0
+  - position: {x: -11.5, y: 1.25}
+    value: 0
+  - position: {x: -12, y: 1.5}
+    value: 0
+  - position: {x: -12.5, y: 1.75}
+    value: 0
+  - position: {x: -13, y: 2}
+    value: 0
+  - position: {x: -13.5, y: 2.25}
+    value: 0
+  - position: {x: -14, y: 2.5}
+    value: 0
+  - position: {x: -14.5, y: 2.75}
+    value: 0
+  - position: {x: -15, y: 3}
+    value: 0
+  - position: {x: -15.5, y: 3.25}
+    value: 0
+  - position: {x: -16, y: 3.5}
+    value: 0
+  - position: {x: -16.5, y: 3.75}
+    value: 0
+  - position: {x: -17, y: 4}
+    value: 0
+  - position: {x: -17.5, y: 4.25}
+    value: 0
+  - position: {x: -18, y: 4.5}
+    value: 0
+  - position: {x: -18.5, y: 4.75}
+    value: 0
+  - position: {x: -19, y: 5}
+    value: 0
+  - position: {x: -19.5, y: 5.25}
+    value: 0
+  - position: {x: -20, y: 5.5}
+    value: 0
+  - position: {x: -20.5, y: 5.75}
+    value: 0
+  - position: {x: -21, y: 6}
+    value: 0
+  - position: {x: -21.5, y: 6.25}
+    value: 0
+  - position: {x: -22, y: 6.5}
+    value: 0
+  - position: {x: -22.5, y: 6.75}
+    value: 0
+  - position: {x: -23, y: 7}
+    value: 0
+  - position: {x: 2, y: -5}
+    value: 0
+  - position: {x: 1.5, y: -4.75}
+    value: 0
+  - position: {x: 1, y: -4.5}
+    value: 0
+  - position: {x: 0.5, y: -4.25}
+    value: 0.51384246
+  - position: {x: 0, y: -4}
+    value: 1.6651373
+  - position: {x: -0.5, y: -3.75}
+    value: 1.9324906
+  - position: {x: -1, y: -3.5}
+    value: 5.836421
+  - position: {x: -1.5, y: -3.25}
+    value: 0.16122186
+  - position: {x: -2, y: -3}
+    value: 0.85667145
+  - position: {x: -2.5, y: -2.75}
+    value: 1.1551064
+  - position: {x: -3, y: -2.5}
+    value: 23.129854
+  - position: {x: -3.5, y: -2.25}
+    value: 16.165878
+  - position: {x: -4, y: -2}
+    value: 0.11348379
+  - position: {x: -4.5, y: -1.75}
+    value: 0
+  - position: {x: -5, y: -1.5}
+    value: 0.46948203
+  - position: {x: -5.5, y: -1.25}
+    value: 0
+  - position: {x: -6, y: -1}
+    value: 0.115182996
+  - position: {x: -6.5, y: -0.75}
+    value: 0
+  - position: {x: -7, y: -0.5}
+    value: 0
+  - position: {x: -7.5, y: -0.25}
+    value: 0
+  - position: {x: -8, y: 0}
+    value: 0
+  - position: {x: -8.5, y: 0.25}
+    value: 0
+  - position: {x: -9, y: 0.5}
+    value: 0
+  - position: {x: -9.5, y: 0.75}
+    value: 0
+  - position: {x: -10, y: 1}
+    value: 0
+  - position: {x: -10.5, y: 1.25}
+    value: 0
+  - position: {x: -11, y: 1.5}
+    value: 0
+  - position: {x: -11.5, y: 1.75}
+    value: 0
+  - position: {x: -12, y: 2}
+    value: 0
+  - position: {x: -12.5, y: 2.25}
+    value: 0
+  - position: {x: -13, y: 2.5}
+    value: 0
+  - position: {x: -13.5, y: 2.75}
+    value: 0
+  - position: {x: -14, y: 3}
+    value: 0
+  - position: {x: -14.5, y: 3.25}
+    value: 0
+  - position: {x: -15, y: 3.5}
+    value: 0
+  - position: {x: -15.5, y: 3.75}
+    value: 0
+  - position: {x: -16, y: 4}
+    value: 0
+  - position: {x: -16.5, y: 4.25}
+    value: 0
+  - position: {x: -17, y: 4.5}
+    value: 0
+  - position: {x: -17.5, y: 4.75}
+    value: 0
+  - position: {x: -18, y: 5}
+    value: 0
+  - position: {x: -18.5, y: 5.25}
+    value: 0
+  - position: {x: -19, y: 5.5}
+    value: 0
+  - position: {x: -19.5, y: 5.75}
+    value: 0
+  - position: {x: -20, y: 6}
+    value: 0
+  - position: {x: -20.5, y: 6.25}
+    value: 0
+  - position: {x: -21, y: 6.5}
+    value: 0
+  - position: {x: -21.5, y: 6.75}
+    value: 0
+  - position: {x: -22, y: 7}
+    value: 0
+  - position: {x: -22.5, y: 7.25}
+    value: 0
+  - position: {x: 2.5, y: -4.75}
+    value: 0
+  - position: {x: 2, y: -4.5}
+    value: 0
+  - position: {x: 1.5, y: -4.25}
+    value: 0.43914777
+  - position: {x: 1, y: -4}
+    value: 1.511473
+  - position: {x: 0.5, y: -3.75}
+    value: 1.4963429
+  - position: {x: 0, y: -3.5}
+    value: 0.51136154
+  - position: {x: -0.5, y: -3.25}
+    value: 0
+  - position: {x: -1, y: -3}
+    value: 0
+  - position: {x: -1.5, y: -2.75}
+    value: 0.4018702
+  - position: {x: -2, y: -2.5}
+    value: 1.2115707
+  - position: {x: -2.5, y: -2.25}
+    value: 0.38193476
+  - position: {x: -3, y: -2}
+    value: 1.3427614
+  - position: {x: -3.5, y: -1.75}
+    value: 1.2281328
+  - position: {x: -4, y: -1.5}
+    value: 1.0282208
+  - position: {x: -4.5, y: -1.25}
+    value: 1.6157459
+  - position: {x: -5, y: -1}
+    value: 0.8946942
+  - position: {x: -5.5, y: -0.75}
+    value: 2.1305583
+  - position: {x: -6, y: -0.5}
+    value: 2.133778
+  - position: {x: -6.5, y: -0.25}
+    value: 0
+  - position: {x: -7, y: 0}
+    value: 0
+  - position: {x: -7.5, y: 0.25}
+    value: 0
+  - position: {x: -8, y: 0.5}
+    value: 0
+  - position: {x: -8.5, y: 0.75}
+    value: 0
+  - position: {x: -9, y: 1}
+    value: 0
+  - position: {x: -9.5, y: 1.25}
+    value: 0
+  - position: {x: -10, y: 1.5}
+    value: 0
+  - position: {x: -10.5, y: 1.75}
+    value: 0
+  - position: {x: -11, y: 2}
+    value: 0
+  - position: {x: -11.5, y: 2.25}
+    value: 0
+  - position: {x: -12, y: 2.5}
+    value: 0
+  - position: {x: -12.5, y: 2.75}
+    value: 0
+  - position: {x: -13, y: 3}
+    value: 0
+  - position: {x: -13.5, y: 3.25}
+    value: 0
+  - position: {x: -14, y: 3.5}
+    value: 0
+  - position: {x: -14.5, y: 3.75}
+    value: 0
+  - position: {x: -15, y: 4}
+    value: 0
+  - position: {x: -15.5, y: 4.25}
+    value: 0
+  - position: {x: -16, y: 4.5}
+    value: 0
+  - position: {x: -16.5, y: 4.75}
+    value: 0
+  - position: {x: -17, y: 5}
+    value: 0
+  - position: {x: -17.5, y: 5.25}
+    value: 0
+  - position: {x: -18, y: 5.5}
+    value: 0
+  - position: {x: -18.5, y: 5.75}
+    value: 0
+  - position: {x: -19, y: 6}
+    value: 0
+  - position: {x: -19.5, y: 6.25}
+    value: 0
+  - position: {x: -20, y: 6.5}
+    value: 0
+  - position: {x: -20.5, y: 6.75}
+    value: 0
+  - position: {x: -21, y: 7}
+    value: 0
+  - position: {x: -21.5, y: 7.25}
+    value: 0
+  - position: {x: -22, y: 7.5}
+    value: 0
+  - position: {x: 3, y: -4.5}
+    value: 0
+  - position: {x: 2.5, y: -4.25}
+    value: 0
+  - position: {x: 2, y: -4}
+    value: 0.89069325
+  - position: {x: 1.5, y: -3.75}
+    value: 1.5301346
+  - position: {x: 1, y: -3.5}
+    value: 0.8638928
+  - position: {x: 0.5, y: -3.25}
+    value: 0
+  - position: {x: 0, y: -3}
+    value: 0
+  - position: {x: -0.5, y: -2.75}
+    value: 0
+  - position: {x: -1, y: -2.5}
+    value: 0.10769844
+  - position: {x: -1.5, y: -2.25}
+    value: 1.1718471
+  - position: {x: -2, y: -2}
+    value: 0.24568805
+  - position: {x: -2.5, y: -1.75}
+    value: 0
+  - position: {x: -3, y: -1.5}
+    value: 0.08656937
+  - position: {x: -3.5, y: -1.25}
+    value: 0.61982435
+  - position: {x: -4, y: -1}
+    value: 0.8246782
+  - position: {x: -5, y: -0.5}
+    value: 1.0153544
+  - position: {x: -5.5, y: -0.25}
+    value: 2.1215065
+  - position: {x: -6, y: 0}
+    value: 0.41320467
+  - position: {x: -6.5, y: 0.25}
+    value: 0
+  - position: {x: -7, y: 0.5}
+    value: 0
+  - position: {x: -7.5, y: 0.75}
+    value: 0
+  - position: {x: -8, y: 1}
+    value: 0
+  - position: {x: -8.5, y: 1.25}
+    value: 0
+  - position: {x: -9, y: 1.5}
+    value: 0
+  - position: {x: -9.5, y: 1.75}
+    value: 0
+  - position: {x: -10, y: 2}
+    value: 0
+  - position: {x: -10.5, y: 2.25}
+    value: 0
+  - position: {x: -11, y: 2.5}
+    value: 0
+  - position: {x: -11.5, y: 2.75}
+    value: 0
+  - position: {x: -12, y: 3}
+    value: 0
+  - position: {x: -12.5, y: 3.25}
+    value: 0
+  - position: {x: -13, y: 3.5}
+    value: 0
+  - position: {x: -13.5, y: 3.75}
+    value: 0
+  - position: {x: -14, y: 4}
+    value: 0
+  - position: {x: -14.5, y: 4.25}
+    value: 0
+  - position: {x: -15, y: 4.5}
+    value: 0
+  - position: {x: -15.5, y: 4.75}
+    value: 0
+  - position: {x: -16, y: 5}
+    value: 0
+  - position: {x: -16.5, y: 5.25}
+    value: 0
+  - position: {x: -17, y: 5.5}
+    value: 0
+  - position: {x: -17.5, y: 5.75}
+    value: 0
+  - position: {x: -18, y: 6}
+    value: 0
+  - position: {x: -18.5, y: 6.25}
+    value: 0
+  - position: {x: -19, y: 6.5}
+    value: 0
+  - position: {x: -19.5, y: 6.75}
+    value: 0
+  - position: {x: -20, y: 7}
+    value: 0
+  - position: {x: -20.5, y: 7.25}
+    value: 0
+  - position: {x: -21, y: 7.5}
+    value: 0
+  - position: {x: -21.5, y: 7.75}
+    value: 0
+  - position: {x: 3.5, y: -4.25}
+    value: 0
+  - position: {x: 3, y: -4}
+    value: 0
+  - position: {x: 2.5, y: -3.75}
+    value: 0.080331326
+  - position: {x: 2, y: -3.5}
+    value: 0.52470064
+  - position: {x: 1.5, y: -3.25}
+    value: 0.015650332
+  - position: {x: 1, y: -3}
+    value: 0
+  - position: {x: 0.5, y: -2.75}
+    value: 0
+  - position: {x: 0, y: -2.5}
+    value: 0.8046441
+  - position: {x: -0.5, y: -2.25}
+    value: 0.6633004
+  - position: {x: -1, y: -2}
+    value: 0
+  - position: {x: -1.5, y: -1.75}
+    value: 0.026216986
+  - position: {x: -2, y: -1.5}
+    value: 0
+  - position: {x: -2.5, y: -1.25}
+    value: 0
+  - position: {x: -3, y: -1}
+    value: 0
+  - position: {x: -7, y: 1}
+    value: 0
+  - position: {x: -7.5, y: 1.25}
+    value: 0
+  - position: {x: -8, y: 1.5}
+    value: 0
+  - position: {x: -8.5, y: 1.75}
+    value: 0
+  - position: {x: -9, y: 2}
+    value: 0
+  - position: {x: -9.5, y: 2.25}
+    value: 0
+  - position: {x: -10, y: 2.5}
+    value: 0
+  - position: {x: -10.5, y: 2.75}
+    value: 0
+  - position: {x: -11, y: 3}
+    value: 0
+  - position: {x: -11.5, y: 3.25}
+    value: 0
+  - position: {x: -12, y: 3.5}
+    value: 0
+  - position: {x: -12.5, y: 3.75}
+    value: 0
+  - position: {x: -13, y: 4}
+    value: 0
+  - position: {x: -13.5, y: 4.25}
+    value: 0
+  - position: {x: -14, y: 4.5}
+    value: 0
+  - position: {x: -14.5, y: 4.75}
+    value: 0
+  - position: {x: -15, y: 5}
+    value: 0
+  - position: {x: -15.5, y: 5.25}
+    value: 0
+  - position: {x: -16, y: 5.5}
+    value: 0
+  - position: {x: -16.5, y: 5.75}
+    value: 0
+  - position: {x: -17, y: 6}
+    value: 0
+  - position: {x: -17.5, y: 6.25}
+    value: 0
+  - position: {x: -18, y: 6.5}
+    value: 0
+  - position: {x: -18.5, y: 6.75}
+    value: 0
+  - position: {x: -19, y: 7}
+    value: 0
+  - position: {x: -19.5, y: 7.25}
+    value: 0
+  - position: {x: -20, y: 7.5}
+    value: 0
+  - position: {x: -20.5, y: 7.75}
+    value: 0
+  - position: {x: -21, y: 8}
+    value: 0
+  - position: {x: 4, y: -4}
+    value: 0
+  - position: {x: 3.5, y: -3.75}
+    value: 0
+  - position: {x: 3, y: -3.5}
+    value: 0
+  - position: {x: 2.5, y: -3.25}
+    value: 0
+  - position: {x: 2, y: -3}
+    value: 0
+  - position: {x: 1.5, y: -2.75}
+    value: 0
+  - position: {x: 1, y: -2.5}
+    value: 0.35695213
+  - position: {x: 0.5, y: -2.25}
+    value: 0.23383506
+  - position: {x: 0, y: -2}
+    value: 1.1098592
+  - position: {x: -0.5, y: -1.75}
+    value: 0.05998653
+  - position: {x: -1, y: -1.5}
+    value: 0
+  - position: {x: -1.5, y: -1.25}
+    value: 0
+  - position: {x: -2, y: -1}
+    value: 0
+  - position: {x: -2.5, y: -0.75}
+    value: 0
+  - position: {x: -7, y: 1.5}
+    value: 0
+  - position: {x: -7.5, y: 1.75}
+    value: 0
+  - position: {x: -8, y: 2}
+    value: 0
+  - position: {x: -8.5, y: 2.25}
+    value: 0
+  - position: {x: -9, y: 2.5}
+    value: 0
+  - position: {x: -9.5, y: 2.75}
+    value: 0
+  - position: {x: -10, y: 3}
+    value: 0
+  - position: {x: -10.5, y: 3.25}
+    value: 0
+  - position: {x: -11, y: 3.5}
+    value: 0
+  - position: {x: -11.5, y: 3.75}
+    value: 0
+  - position: {x: -12, y: 4}
+    value: 0
+  - position: {x: -12.5, y: 4.25}
+    value: 0
+  - position: {x: -13, y: 4.5}
+    value: 0
+  - position: {x: -13.5, y: 4.75}
+    value: 0
+  - position: {x: -14, y: 5}
+    value: 0
+  - position: {x: -14.5, y: 5.25}
+    value: 0
+  - position: {x: -15, y: 5.5}
+    value: 0
+  - position: {x: -15.5, y: 5.75}
+    value: 0
+  - position: {x: -16, y: 6}
+    value: 0
+  - position: {x: -16.5, y: 6.25}
+    value: 0
+  - position: {x: -17, y: 6.5}
+    value: 0
+  - position: {x: -17.5, y: 6.75}
+    value: 0
+  - position: {x: -18, y: 7}
+    value: 0
+  - position: {x: -18.5, y: 7.25}
+    value: 0
+  - position: {x: -19, y: 7.5}
+    value: 0
+  - position: {x: -19.5, y: 7.75}
+    value: 0
+  - position: {x: -20, y: 8}
+    value: 0
+  - position: {x: -20.5, y: 8.25}
+    value: 0
+  - position: {x: 4.5, y: -3.75}
+    value: 0
+  - position: {x: 4, y: -3.5}
+    value: 0
+  - position: {x: 3.5, y: -3.25}
+    value: 0
+  - position: {x: 3, y: -3}
+    value: 0
+  - position: {x: 2.5, y: -2.75}
+    value: 0
+  - position: {x: 2, y: -2.5}
+    value: 0
+  - position: {x: 1.5, y: -2.25}
+    value: 0.70612955
+  - position: {x: 1, y: -2}
+    value: 1.3462337
+  - position: {x: 0.5, y: -1.75}
+    value: 0.14859182
+  - position: {x: 0, y: -1.5}
+    value: 0
+  - position: {x: -0.5, y: -1.25}
+    value: 0
+  - position: {x: -1, y: -1}
+    value: 0
+  - position: {x: -1.5, y: -0.75}
+    value: 0
+  - position: {x: -2, y: -0.5}
+    value: 0
+  - position: {x: -7, y: 2}
+    value: 0
+  - position: {x: -7.5, y: 2.25}
+    value: 0
+  - position: {x: -8, y: 2.5}
+    value: 0
+  - position: {x: -8.5, y: 2.75}
+    value: 0
+  - position: {x: -9, y: 3}
+    value: 0
+  - position: {x: -9.5, y: 3.25}
+    value: 0
+  - position: {x: -10, y: 3.5}
+    value: 0
+  - position: {x: -10.5, y: 3.75}
+    value: 0
+  - position: {x: -11, y: 4}
+    value: 0
+  - position: {x: -11.5, y: 4.25}
+    value: 0
+  - position: {x: -12, y: 4.5}
+    value: 0
+  - position: {x: -12.5, y: 4.75}
+    value: 0
+  - position: {x: -13, y: 5}
+    value: 0
+  - position: {x: -13.5, y: 5.25}
+    value: 0
+  - position: {x: -14, y: 5.5}
+    value: 0
+  - position: {x: -14.5, y: 5.75}
+    value: 0
+  - position: {x: -15, y: 6}
+    value: 0
+  - position: {x: -15.5, y: 6.25}
+    value: 0
+  - position: {x: -16, y: 6.5}
+    value: 0
+  - position: {x: -16.5, y: 6.75}
+    value: 0
+  - position: {x: -17, y: 7}
+    value: 0
+  - position: {x: -17.5, y: 7.25}
+    value: 0
+  - position: {x: -18, y: 7.5}
+    value: 0
+  - position: {x: -18.5, y: 7.75}
+    value: 0
+  - position: {x: -19, y: 8}
+    value: 0
+  - position: {x: -19.5, y: 8.25}
+    value: 0
+  - position: {x: -20, y: 8.5}
+    value: 0
+  - position: {x: 5, y: -3.5}
+    value: 0
+  - position: {x: 4.5, y: -3.25}
+    value: 0
+  - position: {x: 4, y: -3}
+    value: 0
+  - position: {x: 3.5, y: -2.75}
+    value: 0.15588284
+  - position: {x: 3, y: -2.5}
+    value: 0
+  - position: {x: 2.5, y: -2.25}
+    value: 0
+  - position: {x: 2, y: -2}
+    value: 1.1544509
+  - position: {x: 1.5, y: -1.75}
+    value: 1.2757349
+  - position: {x: 1, y: -1.5}
+    value: 0.114987254
+  - position: {x: 0.5, y: -1.25}
+    value: 0
+  - position: {x: 0, y: -1}
+    value: 0
+  - position: {x: -0.5, y: -0.75}
+    value: 0
+  - position: {x: -1, y: -0.5}
+    value: 0
+  - position: {x: -1.5, y: -0.25}
+    value: 0
+  - position: {x: -6.5, y: 2.25}
+    value: 0
+  - position: {x: -7, y: 2.5}
+    value: 0
+  - position: {x: -7.5, y: 2.75}
+    value: 0
+  - position: {x: -8, y: 3}
+    value: 0
+  - position: {x: -8.5, y: 3.25}
+    value: 0
+  - position: {x: -9, y: 3.5}
+    value: 0
+  - position: {x: -9.5, y: 3.75}
+    value: 0
+  - position: {x: -10, y: 4}
+    value: 0
+  - position: {x: -14, y: 6}
+    value: 0
+  - position: {x: -14.5, y: 6.25}
+    value: 0
+  - position: {x: -15, y: 6.5}
+    value: 0
+  - position: {x: -15.5, y: 6.75}
+    value: 0
+  - position: {x: -16, y: 7}
+    value: 0
+  - position: {x: -16.5, y: 7.25}
+    value: 0
+  - position: {x: -17, y: 7.5}
+    value: 0
+  - position: {x: -17.5, y: 7.75}
+    value: 0
+  - position: {x: -18, y: 8}
+    value: 0
+  - position: {x: -18.5, y: 8.25}
+    value: 0
+  - position: {x: -19, y: 8.5}
+    value: 0
+  - position: {x: -19.5, y: 8.75}
+    value: 0
+  - position: {x: 5.5, y: -3.25}
+    value: 0
+  - position: {x: 5, y: -3}
+    value: 0
+  - position: {x: 4.5, y: -2.75}
+    value: 0
+  - position: {x: 4, y: -2.5}
+    value: 0.86039263
+  - position: {x: 3.5, y: -2.25}
+    value: 5.03056
+  - position: {x: 3, y: -2}
+    value: 0.05079186
+  - position: {x: 2.5, y: -1.75}
+    value: 1.0716927
+  - position: {x: 2, y: -1.5}
+    value: 1.4050741
+  - position: {x: 1.5, y: -1.25}
+    value: 0
+  - position: {x: 1, y: -1}
+    value: 0
+  - position: {x: 0.5, y: -0.75}
+    value: 0
+  - position: {x: 0, y: -0.5}
+    value: 0
+  - position: {x: -0.5, y: -0.25}
+    value: 0
+  - position: {x: -1, y: 0}
+    value: 0
+  - position: {x: -1.5, y: 0.25}
+    value: 0
+  - position: {x: -6, y: 2.5}
+    value: 0
+  - position: {x: -6.5, y: 2.75}
+    value: 0
+  - position: {x: -7, y: 3}
+    value: 0
+  - position: {x: -7.5, y: 3.25}
+    value: 0
+  - position: {x: -8, y: 3.5}
+    value: 0
+  - position: {x: -8.5, y: 3.75}
+    value: 0
+  - position: {x: -9, y: 4}
+    value: 0
+  - position: {x: -9.5, y: 4.25}
+    value: 0
+  - position: {x: -13.5, y: 6.25}
+    value: 0
+  - position: {x: -14, y: 6.5}
+    value: 0
+  - position: {x: -14.5, y: 6.75}
+    value: 0
+  - position: {x: -15, y: 7}
+    value: 0
+  - position: {x: -15.5, y: 7.25}
+    value: 0
+  - position: {x: -16, y: 7.5}
+    value: 0
+  - position: {x: -16.5, y: 7.75}
+    value: 0
+  - position: {x: -17, y: 8}
+    value: 0
+  - position: {x: -17.5, y: 8.25}
+    value: 0
+  - position: {x: -18, y: 8.5}
+    value: 0
+  - position: {x: -18.5, y: 8.75}
+    value: 0
+  - position: {x: -19, y: 9}
+    value: 0
+  - position: {x: 6, y: -3}
+    value: 1.959992
+  - position: {x: 5.5, y: -2.75}
+    value: 1.7232558
+  - position: {x: 5, y: -2.5}
+    value: 0.53964376
+  - position: {x: 4.5, y: -2.25}
+    value: 0.15252292
+  - position: {x: 4, y: -2}
+    value: 3.0365798
+  - position: {x: 3.5, y: -1.75}
+    value: 2.5854206
+  - position: {x: 3, y: -1.5}
+    value: 1.5491116
+  - position: {x: 2.5, y: -1.25}
+    value: 1.2673888
+  - position: {x: 2, y: -1}
+    value: 0
+  - position: {x: 1.5, y: -0.75}
+    value: 0
+  - position: {x: 1, y: -0.5}
+    value: 0
+  - position: {x: 0.5, y: -0.25}
+    value: 0
+  - position: {x: 0, y: 0}
+    value: 0
+  - position: {x: -0.5, y: 0.25}
+    value: 0
+  - position: {x: -1, y: 0.5}
+    value: 0
+  - position: {x: -5.5, y: 2.75}
+    value: 0
+  - position: {x: -6, y: 3}
+    value: 0
+  - position: {x: -6.5, y: 3.25}
+    value: 0
+  - position: {x: -7, y: 3.5}
+    value: 0
+  - position: {x: -7.5, y: 3.75}
+    value: 0.12022626
+  - position: {x: -8, y: 4}
+    value: 0.41504014
+  - position: {x: -8.5, y: 4.25}
+    value: 0
+  - position: {x: -9, y: 4.5}
+    value: 0
+  - position: {x: -13, y: 6.5}
+    value: 0
+  - position: {x: -13.5, y: 6.75}
+    value: 0
+  - position: {x: -14, y: 7}
+    value: 0
+  - position: {x: -14.5, y: 7.25}
+    value: 0
+  - position: {x: -15, y: 7.5}
+    value: 0
+  - position: {x: -15.5, y: 7.75}
+    value: 0
+  - position: {x: -16, y: 8}
+    value: 0
+  - position: {x: -16.5, y: 8.25}
+    value: 0
+  - position: {x: -17, y: 8.5}
+    value: 0
+  - position: {x: -17.5, y: 8.75}
+    value: 0
+  - position: {x: -18, y: 9}
+    value: 0
+  - position: {x: -18.5, y: 9.25}
+    value: 0
+  - position: {x: 6.5, y: -2.75}
+    value: 1.0811069
+  - position: {x: 6, y: -2.5}
+    value: 1.8871045
+  - position: {x: 5.5, y: -2.25}
+    value: 5.9435306
+  - position: {x: 5, y: -2}
+    value: 14.463219
+  - position: {x: 4.5, y: -1.75}
+    value: 34.135044
+  - position: {x: 4, y: -1.5}
+    value: 28.142176
+  - position: {x: 3.5, y: -1.25}
+    value: 15.280413
+  - position: {x: 3, y: -1}
+    value: 12.798514
+  - position: {x: 2.5, y: -0.75}
+    value: 1.8772597
+  - position: {x: 2, y: -0.5}
+    value: 0
+  - position: {x: 1.5, y: -0.25}
+    value: 0
+  - position: {x: 1, y: 0}
+    value: 0
+  - position: {x: 0.5, y: 0.25}
+    value: 0
+  - position: {x: 0, y: 0.5}
+    value: 0
+  - position: {x: -0.5, y: 0.75}
+    value: 0
+  - position: {x: -1, y: 1}
+    value: 0
+  - position: {x: -1.5, y: 1.25}
+    value: 0
+  - position: {x: -2, y: 1.5}
+    value: 0
+  - position: {x: -2.5, y: 1.75}
+    value: 0
+  - position: {x: -3, y: 2}
+    value: 0
+  - position: {x: -3.5, y: 2.25}
+    value: 0
+  - position: {x: -4, y: 2.5}
+    value: 0
+  - position: {x: -4.5, y: 2.75}
+    value: 0
+  - position: {x: -5, y: 3}
+    value: 0
+  - position: {x: -5.5, y: 3.25}
+    value: 0
+  - position: {x: -6, y: 3.5}
+    value: 0
+  - position: {x: -6.5, y: 3.75}
+    value: 0
+  - position: {x: -7, y: 4}
+    value: 0
+  - position: {x: -7.5, y: 4.25}
+    value: 0.80198073
+  - position: {x: -8, y: 4.5}
+    value: 0.41982698
+  - position: {x: -8.5, y: 4.75}
+    value: 0
+  - position: {x: -9, y: 5}
+    value: 0
+  - position: {x: -9.5, y: 5.25}
+    value: 0
+  - position: {x: -10, y: 5.5}
+    value: 0
+  - position: {x: -10.5, y: 5.75}
+    value: 0
+  - position: {x: -11, y: 6}
+    value: 0
+  - position: {x: -11.5, y: 6.25}
+    value: 0
+  - position: {x: -12, y: 6.5}
+    value: 0
+  - position: {x: -12.5, y: 6.75}
+    value: 0
+  - position: {x: -13, y: 7}
+    value: 0
+  - position: {x: -13.5, y: 7.25}
+    value: 0
+  - position: {x: -14, y: 7.5}
+    value: 0
+  - position: {x: -14.5, y: 7.75}
+    value: 0
+  - position: {x: -15, y: 8}
+    value: 0
+  - position: {x: -15.5, y: 8.25}
+    value: 0
+  - position: {x: -16, y: 8.5}
+    value: 0
+  - position: {x: -16.5, y: 8.75}
+    value: 0
+  - position: {x: -17, y: 9}
+    value: 0
+  - position: {x: -17.5, y: 9.25}
+    value: 0
+  - position: {x: -18, y: 9.5}
+    value: 0
+  - position: {x: 7, y: -2.5}
+    value: 0
+  - position: {x: 6.5, y: -2.25}
+    value: 0.32374978
+  - position: {x: 6, y: -2}
+    value: 4.086791
+  - position: {x: 5.5, y: -1.75}
+    value: 20.587885
+  - position: {x: 5, y: -1.5}
+    value: 64.74959
+  - position: {x: 4.5, y: -1.25}
+    value: 90.375015
+  - position: {x: 4, y: -1}
+    value: 88.50971
+  - position: {x: 3.5, y: -0.75}
+    value: 52.169334
+  - position: {x: 3, y: -0.5}
+    value: 31.230928
+  - position: {x: 2.5, y: -0.25}
+    value: 8.293935
+  - position: {x: 2, y: 0}
+    value: 0.15794545
+  - position: {x: 1.5, y: 0.25}
+    value: 0
+  - position: {x: 1, y: 0.5}
+    value: 0
+  - position: {x: 0.5, y: 0.75}
+    value: 0
+  - position: {x: 0, y: 1}
+    value: 0
+  - position: {x: -0.5, y: 1.25}
+    value: 0
+  - position: {x: -1, y: 1.5}
+    value: 0
+  - position: {x: -1.5, y: 1.75}
+    value: 0
+  - position: {x: -2, y: 2}
+    value: 0
+  - position: {x: -2.5, y: 2.25}
+    value: 0
+  - position: {x: -3, y: 2.5}
+    value: 0
+  - position: {x: -3.5, y: 2.75}
+    value: 0
+  - position: {x: -4, y: 3}
+    value: 0
+  - position: {x: -4.5, y: 3.25}
+    value: 0
+  - position: {x: -5, y: 3.5}
+    value: 0
+  - position: {x: -5.5, y: 3.75}
+    value: 0
+  - position: {x: -6, y: 4}
+    value: 0
+  - position: {x: -6.5, y: 4.25}
+    value: 0
+  - position: {x: -7, y: 4.5}
+    value: 0
+  - position: {x: -7.5, y: 4.75}
+    value: 0.12718725
+  - position: {x: -8, y: 5}
+    value: 0
+  - position: {x: -8.5, y: 5.25}
+    value: 0
+  - position: {x: -9, y: 5.5}
+    value: 0
+  - position: {x: -9.5, y: 5.75}
+    value: 0
+  - position: {x: -10, y: 6}
+    value: 0
+  - position: {x: -10.5, y: 6.25}
+    value: 0
+  - position: {x: -11, y: 6.5}
+    value: 0
+  - position: {x: -11.5, y: 6.75}
+    value: 0
+  - position: {x: -12, y: 7}
+    value: 0
+  - position: {x: -12.5, y: 7.25}
+    value: 0
+  - position: {x: -13, y: 7.5}
+    value: 0
+  - position: {x: -13.5, y: 7.75}
+    value: 0
+  - position: {x: -14, y: 8}
+    value: 0
+  - position: {x: -14.5, y: 8.25}
+    value: 0
+  - position: {x: -15, y: 8.5}
+    value: 0
+  - position: {x: -15.5, y: 8.75}
+    value: 0
+  - position: {x: -16, y: 9}
+    value: 0
+  - position: {x: -16.5, y: 9.25}
+    value: 0
+  - position: {x: -17, y: 9.5}
+    value: 0
+  - position: {x: -17.5, y: 9.75}
+    value: 0
+  - position: {x: 7.5, y: -2.25}
+    value: 0
+  - position: {x: 7, y: -2}
+    value: 0
+  - position: {x: 6.5, y: -1.75}
+    value: 0.77197886
+  - position: {x: 6, y: -1.5}
+    value: 16.347383
+  - position: {x: 5.5, y: -1.25}
+    value: 42.751682
+  - position: {x: 5, y: -1}
+    value: 80.82641
+  - position: {x: 4.5, y: -0.75}
+    value: 98.1856
+  - position: {x: 4, y: -0.5}
+    value: 73.74258
+  - position: {x: 3.5, y: -0.25}
+    value: 55.743454
+  - position: {x: 3, y: 0}
+    value: 51.252876
+  - position: {x: 2.5, y: 0.25}
+    value: 11.358925
+  - position: {x: 2, y: 0.5}
+    value: 0
+  - position: {x: 1.5, y: 0.75}
+    value: 0
+  - position: {x: 1, y: 1}
+    value: 0
+  - position: {x: 0.5, y: 1.25}
+    value: 0
+  - position: {x: 0, y: 1.5}
+    value: 0
+  - position: {x: -0.5, y: 1.75}
+    value: 0
+  - position: {x: -1, y: 2}
+    value: 0
+  - position: {x: -1.5, y: 2.25}
+    value: 0
+  - position: {x: -2, y: 2.5}
+    value: 0
+  - position: {x: -2.5, y: 2.75}
+    value: 0
+  - position: {x: -3, y: 3}
+    value: 0
+  - position: {x: -3.5, y: 3.25}
+    value: 0
+  - position: {x: -4, y: 3.5}
+    value: 0
+  - position: {x: -4.5, y: 3.75}
+    value: 0
+  - position: {x: -5, y: 4}
+    value: 0
+  - position: {x: -5.5, y: 4.25}
+    value: 0
+  - position: {x: -6, y: 4.5}
+    value: 0
+  - position: {x: -6.5, y: 4.75}
+    value: 0
+  - position: {x: -7, y: 5}
+    value: 0
+  - position: {x: -7.5, y: 5.25}
+    value: 0
+  - position: {x: -8, y: 5.5}
+    value: 0
+  - position: {x: -8.5, y: 5.75}
+    value: 0
+  - position: {x: -9, y: 6}
+    value: 0
+  - position: {x: -9.5, y: 6.25}
+    value: 0
+  - position: {x: -10, y: 6.5}
+    value: 0
+  - position: {x: -10.5, y: 6.75}
+    value: 0
+  - position: {x: -11, y: 7}
+    value: 0
+  - position: {x: -11.5, y: 7.25}
+    value: 0
+  - position: {x: -12, y: 7.5}
+    value: 0
+  - position: {x: -12.5, y: 7.75}
+    value: 0
+  - position: {x: -13, y: 8}
+    value: 0
+  - position: {x: -13.5, y: 8.25}
+    value: 0
+  - position: {x: -14, y: 8.5}
+    value: 0
+  - position: {x: -14.5, y: 8.75}
+    value: 0
+  - position: {x: -15, y: 9}
+    value: 0
+  - position: {x: -15.5, y: 9.25}
+    value: 0
+  - position: {x: -16, y: 9.5}
+    value: 0
+  - position: {x: -16.5, y: 9.75}
+    value: 0
+  - position: {x: -17, y: 10}
+    value: 0
+  - position: {x: 8, y: -2}
+    value: 0
+  - position: {x: 7.5, y: -1.75}
+    value: 0
+  - position: {x: 7, y: -1.5}
+    value: 0
+  - position: {x: 6.5, y: -1.25}
+    value: 3.4151049
+  - position: {x: 6, y: -1}
+    value: 29.649649
+  - position: {x: 5.5, y: -0.75}
+    value: 46.217136
+  - position: {x: 5, y: -0.5}
+    value: 55.980774
+  - position: {x: 4.5, y: -0.25}
+    value: 67.508705
+  - position: {x: 4, y: 0}
+    value: 45.070847
+  - position: {x: 3.5, y: 0.25}
+    value: 40.592037
+  - position: {x: 3, y: 0.5}
+    value: 34.35067
+  - position: {x: 2.5, y: 0.75}
+    value: 2.0301974
+  - position: {x: 2, y: 1}
+    value: 0
+  - position: {x: 1.5, y: 1.25}
+    value: 0
+  - position: {x: 1, y: 1.5}
+    value: 0
+  - position: {x: 0.5, y: 1.75}
+    value: 0
+  - position: {x: 0, y: 2}
+    value: 0
+  - position: {x: -0.5, y: 2.25}
+    value: 0
+  - position: {x: -1, y: 2.5}
+    value: 0
+  - position: {x: -1.5, y: 2.75}
+    value: 0
+  - position: {x: -2, y: 3}
+    value: 0
+  - position: {x: -2.5, y: 3.25}
+    value: 0
+  - position: {x: -3, y: 3.5}
+    value: 0
+  - position: {x: -3.5, y: 3.75}
+    value: 0
+  - position: {x: -4, y: 4}
+    value: 0
+  - position: {x: -4.5, y: 4.25}
+    value: 0
+  - position: {x: -5, y: 4.5}
+    value: 0
+  - position: {x: -5.5, y: 4.75}
+    value: 0
+  - position: {x: -6, y: 5}
+    value: 0
+  - position: {x: -6.5, y: 5.25}
+    value: 0
+  - position: {x: -7, y: 5.5}
+    value: 0
+  - position: {x: -7.5, y: 5.75}
+    value: 0
+  - position: {x: -8, y: 6}
+    value: 0
+  - position: {x: -8.5, y: 6.25}
+    value: 0
+  - position: {x: -9, y: 6.5}
+    value: 0
+  - position: {x: -9.5, y: 6.75}
+    value: 0
+  - position: {x: -10, y: 7}
+    value: 0
+  - position: {x: -10.5, y: 7.25}
+    value: 0
+  - position: {x: -11, y: 7.5}
+    value: 0
+  - position: {x: -11.5, y: 7.75}
+    value: 0
+  - position: {x: -12, y: 8}
+    value: 0
+  - position: {x: -12.5, y: 8.25}
+    value: 0
+  - position: {x: -13, y: 8.5}
+    value: 0
+  - position: {x: -13.5, y: 8.75}
+    value: 0
+  - position: {x: -14, y: 9}
+    value: 0
+  - position: {x: -14.5, y: 9.25}
+    value: 0
+  - position: {x: -15, y: 9.5}
+    value: 0
+  - position: {x: -15.5, y: 9.75}
+    value: 0
+  - position: {x: -16, y: 10}
+    value: 0
+  - position: {x: -16.5, y: 10.25}
+    value: 0
+  - position: {x: 8.5, y: -1.75}
+    value: 0
+  - position: {x: 8, y: -1.5}
+    value: 0
+  - position: {x: 7.5, y: -1.25}
+    value: 0
+  - position: {x: 7, y: -1}
+    value: 0
+  - position: {x: 6.5, y: -0.75}
+    value: 3.3101118
+  - position: {x: 6, y: -0.5}
+    value: 15.379848
+  - position: {x: 5.5, y: -0.25}
+    value: 17.018805
+  - position: {x: 5, y: 0}
+    value: 38.703445
+  - position: {x: 4.5, y: 0.25}
+    value: 35.2473
+  - position: {x: 4, y: 0.5}
+    value: 35.340073
+  - position: {x: 3.5, y: 0.75}
+    value: 26.841051
+  - position: {x: 3, y: 1}
+    value: 5.6131535
+  - position: {x: 2.5, y: 1.25}
+    value: 0
+  - position: {x: 2, y: 1.5}
+    value: 0
+  - position: {x: 1.5, y: 1.75}
+    value: 0
+  - position: {x: 1, y: 2}
+    value: 0
+  - position: {x: 0.5, y: 2.25}
+    value: 0
+  - position: {x: 0, y: 2.5}
+    value: 0
+  - position: {x: -0.5, y: 2.75}
+    value: 0
+  - position: {x: -1, y: 3}
+    value: 0
+  - position: {x: -1.5, y: 3.25}
+    value: 0
+  - position: {x: -2, y: 3.5}
+    value: 0
+  - position: {x: -2.5, y: 3.75}
+    value: 0
+  - position: {x: -3, y: 4}
+    value: 0
+  - position: {x: -3.5, y: 4.25}
+    value: 0
+  - position: {x: -4, y: 4.5}
+    value: 0
+  - position: {x: -4.5, y: 4.75}
+    value: 0
+  - position: {x: -5, y: 5}
+    value: 0
+  - position: {x: -5.5, y: 5.25}
+    value: 0
+  - position: {x: -6, y: 5.5}
+    value: 0
+  - position: {x: -6.5, y: 5.75}
+    value: 0
+  - position: {x: -7, y: 6}
+    value: 0
+  - position: {x: -7.5, y: 6.25}
+    value: 0
+  - position: {x: -8, y: 6.5}
+    value: 0
+  - position: {x: -8.5, y: 6.75}
+    value: 0
+  - position: {x: -9, y: 7}
+    value: 0
+  - position: {x: -9.5, y: 7.25}
+    value: 0
+  - position: {x: -10, y: 7.5}
+    value: 0
+  - position: {x: -10.5, y: 7.75}
+    value: 0
+  - position: {x: -11, y: 8}
+    value: 0
+  - position: {x: -11.5, y: 8.25}
+    value: 0
+  - position: {x: -12, y: 8.5}
+    value: 0
+  - position: {x: -12.5, y: 8.75}
+    value: 0
+  - position: {x: -13, y: 9}
+    value: 0
+  - position: {x: -13.5, y: 9.25}
+    value: 0
+  - position: {x: -14, y: 9.5}
+    value: 0
+  - position: {x: -14.5, y: 9.75}
+    value: 0
+  - position: {x: -15, y: 10}
+    value: 0
+  - position: {x: -15.5, y: 10.25}
+    value: 0
+  - position: {x: -16, y: 10.5}
+    value: 0
+  - position: {x: 9, y: -1.5}
+    value: 0
+  - position: {x: 8.5, y: -1.25}
+    value: 0
+  - position: {x: 8, y: -1}
+    value: 0
+  - position: {x: 7.5, y: -0.75}
+    value: 0
+  - position: {x: 7, y: -0.5}
+    value: 0
+  - position: {x: 6.5, y: -0.25}
+    value: 0.26389968
+  - position: {x: 6, y: 0}
+    value: 0.8858502
+  - position: {x: 5.5, y: 0.25}
+    value: 3.3091853
+  - position: {x: 5, y: 0.5}
+    value: 7.8952026
+  - position: {x: 4.5, y: 0.75}
+    value: 5.078404
+  - position: {x: 4, y: 1}
+    value: 6.6016636
+  - position: {x: 3.5, y: 1.25}
+    value: 0.7804486
+  - position: {x: 3, y: 1.5}
+    value: 0
+  - position: {x: 2.5, y: 1.75}
+    value: 0
+  - position: {x: 2, y: 2}
+    value: 0
+  - position: {x: 1.5, y: 2.25}
+    value: 0
+  - position: {x: 1, y: 2.5}
+    value: 0
+  - position: {x: 0.5, y: 2.75}
+    value: 0
+  - position: {x: 0, y: 3}
+    value: 0
+  - position: {x: -0.5, y: 3.25}
+    value: 0
+  - position: {x: -1, y: 3.5}
+    value: 0
+  - position: {x: -1.5, y: 3.75}
+    value: 0
+  - position: {x: -2, y: 4}
+    value: 0
+  - position: {x: -2.5, y: 4.25}
+    value: 0
+  - position: {x: -3, y: 4.5}
+    value: 0
+  - position: {x: -3.5, y: 4.75}
+    value: 0
+  - position: {x: -4, y: 5}
+    value: 0
+  - position: {x: -4.5, y: 5.25}
+    value: 0
+  - position: {x: -5, y: 5.5}
+    value: 0
+  - position: {x: -5.5, y: 5.75}
+    value: 0
+  - position: {x: -6, y: 6}
+    value: 0
+  - position: {x: -6.5, y: 6.25}
+    value: 0
+  - position: {x: -7, y: 6.5}
+    value: 0
+  - position: {x: -7.5, y: 6.75}
+    value: 0
+  - position: {x: -8, y: 7}
+    value: 0
+  - position: {x: -8.5, y: 7.25}
+    value: 0
+  - position: {x: -9, y: 7.5}
+    value: 0
+  - position: {x: -9.5, y: 7.75}
+    value: 0
+  - position: {x: -10, y: 8}
+    value: 0
+  - position: {x: -10.5, y: 8.25}
+    value: 0
+  - position: {x: -11, y: 8.5}
+    value: 0
+  - position: {x: -11.5, y: 8.75}
+    value: 0
+  - position: {x: -12, y: 9}
+    value: 0
+  - position: {x: -12.5, y: 9.25}
+    value: 0
+  - position: {x: -13, y: 9.5}
+    value: 0
+  - position: {x: -13.5, y: 9.75}
+    value: 0
+  - position: {x: -14, y: 10}
+    value: 0
+  - position: {x: -14.5, y: 10.25}
+    value: 0
+  - position: {x: -15, y: 10.5}
+    value: 0
+  - position: {x: 0, y: 3.5}
+    value: 0
+  - position: {x: -0.5, y: 3.75}
+    value: 0
+  - position: {x: -1, y: 4}
+    value: 0
+  - position: {x: -1.5, y: 4.25}
+    value: 0
+  - position: {x: -2, y: 4.5}
+    value: 0
+  - position: {x: -2.5, y: 4.75}
+    value: 0
+  - position: {x: -3, y: 5}
+    value: 0
+  - position: {x: -3.5, y: 5.25}
+    value: 0
+  - position: {x: -4, y: 5.5}
+    value: 0
+  - position: {x: -4.5, y: 5.75}
+    value: 0
+  - position: {x: -5, y: 6}
+    value: 0
+  - position: {x: -5.5, y: 6.25}
+    value: 0
+  - position: {x: -6, y: 6.5}
+    value: 0
+  - position: {x: -6.5, y: 6.75}
+    value: 0
+  - position: {x: -7, y: 7}
+    value: 0
+  - position: {x: -7.5, y: 7.25}
+    value: 0
+  - position: {x: -8, y: 7.5}
+    value: 0
+  - position: {x: -8.5, y: 7.75}
+    value: 0
+  - position: {x: -9, y: 8}
+    value: 0
+  - position: {x: -9.5, y: 8.25}
+    value: 0
+  - position: {x: -10, y: 8.5}
+    value: 0
+  - position: {x: -10.5, y: 8.75}
+    value: 0
+  - position: {x: -11, y: 9}
+    value: 0
+  - position: {x: -11.5, y: 9.25}
+    value: 0
+  - position: {x: -12, y: 9.5}
+    value: 0
+  - position: {x: -12.5, y: 9.75}
+    value: 0
+  - position: {x: -13, y: 10}
+    value: 0
+  - position: {x: -13.5, y: 10.25}
+    value: 0
+  - position: {x: -14, y: 10.5}
+    value: 0
+  - position: {x: -14.5, y: 10.75}
+    value: 0
+  - position: {x: 0.5, y: 3.75}
+    value: 0
+  - position: {x: 0, y: 4}
+    value: 0
+  - position: {x: -0.5, y: 4.25}
+    value: 0
+  - position: {x: -1, y: 4.5}
+    value: 0
+  - position: {x: -1.5, y: 4.75}
+    value: 0
+  - position: {x: -2, y: 5}
+    value: 0
+  - position: {x: -2.5, y: 5.25}
+    value: 0
+  - position: {x: -3, y: 5.5}
+    value: 0
+  - position: {x: -3.5, y: 5.75}
+    value: 0
+  - position: {x: -4, y: 6}
+    value: 0
+  - position: {x: -4.5, y: 6.25}
+    value: 0
+  - position: {x: -5, y: 6.5}
+    value: 0
+  - position: {x: -5.5, y: 6.75}
+    value: 0
+  - position: {x: -6, y: 7}
+    value: 0
+  - position: {x: -6.5, y: 7.25}
+    value: 0
+  - position: {x: -7, y: 7.5}
+    value: 0
+  - position: {x: -7.5, y: 7.75}
+    value: 0
+  - position: {x: -8, y: 8}
+    value: 0
+  - position: {x: -8.5, y: 8.25}
+    value: 0
+  - position: {x: -9, y: 8.5}
+    value: 0
+  - position: {x: -9.5, y: 8.75}
+    value: 0
+  - position: {x: -10, y: 9}
+    value: 0
+  - position: {x: -10.5, y: 9.25}
+    value: 0
+  - position: {x: -11, y: 9.5}
+    value: 0
+  - position: {x: -11.5, y: 9.75}
+    value: 0
+  - position: {x: -12, y: 10}
+    value: 0
+  - position: {x: -12.5, y: 10.25}
+    value: 0
+  - position: {x: -13, y: 10.5}
+    value: 0
+  - position: {x: -13.5, y: 10.75}
+    value: 0
+  - position: {x: -14, y: 11}
+    value: 0
+  - position: {x: 1, y: 4}
+    value: 0
+  - position: {x: 0.5, y: 4.25}
+    value: 0
+  - position: {x: 0, y: 4.5}
+    value: 0
+  - position: {x: -0.5, y: 4.75}
+    value: 0
+  - position: {x: -1, y: 5}
+    value: 0
+  - position: {x: -1.5, y: 5.25}
+    value: 0
+  - position: {x: -2, y: 5.5}
+    value: 0
+  - position: {x: -2.5, y: 5.75}
+    value: 0
+  - position: {x: -3, y: 6}
+    value: 0
+  - position: {x: -3.5, y: 6.25}
+    value: 0
+  - position: {x: -4, y: 6.5}
+    value: 0
+  - position: {x: -4.5, y: 6.75}
+    value: 0
+  - position: {x: -5, y: 7}
+    value: 0
+  - position: {x: -5.5, y: 7.25}
+    value: 0
+  - position: {x: -6, y: 7.5}
+    value: 0
+  - position: {x: -6.5, y: 7.75}
+    value: 0
+  - position: {x: -7, y: 8}
+    value: 0
+  - position: {x: -7.5, y: 8.25}
+    value: 0
+  - position: {x: -8, y: 8.5}
+    value: 0
+  - position: {x: -8.5, y: 8.75}
+    value: 0
+  - position: {x: -9, y: 9}
+    value: 0
+  - position: {x: -9.5, y: 9.25}
+    value: 0
+  - position: {x: -10, y: 9.5}
+    value: 0
+  - position: {x: -10.5, y: 9.75}
+    value: 0
+  - position: {x: -11, y: 10}
+    value: 0
+  - position: {x: -11.5, y: 10.25}
+    value: 0
+  - position: {x: -12, y: 10.5}
+    value: 0
+  - position: {x: -12.5, y: 10.75}
+    value: 0
+  - position: {x: -13, y: 11}
+    value: 0
+  - position: {x: -13.5, y: 11.25}
+    value: 0
+  - position: {x: 1.5, y: 4.25}
+    value: 0
+  - position: {x: 1, y: 4.5}
+    value: 0
+  - position: {x: 0.5, y: 4.75}
+    value: 0
+  - position: {x: 0, y: 5}
+    value: 0
+  - position: {x: -0.5, y: 5.25}
+    value: 0
+  - position: {x: -1, y: 5.5}
+    value: 0
+  - position: {x: -1.5, y: 5.75}
+    value: 0
+  - position: {x: -2, y: 6}
+    value: 0
+  - position: {x: -2.5, y: 6.25}
+    value: 0
+  - position: {x: -3, y: 6.5}
+    value: 0
+  - position: {x: -3.5, y: 6.75}
+    value: 0
+  - position: {x: -4, y: 7}
+    value: 0
+  - position: {x: -4.5, y: 7.25}
+    value: 0
+  - position: {x: -5, y: 7.5}
+    value: 0
+  - position: {x: -5.5, y: 7.75}
+    value: 0
+  - position: {x: -6, y: 8}
+    value: 0
+  - position: {x: -6.5, y: 8.25}
+    value: 0
+  - position: {x: -7, y: 8.5}
+    value: 0
+  - position: {x: -7.5, y: 8.75}
+    value: 0
+  - position: {x: -8, y: 9}
+    value: 0
+  - position: {x: -8.5, y: 9.25}
+    value: 0
+  - position: {x: -9, y: 9.5}
+    value: 0
+  - position: {x: -9.5, y: 9.75}
+    value: 0
+  - position: {x: -10, y: 10}
+    value: 0
+  - position: {x: -10.5, y: 10.25}
+    value: 0
+  - position: {x: -11, y: 10.5}
+    value: 0
+  - position: {x: -11.5, y: 10.75}
+    value: 0
+  - position: {x: -12, y: 11}
+    value: 0
+  - position: {x: -12.5, y: 11.25}
+    value: 0
+  - position: {x: -13, y: 11.5}
+    value: 0
