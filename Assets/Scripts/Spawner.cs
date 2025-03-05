@@ -27,6 +27,8 @@ public class Spawner : MonoBehaviour
         // Create a parent object to organize spawned prefabs
         prefabParent = GameObject.Find($"{prefab.name} Parent");
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
+        List<TilePosData.TilePos> tilePositions = heatmapData.tilePosData.TilePositions.ToList();
+        Shuffle(tilePositions);
         StartCoroutine(Spawning());
     }
 
