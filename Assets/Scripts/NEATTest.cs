@@ -84,7 +84,7 @@ public class NEATTest : MonoBehaviour
         Debug.Log("Starting Test 1: Basic Mating Movement");
         
         // Create two Alberts far from each other but still within detection radius
-        Vector3 olderPosition = new Vector3(-4, -4, 0);
+        Vector3 olderPosition = new Vector3(-2, -2, 0);
         Vector3 youngerPosition = new Vector3(2, 2, 0); // 8 units diagonal distance
         
         // Spawn older creature
