@@ -80,15 +80,21 @@ public class NEATTest : MonoBehaviour
     {
         Debug.Log("Starting Test 1: Basic Mating Movement");
         
-        // Create two Alberts close to each other but not too close
-        Vector3 olderPosition = new Vector3(0, 0, 0);
-        Vector3 youngerPosition = new Vector3(3, 0, 0); // 3 units away, within detection radius
+        // Create two Alberts far from each other but still within detection radius
+        Vector3 olderPosition = new Vector3(-4, -4, 0);
+        Vector3 youngerPosition = new Vector3(4, 4, 0); // 8 units diagonal distance
         
         // Spawn older creature
         var olderCreature = SpawnCreature(albertCreaturePrefab, olderPosition, Creature.CreatureType.Albert);
         
         // Spawn younger creature
         var youngerCreature = SpawnCreature(albertCreaturePrefab, youngerPosition, Creature.CreatureType.Albert);
+        
+        // Add visual distinction
+        var olderSprite = olderCreature.GetComponent<SpriteRenderer>();
+        var youngerSprite = youngerCreature.GetComponent<SpriteRenderer>();
+        if (olderSprite != null) olderSprite.color = new Color(1f, 0.8f, 0.8f); // Slightly red
+        if (youngerSprite != null) youngerSprite.color = new Color(0.8f, 0.8f, 1f); // Slightly blue
         
         // Set their reproduction meters to maximum
         olderCreature.reproduction = olderCreature.maxReproduction;
@@ -104,9 +110,9 @@ public class NEATTest : MonoBehaviour
         }
 
         Debug.Log("Test 1 Setup Complete:");
-        Debug.Log($"- Older creature at {olderPosition}, age: 20");
-        Debug.Log($"- Younger creature at {youngerPosition}, age: 10");
-        Debug.Log("Expected behavior: Younger creature should move toward older creature, older creature should stay still");
+        Debug.Log($"- Older creature (reddish) at {olderPosition}, age: 20");
+        Debug.Log($"- Younger creature (bluish) at {youngerPosition}, age: 10");
+        Debug.Log("Expected behavior: Younger creature (blue) should move toward older creature (red), older creature should stay still");
     }
     
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type)

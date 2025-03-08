@@ -61,9 +61,19 @@ public class Creature : MonoBehaviour
         reproduction = 0f;
         lifetime = 0f;
         
+        // Add small delay before reproduction can start (for testing)
+        StartCoroutine(DelayedReproductionStart());
+        
         // Increment counter when creature is created
         totalCreatures++;
         Debug.Log($"Creature created. Total creatures: {totalCreatures}");
+    }
+
+    private IEnumerator DelayedReproductionStart()
+    {
+        // Wait for 2 seconds before allowing reproduction
+        yield return new WaitForSeconds(2f);
+        reproduction = 0f; // Reset reproduction to ensure proper start
     }
     
     private void Start()
