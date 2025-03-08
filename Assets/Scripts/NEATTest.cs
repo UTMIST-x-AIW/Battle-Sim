@@ -96,23 +96,15 @@ public class NEATTest : MonoBehaviour
         if (olderSprite != null) olderSprite.color = new Color(1f, 0.8f, 0.8f); // Slightly red
         if (youngerSprite != null) youngerSprite.color = new Color(0.8f, 0.8f, 1f); // Slightly blue
         
-        // Set their reproduction meters to maximum
-        olderCreature.reproduction = olderCreature.maxReproduction;
-        youngerCreature.reproduction = youngerCreature.maxReproduction;
-        
-        // Set different ages (using lifetime)
-        // We'll use reflection since lifetime is private
-        var lifetimeField = typeof(Creature).GetField("lifetime", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (lifetimeField != null)
-        {
-            lifetimeField.SetValue(olderCreature, 20f); // 20 seconds old
-            lifetimeField.SetValue(youngerCreature, 10f); // 10 seconds old
-        }
+        // Initialize creatures with their starting values
+        olderCreature.InitializeForTesting(20f, olderCreature.maxReproduction);
+        youngerCreature.InitializeForTesting(10f, youngerCreature.maxReproduction);
 
         Debug.Log("Test 1 Setup Complete:");
         Debug.Log($"- Older creature (reddish) at {olderPosition}, age: 20");
         Debug.Log($"- Younger creature (bluish) at {youngerPosition}, age: 10");
         Debug.Log("Expected behavior: Younger creature (blue) should move toward older creature (red), older creature should stay still");
+        Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
     }
     
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type)

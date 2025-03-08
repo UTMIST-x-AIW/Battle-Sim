@@ -53,6 +53,7 @@ public class Creature : MonoBehaviour
     private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
     private bool isMovingToMate = false;
     private bool isWaitingForMate = false;
+    private bool canStartReproducing = false;  // New flag to control reproduction start
 
     private void Awake()
     {
@@ -60,9 +61,7 @@ public class Creature : MonoBehaviour
         health = maxHealth;
         reproduction = 0f;
         lifetime = 0f;
-        
-        // Add small delay before reproduction can start (for testing)
-        StartCoroutine(DelayedReproductionStart());
+        canStartReproducing = false;
         
         // Increment counter when creature is created
         totalCreatures++;
@@ -73,7 +72,19 @@ public class Creature : MonoBehaviour
     {
         // Wait for 2 seconds before allowing reproduction
         yield return new WaitForSeconds(2f);
-        reproduction = 0f; // Reset reproduction to ensure proper start
+        canStartReproducing = true;
+        Debug.Log($"Creature {gameObject.name} can now start reproducing");
+    }
+
+    // Add method to initialize creature for testing
+    public void InitializeForTesting(float startingAge, float startingReproduction)
+    {
+        lifetime = startingAge;
+        if (startingReproduction > 0)
+        {
+            reproduction = startingReproduction;
+            StartCoroutine(DelayedReproductionStart());
+        }
     }
     
     private void Start()
@@ -138,8 +149,8 @@ public class Creature : MonoBehaviour
     
     private void UpdateReproduction()
     {
-        // Only accumulate reproduction points and try to reproduce if not already reproducing
-        if (!isReproducing)
+        // Only accumulate reproduction points and try to reproduce if allowed
+        if (!isReproducing && canStartReproducing)
         {
             reproduction += reproductionRate * Time.fixedDeltaTime;
             
