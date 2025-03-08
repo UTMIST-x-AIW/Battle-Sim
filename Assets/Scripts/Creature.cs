@@ -273,8 +273,10 @@ public class Creature : MonoBehaviour
         {
             // We're the younger one, move to mate
             isMovingToMate = true;
+            isReproducing = true;  // Set this flag for both creatures
             targetMate = mate;
             mate.isWaitingForMate = true;
+            mate.isReproducing = true;
             mate.targetMate = this;
             Debug.Log($"{gameObject.name} (younger) moving to mate with {mate.gameObject.name}");
         }
@@ -282,10 +284,11 @@ public class Creature : MonoBehaviour
         {
             // We're the older one, wait for mate
             isWaitingForMate = true;
+            isReproducing = true;  // Set this flag for both creatures
             targetMate = mate;
             mate.isMovingToMate = true;
-            mate.targetMate = this;
             mate.isReproducing = true;
+            mate.targetMate = this;
             Debug.Log($"{gameObject.name} (older) waiting for mate {mate.gameObject.name}");
         }
     }
