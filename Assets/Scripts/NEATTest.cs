@@ -67,30 +67,30 @@ public class NEATTest : MonoBehaviour
     {
         Debug.Log("Setting up normal game");
         
-        // Spawn three Alberts in top left
+        // Spawn three Alberts in top left, with more spacing
         Vector3[] albertPositions = {
             new Vector3(-12f, 6f, 0f),
-            new Vector3(-10f, 4f, 0f),
-            new Vector3(-11f, 2f, 0f)
+            new Vector3(-8f, 6f, 0f),
+            new Vector3(-10f, 3f, 0f)
         };
         
         foreach (var basePos in albertPositions)
         {
-            Vector3 position = basePos + Random.insideUnitSphere * 2f;
+            Vector3 position = basePos + Random.insideUnitSphere * 1f; // Reduced random offset
             position.z = 0f;
             SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
         }
         
-        // Spawn three Kais in bottom right
+        // Spawn three Kais in bottom right, with more spacing
         Vector3[] kaiPositions = {
             new Vector3(12f, -6f, 0f),
-            new Vector3(10f, -4f, 0f),
-            new Vector3(11f, -2f, 0f)
+            new Vector3(8f, -6f, 0f),
+            new Vector3(10f, -3f, 0f)
         };
         
         foreach (var basePos in kaiPositions)
         {
-            Vector3 position = basePos + Random.insideUnitSphere * 2f;
+            Vector3 position = basePos + Random.insideUnitSphere * 1f; // Reduced random offset
             position.z = 0f;
             SpawnCreature(kaiCreaturePrefab, position, Creature.CreatureType.Kai, true);
         }

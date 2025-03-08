@@ -114,12 +114,27 @@ public class Creature : MonoBehaviour
             rb = gameObject.AddComponent<Rigidbody2D>();
         }
         
-        // Configure Rigidbody2D
+        // Configure Rigidbody2D for proper collisions
         rb.gravityScale = 0f;
-        rb.drag = 1f;
-        rb.angularDrag = 1f;
-        rb.constraints = RigidbodyConstraints2D.None;
+        rb.drag = 2f;  // Increased drag for more controlled movement
+        rb.angularDrag = 0.5f;
+        rb.mass = 1f;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep;  // Always process physics
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        
+        // Configure BoxCollider2D
+        var collider = GetComponent<BoxCollider2D>();
+        if (collider != null)
+        {
+            collider.isTrigger = true;  // Changed to true to disable physical collisions
+            collider.offset = new Vector2(0f, GetComponent<SpriteRenderer>().bounds.extents.y);
+            collider.size = new Vector2(0.6f, 0.6f);  // Slightly smaller for better separation
+        }
+
+        // Start the reproduction timer for new creatures
+        StartCoroutine(DelayedReproductionStart());
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -629,10 +644,10 @@ public class Creature : MonoBehaviour
         }
     }
     
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         // Check if we collided with another creature
-        Creature otherCreature = collision.gameObject.GetComponent<Creature>();
+        Creature otherCreature = collider.GetComponent<Creature>();
         if (otherCreature != null && otherCreature.type != type)
         {
             // Check if healths are approximately equal (within 0.1)
