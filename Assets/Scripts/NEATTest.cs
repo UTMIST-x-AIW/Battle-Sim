@@ -14,6 +14,9 @@ public class NEATTest : MonoBehaviour
     [Header("Test Settings")]
     public bool runTests = true;
     public int currentTest = 1;
+
+    [Header("Visualization Settings")]
+    public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     
     private void Awake()
     {

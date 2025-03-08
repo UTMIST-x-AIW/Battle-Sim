@@ -8,6 +8,7 @@ public class Creature : MonoBehaviour
     // Add static counter at the top of the class
     private static int totalCreatures = 0;
     private static readonly int maxCreatures = 20;
+    private static NEATTest neatTest;  // Cache NEATTest reference
 
     [Header("Basic Stats")]
     public float health = 3f;
@@ -54,9 +55,16 @@ public class Creature : MonoBehaviour
     private bool isMovingToMate = false;
     private bool isWaitingForMate = false;
     private bool canStartReproducing = false;  // New flag to control reproduction start
+    private Creature targetMate = null;
 
     private void Awake()
     {
+        // Cache NEATTest reference if not already cached
+        if (neatTest == null)
+        {
+            neatTest = FindObjectOfType<NEATTest>();
+        }
+
         // Initialize stats
         health = maxHealth;
         reproduction = 0f;
@@ -162,6 +170,31 @@ public class Creature : MonoBehaviour
         }
     }
     
+    private List<Creature> FindPotentialMates()
+    {
+        List<Creature> potentialMates = new List<Creature>();
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+        
+        foreach (var collider in nearbyColliders)
+        {
+            if (collider.gameObject == gameObject) continue;
+            
+            Creature otherCreature = collider.GetComponent<Creature>();
+            if (otherCreature != null && 
+                otherCreature.type == type && 
+                otherCreature.reproduction >= maxReproduction &&
+                !otherCreature.isReproducing &&
+                otherCreature.canStartReproducing)
+            {
+                potentialMates.Add(otherCreature);
+            }
+        }
+        
+        // Sort by lifetime (oldest first)
+        potentialMates.Sort((a, b) => b.lifetime.CompareTo(a.lifetime));
+        return potentialMates;
+    }
+
     private IEnumerator TryReproduce()
     {
         // Set flag to prevent multiple reproduction attempts
@@ -182,26 +215,64 @@ public class Creature : MonoBehaviour
             yield break;
         }
 
-        // Create a new genome with a unique key based on timestamp
-        int newKey = (int)(Time.time * 1000) % 1000000;
-        var genome = new NEAT.Genome.Genome(newKey);
-
-        // Get nodes and connections from the brain's network
-        var nodes = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.NodeGene>;
-        var connections = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
-
-        // Clone nodes and connections
-        foreach (var node in nodes.Values)
+        // Find potential mates
+        var potentialMates = FindPotentialMates();
+        
+        // If no potential mates found, reset reproduction and exit
+        if (potentialMates.Count == 0)
         {
-            genome.AddNode((NEAT.Genes.NodeGene)node.Clone());
-        }
-        foreach (var conn in connections.Values)
-        {
-            genome.AddConnection((NEAT.Genes.ConnectionGene)conn.Clone());
+            reproduction = maxReproduction; // Keep ready to reproduce
+            isReproducing = false;
+            yield break;
         }
 
-        // Apply mutations
-        ApplyMutations(genome);
+        // Get the oldest mate
+        Creature mate = potentialMates[0];
+        
+        // Decide who moves to whom
+        bool shouldMove = true;
+        if (lifetime == mate.lifetime)
+        {
+            // If same age, randomly decide
+            shouldMove = Random.value < 0.5f;
+        }
+        else if (lifetime > mate.lifetime)
+        {
+            // If we're older, we wait
+            shouldMove = false;
+        }
+
+        if (shouldMove)
+        {
+            // We're the younger one, move to mate
+            isMovingToMate = true;
+            targetMate = mate;
+            mate.isWaitingForMate = true;
+            mate.targetMate = this;
+            Debug.Log($"{gameObject.name} (younger) moving to mate with {mate.gameObject.name}");
+        }
+        else
+        {
+            // We're the older one, wait for mate
+            isWaitingForMate = true;
+            targetMate = mate;
+            mate.isMovingToMate = true;
+            mate.targetMate = this;
+            mate.isReproducing = true;
+            Debug.Log($"{gameObject.name} (older) waiting for mate {mate.gameObject.name}");
+        }
+    }
+
+    private IEnumerator BeginReproduction()
+    {
+        Debug.Log($"{gameObject.name} beginning reproduction with {targetMate.gameObject.name}");
+        
+        // Both creatures should be in position now
+        if (targetMate == null || !targetMate.gameObject)
+        {
+            FreeMate();
+            yield break;
+        }
 
         // Get floor collider
         PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
@@ -210,7 +281,7 @@ public class Creature : MonoBehaviour
         Vector2 validPosition = Vector2.zero;
         
         // Try to find a valid spawn position first
-        while (!spawnSuccessful && health > 0)
+        while (!spawnSuccessful && health > 0 && targetMate != null && targetMate.health > 0)
         {
             // Get random offset (slightly larger range for more spread)
             Vector2 spawnOffset = Random.insideUnitCircle * 2f;
@@ -218,7 +289,7 @@ public class Creature : MonoBehaviour
             
             if (floorCollider != null)
             {
-                // Calculate where the bottom center would be (need to create a temporary sprite to get bounds)
+                // Calculate where the bottom center would be
                 GameObject tempSprite = new GameObject("TempSprite");
                 tempSprite.transform.position = potentialPosition;
                 SpriteRenderer tempRenderer = tempSprite.AddComponent<SpriteRenderer>();
@@ -229,7 +300,7 @@ public class Creature : MonoBehaviour
                     potentialPosition.y - tempRenderer.bounds.extents.y
                 );
                 
-                Destroy(tempSprite);  // Clean up temporary object
+                Destroy(tempSprite);
                 
                 if (floorCollider.OverlapPoint(bottomCenter))
                 {
@@ -238,41 +309,115 @@ public class Creature : MonoBehaviour
                 }
                 else
                 {
-                    yield return spawnDelay;  // Wait before trying next position
+                    yield return spawnDelay;
                 }
             }
             else
             {
-                // If no floor collider found, any position is valid
                 validPosition = potentialPosition;
                 spawnSuccessful = true;
             }
         }
-        
-        // Only create the offspring if we found a valid position
-        if (spawnSuccessful)
+
+        // Check if both parents are still alive
+        if (!spawnSuccessful || targetMate == null || !targetMate.gameObject)
         {
-            // Create offspring at the valid position
-            GameObject offspring = Instantiate(gameObject, validPosition, Quaternion.identity);
-            Creature offspringCreature = offspring.GetComponent<Creature>();
-            
-            // Initialize offspring with mutated brain
-            var network = NEAT.NN.FeedForwardNetwork.Create(genome);
-            offspringCreature.InitializeNetwork(network);
-            offspringCreature.type = type;
-            
-            reproduction = 0f;  // Reset reproduction points on success
+            FreeMate();
+            yield break;
         }
-        else
+        
+        // Get nodes and connections from both parents' brains
+        var parent1Brain = brain;
+        var parent2Brain = targetMate.GetBrain();
+
+        var parent1Nodes = parent1Brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent1Brain) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent1Connections = parent1Brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent1Brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        
+        var parent2Nodes = parent2Brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent2Brain) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent2Connections = parent2Brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent2Brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+
+        // Create a new genome for the child
+        int newKey = (int)(Time.time * 1000) % 1000000;
+        var childGenome = new NEAT.Genome.Genome(newKey);
+
+        // Perform crossover by randomly selecting nodes and connections from either parent
+        var allNodeKeys = new HashSet<int>(parent1Nodes.Keys.Concat(parent2Nodes.Keys));
+        foreach (var nodeKey in allNodeKeys)
         {
-            // If we couldn't find a valid position, reset reproduction progress
-            reproduction = 0f;
+            NEAT.Genes.NodeGene nodeToAdd = null;
+            if (parent1Nodes.ContainsKey(nodeKey) && parent2Nodes.ContainsKey(nodeKey))
+            {
+                // If both parents have the node, randomly choose one
+                nodeToAdd = (NEAT.Genes.NodeGene)(Random.value < 0.5f ? parent1Nodes[nodeKey].Clone() : parent2Nodes[nodeKey].Clone());
+            }
+            else if (parent1Nodes.ContainsKey(nodeKey))
+            {
+                nodeToAdd = (NEAT.Genes.NodeGene)parent1Nodes[nodeKey].Clone();
+            }
+            else
+            {
+                nodeToAdd = (NEAT.Genes.NodeGene)parent2Nodes[nodeKey].Clone();
+            }
+            childGenome.AddNode(nodeToAdd);
         }
 
-        // Reset flag at the end, whether successful or not
-        isReproducing = false;
+        // Do the same for connections
+        var allConnectionKeys = new HashSet<int>(parent1Connections.Keys.Concat(parent2Connections.Keys));
+        foreach (var connKey in allConnectionKeys)
+        {
+            NEAT.Genes.ConnectionGene connToAdd = null;
+            if (parent1Connections.ContainsKey(connKey) && parent2Connections.ContainsKey(connKey))
+            {
+                // If both parents have the connection, randomly choose one
+                connToAdd = (NEAT.Genes.ConnectionGene)(Random.value < 0.5f ? parent1Connections[connKey].Clone() : parent2Connections[connKey].Clone());
+            }
+            else if (parent1Connections.ContainsKey(connKey))
+            {
+                connToAdd = (NEAT.Genes.ConnectionGene)parent1Connections[connKey].Clone();
+            }
+            else
+            {
+                connToAdd = (NEAT.Genes.ConnectionGene)parent2Connections[connKey].Clone();
+            }
+            childGenome.AddConnection(connToAdd);
+        }
+
+        // Apply mutations to the child's genome
+        ApplyMutations(childGenome);
+
+        // Create offspring at the valid position
+        GameObject offspring = Instantiate(gameObject, validPosition, Quaternion.identity);
+        Creature offspringCreature = offspring.GetComponent<Creature>();
+        
+        // Initialize offspring with crossed-over and mutated brain
+        var network = NEAT.NN.FeedForwardNetwork.Create(childGenome);
+        offspringCreature.InitializeNetwork(network);
+        offspringCreature.type = type;
+        
+        Debug.Log($"Created offspring at position {validPosition}");
+        
+        // Reset both parents
+        FreeMate();
+        targetMate.FreeMate();
     }
-    
+
+    // Add method to free mate if they die or reproduction is cancelled
+    private void FreeMate()
+    {
+        if (isMovingToMate || isWaitingForMate)
+        {
+            isMovingToMate = false;
+            isWaitingForMate = false;
+            isReproducing = false;
+            reproduction = 0f;
+            if (targetMate != null)
+            {
+                Debug.Log($"{gameObject.name} freeing mate {targetMate.gameObject.name}");
+            }
+            targetMate = null;
+        }
+    }
+
     private void ApplyMutations(NEAT.Genome.Genome genome)
     {
         // 1. Weight mutations (configurable chance for each connection)
@@ -463,7 +608,7 @@ public class Creature : MonoBehaviour
         if (lifetime > agingStartTime)
         {
             float agingTime = lifetime - agingStartTime;
-            // Linear aging damage calculation (removed the Pow function)
+            // Linear aging damage calculation
             float agingDamage = agingRate * agingTime * Time.fixedDeltaTime;
             health = Mathf.Max(0, health - agingDamage);
             
@@ -477,38 +622,66 @@ public class Creature : MonoBehaviour
 
         if (brain != null)
         {
-            float[] actions = GetActions();
-            
-            // Actions[0] is horizontal velocity, actions[1] is vertical velocity
-            Vector2 desiredVelocity = new Vector2(actions[0], actions[1]) * moveSpeed;
-            
-            // Check if the desired position would be within bounds
-            Vector2 currentPos = rb.position;
-            Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
-            
-            // Get the floor bounds
-            PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
-            if (floorCollider != null)
+            // If we're moving to mate, override normal movement
+            if (isMovingToMate && targetMate != null)
             {
-                // Get the sprite's bottom center point
-                Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
+                // Calculate direction to mate
+                Vector2 directionToMate = (targetMate.transform.position - transform.position).normalized;
                 
-                // Check if the bottom center point would be inside the floor bounds
-                if (floorCollider.OverlapPoint(bottomCenter))
+                // Check if we're close enough to mate
+                if (Vector2.Distance(transform.position, targetMate.transform.position) < 0.5f)
                 {
-                    // Apply movement
-                    rb.velocity = desiredVelocity;
+                    // We've arrived at mate position
+                    isMovingToMate = false;
+                    StartCoroutine(BeginReproduction());
                 }
                 else
                 {
-                    // Stop at the current position
-                    rb.velocity = Vector2.zero;
+                    // Move towards mate
+                    rb.velocity = directionToMate * moveSpeed;
                 }
             }
-            else
+            // If waiting for mate, don't move
+            else if (isWaitingForMate)
             {
-                // If no floor collider found, just apply movement
-                rb.velocity = desiredVelocity;
+                rb.velocity = Vector2.zero;
+            }
+            // Normal movement
+            else if (!isReproducing)
+            {
+                float[] actions = GetActions();
+                
+                // Actions[0] is horizontal velocity, actions[1] is vertical velocity
+                Vector2 desiredVelocity = new Vector2(actions[0], actions[1]) * moveSpeed;
+                
+                // Check if the desired position would be within bounds
+                Vector2 currentPos = rb.position;
+                Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
+                
+                // Get the floor bounds
+                PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
+                if (floorCollider != null)
+                {
+                    // Get the sprite's bottom center point
+                    Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
+                    
+                    // Check if the bottom center point would be inside the floor bounds
+                    if (floorCollider.OverlapPoint(bottomCenter))
+                    {
+                        // Apply movement
+                        rb.velocity = desiredVelocity;
+                    }
+                    else
+                    {
+                        // Stop at the current position
+                        rb.velocity = Vector2.zero;
+                    }
+                }
+                else
+                {
+                    // If no floor collider found, just apply movement
+                    rb.velocity = desiredVelocity;
+                }
             }
             
             // Update reproduction
@@ -563,6 +736,12 @@ public class Creature : MonoBehaviour
 
     private void OnDestroy()
     {
+        // If we were someone's target mate, free them
+        if (targetMate != null)
+        {
+            targetMate.FreeMate();
+        }
+
         // Decrement counter when creature is destroyed
         totalCreatures--;
         Debug.Log($"Creature destroyed. Total creatures: {totalCreatures}");
@@ -595,6 +774,25 @@ public class Creature : MonoBehaviour
                 GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 60, 100, 20), 
                          status);
             }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Only draw if visualization is enabled and NEATTest reference exists
+        if (neatTest != null && neatTest.showDetectionRadius)
+        {
+            // Set color to be semi-transparent and match creature type
+            Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
+            Gizmos.color = gizmoColor;
+            
+            // Draw filled circle for better visibility
+            Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            
+            // Draw wire frame with more opacity for better edge definition
+            gizmoColor.a = 0.3f;
+            Gizmos.color = gizmoColor;
+            Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
         }
     }
 } 
