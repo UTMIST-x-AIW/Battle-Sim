@@ -51,6 +51,8 @@ public class Creature : MonoBehaviour
     
     // Add at the top with other private fields
     private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
+    private bool isMovingToMate = false;
+    private bool isWaitingForMate = false;
 
     private void Awake()
     {
@@ -543,5 +545,35 @@ public class Creature : MonoBehaviour
         // Decrement counter when creature is destroyed
         totalCreatures--;
         Debug.Log($"Creature destroyed. Total creatures: {totalCreatures}");
+    }
+
+    private void OnGUI()
+    {
+        // Get screen position for this creature
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        screenPos.y = Screen.height - screenPos.y; // GUI uses top-left origin
+
+        // Only show if on screen
+        if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
+            screenPos.y >= 0 && screenPos.y <= Screen.height)
+        {
+            string status = "";
+            if (isMovingToMate)
+                status = "Moving to mate";
+            else if (isWaitingForMate)
+                status = "Waiting for mate";
+            else if (isReproducing)
+                status = "Reproducing";
+
+            // Show age and status
+            GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 40, 100, 20), 
+                     $"Age: {lifetime:F1}");
+            
+            if (status != "")
+            {
+                GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 60, 100, 20), 
+                         status);
+            }
+        }
     }
 } 
