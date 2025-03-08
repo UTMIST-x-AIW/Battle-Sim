@@ -67,16 +67,33 @@ public class NEATTest : MonoBehaviour
     {
         Debug.Log("Setting up normal game");
         
-        // Original game setup
-        // Spawn one Albert near (-5, 5)
-        Vector3 albertPosition = new Vector3(-12, 6, 0) + Random.insideUnitSphere * 2f;
-        albertPosition.z = 0;  // Ensure z is 0
-        SpawnCreature(albertCreaturePrefab, albertPosition, Creature.CreatureType.Albert);
+        // Spawn three Alberts in top left
+        Vector3[] albertPositions = {
+            new Vector3(-12f, 6f, 0f),
+            new Vector3(-10f, 4f, 0f),
+            new Vector3(-11f, 2f, 0f)
+        };
         
-        // Spawn one Kai near (5, -5)
-        Vector3 kaiPosition = new Vector3(12, -6, 0) + Random.insideUnitSphere * 2f;
-        kaiPosition.z = 0;  // Ensure z is 0
-        SpawnCreature(kaiCreaturePrefab, kaiPosition, Creature.CreatureType.Kai);
+        foreach (var basePos in albertPositions)
+        {
+            Vector3 position = basePos + Random.insideUnitSphere * 2f;
+            position.z = 0f;
+            SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
+        }
+        
+        // Spawn three Kais in bottom right
+        Vector3[] kaiPositions = {
+            new Vector3(12f, -6f, 0f),
+            new Vector3(10f, -4f, 0f),
+            new Vector3(11f, -2f, 0f)
+        };
+        
+        foreach (var basePos in kaiPositions)
+        {
+            Vector3 position = basePos + Random.insideUnitSphere * 2f;
+            position.z = 0f;
+            SpawnCreature(kaiCreaturePrefab, position, Creature.CreatureType.Kai, true);
+        }
     }
 
     private void SetupMatingMovementTest()
@@ -88,10 +105,10 @@ public class NEATTest : MonoBehaviour
         Vector3 youngerPosition = new Vector3(2.5f, 2.5f, 0f); // 8 units diagonal distance
         
         // Spawn older creature
-        var olderCreature = SpawnCreature(albertCreaturePrefab, olderPosition, Creature.CreatureType.Albert);
+        var olderCreature = SpawnCreature(albertCreaturePrefab, olderPosition, Creature.CreatureType.Albert, false);
         
         // Spawn younger creature
-        var youngerCreature = SpawnCreature(albertCreaturePrefab, youngerPosition, Creature.CreatureType.Albert);
+        var youngerCreature = SpawnCreature(albertCreaturePrefab, youngerPosition, Creature.CreatureType.Albert, false);
         
         // Initialize creatures with their starting values
         olderCreature.InitializeForTesting(20f, olderCreature.maxReproduction);
@@ -104,14 +121,14 @@ public class NEATTest : MonoBehaviour
         Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
     }
     
-    private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type)
+    private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
         var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
-        // Create initial neural network
-        var genome = CreateInitialGenome();
+        // Create initial neural network with appropriate genome
+        var genome = isKai ? CreateInitialKaiGenome() : CreateInitialGenome();
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
         
@@ -168,6 +185,50 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 11, 13, 0.3f));
         // Current direction y to vertical velocity
         genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 12, 14, 0.3f));
+        
+        return genome;
+    }
+    
+    NEAT.Genome.Genome CreateInitialKaiGenome()
+    {
+        var genome = new NEAT.Genome.Genome(0);
+        
+        // Add input nodes (same as Albert)
+        for (int i = 0; i < 13; i++)
+        {
+            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            node.Layer = 0;
+            genome.AddNode(node);
+        }
+        
+        // Add output nodes
+        var outputNode1 = new NEAT.Genes.NodeGene(13, NEAT.Genes.NodeType.Output);
+        var outputNode2 = new NEAT.Genes.NodeGene(14, NEAT.Genes.NodeType.Output);
+        outputNode1.Layer = 2;
+        outputNode2.Layer = 2;
+        genome.AddNode(outputNode1);
+        genome.AddNode(outputNode2);
+        
+        // Add connections with different weights than Albert
+        // Kais are more aggressive (stronger response to opposite type)
+        // and less focused on reproduction
+        
+        // Health to horizontal velocity (more defensive)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 13, -0.7f));
+        // Reproduction to vertical velocity (less priority)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 14, -0.3f));
+        // Same type x,y position (slightly weaker attraction)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 2, 13, 0.4f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 3, 14, 0.4f));
+        // Opposite type x,y position (stronger reaction)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 5, 13, 0.8f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 6, 14, 0.8f));
+        // Cherry position (more food-focused)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 8, 13, 0.6f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 9, 14, 0.6f));
+        // Current direction (more momentum)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 11, 13, 0.4f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 12, 14, 0.4f));
         
         return genome;
     }
