@@ -10,6 +10,7 @@ public class Sword : MonoBehaviour
     private Quaternion targetRotation;
     private Transform swordTransform;
     [SerializeField] public float swingSpeedScale = 20f;
+    public bool isArcher = false;
 
     void Start()
     {
@@ -24,7 +25,7 @@ public class Sword : MonoBehaviour
             attackTimer -= Time.deltaTime * 2;
         }
         
-        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && !isSwinging && attackTimer <= 0f)
+        if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.Space)) && !isArcher && !isSwinging && attackTimer <= 0f)
         {
             gameObject.GetComponentInParent<PlayerAttack>().Attack();
             attackTimer = attackCooldown;

@@ -22,6 +22,8 @@ public class Stats : MonoBehaviour
     [SerializeField] private GameObject basicSword;
     [SerializeField] private GameObject upgradedSword;
     [SerializeField] private GameObject upgradedBow;
+    [SerializeField] private GameObject arrow;
+    [SerializeField] private GameObject glasses;
     
     private float archerThreshold = 1f;
     
@@ -100,8 +102,9 @@ public class Stats : MonoBehaviour
         if (!hasUpgradedClass)
         {
             hasUpgradedClass = true;
-            gameObject.transform.localScale = new Vector3(-1f, 1f, 1f)* 0.67f;
-            gameObject.GetComponent<DebugMovement>().sizeScaling = 0.67f;
+            // gameObject.transform.localScale = new Vector3(-1f, 1f, 1f)* 0.67f;
+            // gameObject.GetComponent<DebugMovement>().sizeScaling = 0.67f;
+            glasses.SetActive(true);
         }
     }
     
@@ -112,6 +115,7 @@ public class Stats : MonoBehaviour
             hasUpgradedClass = true;
             basicSword.SetActive(false);
             upgradedBow.SetActive(false);
+            arrow.SetActive(false);
             upgradedSword.SetActive(true);
         }
     }
@@ -124,11 +128,13 @@ public class Stats : MonoBehaviour
             basicSword.SetActive(false);
             upgradedSword.SetActive(false);
             upgradedBow.SetActive(true);
-            // TODO
+            arrow.SetActive(true);
+            gameObject.GetComponent<PlayerAttack>().attackRange = 4.5f;
+            gameObject.GetComponentInChildren<Sword>().isArcher = true;
+            gameObject.GetComponentInChildren<Arrow>().isArcher = true;
+            
         }
     }
-    
-    
     
     
 }
