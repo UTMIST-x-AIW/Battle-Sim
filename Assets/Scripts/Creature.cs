@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using NEAT.Genes;
 
 public class Creature : MonoBehaviour
 {
@@ -61,6 +62,9 @@ public class Creature : MonoBehaviour
     private bool hasLoggedObservations = false;
     private int debugFrameCounter = 0;
 
+    // Animator reference
+    private CreatureAnimator creatureAnimator;
+
     private void Awake()
     {
         // Cache NEATTest reference if not already cached
@@ -74,6 +78,13 @@ public class Creature : MonoBehaviour
         reproduction = 0f;
         lifetime = 0f;
         canStartReproducing = false;
+        
+        // Get CreatureAnimator reference
+        creatureAnimator = GetComponent<CreatureAnimator>();
+        if (creatureAnimator == null)
+        {
+            creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
+        }
         
         // Increment counter when creature is created
         totalCreatures++;
@@ -124,6 +135,12 @@ public class Creature : MonoBehaviour
         rb.angularDrag = 1f;
         rb.constraints = RigidbodyConstraints2D.None;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        
+        // Update the animator with the creature type
+        if (creatureAnimator != null)
+        {
+            creatureAnimator.SetCreatureType(type);
+        }
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
