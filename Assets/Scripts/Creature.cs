@@ -57,6 +57,10 @@ public class Creature : MonoBehaviour
     private bool canStartReproducing = false;  // New flag to control reproduction start
     private Creature targetMate = null;
 
+    // Add these private variables at the class level
+    private bool hasLoggedObservations = false;
+    private int debugFrameCounter = 0;
+
     private void Awake()
     {
         // Cache NEATTest reference if not already cached
@@ -73,13 +77,13 @@ public class Creature : MonoBehaviour
         
         // Increment counter when creature is created
         totalCreatures++;
-        Debug.Log($"Creature created. Total creatures: {totalCreatures}");
+        // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
     }
 
     private IEnumerator DelayedReproductionStart()
     {
         canStartReproducing = false;
-        Debug.Log($"{gameObject.name}: Starting reproduction delay timer");
+        // Debug.Log(string.Format("{0}: Starting reproduction delay timer", gameObject.name));
         
         // Wait for 2 seconds before allowing reproduction
         yield return new WaitForSeconds(2f);
@@ -88,7 +92,7 @@ public class Creature : MonoBehaviour
         if (this != null && gameObject != null)
         {
             canStartReproducing = true;
-            Debug.Log($"{gameObject.name} can now start reproducing");
+            // Debug.Log(string.Format("{0} can now start reproducing", gameObject.name));
         }
     }
 
@@ -149,12 +153,37 @@ public class Creature : MonoBehaviour
     
     public float[] GetActions()
     {
-        if (brain == null) return new float[] { 0f, 0f };
+        if (brain == null)
+        {
+            // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
+            return new float[] { 0f, 0f };
+        }
         
         float[] observations = observer.GetObservations(this);
         double[] doubleObservations = ConvertToDouble(observations);
+        
+        // Debug the observations once
+        //if (!hasLoggedObservations)
+        //{
+        //    string obsStr = "Observations: ";
+        //    for (int i = 0; i < observations.Length; i++)
+        //    {
+        //        obsStr += string.Format("[{0}]={1}, ", i, observations[i]);
+        //    }
+        //    Debug.Log(string.Format("{0}: {1}", gameObject.name, obsStr));
+        //    hasLoggedObservations = true;
+        //}
+        
         double[] doubleOutputs = brain.Activate(doubleObservations);
         float[] outputs = ConvertToFloat(doubleOutputs);
+        
+        // Debug the outputs periodically
+        //debugFrameCounter++;
+        //if (debugFrameCounter >= 100)
+        //{
+        //    Debug.Log(string.Format("{0}: Network output x={1}, y={2}", gameObject.name, outputs[0], outputs[1]));
+        //    debugFrameCounter = 0;
+        //}
         
         // Ensure outputs are in range [-1, 1]
         outputs[0] = Mathf.Clamp(outputs[0], -1f, 1f);
@@ -171,7 +200,7 @@ public class Creature : MonoBehaviour
             // If we somehow got stuck with isReproducing false but other flags true, reset
             if (isMovingToMate || isWaitingForMate)
             {
-                Debug.LogWarning($"{gameObject.name}: Found inconsistent reproduction state, resetting...");
+                // Debug.LogWarning(string.Format("{0}: Found inconsistent reproduction state, resetting...", gameObject.name));
                 FreeMate();
                 return;
             }
@@ -192,7 +221,7 @@ public class Creature : MonoBehaviour
         else if (isReproducing && !isMovingToMate && !isWaitingForMate && targetMate == null)
         {
             // We're in an inconsistent state - isReproducing is true but we're not actually in any reproduction process
-            Debug.LogWarning($"{gameObject.name}: Found stuck reproduction state, resetting...");
+            // Debug.LogWarning(string.Format("{0}: Found stuck reproduction state, resetting...", gameObject.name));
             FreeMate();
         }
     }
@@ -230,7 +259,7 @@ public class Creature : MonoBehaviour
         // Check population limit first
         if (totalCreatures >= maxCreatures)
         {
-            Debug.Log($"Max creatures ({maxCreatures}) reached, preventing reproduction");
+            // Debug.Log(string.Format("Max creatures ({0}) reached, preventing reproduction", maxCreatures));
             FreeMate();
             yield break;
         }
@@ -247,7 +276,7 @@ public class Creature : MonoBehaviour
         // If no potential mates found, reset reproduction and exit
         if (potentialMates.Count == 0)
         {
-            Debug.Log($"{gameObject.name}: No potential mates found, keeping reproduction ready");
+            // Debug.Log(string.Format("{0}: No potential mates found, keeping reproduction ready", gameObject.name));
             isReproducing = false;
             reproduction = maxReproduction; // Keep ready to reproduce
             yield break;
@@ -278,7 +307,7 @@ public class Creature : MonoBehaviour
             mate.isWaitingForMate = true;
             mate.isReproducing = true;
             mate.targetMate = this;
-            Debug.Log($"{gameObject.name} (younger) moving to mate with {mate.gameObject.name}");
+            // Debug.Log(string.Format("{0} (younger) moving to mate with {1}", gameObject.name, mate.gameObject.name));
         }
         else
         {
@@ -289,13 +318,13 @@ public class Creature : MonoBehaviour
             mate.isMovingToMate = true;
             mate.isReproducing = true;
             mate.targetMate = this;
-            Debug.Log($"{gameObject.name} (older) waiting for mate {mate.gameObject.name}");
+            // Debug.Log(string.Format("{0} (older) waiting for mate {1}", gameObject.name, mate.gameObject.name));
         }
     }
 
     private void FreeMate()
     {
-        Debug.Log($"{gameObject.name}: FreeMate called. Previous state - isReproducing: {isReproducing}, isMovingToMate: {isMovingToMate}, isWaitingForMate: {isWaitingForMate}, reproduction: {reproduction}");
+        // Debug.Log(string.Format("{0}: FreeMate called. Previous state - isReproducing: {1}, isMovingToMate: {2}, isWaitingForMate: {3}, reproduction: {4}", gameObject.name, isReproducing, isMovingToMate, isWaitingForMate, reproduction));
         
         // Reset ALL reproduction-related flags
         isMovingToMate = false;
@@ -307,7 +336,7 @@ public class Creature : MonoBehaviour
         // If we have a target mate, log and clear it
         if (targetMate != null)
         {
-            Debug.Log($"{gameObject.name} freeing mate {targetMate.gameObject.name}");
+            // Debug.Log(string.Format("{0} freeing mate {1}", gameObject.name, targetMate.gameObject.name));
             
             // Store reference before nulling it
             var mate = targetMate;
@@ -339,7 +368,7 @@ public class Creature : MonoBehaviour
         // Start delayed reproduction timer again
         StartCoroutine(DelayedReproductionStart());
         
-        Debug.Log($"{gameObject.name}: FreeMate completed. New state - canStartReproducing: false, reproduction: 0");
+        // Debug.Log(string.Format("{0}: FreeMate completed. New state - canStartReproducing: false, reproduction: 0", gameObject.name));
     }
 
     private void ApplyMutations(NEAT.Genome.Genome genome)
@@ -684,7 +713,7 @@ public class Creature : MonoBehaviour
 
         // Decrement counter when creature is destroyed
         totalCreatures--;
-        Debug.Log($"Creature destroyed. Total creatures: {totalCreatures}");
+        // Debug.Log(string.Format("Creature destroyed. Total creatures: {0}", totalCreatures));
     }
 
     private void OnGUI()
@@ -707,7 +736,7 @@ public class Creature : MonoBehaviour
 
             // Show age and status
             GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 40, 100, 20), 
-                     $"Age: {lifetime:F1}");
+                     string.Format("Age: {0:F1}", lifetime));
             
             if (status != "")
             {
@@ -741,25 +770,25 @@ public class Creature : MonoBehaviour
         // Validate all required components before proceeding
         if (targetMate == null)
         {
-            Debug.LogError($"{gameObject.name}: Cannot begin reproduction - targetMate is null");
+            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - targetMate is null", gameObject.name));
             FreeMate();
             yield break;
         }
 
         if (targetMate.gameObject == null)
         {
-            Debug.LogError($"{gameObject.name}: Cannot begin reproduction - targetMate.gameObject is null");
+            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - targetMate.gameObject is null", gameObject.name));
             FreeMate();
             yield break;
         }
 
-        Debug.Log($"{gameObject.name} beginning reproduction with {targetMate.gameObject.name}");
+        // Debug.Log(string.Format("{0} beginning reproduction with {1}", gameObject.name, targetMate.gameObject.name));
 
         // Get floor collider with null check
         var floorObj = GameObject.FindGameObjectWithTag("Floor");
         if (floorObj == null)
         {
-            Debug.LogError($"{gameObject.name}: Cannot begin reproduction - Floor object not found");
+            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - Floor object not found", gameObject.name));
             FreeMate();
             yield break;
         }
@@ -767,7 +796,7 @@ public class Creature : MonoBehaviour
         var floorCollider = floorObj.GetComponent<PolygonCollider2D>();
         if (floorCollider == null)
         {
-            Debug.LogError($"{gameObject.name}: Cannot begin reproduction - Floor collider not found");
+            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - Floor collider not found", gameObject.name));
             FreeMate();
             yield break;
         }
@@ -776,7 +805,7 @@ public class Creature : MonoBehaviour
         var spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer == null || spriteRenderer.sprite == null)
         {
-            Debug.LogError($"{gameObject.name}: Cannot begin reproduction - SpriteRenderer or sprite is null");
+            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - SpriteRenderer or sprite is null", gameObject.name));
             FreeMate();
             yield break;
         }
@@ -811,14 +840,14 @@ public class Creature : MonoBehaviour
         // Final validation before creating offspring
         if (!spawnSuccessful)
         {
-            Debug.LogError($"{gameObject.name}: Failed to find valid spawn position");
+            // Debug.LogError(string.Format("{0}: Failed to find valid spawn position", gameObject.name));
             FreeMate();
             yield break;
         }
 
         if (targetMate == null || !targetMate.gameObject)
         {
-            Debug.LogError($"{gameObject.name}: Target mate became invalid during spawn position search");
+            // Debug.LogError(string.Format("{0}: Target mate became invalid during spawn position search", gameObject.name));
             FreeMate();
             yield break;
         }
@@ -828,14 +857,14 @@ public class Creature : MonoBehaviour
             // Validate brains
             if (brain == null)
             {
-                Debug.LogError($"{gameObject.name}: Brain is null");
+                // Debug.LogError(string.Format("{0}: Brain is null", gameObject.name));
                 throw new System.Exception("Brain is null");
             }
 
             var parent2Brain = targetMate.GetBrain();
             if (parent2Brain == null)
             {
-                Debug.LogError($"{gameObject.name}: Target mate's brain is null");
+                // Debug.LogError(string.Format("{0}: Target mate's brain is null", gameObject.name));
                 throw new System.Exception("Target mate's brain is null");
             }
 
@@ -847,7 +876,7 @@ public class Creature : MonoBehaviour
 
             if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
             {
-                Debug.LogError($"{gameObject.name}: Failed to get neural network data");
+                // Debug.LogError(string.Format("{0}: Failed to get neural network data", gameObject.name));
                 throw new System.Exception("Failed to get neural network data");
             }
 
@@ -928,7 +957,7 @@ public class Creature : MonoBehaviour
             offspringCreature.targetMate = null;
             offspringCreature.StartCoroutine(offspringCreature.DelayedReproductionStart());
             
-            Debug.Log($"{gameObject.name}: Successfully created offspring at position {validPosition}");
+            // Debug.Log(string.Format("{0}: Successfully created offspring at position {1}", gameObject.name, validPosition));
             
             // Reset both parents
             var tempMate = targetMate; // Store reference in case it becomes null
@@ -940,7 +969,7 @@ public class Creature : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"{gameObject.name}: Exception in BeginReproduction: {e}");
+            // Debug.LogError(string.Format("{0}: Exception in BeginReproduction: {1}", gameObject.name, e));
             FreeMate();
         }
     }

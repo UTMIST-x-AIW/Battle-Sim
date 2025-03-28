@@ -35,11 +35,11 @@ public class NEATTest : MonoBehaviour
         // Only proceed if we're the main instance
         if (instance != this) return;
 
-        Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
+        // Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
 
         // Clear any existing creatures first
         var existingCreatures = GameObject.FindObjectsOfType<Creature>();
-        Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
+        // Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
         foreach (var creature in existingCreatures)
         {
             Destroy(creature.gameObject);
@@ -65,7 +65,7 @@ public class NEATTest : MonoBehaviour
 
     private void SetupNormalGame()
     {
-        Debug.Log("Setting up normal game");
+        // Debug.Log("Setting up normal game");
         
         // Spawn three Alberts in top left
         Vector3[] albertPositions = {
@@ -98,7 +98,7 @@ public class NEATTest : MonoBehaviour
 
     private void SetupMatingMovementTest()
     {
-        Debug.Log("Starting Test 1: Basic Mating Movement");
+        // Debug.Log("Starting Test 1: Basic Mating Movement");
         
         // Create two Alberts far from each other but still within detection radius
         Vector3 olderPosition = new Vector3(-2.5f, -2.5f, 0f);
@@ -114,11 +114,11 @@ public class NEATTest : MonoBehaviour
         olderCreature.InitializeForTesting(20f, olderCreature.maxReproduction);
         youngerCreature.InitializeForTesting(10f, youngerCreature.maxReproduction);
 
-        Debug.Log("Test 1 Setup Complete:");
-        Debug.Log($"- Older creature at {olderPosition}, age: 20");
-        Debug.Log($"- Younger creature at {youngerPosition}, age: 10");
-        Debug.Log("Expected behavior: Younger creature should move toward older creature, older creature should stay still");
-        Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
+        // Debug.Log("Test 1 Setup Complete:");
+        // Debug.Log($"- Older creature at {olderPosition}, age: 20");
+        // Debug.Log($"- Younger creature at {youngerPosition}, age: 10");
+        // Debug.Log("Expected behavior: Younger creature should move toward older creature, older creature should stay still");
+        // Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
     }
     
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
@@ -156,6 +156,7 @@ public class NEATTest : MonoBehaviour
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
+            node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
             genome.AddNode(node);
         }
         
@@ -164,6 +165,11 @@ public class NEATTest : MonoBehaviour
         var outputNode2 = new NEAT.Genes.NodeGene(14, NEAT.Genes.NodeType.Output);
         outputNode1.Layer = 2;  // Output layer
         outputNode2.Layer = 2;  // Output layer
+        
+        // Explicitly set bias to 0 for output nodes to maintain previous behavior
+        outputNode1.Bias = 0.0;
+        outputNode2.Bias = 0.0;
+        
         genome.AddNode(outputNode1);
         genome.AddNode(outputNode2);
         
@@ -198,6 +204,7 @@ public class NEATTest : MonoBehaviour
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
+            node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
             genome.AddNode(node);
         }
         
@@ -206,6 +213,11 @@ public class NEATTest : MonoBehaviour
         var outputNode2 = new NEAT.Genes.NodeGene(14, NEAT.Genes.NodeType.Output);
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
+        
+        // Explicitly set bias to 0 for output nodes to maintain previous behavior
+        outputNode1.Bias = 0.0;
+        outputNode2.Bias = 0.0;
+        
         genome.AddNode(outputNode1);
         genome.AddNode(outputNode2);
         
