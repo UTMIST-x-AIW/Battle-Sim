@@ -16,8 +16,12 @@ public class NetworkVisualizer : MonoBehaviour
     public float nodeSize = 30f;        // Size of node circles
     public float edgeMargin = 40f;      // Margin from panel edges
     
+    [Header("Visualization Settings")]
+    public float outlineThickness = 3f;  // Thickness of the node outline for bias visualization
+    
     private Dictionary<int, Vector2> nodePositions = new Dictionary<int, Vector2>();
     private Dictionary<int, Image> nodeImages = new Dictionary<int, Image>();
+    private Dictionary<int, Outline> nodeOutlines = new Dictionary<int, Outline>();
     private List<RectTransform> connectionObjects = new List<RectTransform>();
     private Creature selectedCreature;
     private CameraController cameraController;
@@ -25,52 +29,56 @@ public class NetworkVisualizer : MonoBehaviour
     
     void Start()
     {
-        // Hide panel initially
+        // Find camera controller if available
+        cameraController = FindObjectOfType<CameraController>();
+        
+        // Ensure network panel starts hidden
         if (networkPanel != null)
         {
             networkPanel.gameObject.SetActive(false);
-            
-            // Set panel position and size
+        }
+        
+        // Setup layout - restore original anchoring
+        if (networkPanel != null)
+        {
             networkPanel.anchorMin = new Vector2(0, 1);  // Anchor to top-left
             networkPanel.anchorMax = new Vector2(0, 1);
             networkPanel.pivot = new Vector2(0, 1);      // Pivot at top-left
-            networkPanel.anchoredPosition = panelOffset;
             networkPanel.sizeDelta = panelSize;
-        }
-        
-        // Get camera controller
-        cameraController = Camera.main.GetComponent<CameraController>();
-        if (cameraController == null)
-        {
-            cameraController = Camera.main.gameObject.AddComponent<CameraController>();
+            networkPanel.anchoredPosition = panelOffset;
         }
     }
     
     void Update()
     {
-        // Check for mouse click
+        // Check for mouse clicks to select creatures
         if (Input.GetMouseButtonDown(0))
         {
-            // Cast a ray from the camera to the mouse position
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction);
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
             
-            bool foundCreature = false;
-            foreach (var hit in hits)
+            // Cast a ray and check for creatures
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            if (hit.collider != null)
             {
                 Creature creature = hit.collider.GetComponent<Creature>();
                 if (creature != null)
                 {
-                    Debug.Log($"Selected creature of type: {creature.type}");
                     SelectCreature(creature);
-                    foundCreature = true;
-                    break;
+                }
+                else
+                {
+                    // Clicked on something else - reset camera
+                    HideNetwork();
+                    if (cameraController != null)
+                    {
+                        cameraController.ResetCamera();
+                    }
                 }
             }
-            
-            // If we didn't click on a creature, hide the network and reset camera
-            if (!foundCreature)
+            else
             {
+                // Clicked on empty space - reset camera
                 HideNetwork();
                 if (cameraController != null)
                 {
@@ -79,8 +87,18 @@ public class NetworkVisualizer : MonoBehaviour
             }
         }
         
-        // Update node colors if we have a selected creature
-        if (selectedCreature != null && networkPanel.gameObject.activeSelf)
+        // Check for escape key to hide network
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            HideNetwork();
+            if (cameraController != null)
+            {
+                cameraController.ResetCamera();
+            }
+        }
+        
+        // Update visualization if we have a selected creature
+        if (selectedCreature != null && networkPanel != null && networkPanel.gameObject.activeSelf)
         {
             UpdateNodeColors();
         }
@@ -321,6 +339,41 @@ public class NetworkVisualizer : MonoBehaviour
             text.text = node.Key.ToString();
             text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);
         }
+        
+        // Add or get outline component for bias visualization
+        Outline outline = nodeObj.GetComponent<Outline>();
+        if (outline == null)
+        {
+            outline = nodeObj.AddComponent<Outline>();
+        }
+        
+        nodeOutlines[node.Key] = outline;
+        
+        // Configure outline
+        outline.effectColor = GetBiasColor((float)node.Bias);
+        outline.effectDistance = new Vector2(outlineThickness, outlineThickness);
+        outline.useGraphicAlpha = false;
+        
+        // Debug log the bias value
+        Debug.Log($"Node {node.Key} bias: {node.Bias}");
+    }
+    
+    // Helper method to convert bias value to color
+    Color GetBiasColor(float bias)
+    {
+        // Green for positive bias, red for negative, white for zero
+        if (bias > 0)
+        {
+            return Color.Lerp(Color.white, Color.green, Mathf.Min(1, Mathf.Abs(bias)));
+        }
+        else if (bias < 0)
+        {
+            return Color.Lerp(Color.white, Color.red, Mathf.Min(1, Mathf.Abs(bias)));
+        }
+        else
+        {
+            return Color.white;
+        }
     }
     
     void DrawConnection(ConnectionGene connection)
@@ -368,6 +421,7 @@ public class NetworkVisualizer : MonoBehaviour
         
         nodePositions.Clear();
         nodeImages.Clear();
+        nodeOutlines.Clear();
         connectionObjects.Clear();
         lastNodeValues.Clear();
     }
