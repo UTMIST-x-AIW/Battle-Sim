@@ -205,17 +205,18 @@ public class NetworkVisualizer : MonoBehaviour
     
     void CalculateNodePositions(Dictionary<int, NodeGene> nodes, Dictionary<int, ConnectionGene> connections)
     {
-        float panelWidth = panelSize.x;
-        float panelHeight = panelSize.y;
+        if (nodes == null || nodes.Count == 0) return;
         
-        // Group nodes by type and layer
-        var inputNodes = new List<NodeGene>();
-        var hiddenNodes = new Dictionary<int, List<NodeGene>>();  // Layer -> nodes
-        var biasNodes = new Dictionary<int, NodeGene>();  // Layer -> bias node
-        var outputNodes = new List<NodeGene>();
+        nodePositions.Clear();
         
-        // Find max layer for hidden nodes
-        int maxHiddenLayer = 1;
+        float panelWidth = networkPanel.sizeDelta.x - edgeMargin * 2;
+        float panelHeight = networkPanel.sizeDelta.y;
+        
+        List<NodeGene> inputNodes = new List<NodeGene>();
+        List<NodeGene> outputNodes = new List<NodeGene>();
+        Dictionary<int, List<NodeGene>> hiddenNodes = new Dictionary<int, List<NodeGene>>();
+        int maxHiddenLayer = 0;
+        
         foreach (var node in nodes.Values)
         {
             switch (node.Type)
@@ -227,10 +228,6 @@ public class NetworkVisualizer : MonoBehaviour
                     if (!hiddenNodes.ContainsKey(node.Layer))
                         hiddenNodes[node.Layer] = new List<NodeGene>();
                     hiddenNodes[node.Layer].Add(node);
-                    maxHiddenLayer = Mathf.Max(maxHiddenLayer, node.Layer);
-                    break;
-                case NodeType.Bias:
-                    biasNodes[node.Layer] = node;
                     maxHiddenLayer = Mathf.Max(maxHiddenLayer, node.Layer);
                     break;
                 case NodeType.Output:
@@ -264,7 +261,7 @@ public class NetworkVisualizer : MonoBehaviour
             );
         }
         
-        // Position hidden and bias nodes in layers
+        // Position hidden nodes in layers
         if (maxHiddenLayer > 0)
         {
             float layerSpacing = (panelWidth - nodeSize) / (maxHiddenLayer + 1);
@@ -276,23 +273,13 @@ public class NetworkVisualizer : MonoBehaviour
                 
                 // Position hidden nodes in this layer
                 var layerNodes = hiddenNodes.ContainsKey(layer) ? hiddenNodes[layer] : new List<NodeGene>();
-                float nodeSpacing = verticalSpace / (layerNodes.Count + 2);  // +2 to leave space for bias node
+                float nodeSpacing = verticalSpace / (layerNodes.Count + 1);
                 for (int i = 0; i < layerNodes.Count; i++)
                 {
                     var node = layerNodes[i];
                     nodePositions[node.Key] = new Vector2(
                         layerX,
                         -edgeMargin - nodeSpacing * (i + 1)
-                    );
-                }
-                
-                // Position bias node at the top of the layer if it exists
-                if (biasNodes.ContainsKey(layer))
-                {
-                    var biasNode = biasNodes[layer];
-                    nodePositions[biasNode.Key] = new Vector2(
-                        layerX,
-                        -edgeMargin  // At the top of the layer
                     );
                 }
             }
@@ -322,9 +309,6 @@ public class NetworkVisualizer : MonoBehaviour
                     break;
                 case NodeType.Output:
                     image.color = Color.yellow;
-                    break;
-                case NodeType.Bias:
-                    image.color = new Color(1f, 0.7f, 0.7f);  // Light pink for bias nodes
                     break;
                 default:
                     image.color = Color.white;

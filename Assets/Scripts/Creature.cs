@@ -427,7 +427,7 @@ public class Creature : MonoBehaviour
             int maxCurrentLayer = 0;
             foreach (var node in genome.Nodes.Values)
             {
-                if (node.Type == NEAT.Genes.NodeType.Hidden || node.Type == NEAT.Genes.NodeType.Bias)
+                if (node.Type == NEAT.Genes.NodeType.Hidden)
                 {
                     maxCurrentLayer = Mathf.Max(maxCurrentLayer, node.Layer);
                 }
@@ -436,94 +436,49 @@ public class Creature : MonoBehaviour
             // Only proceed if we haven't reached the max hidden layers
             if (maxCurrentLayer < maxHiddenLayers + 1) // +1 because layer 0 is input
             {
-                bool addBiasNode = Random.value < 0.9f; // 90% chance to add a bias node
+                // Original connection-splitting logic
+                var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+                var connToSplit = connList[Random.Range(0, connList.Count)];
+                connToSplit.Enabled = false;
+
+                // Create new node
+                int newNodeKey = genome.Nodes.Count;
+                var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
                 
-                if (addBiasNode)
+                // Set layer between input and output nodes
+                var inputNode = genome.Nodes[connToSplit.InputKey];
+                var outputNode = genome.Nodes[connToSplit.OutputKey];
+                newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+                
+                // If the layer would be the same as the input layer, increment it
+                if (newNode.Layer <= inputNode.Layer)
                 {
-                    // Pick a random hidden layer
-                    int targetLayer = Random.Range(1, maxCurrentLayer + 2); // +2 because we might want to add a new layer
-                    
-                    // Check if this layer already has a bias node
-                    bool hasBiasNode = false;
-                    foreach (var node in genome.Nodes.Values)
+                    // Check if incrementing would exceed max layers
+                    if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
                     {
-                        if (node.Type == NEAT.Genes.NodeType.Bias && node.Layer == targetLayer)
-                        {
-                            hasBiasNode = true;
-                            break;
-                        }
+                        // Skip this mutation if it would exceed max layers
+                        return;
                     }
-                    
-                    // If no bias node in this layer and it's not beyond max layers, add one
-                    if (!hasBiasNode && targetLayer <= maxHiddenLayers)
-                    {
-                        // Create new bias node
-                        int newNodeKey = genome.Nodes.Count;
-                        var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Bias);
-                        newNode.Layer = targetLayer;
-                        genome.AddNode(newNode);
-                        
-                        // Add connections from this bias node to nodes in higher layers
-                        foreach (var targetNode in genome.Nodes.Values)
-                        {
-                            if (targetNode.Layer > targetLayer)
-                            {
-                                var newConn = new NEAT.Genes.ConnectionGene(
-                                    genome.Connections.Count,
-                                    newNodeKey,
-                                    targetNode.Key,
-                                    Random.Range(-0.1f, 0.1f)); // Start with small random weights
-                                genome.AddConnection(newConn);
-                            }
-                        }
-                    }
+                    newNode.Layer = inputNode.Layer + 1;
                 }
-                else
-                {
-                    // Original connection-splitting logic
-                    var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-                    var connToSplit = connList[Random.Range(0, connList.Count)];
-                    connToSplit.Enabled = false;
+                
+                genome.AddNode(newNode);
 
-                    // Create new node
-                    int newNodeKey = genome.Nodes.Count;
-                    var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
-                    
-                    // Set layer between input and output nodes
-                    var inputNode = genome.Nodes[connToSplit.InputKey];
-                    var outputNode = genome.Nodes[connToSplit.OutputKey];
-                    newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-                    
-                    // If the layer would be the same as the input layer, increment it
-                    if (newNode.Layer <= inputNode.Layer)
-                    {
-                        // Check if incrementing would exceed max layers
-                        if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
-                        {
-                            // Skip this mutation if it would exceed max layers
-                            return;
-                        }
-                        newNode.Layer = inputNode.Layer + 1;
-                    }
-                    
-                    genome.AddNode(newNode);
+                // Add two new connections
+                var conn1 = new NEAT.Genes.ConnectionGene(
+                    genome.Connections.Count,
+                    connToSplit.InputKey,
+                    newNodeKey,
+                    1.0);
 
-                    // Add two new connections
-                    var conn1 = new NEAT.Genes.ConnectionGene(
-                        genome.Connections.Count,
-                        connToSplit.InputKey,
-                        newNodeKey,
-                        1.0);
+                var conn2 = new NEAT.Genes.ConnectionGene(
+                    genome.Connections.Count + 1,
+                    newNodeKey,
+                    connToSplit.OutputKey,
+                    connToSplit.Weight);
 
-                    var conn2 = new NEAT.Genes.ConnectionGene(
-                        genome.Connections.Count + 1,
-                        newNodeKey,
-                        connToSplit.OutputKey,
-                        connToSplit.Weight);
-
-                    genome.AddConnection(conn1);
-                    genome.AddConnection(conn2);
-                }
+                genome.AddConnection(conn1);
+                genome.AddConnection(conn2);
             }
         }
 
@@ -540,11 +495,9 @@ public class Creature : MonoBehaviour
                 // - Must be from a lower layer to a higher layer
                 // - Cannot connect input to input or output to output
                 // - Cannot connect to input or from output
-                // - Cannot connect TO a bias node
                 if (sourceNode.Layer >= targetNode.Layer ||
                     sourceNode.Type == NEAT.Genes.NodeType.Output ||
-                    targetNode.Type == NEAT.Genes.NodeType.Input ||
-                    targetNode.Type == NEAT.Genes.NodeType.Bias)
+                    targetNode.Type == NEAT.Genes.NodeType.Input)
                 {
                     continue;
                 }
@@ -572,13 +525,7 @@ public class Creature : MonoBehaviour
         {
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToDelete = connList[Random.Range(0, connList.Count)];
-            
-            // Don't delete connections from bias nodes as they're their only outputs
-            var sourceNode = genome.Nodes[connToDelete.InputKey];
-            if (sourceNode.Type != NEAT.Genes.NodeType.Bias)
-            {
-                genome.Connections.Remove(connToDelete.Key);
-            }
+            genome.Connections.Remove(connToDelete.Key);
         }
     }
     
