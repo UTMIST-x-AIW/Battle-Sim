@@ -66,6 +66,10 @@ public class Creature : MonoBehaviour
     private bool isWaitingForMate = false;
     private bool canStartReproducing = false;  // New flag to control reproduction start
     private Creature targetMate = null;
+    
+    // Track original physics layer for restoration
+    private int originalLayer;
+    private const int PHASE_THROUGH_LAYER = 10; // Define a layer number to use for phasing
 
     // Add these private variables at the class level
     private bool hasLoggedObservations = false;
@@ -77,6 +81,9 @@ public class Creature : MonoBehaviour
     // Cache floor collider to avoid FindGameObjectWithTag every frame
     private static PolygonCollider2D cachedFloorCollider;
     private static Bounds floorBounds;
+
+    // Static flag to ensure we only set up the physics matrix once
+    private static bool phasingLayerSetup = false;
 
     private void Awake()
     {
@@ -99,9 +106,31 @@ public class Creature : MonoBehaviour
             creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
         }
         
+        // Store the original layer
+        originalLayer = gameObject.layer;
+        
+        // Set up physics layers to ignore collisions between phasing and regular creatures
+        // This only needs to happen once, so we use a static flag
+        SetupPhasingLayer();
+        
         // Increment counter when creature is created
         totalCreatures++;
         // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
+    }
+    
+    private void SetupPhasingLayer()
+    {
+        // Only set up the physics matrix once
+        if (!phasingLayerSetup)
+        {
+            // Ignore collisions between the phasing layer and the Default layer
+            Physics2D.IgnoreLayerCollision(PHASE_THROUGH_LAYER, 0, true);
+            
+            // Also ignore collisions within the phasing layer itself
+            Physics2D.IgnoreLayerCollision(PHASE_THROUGH_LAYER, PHASE_THROUGH_LAYER, true);
+            
+            phasingLayerSetup = true;
+        }
     }
 
     private IEnumerator DelayedReproductionStart()
@@ -146,7 +175,7 @@ public class Creature : MonoBehaviour
         rb.gravityScale = 0f;
         rb.drag = 1f;
         rb.angularDrag = 1f;
-        rb.constraints = RigidbodyConstraints2D.None;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation; // Freeze rotation to prevent tumbling
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         
         // Update the animator with the creature type
@@ -154,6 +183,64 @@ public class Creature : MonoBehaviour
         {
             creatureAnimator.SetCreatureType(type);
         }
+        
+        // Setup or adjust collider to match sprite size
+        SetupCollider();
+        
+        // Safety check: make sure creature is fully opaque and on the correct layer
+        // This catches any creatures that might have been left translucent
+        if (gameObject.layer == PHASE_THROUGH_LAYER)
+        {
+            gameObject.layer = 0; // Default layer
+        }
+        
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null && renderer.color.a < 1.0f)
+        {
+            Color color = renderer.color;
+            color.a = 1.0f; // Full opacity
+            renderer.color = color;
+        }
+    }
+    
+    // New method to set up and adjust collider
+    private void SetupCollider()
+    {
+        // Get or add the collider
+        CircleCollider2D circleCollider = GetComponent<CircleCollider2D>();
+        if (circleCollider == null)
+        {
+            circleCollider = gameObject.AddComponent<CircleCollider2D>();
+        }
+        
+        // Get sprite renderer to determine size
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null && spriteRenderer.sprite != null)
+        {
+            // Make collider match sprite - use the smaller of width/height for circle
+            float minSize = Mathf.Min(
+                spriteRenderer.sprite.bounds.size.x,
+                spriteRenderer.sprite.bounds.size.y
+            );
+            
+            // Set collider size to be a percentage of sprite size
+            circleCollider.radius = minSize * 0.4f;
+            
+            // Center the collider
+            circleCollider.offset = new Vector2(0, -0.1f); // Slight offset to ground the character
+        }
+        else
+        {
+            // Default size if no sprite found
+            circleCollider.radius = 0.5f;
+            circleCollider.offset = Vector2.zero;
+        }
+    }
+    
+    // Add a method to handle sprite changes from animation
+    public void UpdateColliderForSprite()
+    {
+        SetupCollider();
     }
     
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -367,6 +454,10 @@ public class Creature : MonoBehaviour
             targetMate = mate;
             mate.isWaitingForMate = true;
             mate.targetMate = this;
+            
+            // Enable phasing through other creatures
+            EnablePhasing();
+            
             // Debug.Log($"{gameObject.name} (younger) moving to mate with {mate.gameObject.name}. My position: {transform.position}, Target: {mate.transform.position}");
         }
         else
@@ -376,13 +467,56 @@ public class Creature : MonoBehaviour
             targetMate = mate;
             mate.isMovingToMate = true;
             mate.targetMate = this;
+            
+            // Enable phasing through other creatures for the mate
+            mate.EnablePhasing();
+            
             // Debug.Log($"{gameObject.name} (older) waiting for mate {mate.gameObject.name}. My position: {transform.position}, Partner starting at: {mate.transform.position}");
         }
     }
 
+    private void EnablePhasing()
+    {
+        // Store the original layer for later restoration
+        originalLayer = gameObject.layer;
+        
+        // Change to phasing layer to avoid collisions with other creatures
+        gameObject.layer = PHASE_THROUGH_LAYER;
+        
+        // Make sprite translucent
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null)
+        {
+            Color color = renderer.color;
+            color.a = 0.6f; // 60% opacity
+            renderer.color = color;
+        }
+    }
+    
+    private void DisablePhasing()
+    {
+        // Restore original layer
+        gameObject.layer = originalLayer;
+        
+        // Restore opacity
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null)
+        {
+            Color color = renderer.color;
+            color.a = 1.0f; // Full opacity
+            renderer.color = color;
+        }
+    }
+    
     private void FreeMate()
     {
         // Debug.Log(string.Format("{0}: FreeMate called. Previous state - isReproducing: {1}, isMovingToMate: {2}, isWaitingForMate: {3}, reproduction: {4}", gameObject.name, isReproducing, isMovingToMate, isWaitingForMate, reproduction));
+        
+        // Disable phasing if we were moving to mate
+        if (isMovingToMate)
+        {
+            DisablePhasing();
+        }
         
         // Reset ALL reproduction-related flags
         isMovingToMate = false;
@@ -403,6 +537,12 @@ public class Creature : MonoBehaviour
             // Also reset the target mate's flags (in case they haven't been reset)
             if (mate != null && mate.gameObject != null && mate.gameObject.activeInHierarchy)
             {
+                // Disable phasing for mate if they were moving
+                if (mate.isMovingToMate)
+                {
+                    mate.DisablePhasing();
+                }
+                
                 mate.isMovingToMate = false;
                 mate.isWaitingForMate = false;
                 mate.isReproducing = false;
@@ -894,6 +1034,14 @@ public class Creature : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If we're translucent (phasing) but somehow hit something anyway, restore opacity
+        if (gameObject.layer == PHASE_THROUGH_LAYER)
+        {
+            DisablePhasing();
+            // Return early since we shouldn't be colliding while phasing
+            return;
+        }
+        
         // Check if we collided with another creature
         Creature otherCreature = collision.gameObject.GetComponent<Creature>();
         if (otherCreature != null && otherCreature.type != type)
@@ -945,6 +1093,17 @@ public class Creature : MonoBehaviour
             // Break the circular reference first
             var tempMate = targetMate;
             targetMate = null;
+            
+            // Disable phasing for both creatures if needed
+            if (isMovingToMate)
+            {
+                DisablePhasing();
+            }
+            
+            if (tempMate.isMovingToMate)
+            {
+                tempMate.DisablePhasing();
+            }
             
             // Reset their flags directly instead of using FreeMate which may start coroutines
             tempMate.isMovingToMate = false;
@@ -1040,6 +1199,19 @@ public class Creature : MonoBehaviour
         }
 
         // Debug.Log(string.Format("{0} beginning reproduction with {1}", gameObject.name, targetMate.gameObject.name));
+        
+        // Disable phasing for both creatures since they've arrived at their destination
+        if (isMovingToMate)
+        {
+            DisablePhasing();
+            isMovingToMate = false;
+        }
+        
+        if (targetMate.isMovingToMate)
+        {
+            targetMate.DisablePhasing();
+            targetMate.isMovingToMate = false;
+        }
 
         // Get floor collider with null check
         var floorObj = GameObject.FindGameObjectWithTag("Floor");
@@ -1212,12 +1384,31 @@ public class Creature : MonoBehaviour
             offspringCreature.isMovingToMate = false;
             offspringCreature.isWaitingForMate = false;
             offspringCreature.targetMate = null;
+            
+            // Make sure the offspring is fully opaque and on the default layer
+            offspringCreature.gameObject.layer = 0; // Default layer
+            SpriteRenderer offspringRenderer = offspringCreature.GetComponent<SpriteRenderer>();
+            if (offspringRenderer != null)
+            {
+                Color color = offspringRenderer.color;
+                color.a = 1.0f; // Full opacity
+                offspringRenderer.color = color;
+            }
+            
             offspringCreature.StartCoroutine(offspringCreature.DelayedReproductionStart());
             
             // Debug.Log(string.Format("{0}: Successfully created offspring at position {1}", gameObject.name, validPosition));
             
             // Reset both parents
             var tempMate = targetMate; // Store reference in case it becomes null
+            
+            // Make sure both parents are fully opaque before freeing
+            DisablePhasing();
+            if (tempMate != null && tempMate.gameObject != null)
+            {
+                tempMate.DisablePhasing();
+            }
+            
             FreeMate();
             if (tempMate != null && tempMate.gameObject != null)
             {

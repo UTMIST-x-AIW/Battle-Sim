@@ -144,7 +144,8 @@ public class NEATTest : MonoBehaviour
         float spreadRadius = 4f;
         
         // Spawn 8 Alberts in the top left corner
-        for (int i = 0; i < 8; i++)
+        // for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 3; i++)
         {
             // Calculate a position with some randomness
             Vector2 offset = Random.insideUnitCircle * spreadRadius;

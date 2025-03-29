@@ -176,6 +176,12 @@ public class CreatureAnimator : MonoBehaviour
             currentCreatureSprites[currentDirection][currentFrame] != null)
         {
             spriteRenderer.sprite = currentCreatureSprites[currentDirection][currentFrame];
+            
+            // Update collider to match new sprite
+            if (creature != null)
+            {
+                creature.UpdateColliderForSprite();
+            }
         }
     }
 } 
