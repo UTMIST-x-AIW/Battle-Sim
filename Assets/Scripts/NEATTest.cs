@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class NEATTest : MonoBehaviour
 {
@@ -10,10 +12,16 @@ public class NEATTest : MonoBehaviour
     
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
+    public int maxCreatures = 20;     // Maximum number of creatures allowed in the simulation
 
     [Header("Test Settings")]
     public bool runTests = true;
     public int currentTest = 1;
+
+    // Test scenarios
+    private const int TEST_NORMAL_GAME = 0;
+    private const int TEST_MATING_MOVEMENT = 1;
+    private const int TEST_ALBERTS_ONLY = 2;  // New test case
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
@@ -49,8 +57,14 @@ public class NEATTest : MonoBehaviour
         {
             switch (currentTest)
             {
-                case 1:
+                case TEST_NORMAL_GAME:
+                    SetupNormalGame();
+                    break;
+                case TEST_MATING_MOVEMENT:
                     SetupMatingMovementTest();
+                    break;
+                case TEST_ALBERTS_ONLY:
+                    SetupAlbertsOnlyTest();
                     break;
                 default:
                     SetupNormalGame();
@@ -119,6 +133,37 @@ public class NEATTest : MonoBehaviour
         // Debug.Log($"- Younger creature at {youngerPosition}, age: 10");
         // Debug.Log("Expected behavior: Younger creature should move toward older creature, older creature should stay still");
         // Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
+    }
+
+    private void SetupAlbertsOnlyTest()
+    {
+        Debug.Log("Starting Test: Alberts Only - 8 Alberts with random brains in top left");
+        
+        // Spawn area in top left
+        Vector2 spawnCenter = new Vector2(-12f, 6f);
+        float spreadRadius = 4f;
+        
+        // Spawn 8 Alberts in the top left corner
+        for (int i = 0; i < 8; i++)
+        {
+            // Calculate a position with some randomness
+            Vector2 offset = Random.insideUnitCircle * spreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+            
+            // Spawn the creature with a randomized brain
+            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            
+            // Initialize the creature with varied ages to encourage dynamic behavior
+            float startingAge = Random.Range(5f, 15f);
+            float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            creature.InitializeForTesting(startingAge, startingReproduction);
+        }
+        
+        Debug.Log("Test setup complete: 8 Alberts with random brains spawned in top left");
     }
     
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
@@ -293,5 +338,76 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 2, 20, 0.7f)); // Energy to attack - higher weight makes Kai more likely to attack
         
         return genome;
+    }
+
+    // New method to spawn creatures with more randomized brains
+    private Creature SpawnCreatureWithRandomizedBrain(GameObject prefab, Vector3 position, Creature.CreatureType type)
+    {
+        // Create the creature instance
+        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creatureComponent = creature.GetComponent<Creature>();
+        creatureComponent.type = type;
+        
+        // Create a base genome
+        var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
+        
+        // Randomize the weights to create more diverse behaviors
+        foreach (var connection in genome.Connections.Values)
+        {
+            // Assign a completely random weight to each connection
+            connection.Weight = Random.Range(-1f, 1f);
+        }
+        
+        // Add some random additional connections to create more diverse topologies
+        int extraConnectionsCount = Random.Range(0, 5);
+        for (int i = 0; i < extraConnectionsCount; i++)
+        {
+            creatureComponent.addConnectionRate = 1.0f; // Ensure connections are added
+            ApplyRandomConnectionMutation(genome, creatureComponent.maxHiddenLayers);
+        }
+        
+        // Create the neural network from the randomized genome
+        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        creatureComponent.InitializeNetwork(network);
+        
+        // Pass the max hidden layers setting to the creature
+        creatureComponent.maxHiddenLayers = maxHiddenLayers;
+        
+        return creatureComponent;
+    }
+    
+    private void ApplyRandomConnectionMutation(NEAT.Genome.Genome genome, int maxHiddenLayers)
+    {
+        // Try a few times to find a valid connection
+        for (int tries = 0; tries < 5; tries++)
+        {
+            var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+            var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
+            var targetNode = nodeList[Random.Range(0, nodeList.Count)];
+            
+            // Skip invalid connections
+            if (sourceNode.Layer >= targetNode.Layer ||
+                sourceNode.Type == NEAT.Genes.NodeType.Output ||
+                targetNode.Type == NEAT.Genes.NodeType.Input)
+            {
+                continue;
+            }
+            
+            // Check if connection already exists
+            bool exists = genome.Connections.Values.Any(c =>
+                c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
+            
+            if (!exists)
+            {
+                var newConn = new NEAT.Genes.ConnectionGene(
+                    genome.Connections.Count,
+                    sourceNode.Key,
+                    targetNode.Key,
+                    Random.Range(-1f, 1f));
+                
+                genome.AddConnection(newConn);
+                break;
+            }
+        }
     }
 } 

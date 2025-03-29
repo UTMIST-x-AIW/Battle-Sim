@@ -184,8 +184,6 @@ public class NetworkVisualizer : MonoBehaviour
             return;
         }
         
-        Debug.Log($"Visualizing network with {nodes.Count} nodes and {connections.Count} connections");
-        
         // Calculate layout
         CalculateNodePositions(nodes, connections);
         
@@ -337,9 +335,6 @@ public class NetworkVisualizer : MonoBehaviour
         outline.effectColor = GetBiasColor((float)node.Bias);
         outline.effectDistance = new Vector2(outlineThickness, outlineThickness);
         outline.useGraphicAlpha = false;
-        
-        // Debug log the bias value
-        Debug.Log($"Node {node.Key} bias: {node.Bias}");
     }
     
     // Helper method to convert bias value to color
@@ -391,8 +386,6 @@ public class NetworkVisualizer : MonoBehaviour
             else
                 image.color = new Color(1, 0, 0, Mathf.Min(1, -weight));
         }
-        
-        Debug.Log($"Drew connection from node {connection.InputKey} to {connection.OutputKey} with weight {connection.Weight}");
     }
     
     void ClearVisualization()

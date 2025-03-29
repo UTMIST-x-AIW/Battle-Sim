@@ -8,9 +8,10 @@ public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
     private static int totalCreatures = 0;
-    private static readonly int maxCreatures = 20;
     private static NEATTest neatTest;  // Cache NEATTest reference
-
+    
+    // maxCreatures is now accessed from NEATTest
+    
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
@@ -72,6 +73,10 @@ public class Creature : MonoBehaviour
 
     // Animator reference
     private CreatureAnimator creatureAnimator;
+
+    // Cache floor collider to avoid FindGameObjectWithTag every frame
+    private static PolygonCollider2D cachedFloorCollider;
+    private static Bounds floorBounds;
 
     private void Awake()
     {
@@ -284,10 +289,27 @@ public class Creature : MonoBehaviour
         // Set flag to prevent multiple reproduction attempts
         isReproducing = true;
         
-        // Check population limit first
-        if (totalCreatures >= maxCreatures)
+        // Make sure NEATTest reference exists
+        if (neatTest == null)
         {
-            // Debug.Log(string.Format("Max creatures ({0}) reached, preventing reproduction", maxCreatures));
+            neatTest = FindObjectOfType<NEATTest>();
+            
+            // If still null, use a default value and cancel reproduction
+            if (neatTest == null)
+            {
+                Debug.LogWarning("Could not find NEATTest component - using default maxCreatures value of 20");
+                if (totalCreatures >= 20)
+                {
+                    FreeMate();
+                    yield break;
+                }
+            }
+        }
+        
+        // Check population limit first
+        if (neatTest != null && totalCreatures >= neatTest.maxCreatures)
+        {
+            Debug.Log($"Max creatures ({neatTest.maxCreatures}) reached, preventing reproduction");
             FreeMate();
             yield break;
         }
@@ -313,6 +335,15 @@ public class Creature : MonoBehaviour
         // Get the oldest mate
         Creature mate = potentialMates[0];
         
+        // First check that the potential mate is still valid and ready
+        if (mate == null || !mate.gameObject.activeInHierarchy || mate.isReproducing)
+        {
+            // Cancel reproduction if mate isn't valid anymore
+            isReproducing = false;
+            reproduction = maxReproduction; // Keep ready to reproduce
+            yield break;
+        }
+        
         // Decide who moves to whom
         bool shouldMove = true;
         if (lifetime == mate.lifetime)
@@ -326,27 +357,26 @@ public class Creature : MonoBehaviour
             shouldMove = false;
         }
 
+        // Lock the mate's reproduction state immediately to prevent race conditions
+        mate.isReproducing = true;
+        
         if (shouldMove)
         {
             // We're the younger one, move to mate
             isMovingToMate = true;
-            isReproducing = true;  // Set this flag for both creatures
             targetMate = mate;
             mate.isWaitingForMate = true;
-            mate.isReproducing = true;
             mate.targetMate = this;
-            // Debug.Log(string.Format("{0} (younger) moving to mate with {1}", gameObject.name, mate.gameObject.name));
+            // Debug.Log($"{gameObject.name} (younger) moving to mate with {mate.gameObject.name}. My position: {transform.position}, Target: {mate.transform.position}");
         }
         else
         {
             // We're the older one, wait for mate
             isWaitingForMate = true;
-            isReproducing = true;  // Set this flag for both creatures
             targetMate = mate;
             mate.isMovingToMate = true;
-            mate.isReproducing = true;
             mate.targetMate = this;
-            // Debug.Log(string.Format("{0} (older) waiting for mate {1}", gameObject.name, mate.gameObject.name));
+            // Debug.Log($"{gameObject.name} (older) waiting for mate {mate.gameObject.name}. My position: {transform.position}, Partner starting at: {mate.transform.position}");
         }
     }
 
@@ -371,7 +401,7 @@ public class Creature : MonoBehaviour
             targetMate = null;
             
             // Also reset the target mate's flags (in case they haven't been reset)
-            if (mate != null && mate.gameObject != null)
+            if (mate != null && mate.gameObject != null && mate.gameObject.activeInHierarchy)
             {
                 mate.isMovingToMate = false;
                 mate.isWaitingForMate = false;
@@ -381,8 +411,15 @@ public class Creature : MonoBehaviour
                 mate.targetMate = null;
                 
                 // Ensure the mate also starts their reproduction timer
-                mate.StopCoroutine("DelayedReproductionStart");  // Stop any existing timers
-                mate.StartCoroutine(mate.DelayedReproductionStart());
+                try
+                {
+                    mate.StopAllCoroutines();  // Stop any existing timers
+                    mate.StartCoroutine(mate.DelayedReproductionStart());
+                }
+                catch (System.Exception) 
+                {
+                    // Ignore any exceptions if coroutines can't be started
+                }
             }
         }
         else
@@ -390,11 +427,22 @@ public class Creature : MonoBehaviour
             targetMate = null;
         }
         
-        // Stop any existing DelayedReproductionStart coroutines
-        StopCoroutine("DelayedReproductionStart");
-        
-        // Start delayed reproduction timer again
-        StartCoroutine(DelayedReproductionStart());
+        // Only try to manage coroutines if the gameObject is active
+        if (gameObject.activeInHierarchy)
+        {
+            try
+            {
+                // Stop any existing DelayedReproductionStart coroutines
+                StopAllCoroutines();
+                
+                // Start delayed reproduction timer again
+                StartCoroutine(DelayedReproductionStart());
+            }
+            catch (System.Exception)
+            {
+                // Ignore any exceptions if coroutines can't be started
+            }
+        }
         
         // Debug.Log(string.Format("{0}: FreeMate completed. New state - canStartReproducing: false, reproduction: 0", gameObject.name));
     }
@@ -549,31 +597,7 @@ public class Creature : MonoBehaviour
             // If we're moving to mate, override normal movement
             if (isMovingToMate && targetMate != null)
             {
-                // Calculate direction to mate
-                Vector2 directionToMate = (targetMate.transform.position - transform.position).normalized;
-                
-                // Check if we're close enough to mate
-                if (Vector2.Distance(transform.position, targetMate.transform.position) < 0.5f)
-                {
-                    // We've arrived at mate position
-                    isMovingToMate = false;
-                    
-                    // Double check that targetMate is still valid before starting reproduction
-                    if (targetMate != null && targetMate.gameObject != null && targetMate.isActiveAndEnabled)
-                    {
-                        StartCoroutine(BeginReproduction());
-                    }
-                    else
-                    {
-                        // If mate is no longer valid, reset our state
-                        FreeMate();
-                    }
-                }
-                else
-                {
-                    // Move towards mate
-                    rb.velocity = directionToMate * moveSpeed;
-                }
+                MoveTowardsMate();
             }
             // If waiting for mate, don't move
             else if (isWaitingForMate)
@@ -603,9 +627,9 @@ public class Creature : MonoBehaviour
                         moveDirection.Normalize();
                     }
                     
-                    // Apply move speed
-                    Vector2 velocity = moveDirection * moveSpeed;
-                    rb.velocity = velocity;
+                    // Apply move speed with bounds check
+                    Vector2 desiredVelocity = moveDirection * moveSpeed;
+                    ApplyMovementWithBoundsCheck(desiredVelocity);
                 }
             }
             
@@ -621,6 +645,110 @@ public class Creature : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    
+    private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
+    {
+        // Find and cache floor collider if not already cached
+        if (cachedFloorCollider == null)
+        {
+            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
+            if (floorObj != null)
+            {
+                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
+                if (cachedFloorCollider != null)
+                {
+                    floorBounds = cachedFloorCollider.bounds;
+                }
+            }
+        }
+        
+        if (cachedFloorCollider == null)
+        {
+            // No floor found, just apply the movement
+            rb.velocity = desiredVelocity;
+            return;
+        }
+        
+        // Current position and desired position
+        Vector2 currentPos = rb.position;
+        Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
+        
+        // Quick bounds check first (much faster than OverlapPoint)
+        bool inBounds = floorBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
+        
+        // If definitely outside bounds, stop or redirect
+        if (!inBounds)
+        {
+            // Try to redirect toward the center of the floor
+            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+            rb.velocity = directionToCenter * moveSpeed * 0.5f;
+            return;
+        }
+        
+        // For positions near the edge, do a more precise check using the polygon collider
+        // Only do this check if we're moving significantly
+        if (desiredVelocity.sqrMagnitude > 0.1f)
+        {
+            // Cast a ray in the movement direction to check for boundary
+            Vector2 rayDirection = desiredVelocity.normalized;
+            float rayDistance = desiredVelocity.magnitude * Time.fixedDeltaTime * 2; // Look a bit ahead
+            
+            // Use a point slightly inward from the creature's edge
+            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+            float insetDistance = spriteRenderer != null ? spriteRenderer.bounds.extents.x * 0.8f : 0.5f;
+            
+            // Multiple raycasts from different points on the creature
+            bool anyRayHitsEdge = false;
+            
+            // Center raycast
+            RaycastHit2D centerHit = Physics2D.Raycast(currentPos, rayDirection, rayDistance, LayerMask.GetMask("Default"));
+            if (centerHit.collider != null && centerHit.collider != cachedFloorCollider)
+            {
+                anyRayHitsEdge = true;
+            }
+            
+            // Bottom raycast (for ground detection)
+            Vector2 bottomPoint = currentPos - new Vector2(0, insetDistance);
+            RaycastHit2D bottomHit = Physics2D.Raycast(bottomPoint, rayDirection, rayDistance, LayerMask.GetMask("Default"));
+            if (bottomHit.collider != null && bottomHit.collider != cachedFloorCollider)
+            {
+                anyRayHitsEdge = true;
+            }
+            
+            if (anyRayHitsEdge)
+            {
+                // We're about to hit an edge - redirect toward the center
+                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+                
+                // Blend between current direction and center direction
+                Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
+                rb.velocity = blendedDirection * moveSpeed;
+                return;
+            }
+            
+            // Final precise check - use OverlapPoint for the exact boundary
+            bool pointInFloor = cachedFloorCollider.OverlapPoint(desiredPos);
+            if (!pointInFloor)
+            {
+                // Deflect along the boundary instead of stopping
+                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+                
+                // Project desired velocity onto the direction to center to allow sliding along edges
+                Vector2 projectedVelocity = Vector2.Dot(desiredVelocity, directionToCenter) * directionToCenter;
+                Vector2 tangentialVelocity = desiredVelocity - projectedVelocity;
+                
+                // Use mostly tangential movement with a bit of inward movement
+                rb.velocity = tangentialVelocity * 0.8f + directionToCenter * moveSpeed * 0.3f;
+                return;
+            }
+        }
+        
+        // All checks passed, apply the original movement
+        rb.velocity = desiredVelocity;
     }
     
     private void ProcessActionCommands(float[] actions)
@@ -792,10 +920,33 @@ public class Creature : MonoBehaviour
 
     private void OnDestroy()
     {
-        // If we were someone's target mate, free them
-        if (targetMate != null)
+        // If we were someone's target mate, free them but handle exceptions
+        if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
         {
-            targetMate.FreeMate();
+            // Break the circular reference first
+            var tempMate = targetMate;
+            targetMate = null;
+            
+            // Reset their flags directly instead of using FreeMate which may start coroutines
+            tempMate.isMovingToMate = false;
+            tempMate.isWaitingForMate = false;
+            tempMate.isReproducing = false;
+            tempMate.reproduction = 0f;
+            tempMate.canStartReproducing = false;
+            tempMate.targetMate = null;
+            
+            // If they're still alive and active, they can start their own timer
+            if (tempMate.gameObject.activeInHierarchy)
+            {
+                try 
+                {
+                    tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
+                }
+                catch (System.Exception)
+                {
+                    // Ignore any exceptions if coroutines can't be started
+                }
+            }
         }
 
         // Decrement counter when creature is destroyed
@@ -1058,6 +1209,93 @@ public class Creature : MonoBehaviour
         {
             // Debug.LogError(string.Format("{0}: Exception in BeginReproduction: {1}", gameObject.name, e));
             FreeMate();
+        }
+    }
+
+    private void MoveTowardsMate()
+    {
+        if (targetMate == null || !targetMate.gameObject.activeInHierarchy)
+        {
+            FreeMate();
+            return;
+        }
+    
+        // Calculate direction and distance to mate
+        Vector2 directionToMate = (targetMate.transform.position - transform.position);
+        float distanceToMate = directionToMate.magnitude;
+        
+        // Check if we've arrived
+        if (distanceToMate < 0.5f)
+        {
+            // We've arrived at mate position
+            isMovingToMate = false;
+            rb.velocity = Vector2.zero; // Stop moving
+            
+            // Start reproduction process
+            StartCoroutine(BeginReproduction());
+            return;
+        }
+        
+        // Calculate movement direction and speed
+        directionToMate.Normalize();
+        float speed = moveSpeed;
+        
+        // Check floor bounds before moving
+        if (cachedFloorCollider == null)
+        {
+            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
+            if (floorObj != null)
+            {
+                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
+                floorBounds = cachedFloorCollider.bounds;
+            }
+        }
+        
+        // Apply movement with a simple bounds check
+        Vector2 newPosition = rb.position + directionToMate * speed * Time.fixedDeltaTime;
+        
+        // If we'd go out of bounds, adjust the direction to move along the boundary
+        if (cachedFloorCollider != null && !cachedFloorCollider.OverlapPoint(newPosition))
+        {
+            // Try moving just horizontally or just vertically toward the target
+            Vector2 horizontalDir = new Vector2(directionToMate.x, 0).normalized;
+            Vector2 verticalDir = new Vector2(0, directionToMate.y).normalized;
+            
+            Vector2 horizontalPos = rb.position + horizontalDir * speed * Time.fixedDeltaTime;
+            Vector2 verticalPos = rb.position + verticalDir * speed * Time.fixedDeltaTime;
+            
+            // Check which direction is valid and closest to the target
+            bool horizontalValid = cachedFloorCollider.OverlapPoint(horizontalPos);
+            bool verticalValid = cachedFloorCollider.OverlapPoint(verticalPos);
+            
+            if (horizontalValid && verticalValid)
+            {
+                // Choose the direction that gets us closer to the target
+                float horizontalDist = Vector2.Distance(horizontalPos, targetMate.transform.position);
+                float verticalDist = Vector2.Distance(verticalPos, targetMate.transform.position);
+                
+                rb.velocity = (horizontalDist < verticalDist) ? horizontalDir * speed : verticalDir * speed;
+            }
+            else if (horizontalValid)
+            {
+                rb.velocity = horizontalDir * speed;
+            }
+            else if (verticalValid)
+            {
+                rb.velocity = verticalDir * speed;
+            }
+            else
+            {
+                // If both are invalid, try to move toward the center of the floor
+                Vector2 centerPos = new Vector2(floorBounds.center.x, floorBounds.center.y);
+                Vector2 centerDir = (centerPos - rb.position).normalized;
+                rb.velocity = centerDir * speed * 0.5f;
+            }
+        }
+        else
+        {
+            // Move directly toward the mate
+            rb.velocity = directionToMate * speed;
         }
     }
 } 
