@@ -815,10 +815,29 @@ public class Creature : MonoBehaviour
         if (nearestTree != null)
         {
             nearestTree.TakeDamage(chopDamage);
+            
+            // Restore the creature's health to maximum
+            health = maxHealth;
+            
+            // Visual feedback for health restoration
+            StartCoroutine(FlashHealthRestoration());
+            
             return true;
         }
         
         return false;
+    }
+
+    private IEnumerator FlashHealthRestoration()
+    {
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null)
+        {
+            Color originalColor = renderer.color;
+            renderer.color = Color.green;
+            yield return new WaitForSeconds(0.1f);
+            renderer.color = originalColor;
+        }
     }
 
     private bool TryAttackCreature()
@@ -1237,7 +1256,29 @@ public class Creature : MonoBehaviour
         }
         
         // Calculate movement direction and speed
-        directionToMate.Normalize();
+        // Handle the case where creatures are aligned on one axis
+        float xDiff = Mathf.Abs(directionToMate.x);
+        float yDiff = Mathf.Abs(directionToMate.y);
+        Vector2 normalizedDirection;
+        
+        // If the x difference is very small and the y difference is significant
+        if (xDiff < 0.1f && yDiff > 0.5f)
+        {
+            // Force a purely vertical movement
+            normalizedDirection = new Vector2(0, Mathf.Sign(directionToMate.y));
+        }
+        // If the y difference is very small and the x difference is significant
+        else if (yDiff < 0.1f && xDiff > 0.5f)
+        {
+            // Force a purely horizontal movement
+            normalizedDirection = new Vector2(Mathf.Sign(directionToMate.x), 0);
+        }
+        else
+        {
+            // Normal case - normalize the direction
+            normalizedDirection = directionToMate.normalized;
+        }
+        
         float speed = moveSpeed;
         
         // Check floor bounds before moving
@@ -1252,14 +1293,14 @@ public class Creature : MonoBehaviour
         }
         
         // Apply movement with a simple bounds check
-        Vector2 newPosition = rb.position + directionToMate * speed * Time.fixedDeltaTime;
+        Vector2 newPosition = rb.position + normalizedDirection * speed * Time.fixedDeltaTime;
         
         // If we'd go out of bounds, adjust the direction to move along the boundary
         if (cachedFloorCollider != null && !cachedFloorCollider.OverlapPoint(newPosition))
         {
             // Try moving just horizontally or just vertically toward the target
-            Vector2 horizontalDir = new Vector2(directionToMate.x, 0).normalized;
-            Vector2 verticalDir = new Vector2(0, directionToMate.y).normalized;
+            Vector2 horizontalDir = new Vector2(normalizedDirection.x, 0).normalized;
+            Vector2 verticalDir = new Vector2(0, normalizedDirection.y).normalized;
             
             Vector2 horizontalPos = rb.position + horizontalDir * speed * Time.fixedDeltaTime;
             Vector2 verticalPos = rb.position + verticalDir * speed * Time.fixedDeltaTime;
@@ -1295,7 +1336,10 @@ public class Creature : MonoBehaviour
         else
         {
             // Move directly toward the mate
-            rb.velocity = directionToMate * speed;
+            rb.velocity = normalizedDirection * speed;
+            
+            // Add debug visualization to see the movement path
+            Debug.DrawLine(transform.position, transform.position + (Vector3)rb.velocity.normalized * 1f, Color.yellow, 0.1f);
         }
     }
 } 
