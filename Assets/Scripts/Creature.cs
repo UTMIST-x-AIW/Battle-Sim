@@ -14,8 +14,11 @@ public class Creature : MonoBehaviour
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
+    public float energy = 0f;
     public float maxHealth = 3f;
     public float maxReproduction = 1f;
+    public float maxEnergy = 1f;
+    public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
     
     [Header("Aging Settings")]
     public float agingStartTime = 10f;  // Time in seconds before aging starts
@@ -35,6 +38,11 @@ public class Creature : MonoBehaviour
     
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed (set by NEATTest)
+    
+    [Header("Action Settings")]
+    public float actionEnergyCost = 1.0f;
+    public float chopDamage = 1.0f;
+    public float attackDamage = 1.0f;
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -173,7 +181,7 @@ public class Creature : MonoBehaviour
         if (brain == null)
         {
             // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-            return new float[] { 0f, 0f };
+            return new float[] { 0f, 0f, 0f, 0f };  // Update to include chop and attack actions
         }
         
         float[] observations = observer.GetObservations(this);
@@ -198,13 +206,16 @@ public class Creature : MonoBehaviour
         //debugFrameCounter++;
         //if (debugFrameCounter >= 100)
         //{
-        //    Debug.Log(string.Format("{0}: Network output x={1}, y={2}", gameObject.name, outputs[0], outputs[1]));
+        //    Debug.Log(string.Format("{0}: Network output x={1}, y={2}, chop={3}, attack={4}", 
+        //        gameObject.name, outputs[0], outputs[1], outputs[2], outputs[3]));
         //    debugFrameCounter = 0;
         //}
         
         // Ensure outputs are in range [-1, 1]
-        outputs[0] = Mathf.Clamp(outputs[0], -1f, 1f);
-        outputs[1] = Mathf.Clamp(outputs[1], -1f, 1f);
+        for (int i = 0; i < outputs.Length; i++)
+        {
+            outputs[i] = Mathf.Clamp(outputs[i], -1f, 1f);
+        }
         
         return outputs;
     }
@@ -573,25 +584,21 @@ public class Creature : MonoBehaviour
     
     private void FixedUpdate()
     {
-        // Update lifetime and apply aging damage
+        // Apply aging (linear damage based on lifetime after a delay)
         lifetime += Time.fixedDeltaTime;
         if (lifetime > agingStartTime)
         {
-            float agingTime = lifetime - agingStartTime;
-            // Linear aging damage calculation
-            float agingDamage = agingRate * agingTime * Time.fixedDeltaTime;
-            health = Mathf.Max(0, health - agingDamage);
-            
-            // Die if health reaches 0
-            if (health <= 0)
-            {
-                Destroy(gameObject);
-                return;
-            }
+            health -= agingRate * Time.fixedDeltaTime;
         }
-
+        
+        // Replenish energy over time
+        energy = Mathf.Min(energy + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
+        
         if (brain != null)
         {
+            // Get actions from neural network - moved out of the conditional blocks
+            float[] actions = GetActions();
+            
             // If we're moving to mate, override normal movement
             if (isMovingToMate && targetMate != null)
             {
@@ -635,46 +642,162 @@ public class Creature : MonoBehaviour
             // Normal movement
             else if (!isReproducing)
             {
-                float[] actions = GetActions();
-                
-                // Actions[0] is horizontal velocity, actions[1] is vertical velocity
-                Vector2 desiredVelocity = new Vector2(actions[0], actions[1]) * moveSpeed;
-                
-                // Check if the desired position would be within bounds
-                Vector2 currentPos = rb.position;
-                Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
-                
-                // Get the floor bounds
-                PolygonCollider2D floorCollider = GameObject.FindGameObjectWithTag("Floor").GetComponent<PolygonCollider2D>();
-                if (floorCollider != null)
+                // Only apply movement if not waiting for mate
+                if (!isWaitingForMate)
                 {
-                    // Get the sprite's bottom center point
-                    Vector2 bottomCenter = new Vector2(desiredPos.x, desiredPos.y - GetComponent<SpriteRenderer>().bounds.extents.y);
+                    // Apply movement based on neural network output
+                    Vector2 moveDirection = Vector2.zero;
+                    moveDirection.x = actions[0];  // Left/right movement
+                    moveDirection.y = actions[1];  // Up/down movement
                     
-                    // Check if the bottom center point would be inside the floor bounds
-                    if (floorCollider.OverlapPoint(bottomCenter))
+                    // Normalize to ensure diagonal movement isn't faster
+                    if (moveDirection.magnitude > 1f)
                     {
-                        // Apply movement
-                        rb.velocity = desiredVelocity;
+                        moveDirection.Normalize();
                     }
-                    else
-                    {
-                        // Stop at the current position
-                        rb.velocity = Vector2.zero;
-                    }
-                }
-                else
-                {
-                    // If no floor collider found, just apply movement
-                    rb.velocity = desiredVelocity;
+                    
+                    // Apply move speed
+                    Vector2 velocity = moveDirection * moveSpeed;
+                    rb.velocity = velocity;
                 }
             }
+            
+            // Process action commands (chop and attack)
+            ProcessActionCommands(actions);
             
             // Update reproduction
             UpdateReproduction();
         }
+        
+        // Check if we should die
+        if (health <= 0f)
+        {
+            Destroy(gameObject);
+        }
     }
     
+    private void ProcessActionCommands(float[] actions)
+    {
+        // We need at least 4 actions: move x, move y, chop, attack
+        if (actions.Length < 4) return;
+        
+        // Only execute actions if we have enough energy
+        if (energy >= actionEnergyCost)
+        {
+            float chopDesire = actions[2];
+            float attackDesire = actions[3];
+            
+            // Both values must be positive to be considered
+            if (chopDesire > 0 || attackDesire > 0)
+            {
+                // Choose the action with the highest positive value
+                if (chopDesire > attackDesire && chopDesire > 0)
+                {
+                    if (TryChopTree())
+                    {
+                        // Reset energy after successful action
+                        energy -= actionEnergyCost;
+                    }
+                }
+                else if (attackDesire > 0)
+                {
+                    if (TryAttackCreature())
+                    {
+                        // Reset energy after successful action
+                        energy -= actionEnergyCost;
+                    }
+                }
+            }
+        }
+    }
+
+    private bool TryChopTree()
+    {
+        // Find the nearest tree within detection radius
+        TreeHealth nearestTree = null;
+        float nearestDistance = float.MaxValue;
+        
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+        
+        foreach (var collider in nearbyColliders)
+        {
+            if (collider.CompareTag("Tree"))
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    TreeHealth treeHealth = collider.GetComponent<TreeHealth>();
+                    if (treeHealth != null)
+                    {
+                        nearestTree = treeHealth;
+                        nearestDistance = distance;
+                    }
+                }
+            }
+        }
+        
+        // If we found a tree, damage it
+        if (nearestTree != null)
+        {
+            nearestTree.TakeDamage(chopDamage);
+            return true;
+        }
+        
+        return false;
+    }
+
+    private bool TryAttackCreature()
+    {
+        // Find the nearest opposing creature within detection radius
+        Creature nearestOpponent = null;
+        float nearestDistance = float.MaxValue;
+        
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+        
+        foreach (var collider in nearbyColliders)
+        {
+            Creature otherCreature = collider.GetComponent<Creature>();
+            if (otherCreature != null && otherCreature.type != this.type)
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestOpponent = otherCreature;
+                    nearestDistance = distance;
+                }
+            }
+        }
+        
+        // If we found an opposing creature, damage it
+        if (nearestOpponent != null)
+        {
+            nearestOpponent.TakeDamage(attackDamage);
+            return true;
+        }
+        
+        return false;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        
+        // Visual feedback when taking damage
+        StartCoroutine(FlashOnDamage());
+    }
+
+    private IEnumerator FlashOnDamage()
+    {
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        if (renderer != null)
+        {
+            Color originalColor = renderer.color;
+            renderer.color = Color.red;
+            yield return new WaitForSeconds(0.1f);
+            renderer.color = originalColor;
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if we collided with another creature
