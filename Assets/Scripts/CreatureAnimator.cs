@@ -133,18 +133,23 @@ public class CreatureAnimator : MonoBehaviour
         // Calculate angle of movement in degrees
         float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
         
-        // Convert angle to direction (TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT)
-        // TOP_RIGHT: -45 to 45
-        // TOP_LEFT: 45 to 135
-        // BOTTOM_LEFT: 135 to 225
-        // BOTTOM_RIGHT: 225 to 315 (-135 to -45)
-        
         // Normalize angle to 0-360 range
         if (angle < 0) angle += 360f;
         
         int newDirection;
         
-        if (angle >= 0 && angle < 90)
+        // Special case for pure horizontal movement
+        if (Mathf.Abs(velocity.y) < 0.1f)
+        {
+            // Pure right movement uses bottom right
+            if (velocity.x > 0)
+                newDirection = BOTTOM_RIGHT;
+            // Pure left movement uses bottom left
+            else
+                newDirection = BOTTOM_LEFT;
+        }
+        // Normal directional logic for other cases
+        else if (angle >= 0 && angle < 90)
             newDirection = TOP_RIGHT;
         else if (angle >= 90 && angle < 180)
             newDirection = TOP_LEFT;
