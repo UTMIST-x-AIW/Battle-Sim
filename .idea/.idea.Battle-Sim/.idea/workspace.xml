@@ -6,25 +6,37 @@
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/Albert.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Images/rock1.png.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Images/rock1.png.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/GraphicsSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Line.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Line.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/DebugMovement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Spawner.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Spawner.cs.meta" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="autoShow" value="false" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f7237cf7abef49bfbb552d7eb076e422174200/4f/c259a23a/Mathf.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/Downloads/raycasting-explained-main/raycasting-explained-main/Assets/Scripts/RaycastDemo.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/Hero Born/Assets/Scripts/BulletBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -36,16 +48,18 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;Standalone Player.Start Unity.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;GameObject__class&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.completion&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
+  <component name="RunManager" selected="Standalone Player.Start Unity">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="C:\Program Files\Unity\Hub\Editor\2022.3.17f1\Editor\Unity.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath $PROJECT_DIR$ -debugCodeOptimization" />
@@ -95,6 +109,34 @@
       <workItem from="1731798829315" duration="16825000" />
       <workItem from="1736635437827" duration="288000" />
       <workItem from="1736635815737" duration="2172000" />
+      <workItem from="1736896585516" duration="3259000" />
+      <workItem from="1736909343064" duration="10329000" />
+      <workItem from="1736981260794" duration="304000" />
+      <workItem from="1737228291906" duration="12849000" />
+      <workItem from="1737249501066" duration="14921000" />
+      <workItem from="1737266924588" duration="868000" />
+      <workItem from="1737323516614" duration="337000" />
+      <workItem from="1737329024505" duration="1975000" />
+      <workItem from="1737413441582" duration="222000" />
+      <workItem from="1737413772320" duration="172000" />
+      <workItem from="1737848694401" duration="2000" />
+      <workItem from="1737848718979" duration="2385000" />
+      <workItem from="1737851697512" duration="3606000" />
+      <workItem from="1737872764832" duration="550000" />
+      <workItem from="1738454051308" duration="11000" />
+      <workItem from="1738457024108" duration="15862000" />
+      <workItem from="1738486241817" duration="1791000" />
+      <workItem from="1738488118203" duration="7097000" />
+      <workItem from="1739030467823" duration="33000" />
+      <workItem from="1739051798670" duration="376000" />
+      <workItem from="1739056629717" duration="8435000" />
+      <workItem from="1739085339423" duration="18394000" />
+      <workItem from="1739616846454" duration="2751000" />
+      <workItem from="1739624277874" duration="3230000" />
+      <workItem from="1739633810559" duration="145000" />
+      <workItem from="1739640676953" duration="121000" />
+      <workItem from="1739640908923" duration="64000" />
+      <workItem from="1740785816069" duration="4000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
@@ -126,6 +168,17 @@
     <option name="unityProjectFolder" value="true" />
   </component>
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="GitHub.CommitStatus" />
+      </list>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
