@@ -10,6 +10,9 @@ public class Creature : MonoBehaviour
     private static int totalCreatures = 0;
     private static NEATTest neatTest;  // Cache NEATTest reference
     
+    // Make TotalCreatures accessible through a property
+    public static int TotalCreatures { get { return totalCreatures; } }
+    
     // maxCreatures is now accessed from NEATTest
     
     [Header("Basic Stats")]
@@ -186,35 +189,14 @@ public class Creature : MonoBehaviour
         if (brain == null)
         {
             // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-            return new float[] { 0f, 0f, 0f, 0f };  // Update to include chop and attack actions
+            return new float[] { 0f, 0f, 0f, 0f, 0f };  // Add reproduce action as 5th output
         }
         
         float[] observations = observer.GetObservations(this);
         double[] doubleObservations = ConvertToDouble(observations);
         
-        // Debug the observations once
-        //if (!hasLoggedObservations)
-        //{
-        //    string obsStr = "Observations: ";
-        //    for (int i = 0; i < observations.Length; i++)
-        //    {
-        //        obsStr += string.Format("[{0}]={1}, ", i, observations[i]);
-        //    }
-        //    Debug.Log(string.Format("{0}: {1}", gameObject.name, obsStr));
-        //    hasLoggedObservations = true;
-        //}
-        
         double[] doubleOutputs = brain.Activate(doubleObservations);
         float[] outputs = ConvertToFloat(doubleOutputs);
-        
-        // Debug the outputs periodically
-        //debugFrameCounter++;
-        //if (debugFrameCounter >= 100)
-        //{
-        //    Debug.Log(string.Format("{0}: Network output x={1}, y={2}, chop={3}, attack={4}", 
-        //        gameObject.name, outputs[0], outputs[1], outputs[2], outputs[3]));
-        //    debugFrameCounter = 0;
-        //}
         
         // Ensure outputs are in range [-1, 1]
         for (int i = 0; i < outputs.Length; i++)
@@ -382,69 +364,10 @@ public class Creature : MonoBehaviour
 
     private void FreeMate()
     {
-        // Debug.Log(string.Format("{0}: FreeMate called. Previous state - isReproducing: {1}, isMovingToMate: {2}, isWaitingForMate: {3}, reproduction: {4}", gameObject.name, isReproducing, isMovingToMate, isWaitingForMate, reproduction));
-        
-        // Reset ALL reproduction-related flags
         isMovingToMate = false;
         isWaitingForMate = false;
         isReproducing = false;
-        reproduction = 0f;
-        canStartReproducing = false;  // Ensure this is false before starting the delay
-        
-        // If we have a target mate, log and clear it
-        if (targetMate != null)
-        {
-            // Debug.Log(string.Format("{0} freeing mate {1}", gameObject.name, targetMate.gameObject.name));
-            
-            // Store reference before nulling it
-            var mate = targetMate;
-            targetMate = null;
-            
-            // Also reset the target mate's flags (in case they haven't been reset)
-            if (mate != null && mate.gameObject != null && mate.gameObject.activeInHierarchy)
-            {
-                mate.isMovingToMate = false;
-                mate.isWaitingForMate = false;
-                mate.isReproducing = false;
-                mate.reproduction = 0f;
-                mate.canStartReproducing = false;  // Ensure this is false before starting the delay
-                mate.targetMate = null;
-                
-                // Ensure the mate also starts their reproduction timer
-                try
-                {
-                    mate.StopAllCoroutines();  // Stop any existing timers
-                    mate.StartCoroutine(mate.DelayedReproductionStart());
-                }
-                catch (System.Exception) 
-                {
-                    // Ignore any exceptions if coroutines can't be started
-                }
-            }
-        }
-        else
-        {
-            targetMate = null;
-        }
-        
-        // Only try to manage coroutines if the gameObject is active
-        if (gameObject.activeInHierarchy)
-        {
-            try
-            {
-                // Stop any existing DelayedReproductionStart coroutines
-                StopAllCoroutines();
-                
-                // Start delayed reproduction timer again
-                StartCoroutine(DelayedReproductionStart());
-            }
-            catch (System.Exception)
-            {
-                // Ignore any exceptions if coroutines can't be started
-            }
-        }
-        
-        // Debug.Log(string.Format("{0}: FreeMate completed. New state - canStartReproducing: false, reproduction: 0", gameObject.name));
+        targetMate = null;
     }
 
     private void ApplyMutations(NEAT.Genome.Genome genome)
@@ -589,55 +512,31 @@ public class Creature : MonoBehaviour
         // Replenish energy over time
         energy = Mathf.Min(energy + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
         
+        // Accumulate reproduction points
+        reproduction = Mathf.Min(reproduction + reproductionRate * Time.fixedDeltaTime, maxReproduction);
+        
         if (brain != null)
         {
-            // Get actions from neural network - moved out of the conditional blocks
+            // Get actions from neural network
             float[] actions = GetActions();
             
-            // If we're moving to mate, override normal movement
-            if (isMovingToMate && targetMate != null)
+            // Apply movement based on neural network output
+            Vector2 moveDirection = Vector2.zero;
+            moveDirection.x = actions[0];  // Left/right movement
+            moveDirection.y = actions[1];  // Up/down movement
+            
+            // Normalize to ensure diagonal movement isn't faster
+            if (moveDirection.magnitude > 1f)
             {
-                MoveTowardsMate();
-            }
-            // If waiting for mate, don't move
-            else if (isWaitingForMate)
-            {
-                rb.velocity = Vector2.zero;
-                
-                // Check if we should cancel waiting (if mate is gone)
-                if (targetMate == null || !targetMate.gameObject || !targetMate.isActiveAndEnabled)
-                {
-                    FreeMate();
-                }
-            }
-            // Normal movement
-            else if (!isReproducing)
-            {
-                // Only apply movement if not waiting for mate
-                if (!isWaitingForMate)
-                {
-                    // Apply movement based on neural network output
-                    Vector2 moveDirection = Vector2.zero;
-                    moveDirection.x = actions[0];  // Left/right movement
-                    moveDirection.y = actions[1];  // Up/down movement
-                    
-                    // Normalize to ensure diagonal movement isn't faster
-                    if (moveDirection.magnitude > 1f)
-                    {
-                        moveDirection.Normalize();
-                    }
-                    
-                    // Apply move speed with bounds check
-                    Vector2 desiredVelocity = moveDirection * moveSpeed;
-                    ApplyMovementWithBoundsCheck(desiredVelocity);
-                }
+                moveDirection.Normalize();
             }
             
-            // Process action commands (chop and attack)
+            // Apply move speed with bounds check
+            Vector2 desiredVelocity = moveDirection * moveSpeed;
+            ApplyMovementWithBoundsCheck(desiredVelocity);
+            
+            // Process action commands (chop, attack, and now reproduction)
             ProcessActionCommands(actions);
-            
-            // Update reproduction
-            UpdateReproduction();
         }
         
         // Check if we should die
@@ -753,34 +652,41 @@ public class Creature : MonoBehaviour
     
     private void ProcessActionCommands(float[] actions)
     {
-        // We need at least 4 actions: move x, move y, chop, attack
-        if (actions.Length < 4) return;
+        // We need at least 5 actions: move x, move y, chop, attack, reproduce
+        if (actions.Length < 5) return;
         
         // Only execute actions if we have enough energy
         if (energy >= actionEnergyCost)
         {
             float chopDesire = actions[2];
             float attackDesire = actions[3];
+            float reproduceDesire = actions[4];
             
-            // Both values must be positive to be considered
-            if (chopDesire > 0 || attackDesire > 0)
+            // Find the highest desire that is positive
+            float highestDesire = Mathf.Max(chopDesire, attackDesire, reproduceDesire);
+            
+            if (highestDesire > 0)
             {
+                bool actionSuccessful = false;
+                
                 // Choose the action with the highest positive value
-                if (chopDesire > attackDesire && chopDesire > 0)
+                if (highestDesire == chopDesire && chopDesire > 0)
                 {
-                    if (TryChopTree())
-                    {
-                        // Reset energy after successful action
-                        energy -= actionEnergyCost;
-                    }
+                    actionSuccessful = TryChopTree();
                 }
-                else if (attackDesire > 0)
+                else if (highestDesire == attackDesire && attackDesire > 0)
                 {
-                    if (TryAttackCreature())
-                    {
-                        // Reset energy after successful action
-                        energy -= actionEnergyCost;
-                    }
+                    actionSuccessful = TryAttackCreature();
+                }
+                else if (highestDesire == reproduceDesire && reproduceDesire > 0 && reproduction >= maxReproduction)
+                {
+                    actionSuccessful = MakeReproduction();
+                }
+                
+                if (actionSuccessful)
+                {
+                    // Reset energy after successful action
+                    energy -= actionEnergyCost;
                 }
             }
         }
@@ -1022,215 +928,6 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private IEnumerator BeginReproduction()
-    {
-        // Validate all required components before proceeding
-        if (targetMate == null)
-        {
-            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - targetMate is null", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        if (targetMate.gameObject == null)
-        {
-            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - targetMate.gameObject is null", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        // Debug.Log(string.Format("{0} beginning reproduction with {1}", gameObject.name, targetMate.gameObject.name));
-
-        // Get floor collider with null check
-        var floorObj = GameObject.FindGameObjectWithTag("Floor");
-        if (floorObj == null)
-        {
-            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - Floor object not found", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        var floorCollider = floorObj.GetComponent<PolygonCollider2D>();
-        if (floorCollider == null)
-        {
-            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - Floor collider not found", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        // Get sprite renderer with null check
-        var spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null || spriteRenderer.sprite == null)
-        {
-            // Debug.LogError(string.Format("{0}: Cannot begin reproduction - SpriteRenderer or sprite is null", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        WaitForSeconds spawnDelay = new WaitForSeconds(0.3f);
-        bool spawnSuccessful = false;
-        Vector2 validPosition = Vector2.zero;
-        
-        // Try to find a valid spawn position first
-        while (!spawnSuccessful && health > 0 && targetMate != null && targetMate.health > 0)
-        {
-            Vector2 spawnOffset = Random.insideUnitCircle * 2f;
-            Vector2 potentialPosition = (Vector2)transform.position + spawnOffset;
-            
-            // Calculate where the bottom center would be using our existing sprite
-            Vector2 bottomCenter = new Vector2(
-                potentialPosition.x,
-                potentialPosition.y - spriteRenderer.bounds.extents.y
-            );
-            
-            if (floorCollider.OverlapPoint(bottomCenter))
-            {
-                validPosition = potentialPosition;
-                spawnSuccessful = true;
-            }
-            else
-            {
-                yield return spawnDelay;
-            }
-        }
-
-        // Final validation before creating offspring
-        if (!spawnSuccessful)
-        {
-            // Debug.LogError(string.Format("{0}: Failed to find valid spawn position", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        if (targetMate == null || !targetMate.gameObject)
-        {
-            // Debug.LogError(string.Format("{0}: Target mate became invalid during spawn position search", gameObject.name));
-            FreeMate();
-            yield break;
-        }
-
-        try
-        {
-            // Validate brains
-            if (brain == null)
-            {
-                // Debug.LogError(string.Format("{0}: Brain is null", gameObject.name));
-                throw new System.Exception("Brain is null");
-            }
-
-            var parent2Brain = targetMate.GetBrain();
-            if (parent2Brain == null)
-            {
-                // Debug.LogError(string.Format("{0}: Target mate's brain is null", gameObject.name));
-                throw new System.Exception("Target mate's brain is null");
-            }
-
-            // Get nodes and connections with null checks
-            var parent1Nodes = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.NodeGene>;
-            var parent1Connections = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
-            var parent2Nodes = parent2Brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent2Brain) as Dictionary<int, NEAT.Genes.NodeGene>;
-            var parent2Connections = parent2Brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(parent2Brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
-
-            if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
-            {
-                // Debug.LogError(string.Format("{0}: Failed to get neural network data", gameObject.name));
-                throw new System.Exception("Failed to get neural network data");
-            }
-
-            // Create offspring
-            var childGenome = new NEAT.Genome.Genome((int)(Time.time * 1000) % 1000000);
-
-            // Perform crossover
-            var allNodeKeys = new HashSet<int>(parent1Nodes.Keys.Concat(parent2Nodes.Keys));
-            foreach (var nodeKey in allNodeKeys)
-            {
-                NEAT.Genes.NodeGene nodeToAdd = null;
-                if (parent1Nodes.ContainsKey(nodeKey) && parent2Nodes.ContainsKey(nodeKey))
-                {
-                    nodeToAdd = (NEAT.Genes.NodeGene)(Random.value < 0.5f ? parent1Nodes[nodeKey].Clone() : parent2Nodes[nodeKey].Clone());
-                }
-                else if (parent1Nodes.ContainsKey(nodeKey))
-                {
-                    nodeToAdd = (NEAT.Genes.NodeGene)parent1Nodes[nodeKey].Clone();
-                }
-                else
-                {
-                    nodeToAdd = (NEAT.Genes.NodeGene)parent2Nodes[nodeKey].Clone();
-                }
-                childGenome.AddNode(nodeToAdd);
-            }
-
-            var allConnectionKeys = new HashSet<int>(parent1Connections.Keys.Concat(parent2Connections.Keys));
-            foreach (var connKey in allConnectionKeys)
-            {
-                NEAT.Genes.ConnectionGene connToAdd = null;
-                if (parent1Connections.ContainsKey(connKey) && parent2Connections.ContainsKey(connKey))
-                {
-                    connToAdd = (NEAT.Genes.ConnectionGene)(Random.value < 0.5f ? parent1Connections[connKey].Clone() : parent2Connections[connKey].Clone());
-                }
-                else if (parent1Connections.ContainsKey(connKey))
-                {
-                    connToAdd = (NEAT.Genes.ConnectionGene)parent1Connections[connKey].Clone();
-                }
-                else
-                {
-                    connToAdd = (NEAT.Genes.ConnectionGene)parent2Connections[connKey].Clone();
-                }
-                childGenome.AddConnection(connToAdd);
-            }
-
-            ApplyMutations(childGenome);
-
-            // Create and initialize offspring
-            GameObject offspring = Instantiate(gameObject, validPosition, Quaternion.identity);
-            if (offspring == null)
-            {
-                throw new System.Exception("Failed to instantiate offspring");
-            }
-
-            Creature offspringCreature = offspring.GetComponent<Creature>();
-            if (offspringCreature == null)
-            {
-                Destroy(offspring);
-                throw new System.Exception("Offspring missing Creature component");
-            }
-
-            var network = NEAT.NN.FeedForwardNetwork.Create(childGenome);
-            if (network == null)
-            {
-                Destroy(offspring);
-                throw new System.Exception("Failed to create neural network for offspring");
-            }
-
-            offspringCreature.InitializeNetwork(network);
-            offspringCreature.type = type;
-            
-            // Initialize offspring's reproduction state
-            offspringCreature.reproduction = 0f;
-            offspringCreature.canStartReproducing = false;
-            offspringCreature.isReproducing = false;
-            offspringCreature.isMovingToMate = false;
-            offspringCreature.isWaitingForMate = false;
-            offspringCreature.targetMate = null;
-            offspringCreature.StartCoroutine(offspringCreature.DelayedReproductionStart());
-            
-            // Debug.Log(string.Format("{0}: Successfully created offspring at position {1}", gameObject.name, validPosition));
-            
-            // Reset both parents
-            var tempMate = targetMate; // Store reference in case it becomes null
-            FreeMate();
-            if (tempMate != null && tempMate.gameObject != null)
-            {
-                tempMate.FreeMate();
-            }
-        }
-        catch (System.Exception e)
-        {
-            // Debug.LogError(string.Format("{0}: Exception in BeginReproduction: {1}", gameObject.name, e));
-            FreeMate();
-        }
-    }
-
     private void MoveTowardsMate()
     {
         if (targetMate == null || !targetMate.gameObject.activeInHierarchy)
@@ -1250,8 +947,9 @@ public class Creature : MonoBehaviour
             isMovingToMate = false;
             rb.velocity = Vector2.zero; // Stop moving
             
-            // Start reproduction process
-            StartCoroutine(BeginReproduction());
+            // We no longer need the BeginReproduction coroutine in the new system
+            // Just free the mate since we're using the new MakeReproduction method
+            FreeMate();
             return;
         }
         
@@ -1341,5 +1039,202 @@ public class Creature : MonoBehaviour
             // Add debug visualization to see the movement path
             Debug.DrawLine(transform.position, transform.position + (Vector3)rb.velocity.normalized * 1f, Color.yellow, 0.1f);
         }
+    }
+
+    private bool MakeReproduction()
+    {
+        // Check population limit first
+        if (neatTest == null)
+        {
+            neatTest = FindObjectOfType<NEATTest>();
+        }
+        
+        if (neatTest != null && Creature.TotalCreatures >= neatTest.maxCreatures)
+        {
+            return false;
+        }
+        
+        // Find the nearest eligible mate
+        Creature nearestMate = null;
+        float nearestDistance = float.MaxValue;
+        
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+        
+        foreach (var collider in nearbyColliders)
+        {
+            if (collider.gameObject == gameObject) continue;
+            
+            Creature otherCreature = collider.GetComponent<Creature>();
+            if (otherCreature != null && 
+                otherCreature.type == type && 
+                otherCreature.reproduction >= maxReproduction)
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestMate = otherCreature;
+                    nearestDistance = distance;
+                }
+            }
+        }
+        
+        // If no eligible mate found or too far away, fail
+        if (nearestMate == null || nearestDistance > 2.0f)
+        {
+            return false;
+        }
+        
+        // Create offspring
+        CreateOffspring(nearestMate);
+        
+        // Reset reproduction for both parents
+        reproduction = 0f;
+        nearestMate.reproduction = 0f;
+        
+        return true;
+    }
+
+    private void CreateOffspring(Creature mate)
+    {
+        // Create a position for the offspring near the mate
+        Vector3 spawnPosition = mate.transform.position + Random.insideUnitSphere * 1.5f;
+        spawnPosition.z = 0f;
+        
+        // Check if position is valid (on floor)
+        if (cachedFloorCollider == null)
+        {
+            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
+            if (floorObj != null)
+            {
+                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
+            }
+        }
+        
+        // Validate the spawn position
+        bool positionValid = false;
+        if (cachedFloorCollider != null)
+        {
+            for (int i = 0; i < 10; i++) // Try 10 times to find a valid position
+            {
+                if (cachedFloorCollider.OverlapPoint(spawnPosition))
+                {
+                    positionValid = true;
+                    break;
+                }
+                
+                // Try another position
+                spawnPosition = mate.transform.position + Random.insideUnitSphere * 1.5f;
+                spawnPosition.z = 0f;
+            }
+        }
+        else
+        {
+            // No floor check possible, assume valid
+            positionValid = true;
+        }
+        
+        if (!positionValid)
+        {
+            // Fallback to mate's position
+            spawnPosition = mate.transform.position;
+        }
+        
+        // Create a new neural network by crossover
+        var childNetwork = CreateChildNetwork(this.brain, mate.GetBrain());
+        
+        // Instantiate the new creature
+        GameObject offspringObj = Instantiate(gameObject, spawnPosition, Quaternion.identity);
+        Creature offspring = offspringObj.GetComponent<Creature>();
+        
+        // Set up the child's network and stats
+        offspring.InitializeNetwork(childNetwork);
+        offspring.type = type;
+        offspring.reproduction = 0f;
+    }
+    
+    private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
+    {
+        // Get parent network details via reflection
+        System.Reflection.FieldInfo nodesField = parent1.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        System.Reflection.FieldInfo connectionsField = parent1.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        if (nodesField == null || connectionsField == null)
+        {
+            Debug.LogError("Failed to access network fields via reflection");
+            return null;
+        }
+        
+        var parent1Nodes = nodesField.GetValue(parent1) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent1Connections = connectionsField.GetValue(parent1) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        
+        var parent2Nodes = nodesField.GetValue(parent2) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent2Connections = connectionsField.GetValue(parent2) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        
+        if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
+        {
+            Debug.LogError("Failed to extract network components");
+            return null;
+        }
+        
+        // Create new dictionaries for the child
+        var childNodes = new Dictionary<int, NEAT.Genes.NodeGene>();
+        var childConnections = new Dictionary<int, NEAT.Genes.ConnectionGene>();
+        
+        // Add all nodes (taking randomly from either parent for matching nodes)
+        var allNodeKeys = new HashSet<int>(parent1Nodes.Keys.Concat(parent2Nodes.Keys));
+        foreach (var key in allNodeKeys)
+        {
+            if (parent1Nodes.ContainsKey(key) && parent2Nodes.ContainsKey(key))
+            {
+                // Both parents have this node, randomly choose one
+                childNodes[key] = Random.value < 0.5f ? 
+                    (NEAT.Genes.NodeGene)parent1Nodes[key].Clone() : 
+                    (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
+            }
+            else if (parent1Nodes.ContainsKey(key))
+            {
+                // Only parent1 has this node
+                childNodes[key] = (NEAT.Genes.NodeGene)parent1Nodes[key].Clone();
+            }
+            else
+            {
+                // Only parent2 has this node
+                childNodes[key] = (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
+            }
+        }
+        
+        // Add connections (taking randomly from either parent for matching connections)
+        var allConnectionKeys = new HashSet<int>(parent1Connections.Keys.Concat(parent2Connections.Keys));
+        foreach (var key in allConnectionKeys)
+        {
+            if (parent1Connections.ContainsKey(key) && parent2Connections.ContainsKey(key))
+            {
+                // Both parents have this connection, randomly choose one
+                childConnections[key] = Random.value < 0.5f ? 
+                    (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone() : 
+                    (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
+            }
+            else if (parent1Connections.ContainsKey(key))
+            {
+                // Only parent1 has this connection
+                childConnections[key] = (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone();
+            }
+            else
+            {
+                // Only parent2 has this connection
+                childConnections[key] = (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
+            }
+            
+            // Apply mutation to weight (occasionally)
+            if (Random.value < 0.8f)
+            {
+                var conn = childConnections[key];
+                conn.Weight += Random.Range(-0.5f, 0.5f);
+                conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
+            }
+        }
+        
+        // Create a new network with the crossover results
+        return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
     }
 } 

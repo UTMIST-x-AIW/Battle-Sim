@@ -27,6 +27,10 @@ public class NEATTest : MonoBehaviour
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     
+    // NEAT instance for access by other classes
+    [System.NonSerialized]
+    public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
+
     private void Awake()
     {
         // Check if there's already an instance
@@ -210,7 +214,7 @@ public class NEATTest : MonoBehaviour
         var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
         var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
-        var outputNode5 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Reproduction action
+        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Reproduction action
 
         outputNode1.Layer = 2;  // Output layer
         outputNode2.Layer = 2;  // Output layer
@@ -233,9 +237,9 @@ public class NEATTest : MonoBehaviour
 
         for(int i = 0; i < 13; i++)
         {
-            for (int j = 0; j <  5; j++)
+            for (int j = 17; j <  22; j++)
             {
-                genome.AddConnection(new NEAT.Genes.ConnectionGene((i*5 + j),i, j, Random.Range(-1f, 1f)));
+                genome.AddConnection(new NEAT.Genes.ConnectionGene((i*5 + j + 22),i, j, Random.Range(-1f, 1f)));
             }
         }
         
@@ -260,22 +264,26 @@ public class NEATTest : MonoBehaviour
         var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
         var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Reproduction action
         
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
         outputNode3.Layer = 2;
         outputNode4.Layer = 2;
+        outputNode5.Layer = 2;
         
         // Explicitly set bias to 0 for output nodes to maintain previous behavior
         outputNode1.Bias = 0.0;
         outputNode2.Bias = 0.0;
         outputNode3.Bias = 0.0;
         outputNode4.Bias = 0.0;
+        outputNode5.Bias = 0.0;
         
         genome.AddNode(outputNode1);
         genome.AddNode(outputNode2);
         genome.AddNode(outputNode3);
         genome.AddNode(outputNode4);
+        genome.AddNode(outputNode5);
         
         // Add connections with different weights than Albert
         // Kais are more aggressive (stronger response to opposite type)
@@ -313,6 +321,12 @@ public class NEATTest : MonoBehaviour
         // Energy level to actions - enables actions only when energy is high
         genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 2, 19, 0.6f)); // Energy to chop
         genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 2, 20, 0.7f)); // Energy to attack - higher weight makes Kai more likely to attack
+        
+        // Add connections for reproduction - Kai is less focused on reproduction than Albert
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 1, 21, 0.5f));  // Reproduction readiness to reproduce action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 2, 21, 0.4f));  // Energy to reproduce - lower weight than attack/chop
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 3, 21, 0.3f));  // Same type x position to reproduce
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(21, 4, 21, 0.3f));  // Same type y position to reproduce
         
         return genome;
     }

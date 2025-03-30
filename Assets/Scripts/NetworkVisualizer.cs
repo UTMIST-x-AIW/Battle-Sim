@@ -318,8 +318,30 @@ public class NetworkVisualizer : MonoBehaviour
         Text text = nodeObj.GetComponentInChildren<Text>();
         if (text != null)
         {
-            text.text = node.Key.ToString();
-            text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);
+            // For output nodes, add a descriptive label
+            if (node.Type == NodeType.Output)
+            {
+                string label = node.Key.ToString();
+                
+                // Assuming the output nodes are numbered 17, 18, 19, 20, 21 based on the Creature.cs code
+                // Adjust these numbers if your network uses different output node IDs
+                switch (label)
+                {
+                    case "17": label = "17: X Move"; break;
+                    case "18": label = "18: Y Move"; break;
+                    case "19": label = "19: Chop"; break;
+                    case "20": label = "20: Attack"; break;
+                    case "21": label = "21: Reproduce"; break;
+                }
+                
+                text.text = label;
+                text.fontSize = Mathf.RoundToInt(nodeSize * 0.3f); // Smaller font for longer text
+            }
+            else
+            {
+                text.text = node.Key.ToString();
+                text.fontSize = Mathf.RoundToInt(nodeSize * 0.4f);
+            }
         }
         
         // Add or get outline component for bias visualization
