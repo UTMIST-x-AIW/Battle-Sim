@@ -65090,7 +65090,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heatMapData: {fileID: 11400000, guid: fbb78506cbf98b34390a312df3cfa433, type: 2}
-  size: 0.74
+  size: 0.77
 --- !u!1 &1530933609
 GameObject:
   m_ObjectHideFlags: 0
@@ -65365,7 +65365,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1946863758
 MonoBehaviour:
   m_ObjectHideFlags: 0
