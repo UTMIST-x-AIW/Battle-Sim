@@ -14,7 +14,7 @@ public class Creature : MonoBehaviour
     public static int TotalCreatures { get { return totalCreatures; } }
     
     // maxCreatures is now accessed from NEATTest
-    
+
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
@@ -341,7 +341,7 @@ public class Creature : MonoBehaviour
 
         // Lock the mate's reproduction state immediately to prevent race conditions
         mate.isReproducing = true;
-        
+
         if (shouldMove)
         {
             // We're the younger one, move to mate
@@ -367,7 +367,7 @@ public class Creature : MonoBehaviour
         isMovingToMate = false;
         isWaitingForMate = false;
         isReproducing = false;
-        targetMate = null;
+            targetMate = null;
     }
 
     private void ApplyMutations(NEAT.Genome.Genome genome)
@@ -406,50 +406,50 @@ public class Creature : MonoBehaviour
             
             // Only proceed if we haven't reached the max hidden layers
             if (maxCurrentLayer < maxHiddenLayers + 1) // +1 because layer 0 is input
-            {
-                // Original connection-splitting logic
-                var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-                var connToSplit = connList[Random.Range(0, connList.Count)];
-                connToSplit.Enabled = false;
-
-                // Create new node
-                int newNodeKey = genome.Nodes.Count;
-                var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
-                
-                // Set layer between input and output nodes
-                var inputNode = genome.Nodes[connToSplit.InputKey];
-                var outputNode = genome.Nodes[connToSplit.OutputKey];
-                newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-                
-                // If the layer would be the same as the input layer, increment it
-                if (newNode.Layer <= inputNode.Layer)
                 {
-                    // Check if incrementing would exceed max layers
-                    if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
+                    // Original connection-splitting logic
+                    var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+                    var connToSplit = connList[Random.Range(0, connList.Count)];
+                    connToSplit.Enabled = false;
+
+                    // Create new node
+                    int newNodeKey = genome.Nodes.Count;
+                    var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+                    
+                    // Set layer between input and output nodes
+                    var inputNode = genome.Nodes[connToSplit.InputKey];
+                    var outputNode = genome.Nodes[connToSplit.OutputKey];
+                    newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+                    
+                    // If the layer would be the same as the input layer, increment it
+                    if (newNode.Layer <= inputNode.Layer)
                     {
-                        // Skip this mutation if it would exceed max layers
-                        return;
+                        // Check if incrementing would exceed max layers
+                        if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
+                        {
+                            // Skip this mutation if it would exceed max layers
+                            return;
+                        }
+                        newNode.Layer = inputNode.Layer + 1;
                     }
-                    newNode.Layer = inputNode.Layer + 1;
-                }
-                
-                genome.AddNode(newNode);
+                    
+                    genome.AddNode(newNode);
 
-                // Add two new connections
-                var conn1 = new NEAT.Genes.ConnectionGene(
-                    genome.Connections.Count,
-                    connToSplit.InputKey,
-                    newNodeKey,
-                    1.0);
+                    // Add two new connections
+                    var conn1 = new NEAT.Genes.ConnectionGene(
+                        genome.Connections.Count,
+                        connToSplit.InputKey,
+                        newNodeKey,
+                        1.0);
 
-                var conn2 = new NEAT.Genes.ConnectionGene(
-                    genome.Connections.Count + 1,
-                    newNodeKey,
-                    connToSplit.OutputKey,
-                    connToSplit.Weight);
+                    var conn2 = new NEAT.Genes.ConnectionGene(
+                        genome.Connections.Count + 1,
+                        newNodeKey,
+                        connToSplit.OutputKey,
+                        connToSplit.Weight);
 
-                genome.AddConnection(conn1);
-                genome.AddConnection(conn2);
+                    genome.AddConnection(conn1);
+                    genome.AddConnection(conn2);
             }
         }
 
@@ -496,7 +496,7 @@ public class Creature : MonoBehaviour
         {
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToDelete = connList[Random.Range(0, connList.Count)];
-            genome.Connections.Remove(connToDelete.Key);
+                genome.Connections.Remove(connToDelete.Key);
         }
     }
     
@@ -541,8 +541,8 @@ public class Creature : MonoBehaviour
         
         // Check if we should die
         if (health <= 0f)
-        {
-            Destroy(gameObject);
+            {
+                Destroy(gameObject);
         }
     }
     
@@ -566,8 +566,8 @@ public class Creature : MonoBehaviour
         {
             // No floor found, just apply the movement
             rb.velocity = desiredVelocity;
-            return;
-        }
+                return;
+            }
         
         // Current position and desired position
         Vector2 currentPos = rb.position;
@@ -797,7 +797,7 @@ public class Creature : MonoBehaviour
             renderer.color = originalColor;
         }
     }
-
+    
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Check if we collided with another creature
@@ -1126,9 +1126,9 @@ public class Creature : MonoBehaviour
                 spawnPosition = mate.transform.position + Random.insideUnitSphere * 1.5f;
                 spawnPosition.z = 0f;
             }
-        }
-        else
-        {
+                }
+                else
+                {
             // No floor check possible, assume valid
             positionValid = true;
         }

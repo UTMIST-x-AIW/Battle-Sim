@@ -12,7 +12,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[13];  // Now 17 observations (0-16)
+        float[] obs = new float[13];  // Now 13 observations (0-16)
         
         // Basic stats
         obs[0] = self.health;
