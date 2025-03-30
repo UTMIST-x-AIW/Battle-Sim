@@ -12,7 +12,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[17];  // Now 17 observations (0-16)
+        float[] obs = new float[13];  // Now 17 observations (0-16)
         
         // Basic stats
         obs[0] = self.health;
@@ -22,14 +22,10 @@ public class CreatureObserver : MonoBehaviour
         // Get nearby objects
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
         
-        Vector2 sameTypeSum = Vector2.zero;
-        float sameTypeAbsSum = 0f;
-        Vector2 oppositeTypeSum = Vector2.zero;
-        float oppositeTypeAbsSum = 0f;
-        Vector2 cherrySum = Vector2.zero;
-        float cherryAbsSum = 0f;
-        Vector2 treeSum = Vector2.zero;
-        float treeAbsSum = 0f;
+        Vector2 sameTypePos = Vector2.zero;
+        Vector2 oppositeTypePos = Vector2.zero;
+        Vector2 cherryPos = Vector2.zero;
+        Vector2 treePos = Vector2.zero;
         
         foreach (var collider in nearbyColliders)
         {
@@ -39,13 +35,17 @@ public class CreatureObserver : MonoBehaviour
             
             if (collider.CompareTag("Cherry"))
             {
-                cherrySum += relativePos;
-                cherryAbsSum += relativePos.magnitude;
+                if (relativePos.magnitude < cherryPos.magnitude || cherryPos.magnitude == 0)
+                {
+                    cherryPos = relativePos;
+                }
             }
             else if (collider.CompareTag("Tree"))
             {
-                treeSum += relativePos;
-                treeAbsSum += relativePos.magnitude;
+                if (relativePos.magnitude < treePos.magnitude || treePos.magnitude == 0)
+                {
+                    treePos = relativePos;
+                }
             }
             else
             {
@@ -54,40 +54,40 @@ public class CreatureObserver : MonoBehaviour
                 
                 if (other.type == self.type)
                 {
-                    sameTypeSum += relativePos;
-                    sameTypeAbsSum += relativePos.magnitude;
+                    if (relativePos.magnitude < sameTypePos.magnitude || sameTypePos.magnitude == 0)
+                    {
+                        sameTypePos = relativePos;
+                    }
                 }
                 else
                 {
-                    oppositeTypeSum += relativePos;
-                    oppositeTypeAbsSum += relativePos.magnitude;
+                    if (relativePos.magnitude < oppositeTypePos.magnitude || oppositeTypePos.magnitude == 0)
+                    {
+                        oppositeTypePos = relativePos;
+                    }
                 }
             }
         }
         
         // Same type observations (x,y components and absolute sum)
-        obs[3] = sameTypeSum.x;
-        obs[4] = sameTypeSum.y;
-        obs[5] = sameTypeAbsSum;
+        obs[3] = sameTypePos.x;
+        obs[4] = sameTypePos.y;
         
         // Opposite type observations (x,y components and absolute sum)
-        obs[6] = oppositeTypeSum.x;
-        obs[7] = oppositeTypeSum.y;
-        obs[8] = oppositeTypeAbsSum;
+        obs[5] = oppositeTypePos.x;
+        obs[6] = oppositeTypePos.y;
         
         // Cherry observations (x,y components and absolute sum)
-        obs[9] = cherrySum.x;
-        obs[10] = cherrySum.y;
-        obs[11] = cherryAbsSum;
+        obs[7] = cherryPos.x;
+        obs[8] = cherryPos.y;
         
         // Tree observations (x,y components and absolute sum)
-        obs[12] = treeSum.x;
-        obs[13] = treeSum.y;
-        obs[14] = treeAbsSum;
+        obs[9] = treePos.x;
+        obs[10] = treePos.y;
         
         // Add normalized direction vector (helps with orientation)
-        obs[15] = transform.right.x;   // Current x direction
-        obs[16] = transform.right.y;   // Current y direction
+        obs[11] = transform.position.x;   // Current x direction
+        obs[12] = transform.position.y;   // Current y direction
         
         return obs;
     }

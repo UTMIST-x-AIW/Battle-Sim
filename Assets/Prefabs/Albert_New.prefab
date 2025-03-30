@@ -175,10 +175,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 3
   reproduction: 0
+  energy: 0
   maxHealth: 3
   maxReproduction: 1
+  maxEnergy: 1
+  energyRechargeRate: 0.333
   agingStartTime: 10
-  agingRate: 0.01
+  agingRate: 0.2
   moveSpeed: 2
   reproductionRate: 0.1
   weightMutationRate: 0.8
@@ -187,6 +190,9 @@ MonoBehaviour:
   addConnectionRate: 0.5
   deleteConnectionRate: 0.2
   maxHiddenLayers: 10
+  actionEnergyCost: 1
+  chopDamage: 1
+  attackDamage: 1
   type: 0
 --- !u!114 &7128371635744845694
 MonoBehaviour:

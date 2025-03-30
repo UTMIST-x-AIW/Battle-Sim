@@ -18440,7 +18440,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 6258254174234815534, guid: 6c5846c08223140618e92a7437c29da5, type: 3}
   kaiCreaturePrefab: {fileID: 3784808969927339861, guid: d0329ffaf1f014ef4bf948effcaf1f26, type: 3}
+  num_alberts: 50
   maxHiddenLayers: 10
+  maxCreatures: 100
+  runTests: 1
+  currentTest: 2
+  showDetectionRadius: 0
 --- !u!4 &186563466
 Transform:
   m_ObjectHideFlags: 0
@@ -25666,8 +25671,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cherryPrefab: {fileID: 4324742716123573730, guid: 3f83485339e6340198bac3fea30aa976, type: 3}
-  spawnInterval: 1
-  maxCherries: 80
+  spawnInterval: 0.01
+  maxCherries: 40
 --- !u!4 &776339020
 Transform:
   m_ObjectHideFlags: 0
@@ -61829,6 +61834,7 @@ MonoBehaviour:
   panelSize: {x: 600, y: 450}
   nodeSize: 80
   edgeMargin: 10
+  outlineThickness: 3
 --- !u!1001 &2220490600950311428
 PrefabInstance:
   m_ObjectHideFlags: 0
