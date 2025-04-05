@@ -8,8 +8,8 @@ public class HeatMapEditor : Editor
     private HeatMapVisualizer visualizer;
     private bool _enabledediting = false;
     private bool EraserOn = false;
-    private float brushstrength = 0.6f;
-    private float brushRadius = 0.6f;
+    [Range(0f,2f)]private float brushstrength = 0.6f;
+    [Range(0,2f)]private float brushRadius = 0.6f;
 
 
     private void OnEnable()
@@ -53,7 +53,7 @@ public class HeatMapEditor : Editor
             ModifyHeatmap(mousePos_transformed, brushstrength, brushRadius);
            // e.Use();
         }
-        else if (e.type == EventType.MouseDown || EraserOn)
+        else if (e.type == EventType.MouseDrag || EraserOn)
         {
             ModifyHeatmap(mousePos_transformed, -brushstrength, brushRadius);
             //e.Use();
