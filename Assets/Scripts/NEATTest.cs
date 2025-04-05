@@ -221,8 +221,8 @@ public class NEATTest : MonoBehaviour
     private IEnumerator SpawnAlbertsStaggered()
     {
         // Spawn area in top left
-        Vector2 spawnCenter = new Vector2(-5f, -0f);
-        float spreadRadius = 10f;
+        Vector2 spawnCenter = new Vector2(-10f, -0f);
+        float spreadRadius = 2f;
         
         // Spawn Alberts one at a time with random delays
         for (int i = 0; i < num_alberts; i++)
