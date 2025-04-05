@@ -11,7 +11,7 @@ public class NEATTest : MonoBehaviour
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     [SerializeField]
     public static int num_alberts=50;
-    public int MIN_ALBERTS = 40;
+    public int MIN_ALBERTS = 20;
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -107,6 +107,7 @@ public class NEATTest : MonoBehaviour
             );
             SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
         }
+        Debug.Log(num_alberts);
     }
 
 

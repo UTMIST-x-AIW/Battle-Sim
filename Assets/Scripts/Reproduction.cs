@@ -59,7 +59,7 @@ public class Reproduction : MonoBehaviour
                 Creature p1 = this.GetComponent<Creature>();
                 Creature p2 = other.GetComponent<Creature>();
                 GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);
-                Debug.Log("HAAALEELUUJAH");
+                //Debug.Log("HAAALEELUUJAH");
             }
 
             otherScript.gameObject_mated_with.Add(this.gameObject);

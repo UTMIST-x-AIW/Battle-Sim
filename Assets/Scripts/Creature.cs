@@ -18,7 +18,7 @@ public class Creature : MonoBehaviour
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
-    public float energy = 1000f;
+    public float energy = 0f;
     public float maxHealth = 3f;
     public float maxReproduction = 1f;
     public float maxEnergy = 1f;
@@ -69,10 +69,6 @@ public class Creature : MonoBehaviour
     private bool isWaitingForMate = false;
     private bool canStartReproducing = false;  // New flag to control reproduction start
     private Creature targetMate = null;
-
-    // Add these private variables at the class level
-    private bool hasLoggedObservations = false;
-    private int debugFrameCounter = 0;
 
     // Animator reference
     private CreatureAnimator creatureAnimator;
@@ -138,7 +134,6 @@ public class Creature : MonoBehaviour
         rb.gravityScale = 0f;
         rb.drag = 1f;
         rb.angularDrag = 1f;
-        //rb.constraints = RigidbodyConstraints2D.None;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         
         // Update the animator with the creature type
@@ -492,7 +487,6 @@ public class Creature : MonoBehaviour
             
             // Find the highest desire that is positive
             float highestDesire = Mathf.Max(chopDesire, 0);
-            Debug.Log(highestDesire);
             
             if (highestDesire > 0)
             {
