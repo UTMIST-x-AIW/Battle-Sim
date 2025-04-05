@@ -11,7 +11,7 @@ public class SavingTilePos : MonoBehaviour
     // Start is called before the first frame update
     void OnEnable()
     {
-       // tiledata.Initialize(tilemaps[0],50);
+       tiledata.Initialize(tilemaps[0],50);
     }
 
     void RecalculatePos(int tilemapNum)

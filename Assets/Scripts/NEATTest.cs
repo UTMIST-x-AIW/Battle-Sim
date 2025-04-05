@@ -133,9 +133,6 @@ public class NEATTest : MonoBehaviour
         // Spawn younger creature
         var youngerCreature = SpawnCreature(albertCreaturePrefab, youngerPosition, Creature.CreatureType.Albert, false);
         
-        // Initialize creatures with their starting values
-        olderCreature.InitializeForTesting(20f, olderCreature.maxReproduction);
-        youngerCreature.InitializeForTesting(10f, youngerCreature.maxReproduction);
 
         // Debug.Log("Test 1 Setup Complete:");
         // Debug.Log($"- Older creature at {olderPosition}, age: 20");
@@ -169,7 +166,6 @@ public class NEATTest : MonoBehaviour
             // Initialize the creature with varied ages to encourage dynamic behavior
             float startingAge = Random.Range(5f, 15f);
             float startingReproduction = Random.Range(0f, creature.maxReproduction);
-            creature.InitializeForTesting(startingAge, startingReproduction);
         }
         
         Debug.Log("Test setup complete: 8 Alberts with random brains spawned in top left");
@@ -196,12 +192,6 @@ public class NEATTest : MonoBehaviour
         // Spawn low reproduction desire creatures (Albert)
         var lowRepro1 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[1], Creature.CreatureType.Albert, 0.1f);
         var lowRepro2 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[3], Creature.CreatureType.Albert, 0.1f);
-        
-        // Initialize creatures to be ready to reproduce
-        highRepro1.InitializeForTesting(10f, highRepro1.maxReproduction);
-        highRepro2.InitializeForTesting(10f, highRepro2.maxReproduction);
-        lowRepro1.InitializeForTesting(10f, lowRepro1.maxReproduction);
-        lowRepro2.InitializeForTesting(10f, lowRepro2.maxReproduction);
         
         // Set full energy for all creatures
         highRepro1.energy = highRepro1.maxEnergy;
