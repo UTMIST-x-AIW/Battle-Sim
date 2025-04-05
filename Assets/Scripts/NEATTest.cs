@@ -10,10 +10,24 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
+    
+    [Header("Population Settings")]
     [SerializeField]
-    public static int num_alberts=50;
+    private int _num_alberts = 50;
+    public static int num_alberts = 50;  // Keep static for global access
     public int MIN_ALBERTS = 20;
     public int MAX_ALBERTS = 100;
+
+    // Property to show in Inspector
+    public int NumAlberts
+    {
+        get { return _num_alberts; }
+        set 
+        { 
+            _num_alberts = value;
+            num_alberts = value;  // Keep static field in sync
+        }
+    }
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -41,7 +55,7 @@ public class NEATTest : MonoBehaviour
 
     [Header("Population Settings")]
     private float lastPopulationCheck = 0f;
-    private float populationCheckInterval = 1f;  // Check population every second
+    private float populationCheckInterval = 0.1f;  // Check population every 0.1 seconds
 
     private void Awake()
     {
@@ -109,48 +123,78 @@ public class NEATTest : MonoBehaviour
 
     private void ManagePopulation()
     {
-        // Count actual creatures in the scene
-        var actualCreatures = GameObject.FindObjectsOfType<Creature>();
-        int actualCount = actualCreatures.Count(c => c.type == Creature.CreatureType.Albert);
-        
-        // Update the static counter to match reality
-        num_alberts = actualCount;
-        
-        // Log population status
-        Debug.Log($"Current Albert population: {num_alberts} (Min: {MIN_ALBERTS}, Max: {MAX_ALBERTS})");
-        
-        // Handle population management
-        if (num_alberts < MIN_ALBERTS)
+        try
         {
-            SpawnNewAlbert();
+            // Count actual creatures in the scene
+            var actualCreatures = GameObject.FindObjectsOfType<Creature>();
+            LogManager.LogMessage($"Found {actualCreatures.Length} total creatures");
+            
+            int actualCount = actualCreatures.Count(c => c.type == Creature.CreatureType.Albert);
+            LogManager.LogMessage($"Found {actualCount} Albert creatures");
+            
+            // Update the static counter to match reality
+            NumAlberts = actualCount;
+            
+            // Log population status
+            LogManager.LogMessage($"Current Albert population: {num_alberts} (Min: {MIN_ALBERTS}, Max: {MAX_ALBERTS})");
+            
+            // Safety check - if we have more creatures than expected, log it
+            if (actualCount > MAX_ALBERTS)
+            {
+                LogManager.LogError($"Population exceeds MAX_ALBERTS! Current: {actualCount}, Max: {MAX_ALBERTS}");
+                return;
+            }
+            
+            // Handle population management
+            if (num_alberts < MIN_ALBERTS)
+            {
+                LogManager.LogMessage("Population below minimum, spawning new Albert");
+                SpawnNewAlbert();
+            }
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in ManagePopulation: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 
     private void SpawnNewAlbert()
     {
-        // Spawn area in top left
-        Vector2 spawnCenter = new Vector2(-5f, -0f);
-        float spreadRadius = 10f;
-        
-        // Calculate a position with some randomness
-        Vector2 offset = Random.insideUnitCircle * spreadRadius;
-        Vector3 position = new Vector3(
-            spawnCenter.x + offset.x,
-            spawnCenter.y + offset.y,
-            0f
-        );
-        
-        // Spawn the creature with a randomized brain
-        var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-        
-        // Initialize with random age and reproduction
-        float startingAge = Random.Range(5f, 15f);
-        float startingReproduction = Random.Range(0f, creature.maxReproduction);
-        
-        // Set generation to 0 for initially spawned Alberts
-        creature.generation = 0;
-        
-        num_alberts++;
+        try
+        {
+            // Spawn area in top left
+            Vector2 spawnCenter = new Vector2(-5f, -0f);
+            float spreadRadius = 10f;
+            
+            // Calculate a position with some randomness
+            Vector2 offset = Random.insideUnitCircle * spreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+            
+            Debug.Log($"Attempting to spawn new Albert at position: {position}");
+            
+            // Spawn the creature with a randomized brain
+            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            
+            if (creature == null)
+            {
+                Debug.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
+                return;
+            }
+            
+            // Initialize with random age and reproduction
+            float startingAge = Random.Range(5f, 15f);
+            float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            
+            Debug.Log($"Successfully spawned new Albert with age: {startingAge}, reproduction: {startingReproduction}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in SpawnNewAlbert: {e.Message}\nStack trace: {e.StackTrace}");
+        }
     }
 
     // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction

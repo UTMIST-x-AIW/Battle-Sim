@@ -31426,8 +31426,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a7f585788084670a8882b06ef65bea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labelsToggle: {fileID: 0}
-  detectionRadiusToggle: {fileID: 0}
+  labelsToggle: {fileID: 2019707518}
+  detectionRadiusToggle: {fileID: 693493125}
 --- !u!4 &368245996
 Transform:
   m_ObjectHideFlags: 0

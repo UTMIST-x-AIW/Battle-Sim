@@ -324,48 +324,56 @@ public class Creature : MonoBehaviour
     
     private void FixedUpdate()
     {
-        // Apply aging (linear damage based on lifetime after a delay)
-        lifetime += Time.fixedDeltaTime;
-        if (lifetime > agingStartTime)
+        try
         {
-            health -= agingRate * Time.fixedDeltaTime;
-        }
-        
-        // Replenish energy over time
-        energy = Mathf.Min(energy + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
-        
-        // Accumulate reproduction points
-        reproduction = Mathf.Min(reproduction + reproductionRate * Time.fixedDeltaTime, maxReproduction);
-        
-        if (brain != null)
-        {
-            // Get actions from neural network
-            float[] actions = GetActions();
-            
-            // Apply movement based on neural network output
-            Vector2 moveDirection = Vector2.zero;
-            moveDirection.x = actions[0];  // Left/right movement
-            moveDirection.y = actions[1];  // Up/down movement
-            
-            // Normalize to ensure diagonal movement isn't faster
-            if (moveDirection.magnitude > 1f)
+            // Apply aging (linear damage based on lifetime after a delay)
+            lifetime += Time.fixedDeltaTime;
+            if (lifetime > agingStartTime)
             {
-                moveDirection.Normalize();
+                health -= agingRate * Time.fixedDeltaTime;
             }
             
-            // Apply move speed with bounds check
-            Vector2 desiredVelocity = moveDirection * moveSpeed;
-            ApplyMovementWithBoundsCheck(desiredVelocity);
+            // Replenish energy over time
+            energy = Mathf.Min(energy + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
             
-            // Process action commands (chop, attack, and now reproduction)
-            ProcessActionCommands(actions);
+            // Accumulate reproduction points
+            reproduction = Mathf.Min(reproduction + reproductionRate * Time.fixedDeltaTime, maxReproduction);
+            
+            if (brain != null)
+            {
+                // Get actions from neural network
+                float[] actions = GetActions();
+                
+                // Apply movement based on neural network output
+                Vector2 moveDirection = Vector2.zero;
+                moveDirection.x = actions[0];  // Left/right movement
+                moveDirection.y = actions[1];  // Up/down movement
+                
+                // Normalize to ensure diagonal movement isn't faster
+                if (moveDirection.magnitude > 1f)
+                {
+                    moveDirection.Normalize();
+                }
+                
+                // Apply move speed with bounds check
+                Vector2 desiredVelocity = moveDirection * moveSpeed;
+                ApplyMovementWithBoundsCheck(desiredVelocity);
+                
+                // Process action commands (chop, attack, and now reproduction)
+                ProcessActionCommands(actions);
+            }
+            
+            // Check if we should die
+            if (health <= 0f)
+            {
+                LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                Destroy(gameObject);
+                NEATTest.num_alberts--;
+            }
         }
-        
-        // Check if we should die
-        if (health <= 0f)
+        catch (System.Exception e)
         {
-            Destroy(gameObject);
-            NEATTest.num_alberts--;
+            LogManager.LogError($"Error in Creature FixedUpdate: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
     
@@ -667,38 +675,47 @@ public class Creature : MonoBehaviour
 
     private void OnDestroy()
     {
-        // If we were someone's target mate, free them but handle exceptions
-        if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
+        try
         {
-            // Break the circular reference first
-            var tempMate = targetMate;
-            targetMate = null;
+            LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
             
-            // Reset their flags directly instead of using FreeMate which may start coroutines
-            tempMate.isMovingToMate = false;
-            tempMate.isWaitingForMate = false;
-            tempMate.isReproducing = false;
-            tempMate.reproduction = 0f;
-            tempMate.canStartReproducing = false;
-            tempMate.targetMate = null;
-            
-            // If they're still alive and active, they can start their own timer
-            if (tempMate.gameObject.activeInHierarchy)
+            // If we were someone's target mate, free them but handle exceptions
+            if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
             {
-                try 
+                // Break the circular reference first
+                var tempMate = targetMate;
+                targetMate = null;
+                
+                // Reset their flags directly instead of using FreeMate which may start coroutines
+                tempMate.isMovingToMate = false;
+                tempMate.isWaitingForMate = false;
+                tempMate.isReproducing = false;
+                tempMate.reproduction = 0f;
+                tempMate.canStartReproducing = false;
+                tempMate.targetMate = null;
+                
+                // If they're still alive and active, they can start their own timer
+                if (tempMate.gameObject.activeInHierarchy)
                 {
-                    tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
-                }
-                catch (System.Exception)
-                {
-                    // Ignore any exceptions if coroutines can't be started
+                    try 
+                    {
+                        tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
+                    }
+                    catch (System.Exception e)
+                    {
+                        LogManager.LogError($"Error starting reproduction timer for mate: {e.Message}");
+                    }
                 }
             }
-        }
 
-        // Decrement counter when creature is destroyed
-        totalCreatures--;
-        // Debug.Log(string.Format("Creature destroyed. Total creatures: {0}", totalCreatures));
+            // Decrement counter when creature is destroyed
+            totalCreatures--;
+            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}, Current num_alberts: {NEATTest.num_alberts}");
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
+        }
     }
 
     private void OnGUI()

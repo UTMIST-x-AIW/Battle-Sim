@@ -12,11 +12,13 @@ public class Reproduction : MonoBehaviour
     //public Collider2D circle_of_mating;
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.9f;
-    public int MaxCreatures = 100;
     public GameObject Reproduction_prefab;
+    private bool isMating = false;
 
     private void LateUpdate()
     {
+        // Skip if already in mating process
+        if (isMating) return;
 
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, radius_of_mating);
         if (nearbycollider != null || nearbycollider.Length > 0)
@@ -31,6 +33,8 @@ public class Reproduction : MonoBehaviour
 
     private void EnableMating(Collider2D col)
     {
+        // Skip if already in mating process
+        if (isMating) return;
         
         GameObject other_character = col.gameObject;
 
@@ -43,9 +47,7 @@ public class Reproduction : MonoBehaviour
         {
             MateWith(other_character);
         }
-        
     }
-
 
     void MateWith(GameObject other)
     {
@@ -55,12 +57,16 @@ public class Reproduction : MonoBehaviour
             return;
         }
 
+        // Set mating flag
+        isMating = true;
+
         // Add each other to the mated lists
         gameObject_mated_with.Add(other);
 
         Reproduction otherScript = other.GetComponent<Reproduction>();
         if (otherScript == null)
         {
+            isMating = false;
             return;
         }
 
@@ -77,6 +83,7 @@ public class Reproduction : MonoBehaviour
 
                 if (p1 == null || p2 == null)
                 {
+                    isMating = false;
                     return;
                 }
 
@@ -84,6 +91,7 @@ public class Reproduction : MonoBehaviour
                 GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);
                 if (child == null)
                 {
+                    isMating = false;
                     return;
                 }
 
@@ -91,6 +99,16 @@ public class Reproduction : MonoBehaviour
                 otherScript.gameObject_mated_with.Add(this.gameObject);
             }
         }
+
+        // Reset mating flag after a delay
+        StartCoroutine(ResetMatingState());
+    }
+
+    private IEnumerator ResetMatingState()
+    {
+        // Wait a bit before allowing mating again
+        yield return new WaitForSeconds(2f);
+        isMating = false;
     }
 
     private GameObject SpawnChild(Creature p1, Creature p2, GameObject prefab, Vector3 position)
