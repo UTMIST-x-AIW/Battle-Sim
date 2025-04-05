@@ -147,7 +147,6 @@ public class NEATTest : MonoBehaviour
         float startingReproduction = Random.Range(0f, creature.maxReproduction);
         
         num_alberts++;
-        Debug.Log($"Spawned new Albert. Total population: {num_alberts}");
     }
 
     // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction
