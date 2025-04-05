@@ -149,7 +149,7 @@ public class Creature : MonoBehaviour
         rb.gravityScale = 0f;
         rb.drag = 1f;
         rb.angularDrag = 1f;
-        rb.constraints = RigidbodyConstraints2D.None;
+        //rb.constraints = RigidbodyConstraints2D.None;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         
         // Update the animator with the creature type
