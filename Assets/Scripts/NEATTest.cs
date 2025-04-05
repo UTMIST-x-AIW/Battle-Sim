@@ -10,8 +10,9 @@ public class NEATTest : MonoBehaviour
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     [SerializeField]
-    public static int num_alberts=20;
-    
+    public static int num_alberts=50;
+    public int MIN_ALBERTS = 40;
+
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
     public int maxCreatures = 20;     // Maximum number of creatures allowed in the simulation
@@ -91,7 +92,7 @@ public class NEATTest : MonoBehaviour
 
     private void Update()
     {
-        if (num_alberts < 20)
+        if (num_alberts < MIN_ALBERTS)
         {
             Debug.Log("NUM:" + num_alberts.ToString());
             // Spawn area in top left
@@ -107,6 +108,7 @@ public class NEATTest : MonoBehaviour
             SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
         }
     }
+
 
     private void SetupNormalGame()
     {
