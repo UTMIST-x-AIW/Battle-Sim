@@ -8,8 +8,8 @@ public class HeatMapEditor : Editor
     private HeatMapVisualizer visualizer;
     private bool _enabledediting = false;
     private bool EraserOn = false;
-    [Range(0f,2f)]private float brushstrength = 0.6f;
-    [Range(0,2f)]private float brushRadius = 0.6f;
+    private float brushstrength = 0.9f;
+    private float brushRadius = 0.5f;
 
 
     private void OnEnable()
@@ -34,8 +34,8 @@ public class HeatMapEditor : Editor
         {
             visualizer.heatMapData.ClearHeatmap();
         }
-        brushstrength = EditorGUILayout.Slider("Brush Strength", brushstrength, 0.6f, 0.9f);
-        brushRadius = EditorGUILayout.Slider("Brush Radius", brushRadius, 0.0f, 1.5f);
+        brushstrength = EditorGUILayout.Slider("Brush Strength", brushstrength, 0.6f, 2f);
+        brushRadius = EditorGUILayout.Slider("Brush Radius", brushRadius, 0.0f, 2f);
 
     }
 
