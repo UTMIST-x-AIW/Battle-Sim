@@ -1641,3 +1641,12 @@
 [13:05:56.108] Found 21 total creatures
 [13:05:56.111] Found 21 Albert creatures
 [13:05:56.112] Current Albert population: 21 (Min: 20, Max: 100)
+[13:06:05.371] Creature being destroyed - Type: Albert, Health: 2.303212, Generation: 0
+[13:06:05.372] Creature destroyed. Total creatures: 20, Current num_alberts: 21
+[13:06:05.373] Creature being destroyed - Type: Albert, Health: 2.693205, Generation: 0
+[13:06:05.373] Creature destroyed. Total creatures: 19, Current num_alberts: 21
+[13:06:05.373] Creature being destroyed - Type: Albert, Health: 2.282413, Generation: 1
+[13:06:05.373] Creature destroyed. Total creatures: 18, Current num_alberts: 21
+[13:06:05.373] Creature being destroyed - Type: Albert, Health: 1.206013, Generation: 0
+[13:06:05.374] Creature destroyed. Total creatures: 17, Current num_alberts: 21
+[13:06:05.374] === Simulation Session Ended ===

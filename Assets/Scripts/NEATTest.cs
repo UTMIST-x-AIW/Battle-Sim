@@ -46,6 +46,12 @@ public class NEATTest : MonoBehaviour
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public static bool showCreatureLabels = true;  // Toggle for creature labels
+    public bool showSpawnArea = false;  // Toggle for spawn area visualization
+    public Color spawnAreaColor = new Color(0.2f, 0.8f, 0.2f, 0.2f);  // Semi-transparent green
+    
+    [Header("Spawn Area Settings")]
+    public Vector2 spawnCenter = new Vector2(-10f, -0f);  // Center of the spawn area
+    public float spawnSpreadRadius = 2f;  // Radius of the spawn area
     
     // NEAT instance for access by other classes
     [System.NonSerialized]
@@ -268,15 +274,11 @@ public class NEATTest : MonoBehaviour
 
     private IEnumerator SpawnAlbertsStaggered()
     {
-        // Spawn area in top left
-        Vector2 spawnCenter = new Vector2(-10f, -0f);
-        float spreadRadius = 2f;
-        
         // Spawn Alberts one at a time with random delays
         for (int i = 0; i < num_alberts; i++)
         {
             // Calculate a position with some randomness
-            Vector2 offset = Random.insideUnitCircle * spreadRadius;
+            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
             Vector3 position = new Vector3(
                 spawnCenter.x + offset.x,
                 spawnCenter.y + offset.y,
@@ -643,5 +645,22 @@ public class NEATTest : MonoBehaviour
         creatureComponent.maxHiddenLayers = maxHiddenLayers;
         
         return creatureComponent;
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw spawn area if enabled
+        if (showSpawnArea)
+        {
+            // Set color for spawn area
+            Gizmos.color = spawnAreaColor;
+            
+            // Draw the spawn area as a circle
+            Gizmos.DrawSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
+            
+            // Draw a wire frame for better visibility
+            Gizmos.color = new Color(spawnAreaColor.r, spawnAreaColor.g, spawnAreaColor.b, 0.5f);
+            Gizmos.DrawWireSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
+        }
     }
 } 
