@@ -714,6 +714,9 @@ public class Creature : MonoBehaviour
         if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
             screenPos.y >= 0 && screenPos.y <= Screen.height)
         {
+            // Set text color to black
+            GUI.color = Color.black;
+            
             string status = "";
             if (isMovingToMate)
                 status = "Moving to mate";
@@ -731,6 +734,9 @@ public class Creature : MonoBehaviour
                 GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 60, 100, 20), 
                          status);
             }
+            
+            // Reset color back to white
+            GUI.color = Color.white;
         }
     }
 
