@@ -82,7 +82,7 @@ public class Spawner : MonoBehaviour
         spawnedPrefab.transform.SetParent(prefabParent.transform, false);
 
         // Optional: Log the spawn for debugging
-        Debug.Log($"Spawned {prefab.name} at {position}");
+        // Debug.Log($"Spawned {prefab.name} at {position}");
     }
     void Shuffle<T>(List<T> list)
     {

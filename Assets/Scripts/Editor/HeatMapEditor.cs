@@ -34,8 +34,8 @@ public class HeatMapEditor : Editor
         {
             visualizer.heatMapData.ClearHeatmap();
         }
-        brushstrength = EditorGUILayout.Slider("Brush Strength", brushstrength, 0.6f, 0.9f);
-        brushRadius = EditorGUILayout.Slider("Brush Radius", brushRadius, 0.0f, 1.5f);
+        brushstrength = EditorGUILayout.Slider("Brush Strength", brushstrength, 0.6f, 3.0f);
+        brushRadius = EditorGUILayout.Slider("Brush Radius", brushRadius, 0.0f, 3.0f);
 
     }
 
