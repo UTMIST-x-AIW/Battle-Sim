@@ -133,6 +133,9 @@ public class Reproduction : MonoBehaviour
         // Copy max hidden layers setting from parent
         childCreature.maxHiddenLayers = p1.maxHiddenLayers;
 
+        // Set child's generation to max parent generation + 1
+        childCreature.generation = Mathf.Max(p1.generation, p2.generation) + 1;
+
         NEATTest.num_alberts++;
 
         return child;

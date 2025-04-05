@@ -146,6 +146,9 @@ public class NEATTest : MonoBehaviour
         float startingAge = Random.Range(5f, 15f);
         float startingReproduction = Random.Range(0f, creature.maxReproduction);
         
+        // Set generation to 0 for initially spawned Alberts
+        creature.generation = 0;
+        
         num_alberts++;
     }
 
@@ -241,6 +244,9 @@ public class NEATTest : MonoBehaviour
             // Initialize the creature with varied ages to encourage dynamic behavior
             float startingAge = Random.Range(5f, 15f);
             float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            
+            // Set generation to 0 for initially spawned Alberts
+            creature.generation = 0;
             
             // Wait for a random time between 0.5 and 1 second before spawning the next creature
             yield return new WaitForSeconds(Random.Range(0.5f, 1f));

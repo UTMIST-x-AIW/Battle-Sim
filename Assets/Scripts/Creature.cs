@@ -28,6 +28,7 @@ public class Creature : MonoBehaviour
     public float agingStartTime = 10f;  // Time in seconds before aging starts
     public float agingRate = 0.03f;      // Base rate of aging damage (increased from 0.01 to compensate for linear aging)
     private float lifetime = 0f;        // How long the creature has lived
+    public int generation = 0;          // The generation number of this creature
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;  // Maximum speed in any direction
@@ -720,7 +721,7 @@ public class Creature : MonoBehaviour
 
             // Show age and status
             GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 40, 100, 20), 
-                     string.Format("Age: {0:F1}", lifetime));
+                     string.Format("Gen: {0}; Age: {1:F1}", generation, lifetime));
             
             if (status != "")
             {
