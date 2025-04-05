@@ -31,6 +31,7 @@ public class NEATTest : MonoBehaviour
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
+    public static bool showCreatureLabels = true;  // Toggle for creature labels
     
     // NEAT instance for access by other classes
     [System.NonSerialized]
