@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CreatureObserver : MonoBehaviour
 {
-    public static readonly float DETECTION_RADIUS = 5f;
+    public static readonly float DETECTION_RADIUS = 4f;
     private static int timestep = 0;
     
     private void Start()

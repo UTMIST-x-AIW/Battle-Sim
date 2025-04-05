@@ -10,7 +10,7 @@ public class NEATTest : MonoBehaviour
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     [SerializeField]
-    public static int num_alberts=100;
+    public static int num_alberts=20;
     
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed

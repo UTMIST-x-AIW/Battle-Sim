@@ -523,8 +523,9 @@ public class Creature : MonoBehaviour
         // Find the nearest tree within detection radius
         TreeHealth nearestTree = null;
         float nearestDistance = float.MaxValue;
-        
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+
+        float ACTION_RADIUS = 1.5f;
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, ACTION_RADIUS);
         
         foreach (var collider in nearbyColliders)
         {
