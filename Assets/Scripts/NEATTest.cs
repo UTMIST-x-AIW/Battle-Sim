@@ -287,8 +287,19 @@ public class NEATTest : MonoBehaviour
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
             
             // Initialize the creature with varied ages to encourage dynamic behavior
-            float startingAge = Random.Range(5f, 15f);
+            float startingAge = Random.Range(0f, 15f);  // Random age between 0 and 15 seconds
+            creature.lifetime = startingAge;  // Set the lifetime directly
+            
+            // If the creature starts with an age past the aging threshold, give it appropriate health
+            if (startingAge > creature.agingStartTime)
+            {
+                float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                float healthLost = ageBeyondThreshold * creature.agingRate;
+                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
+            }
+            
             float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            creature.reproduction = startingReproduction;
             
             // Set generation to 0 for initially spawned Alberts
             creature.generation = 0;
