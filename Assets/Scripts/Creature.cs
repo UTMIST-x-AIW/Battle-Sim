@@ -125,7 +125,7 @@ public class Creature : MonoBehaviour
     
     private void Start()
     {
-        observer = gameObject.AddComponent<CreatureObserver>();
+        observer = gameObject.GetComponent<CreatureObserver>();
         
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();

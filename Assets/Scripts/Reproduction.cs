@@ -10,6 +10,7 @@ public class Reproduction : MonoBehaviour
     [SerializeField]float radius_of_mating = 3f;
     //public Collider2D circle_of_mating;
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
+    public float pReproduction = 0.9f;
 
     private void LateUpdate()
     {
@@ -39,7 +40,7 @@ public class Reproduction : MonoBehaviour
 
     void MateWith(GameObject other)
     {
-        Debug.Log(name + " is mating with " + other.name);
+        //Debug.Log(name + " is mating with " + other.name);
 
         // Add each other to the mated lists
         gameObject_mated_with.Add(other);
@@ -47,7 +48,7 @@ public class Reproduction : MonoBehaviour
         Reproduction otherScript = other.GetComponent<Reproduction>();
 
         float matingChance = Random.value;
-        if (matingChance > 0.7)
+        if (matingChance > pReproduction)
         {
             Instantiate(this);
 
