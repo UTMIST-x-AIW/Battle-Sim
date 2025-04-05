@@ -26,8 +26,8 @@ public class Creature : MonoBehaviour
     
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
-    [Range(0.0005f, 0.005f)]  // Limit the range to safe values
-    public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
+    [Range(0.001f, 0.02f)]  // Increased maximum to allow faster aging
+    public float agingRate = 0.01f;    // Increased from 0.005 to 0.01 for faster aging
     private float lifetime = 0f;        // How long the creature has lived
     public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
     public int generation = 0;          // The generation number of this creature

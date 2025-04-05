@@ -57,20 +57,32 @@ public class NEATTest : MonoBehaviour
     [System.NonSerialized]
     public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
 
-    [Header("Population Settings")]
-    private float lastPopulationCheck = 0f;
-    private float populationCheckInterval = 0.1f;  // Check population every 0.1 seconds
+    [Header("Adaptive Time Scale")]
+    [Tooltip("Whether to automatically adjust time scale based on simulation conditions")]
+    public bool useAdaptiveTimeScale = true;
+    [Tooltip("Percentage of creatures with low health that triggers time scale reduction")]
+    [Range(0.1f, 0.5f)]
+    public float lowHealthThreshold = 0.2f; // 20% of creatures with low health triggers slowdown
+    [Tooltip("How much health is considered 'low' as a percentage of max health")]
+    [Range(0.1f, 0.4f)]
+    public float lowHealthPercentage = 0.25f; // Below 25% health is considered low
+    [Tooltip("Minimum time scale during high-stress periods")]
+    [Range(0.1f, 1.0f)]
+    public float minAdaptiveTimeScale = 0.3f;
+
+    [Header("Simulation Speed")]
     [Tooltip("Adjust simulation speed (1.0 = normal, 2.0 = 2x speed)")]
     [Range(0.1f, 3.0f)]
     [SerializeField] private float timeScale = 1.0f;
     [Tooltip("Maximum allowed time scale for safety")]
-    [SerializeField] private float maxTimeScale = 3.0f; // Reduced from 5.0f to 3.0f for better stability
+    [SerializeField] private float maxTimeScale = 3.0f;
     [Tooltip("How often to check population (in seconds)")]
     [SerializeField] private float checkInterval = 0.1f;
     private float lastCheckTime = 0f;
     private float lastSpawnTime = 0f;
     private float spawnCooldown = 1.0f;
     private bool isSpawning = false;
+    private float targetTimeScale = 1.0f; // Target time scale based on adaptive system
 
     // Debugging properties to track in inspector
     [Header("Debug Information")]
@@ -79,12 +91,14 @@ public class NEATTest : MonoBehaviour
     [SerializeField] private float timeSinceLastSpawn = 0f;
     [SerializeField] private float currentAverageAge = 0f;
     [SerializeField] private float currentAverageHealth = 0f;
+    [SerializeField] private float percentageAgingCreatures = 0f; // Percentage of creatures past aging threshold
+    [SerializeField] private float percentageLowHealth = 0f; // Percentage of creatures with low health
 
     [Header("Creature Settings")]
     [SerializeField] private float initialAgingRate = 0.005f;  // Rate at which creatures age and lose health
-    [Range(0.0001f, 0.005f)]
+    [Range(0.001f, 0.02f)]
     [Tooltip("How quickly creatures age and lose health per second after aging starts")]
-    public float creatureAgingRate = 0.005f;  // Default value same as before
+    public float creatureAgingRate = 0.01f;  // Increased to match Creature class default
 
     private void Awake()
     {
@@ -142,6 +156,14 @@ public class NEATTest : MonoBehaviour
 
     void Update()
     {
+        // Calculate target time scale based on simulation state
+        if (useAdaptiveTimeScale)
+        {
+            UpdateTargetTimeScale();
+            // Gradually adjust actual time scale toward target (smoothing)
+            timeScale = Mathf.Lerp(timeScale, targetTimeScale, Time.deltaTime * 2f);
+        }
+
         // Apply time scale with safety limits
         timeScale = Mathf.Clamp(timeScale, 0.1f, maxTimeScale);
         Time.timeScale = timeScale;
@@ -160,6 +182,56 @@ public class NEATTest : MonoBehaviour
         }
     }
 
+    private void UpdateTargetTimeScale()
+    {
+        try
+        {
+            var creatures = GameObject.FindObjectsOfType<Creature>();
+            var alberts = creatures.Where(c => c.type == Creature.CreatureType.Albert).ToArray();
+            
+            if (alberts.Length > 0)
+            {
+                // Calculate number of creatures with low health
+                float lowHealthThresholdValue = alberts[0].maxHealth * lowHealthPercentage;
+                int lowHealthCount = alberts.Count(c => c.health < lowHealthThresholdValue);
+                
+                // Calculate percentage of creatures with low health
+                float currentLowHealthPercentage = (float)lowHealthCount / alberts.Length;
+                
+                // Calculate creatures close to aging threshold
+                int soonAgingCount = alberts.Count(c => 
+                    c.Lifetime > c.agingStartTime * 0.9f && 
+                    c.Lifetime < c.agingStartTime * 1.1f);
+                
+                float agingPercentage = (float)soonAgingCount / alberts.Length;
+                
+                // Determine if we need to slow down
+                if (currentLowHealthPercentage > lowHealthThreshold || agingPercentage > 0.3f)
+                {
+                    // Calculate slowdown based on how many are at risk
+                    float riskFactor = Mathf.Max(currentLowHealthPercentage, agingPercentage);
+                    targetTimeScale = Mathf.Lerp(maxTimeScale, minAdaptiveTimeScale, riskFactor);
+                    
+                    // Log only when significant changes happen
+                    if (Mathf.Abs(timeScale - targetTimeScale) > 0.2f)
+                    {
+                        LogManager.LogMessage($"Adaptive time scale: Slowing down to {targetTimeScale:F2}x (Low health: {lowHealthCount}, Aging threshold: {soonAgingCount})");
+                    }
+                }
+                else
+                {
+                    // No risk, gradually return to max speed
+                    targetTimeScale = maxTimeScale;
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in UpdateTargetTimeScale: {e.Message}");
+            targetTimeScale = 1.0f; // Default to safe value on error
+        }
+    }
+
     private void UpdateDebugStatistics()
     {
         try
@@ -172,17 +244,24 @@ public class NEATTest : MonoBehaviour
                 currentAverageAge = alberts.Average(c => c.Lifetime);
                 currentAverageHealth = alberts.Average(c => c.health);
                 
+                // Calculate aging and health percentages
+                int agingCount = alberts.Count(c => c.Lifetime > c.agingStartTime);
+                percentageAgingCreatures = (float)agingCount / alberts.Length;
+                
+                float lowHealthThresholdValue = alberts[0].maxHealth * lowHealthPercentage;
+                int lowHealthCount = alberts.Count(c => c.health < lowHealthThresholdValue);
+                percentageLowHealth = (float)lowHealthCount / alberts.Length;
+                
                 // Log detailed information periodically (every 3 seconds)
                 if (Time.frameCount % 180 == 0)
                 {
-                    int lowHealthCount = alberts.Count(c => c.health < 0.3f);
-                    int agingCount = alberts.Count(c => c.Lifetime > c.agingStartTime);
+                    int lowHealthCount2 = alberts.Count(c => c.health < 0.3f);
                     float oldestAge = alberts.Max(c => c.Lifetime);
                     
                     LogManager.LogMessage($"DEBUG: Population={alberts.Length}, " +
                         $"AvgAge={currentAverageAge:F1}s, OldestAge={oldestAge:F1}s, " +
-                        $"AvgHealth={currentAverageHealth:F2}, LowHealth={lowHealthCount}, " +
-                        $"Aging={agingCount}, TimeScale={timeScale:F1}x");
+                        $"AvgHealth={currentAverageHealth:F2}, LowHealth={lowHealthCount2}, " +
+                        $"Aging={agingCount} ({percentageAgingCreatures:P0}), TimeScale={timeScale:F1}x");
                 }
             }
         }
