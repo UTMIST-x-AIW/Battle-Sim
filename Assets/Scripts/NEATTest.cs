@@ -10,7 +10,7 @@ public class NEATTest : MonoBehaviour
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     [SerializeField]
-    public static int num_alberts=50;
+    public static int num_alberts=100;
     
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -86,6 +86,25 @@ public class NEATTest : MonoBehaviour
         else
         {
             SetupNormalGame();
+        }
+    }
+
+    private void Update()
+    {
+        if (num_alberts < 20)
+        {
+            Debug.Log("NUM:" + num_alberts.ToString());
+            // Spawn area in top left
+            Vector2 spawnCenter = new Vector2(-5f, -0f);
+            float spreadRadius = 10f;
+            // Calculate a position with some randomness
+            Vector2 offset = UnityEngine.Random.insideUnitCircle * spreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+            SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
         }
     }
 

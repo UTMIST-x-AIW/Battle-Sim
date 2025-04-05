@@ -12,7 +12,7 @@ public class Reproduction : MonoBehaviour
     //public Collider2D circle_of_mating;
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.9f;
-    public int MaxCreatures = 150;
+    public int MaxCreatures = 100;
     public GameObject Reproduction_prefab;
 
     private void LateUpdate()
@@ -78,6 +78,8 @@ public class Reproduction : MonoBehaviour
 
         // Pass the max hidden layers setting to the creature
         creatureComponent.maxHiddenLayers = p1.maxHiddenLayers;
+
+        NEATTest.num_alberts++;
 
         return creature;
     }
