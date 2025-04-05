@@ -13,6 +13,7 @@ public class Reproduction : MonoBehaviour
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.9f;
     public int MaxCreatures = 150;
+    public GameObject Reproduction_prefab;
 
     private void LateUpdate()
     {
@@ -54,7 +55,11 @@ public class Reproduction : MonoBehaviour
         {
             if (NEATTest.num_alberts < MaxCreatures)
             {
-                Instantiate(this);
+                Reproduction newObj = Instantiate(this);
+                Creature p1 = this.GetComponent<Creature>();
+                Creature p2 = other.GetComponent<Creature>();
+                GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);
+                Debug.Log("HAAALEELUUJAH");
             }
 
             otherScript.gameObject_mated_with.Add(this.gameObject);
@@ -62,7 +67,22 @@ public class Reproduction : MonoBehaviour
 
     }
 
-    
+    private GameObject SpawnChild(Creature p1, Creature p2, GameObject prefab, Vector3 position)
+    {
+        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creatureComponent = creature.GetComponent<Creature>();
+
+        // Create initial neural network with appropriate genome
+        NEAT.NN.FeedForwardNetwork network = CreateChildNetwork(p1.GetBrain(), p2.GetBrain());
+        creatureComponent.InitializeNetwork(network);
+
+        // Pass the max hidden layers setting to the creature
+        creatureComponent.maxHiddenLayers = p1.maxHiddenLayers;
+
+        return creature;
+    }
+
+
 
 
     // Creating a child Network

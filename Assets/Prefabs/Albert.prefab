@@ -319,6 +319,8 @@ MonoBehaviour:
   radius_of_mating: 3
   gameObject_mated_with: []
   pReproduction: 0.99
+  MaxCreatures: 150
+  Reproduction_prefab: {fileID: 7896111451434077960}
 --- !u!1001 &5208001705850349615
 PrefabInstance:
   m_ObjectHideFlags: 0

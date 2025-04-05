@@ -546,7 +546,6 @@ public class Creature : MonoBehaviour
         // If we found a tree, damage it
         if (nearestTree != null)
         {
-            Debug.Log("AAAAAAAHHHHHH!");
             nearestTree.TakeDamage(chopDamage);
             
             // Restore the creature's health to maximum
