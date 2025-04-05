@@ -98,5 +98,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 8827735956283543281, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   heatmapData: {fileID: 11400000, guid: fbb78506cbf98b34390a312df3cfa433, type: 2}
-  spawnInterval: 1
+  spawnInterval: 0.5
   maxNumOfSpawns: 10
