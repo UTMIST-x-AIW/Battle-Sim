@@ -746,13 +746,24 @@ public class Creature : MonoBehaviour
             else if (isReproducing)
                 status = "Reproducing";
 
-            // Show age and status
-            GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 40, 100, 20), 
-                     string.Format("Gen: {0}; Age: {1:F1}", generation, lifetime));
+            // Format age display - handle large values
+            string ageDisplay;
+            if (lifetime >= 10000f)
+            {
+                ageDisplay = "10,000+";
+            }
+            else
+            {
+                ageDisplay = lifetime.ToString("F1");
+            }
+
+            // Show age and status with increased width for larger numbers
+            GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 40, 140, 20), 
+                     string.Format("Gen: {0}; Age: {1}", generation, ageDisplay));
             
             if (status != "")
             {
-                GUI.Label(new Rect(screenPos.x - 50, screenPos.y - 60, 100, 20), 
+                GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 60, 140, 20), 
                          status);
             }
             
