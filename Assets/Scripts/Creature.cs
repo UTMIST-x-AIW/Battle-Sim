@@ -25,8 +25,8 @@ public class Creature : MonoBehaviour
     public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
     
     [Header("Aging Settings")]
-    public float agingStartTime = 20f;  // Increased from 10 to 20 seconds before aging starts
-    public float agingRate = 0.01f;      // Reduced from 0.03 to 0.01 for slower aging
+    public float agingStartTime = 20f;  // Start aging after 20 seconds
+    public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
     private float lifetime = 0f;        // How long the creature has lived
     public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
     public int generation = 0;          // The generation number of this creature

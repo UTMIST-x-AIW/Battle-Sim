@@ -62,6 +62,9 @@ public class NEATTest : MonoBehaviour
     [Header("Population Settings")]
     private float lastPopulationCheck = 0f;
     private float populationCheckInterval = 0.1f;  // Check population every 0.1 seconds
+    private float lastSpawnTime = 0f;
+    private float spawnCooldown = 1.0f;  // Minimum time between spawns
+    private bool isSpawning = false;  // Flag to prevent multiple spawn coroutines
 
     private void Awake()
     {
@@ -131,31 +134,22 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Count actual creatures in the scene
-            var actualCreatures = GameObject.FindObjectsOfType<Creature>();
-            LogManager.LogMessage($"Found {actualCreatures.Length} total creatures");
+            // Count current Alberts
+            int currentAlberts = CountAlberts();
             
-            int actualCount = actualCreatures.Count(c => c.type == Creature.CreatureType.Albert);
-            LogManager.LogMessage($"Found {actualCount} Albert creatures");
+            // Update the static count for global access
+            num_alberts = currentAlberts;
             
-            // Update the static counter to match reality
-            NumAlberts = actualCount;
+            // Log population count
+            LogManager.LogMessage($"Current Albert population: {currentAlberts}");
             
-            // Log population status
-            LogManager.LogMessage($"Current Albert population: {num_alberts} (Min: {MIN_ALBERTS}, Max: {MAX_ALBERTS})");
-            
-            // Safety check - if we have more creatures than expected, log it
-            if (actualCount > MAX_ALBERTS)
+            // Check if we need to spawn more Alberts and if enough time has passed since last spawn
+            if (currentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
             {
-                LogManager.LogError($"Population exceeds MAX_ALBERTS! Current: {actualCount}, Max: {MAX_ALBERTS}");
-                return;
-            }
-            
-            // Handle population management
-            if (num_alberts < MIN_ALBERTS)
-            {
-                LogManager.LogMessage("Population below minimum, spawning new Albert");
-                SpawnNewAlbert();
+                LogManager.LogMessage($"Population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
+                
+                // Start a coroutine to spawn a new Albert with a random delay
+                StartCoroutine(SpawnNewAlbertStaggered());
             }
         }
         catch (System.Exception e)
@@ -164,42 +158,63 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    private void SpawnNewAlbert()
+    private IEnumerator SpawnNewAlbertStaggered()
     {
+        isSpawning = true;
+        lastSpawnTime = Time.time;
+        
+        // Add a random delay between 0.5 and 1.5 seconds before spawning
+        yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
+        
         try
         {
-            // Spawn area in top left
-            Vector2 spawnCenter = new Vector2(-5f, -0f);
-            float spreadRadius = 10f;
-            
-            // Calculate a position with some randomness
-            Vector2 offset = Random.insideUnitCircle * spreadRadius;
+            // Calculate a position with some randomness within the spawn area
+            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
             Vector3 position = new Vector3(
                 spawnCenter.x + offset.x,
                 spawnCenter.y + offset.y,
                 0f
             );
             
-            Debug.Log($"Attempting to spawn new Albert at position: {position}");
+            LogManager.LogMessage($"Spawning new Albert at position: {position}");
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
             
             if (creature == null)
             {
-                Debug.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
-                return;
+                LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
+                isSpawning = false;
+                yield break;
             }
             
             // Initialize with random age and reproduction
-            float startingAge = Random.Range(5f, 15f);
-            float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            float startingAge = Random.Range(0f, 10f);  // Reduced max age to 10 seconds
+            creature.Lifetime = startingAge;  // Set the lifetime using the public property
             
-            Debug.Log($"Successfully spawned new Albert with age: {startingAge}, reproduction: {startingReproduction}");
+            // If the creature starts with an age past the aging threshold, give it appropriate health
+            if (startingAge > creature.agingStartTime)
+            {
+                float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                float healthLost = ageBeyondThreshold * creature.agingRate;
+                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
+            }
+            
+            float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            creature.reproduction = startingReproduction;
+            
+            // Set generation to 0 for initially spawned Alberts
+            creature.generation = 0;
+            
+            LogManager.LogMessage($"Successfully spawned new Albert with age: {startingAge}, reproduction: {startingReproduction}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"Error in SpawnNewAlbert: {e.Message}\nStack trace: {e.StackTrace}");
+            LogManager.LogError($"Error in SpawnNewAlbertStaggered: {e.Message}\nStack trace: {e.StackTrace}");
+        }
+        finally
+        {
+            isSpawning = false;
         }
     }
 
@@ -266,53 +281,12 @@ public class NEATTest : MonoBehaviour
 
     private void SetupAlbertsOnlyTest()
     {
-        Debug.Log("Starting Test: Alberts Only - Staggered spawning of Alberts with random brains in top left");
+        Debug.Log("Starting Test: Alberts Only - Population will be managed automatically");
         
-        // Start the coroutine to spawn creatures
-        StartCoroutine(SpawnAlbertsStaggered());
+        // No need to spawn initial creatures - the population management system will handle it
+        // The system will detect that we're below MIN_ALBERTS and start spawning creatures
     }
 
-    private IEnumerator SpawnAlbertsStaggered()
-    {
-        // Spawn Alberts one at a time with random delays
-        for (int i = 0; i < num_alberts; i++)
-        {
-            // Calculate a position with some randomness
-            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
-            Vector3 position = new Vector3(
-                spawnCenter.x + offset.x,
-                spawnCenter.y + offset.y,
-                0f
-            );
-            
-            // Spawn the creature with a randomized brain
-            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            
-            // Initialize the creature with varied ages to encourage dynamic behavior
-            float startingAge = Random.Range(0f, 15f);  // Random age between 0 and 15 seconds
-            creature.Lifetime = startingAge;  // Set the lifetime using the public property
-            
-            // If the creature starts with an age past the aging threshold, give it appropriate health
-            if (startingAge > creature.agingStartTime)
-            {
-                float ageBeyondThreshold = startingAge - creature.agingStartTime;
-                float healthLost = ageBeyondThreshold * creature.agingRate;
-                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
-            }
-            
-            float startingReproduction = Random.Range(0f, creature.maxReproduction);
-            creature.reproduction = startingReproduction;
-            
-            // Set generation to 0 for initially spawned Alberts
-            creature.generation = 0;
-            
-            // Wait for a random time between 0.5 and 1 second before spawning the next creature
-            yield return new WaitForSeconds(Random.Range(0.5f, 1f));
-        }
-        
-        Debug.Log("Test setup complete: All Alberts with random brains spawned in top left");
-    }
-    
     private void SetupReproductionTest()
     {
         Debug.Log("Starting Test 3: Reproduction Action Test");
@@ -661,6 +635,26 @@ public class NEATTest : MonoBehaviour
             // Draw a wire frame for better visibility
             Gizmos.color = new Color(spawnAreaColor.r, spawnAreaColor.g, spawnAreaColor.b, 0.5f);
             Gizmos.DrawWireSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
+        }
+    }
+
+    private int CountAlberts()
+    {
+        try
+        {
+            // Find all creatures in the scene
+            var creatures = GameObject.FindObjectsOfType<Creature>();
+            
+            // Count only Alberts
+            int count = creatures.Count(c => c.type == Creature.CreatureType.Albert);
+            
+            LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
+            return count;
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in CountAlberts: {e.Message}\nStack trace: {e.StackTrace}");
+            return 0;  // Return 0 if there's an error
         }
     }
 } 
