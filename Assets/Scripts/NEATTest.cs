@@ -12,9 +12,6 @@ public class NEATTest : MonoBehaviour
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     
     [Header("Population Settings")]
-    [SerializeField]
-    private int _num_alberts = 50;
-    public static int num_alberts = 50;  // Keep static for global access
     public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
     public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
     

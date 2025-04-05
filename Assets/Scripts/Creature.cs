@@ -371,7 +371,8 @@ public class Creature : MonoBehaviour
             {
                 LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
                 Destroy(gameObject);
-                NEATTest.num_alberts--;
+                // No need to decrement num_alberts as it's now tracked automatically
+                // NEATTest.num_alberts--;
             }
         }
         catch (System.Exception e)
@@ -713,7 +714,7 @@ public class Creature : MonoBehaviour
 
             // Decrement counter when creature is destroyed
             totalCreatures--;
-            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}, Current num_alberts: {NEATTest.num_alberts}");
+            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
         }
         catch (System.Exception e)
         {
