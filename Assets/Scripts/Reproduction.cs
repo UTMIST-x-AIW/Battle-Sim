@@ -96,87 +96,69 @@ public class Reproduction : MonoBehaviour
     // Creating a child Network
     private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
     {
-        // Get parent network details via reflection
-        System.Reflection.FieldInfo nodesField = parent1.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        System.Reflection.FieldInfo connectionsField = parent1.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        if (nodesField == null || connectionsField == null)
+        // Create a new genome for the child
+        var childGenome = new NEAT.Genome.Genome(0);
+        
+        // Create input nodes (13 inputs)
+        for (int i = 0; i < 13; i++)
         {
-            Debug.LogError("Failed to access network fields via reflection");
-            return null;
+            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            node.Layer = 0;  // Input layer
+            node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
+            childGenome.AddNode(node);
         }
+        
+        // Add output nodes (5 outputs: x,y velocity, chop, attack, reproduce)
+        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
+        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Reproduction action
 
-        var parent1Nodes = nodesField.GetValue(parent1) as Dictionary<int, NEAT.Genes.NodeGene>;
-        var parent1Connections = connectionsField.GetValue(parent1) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        outputNode1.Layer = 2;  // Output layer
+        outputNode2.Layer = 2;  // Output layer
+        outputNode3.Layer = 2;  // Output layer
+        outputNode4.Layer = 2;  // Output layer
+        outputNode5.Layer = 2;  // Output layer
 
-        var parent2Nodes = nodesField.GetValue(parent2) as Dictionary<int, NEAT.Genes.NodeGene>;
-        var parent2Connections = connectionsField.GetValue(parent2) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        // Explicitly set bias to 0 for output nodes
+        outputNode1.Bias = 0.0;
+        outputNode2.Bias = 0.0;
+        outputNode3.Bias = 0.0;
+        outputNode4.Bias = 0.0;
+        outputNode5.Bias = 0.0;
 
-        if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
+        childGenome.AddNode(outputNode1);
+        childGenome.AddNode(outputNode2);
+        childGenome.AddNode(outputNode3);
+        childGenome.AddNode(outputNode4);
+        childGenome.AddNode(outputNode5);
+
+        // Add connections with random weights
+        for(int i = 0; i < 13; i++)
         {
-            Debug.LogError("Failed to extract network components");
-            return null;
-        }
-
-        // Create new dictionaries for the child
-        var childNodes = new Dictionary<int, NEAT.Genes.NodeGene>();
-        var childConnections = new Dictionary<int, NEAT.Genes.ConnectionGene>();
-
-        // Add all nodes (taking randomly from either parent for matching nodes)
-        var allNodeKeys = new HashSet<int>(parent1Nodes.Keys.Concat(parent2Nodes.Keys));
-        foreach (var key in allNodeKeys)
-        {
-            if (parent1Nodes.ContainsKey(key) && parent2Nodes.ContainsKey(key))
+            for (int j = 17; j < 22; j++)
             {
-                // Both parents have this node, randomly choose one
-                childNodes[key] = Random.value < 0.5f ?
-                    (NEAT.Genes.NodeGene)parent1Nodes[key].Clone() :
-                    (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
-            }
-            else if (parent1Nodes.ContainsKey(key))
-            {
-                // Only parent1 has this node
-                childNodes[key] = (NEAT.Genes.NodeGene)parent1Nodes[key].Clone();
-            }
-            else
-            {
-                // Only parent2 has this node
-                childNodes[key] = (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
-            }
-        }
-
-        // Add connections (taking randomly from either parent for matching connections)
-        var allConnectionKeys = new HashSet<int>(parent1Connections.Keys.Concat(parent2Connections.Keys));
-        foreach (var key in allConnectionKeys)
-        {
-            if (parent1Connections.ContainsKey(key) && parent2Connections.ContainsKey(key))
-            {
-                // Both parents have this connection, randomly choose one
-                childConnections[key] = Random.value < 0.5f ?
-                    (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone() :
-                    (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
-            }
-            else if (parent1Connections.ContainsKey(key))
-            {
-                // Only parent1 has this connection
-                childConnections[key] = (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone();
-            }
-            else
-            {
-                // Only parent2 has this connection
-                childConnections[key] = (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
-            }
-
-            // Apply mutation to weight (occasionally)
-            if (Random.value < 0.8f)
-            {
-                var conn = childConnections[key];
-                conn.Weight += Random.Range(-0.5f, 0.5f);
-                conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
+                // Randomly choose weight from either parent or create a new one
+                float weight;
+                if (Random.value < 0.5f)
+                {
+                    // Use a completely random weight
+                    weight = Random.Range(-1f, 1f);
+                }
+                else
+                {
+                    // Blend weights from parents (if they exist)
+                    float weight1 = Random.Range(-1f, 1f);
+                    float weight2 = Random.Range(-1f, 1f);
+                    weight = (weight1 + weight2) / 2f;
+                }
+                
+                childGenome.AddConnection(new NEAT.Genes.ConnectionGene((i*5 + j + 22), i, j, weight));
             }
         }
-
-        // Create a new network with the crossover results
-        return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
+        
+        // Create a new network from the child genome
+        return NEAT.NN.FeedForwardNetwork.Create(childGenome);
     }
 }
