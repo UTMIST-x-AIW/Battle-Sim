@@ -15,9 +15,9 @@ public class UIManager : MonoBehaviour
         neatTest = FindObjectOfType<NEATTest>();
         
         // Initialize toggles to match current settings
-        if (labelsToggle != null)
+        if (labelsToggle != null && neatTest != null)
         {
-            labelsToggle.isOn = NEATTest.showCreatureLabels;
+            labelsToggle.isOn = neatTest.showCreatureLabels;
             labelsToggle.onValueChanged.AddListener(OnLabelsToggleChanged);
         }
         
@@ -30,7 +30,10 @@ public class UIManager : MonoBehaviour
 
     private void OnLabelsToggleChanged(bool isOn)
     {
-        NEATTest.showCreatureLabels = isOn;
+        if (neatTest != null)
+        {
+            neatTest.showCreatureLabels = isOn;
+        }
     }
 
     private void OnDetectionRadiusToggleChanged(bool isOn)

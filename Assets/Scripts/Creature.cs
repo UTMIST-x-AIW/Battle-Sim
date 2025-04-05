@@ -723,8 +723,8 @@ public class Creature : MonoBehaviour
 
     private void OnGUI()
     {
-        // Only proceed if labels are enabled
-        if (!NEATTest.showCreatureLabels) return;
+        // Only proceed if labels are enabled and NEATTest reference exists
+        if (neatTest == null || !neatTest.showCreatureLabels) return;
 
         // Get screen position for this creature
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);

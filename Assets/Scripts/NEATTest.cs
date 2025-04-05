@@ -45,7 +45,7 @@ public class NEATTest : MonoBehaviour
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public bool showChopRange = false;  // Toggle for chop range visualization
     public Color chopRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
-    public static bool showCreatureLabels = true;  // Toggle for creature labels
+    public bool showCreatureLabels = true;  // Toggle for creature labels
     public bool showSpawnArea = false;  // Toggle for spawn area visualization
     public Color spawnAreaColor = new Color(0.2f, 0.8f, 0.2f, 0.2f);  // Semi-transparent green
     
