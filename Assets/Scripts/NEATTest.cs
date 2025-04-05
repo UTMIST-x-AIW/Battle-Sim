@@ -288,7 +288,7 @@ public class NEATTest : MonoBehaviour
             
             // Initialize the creature with varied ages to encourage dynamic behavior
             float startingAge = Random.Range(0f, 15f);  // Random age between 0 and 15 seconds
-            creature.lifetime = startingAge;  // Set the lifetime directly
+            creature.Lifetime = startingAge;  // Set the lifetime using the public property
             
             // If the creature starts with an age past the aging threshold, give it appropriate health
             if (startingAge > creature.agingStartTime)
