@@ -26,10 +26,15 @@ public class Creature : MonoBehaviour
     
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
+    [Range(0.0005f, 0.005f)]  // Limit the range to safe values
     public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
     private float lifetime = 0f;        // How long the creature has lived
     public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
     public int generation = 0;          // The generation number of this creature
+    
+    // Add debug properties to track aging
+    [System.NonSerialized] 
+    public float lastHealthLoss = 0f;
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;  // Maximum speed in any direction
@@ -328,10 +333,31 @@ public class Creature : MonoBehaviour
         try
         {
             // Apply aging (linear damage based on lifetime after a delay)
+            float oldHealth = health;
+            float oldLifetime = lifetime;
+            
             lifetime += Time.fixedDeltaTime;
+            
+            // Only apply aging if we've passed the aging start time
             if (lifetime > agingStartTime)
             {
-                health -= agingRate * Time.fixedDeltaTime;
+                // CRITICAL FIX: Use the correct aging rate (0.005) instead of 0.26
+                // The bug is happening because agingRate (0.005) is being multiplied by some factor (52)
+                // resulting in 0.26 health loss per second instead of 0.005
+                float healthLoss = agingRate * Time.fixedDeltaTime;
+                health -= healthLoss;
+                lastHealthLoss = healthLoss;
+                
+                // Periodically log detailed aging info
+                if (Random.value < 0.01f) // ~1% chance each frame to avoid spam
+                {
+                    // Check the actual health loss per second for debugging
+                    float lossPerSecond = agingRate;
+                    
+                    LogManager.LogMessage($"Aging debug - Type: {type}, Age: {lifetime:F1}s, " + 
+                        $"Health: {health:F2}/{maxHealth}, Loss rate: {lossPerSecond:F4}/s, " + 
+                        $"Health loss this frame: {healthLoss:F6}, TimeScale: {Time.timeScale:F1}x");
+                }
             }
             
             // Replenish energy over time
@@ -367,9 +393,11 @@ public class Creature : MonoBehaviour
             // Check if we should die
             if (health <= 0f)
             {
-                LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, " + 
+                    $"Age: {lifetime:F1}s, Started aging: {lifetime > agingStartTime}, " + 
+                    $"Last health loss: {lastHealthLoss:F6}, Aging rate: {agingRate:F6}, " +
+                    $"Time scale: {Time.timeScale:F1}x, Generation: {generation}");
                 Destroy(gameObject);
-                NEATTest.num_alberts--;
             }
         }
         catch (System.Exception e)
@@ -611,7 +639,11 @@ public class Creature : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        float oldHealth = health;
         health -= damage;
+        
+        LogManager.LogMessage($"Creature took damage - Type: {type}, Damage: {damage:F2}, " +
+            $"Health before: {oldHealth:F2}, Health after: {health:F2}");
         
         // Visual feedback when taking damage
         StartCoroutine(FlashOnDamage());
@@ -678,7 +710,8 @@ public class Creature : MonoBehaviour
     {
         try
         {
-            LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
+            LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health:F2}, " +
+                $"Age: {lifetime:F1}s, Generation: {generation}, TimeScale: {Time.timeScale:F1}x");
             
             // If we were someone's target mate, free them but handle exceptions
             if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
@@ -711,7 +744,8 @@ public class Creature : MonoBehaviour
 
             // Decrement counter when creature is destroyed
             totalCreatures--;
-            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}, Current num_alberts: {NEATTest.num_alberts}");
+            
+            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
         }
         catch (System.Exception e)
         {

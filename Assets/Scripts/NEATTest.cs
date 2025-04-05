@@ -12,12 +12,14 @@ public class NEATTest : MonoBehaviour
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     
     [Header("Population Settings")]
-    [SerializeField]
-    private int _num_alberts = 50;
-    public static int num_alberts = 50;  // Keep static for global access
+    [Tooltip("Minimum number of Alberts that should exist in the simulation")]
+    [Range(5, 50)]
     public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
+
+    [Tooltip("Maximum number of Alberts allowed in the simulation")]
+    [Range(20, 200)]
     public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
-    
+
     // Property to display current Albert count in Inspector
     [SerializeField]
     private int _current_alberts = 0;
@@ -28,7 +30,7 @@ public class NEATTest : MonoBehaviour
     }
 
     [Header("Network Settings")]
-    public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
+    [SerializeField] private int maxHiddenLayers = 10;  // Maximum hidden layers for neural networks
     public int maxCreatures = 20;     // Maximum number of creatures allowed in the simulation
 
     [Header("Test Settings")]
@@ -58,9 +60,31 @@ public class NEATTest : MonoBehaviour
     [Header("Population Settings")]
     private float lastPopulationCheck = 0f;
     private float populationCheckInterval = 0.1f;  // Check population every 0.1 seconds
+    [Tooltip("Adjust simulation speed (1.0 = normal, 2.0 = 2x speed)")]
+    [Range(0.1f, 3.0f)]
+    [SerializeField] private float timeScale = 1.0f;
+    [Tooltip("Maximum allowed time scale for safety")]
+    [SerializeField] private float maxTimeScale = 3.0f; // Reduced from 5.0f to 3.0f for better stability
+    [Tooltip("How often to check population (in seconds)")]
+    [SerializeField] private float checkInterval = 0.1f;
+    private float lastCheckTime = 0f;
     private float lastSpawnTime = 0f;
-    private float spawnCooldown = 1.0f;  // Minimum time between spawns
-    private bool isSpawning = false;  // Flag to prevent multiple spawn coroutines
+    private float spawnCooldown = 1.0f;
+    private bool isSpawning = false;
+
+    // Debugging properties to track in inspector
+    [Header("Debug Information")]
+    [SerializeField] private int creaturesSpawned = 0;
+    [SerializeField] private int creaturesRemoved = 0;
+    [SerializeField] private float timeSinceLastSpawn = 0f;
+    [SerializeField] private float currentAverageAge = 0f;
+    [SerializeField] private float currentAverageHealth = 0f;
+
+    [Header("Creature Settings")]
+    [SerializeField] private float initialAgingRate = 0.005f;  // Rate at which creatures age and lose health
+    [Range(0.0001f, 0.005f)]
+    [Tooltip("How quickly creatures age and lose health per second after aging starts")]
+    public float creatureAgingRate = 0.005f;  // Default value same as before
 
     private void Awake()
     {
@@ -116,13 +140,55 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
     {
-        // Check population periodically
-        if (Time.time - lastPopulationCheck >= populationCheckInterval)
+        // Apply time scale with safety limits
+        timeScale = Mathf.Clamp(timeScale, 0.1f, maxTimeScale);
+        Time.timeScale = timeScale;
+
+        // Update debug info
+        timeSinceLastSpawn = Time.time - lastSpawnTime;
+        UpdateDebugStatistics();
+
+        // Scale the check interval with time scale to maintain consistent checks
+        float scaledCheckInterval = checkInterval / timeScale;
+        
+        if (Time.time - lastCheckTime >= scaledCheckInterval)
         {
-            lastPopulationCheck = Time.time;
+            lastCheckTime = Time.time;
             ManagePopulation();
+        }
+    }
+
+    private void UpdateDebugStatistics()
+    {
+        try
+        {
+            var creatures = GameObject.FindObjectsOfType<Creature>();
+            var alberts = creatures.Where(c => c.type == Creature.CreatureType.Albert).ToArray();
+            
+            if (alberts.Length > 0)
+            {
+                currentAverageAge = alberts.Average(c => c.Lifetime);
+                currentAverageHealth = alberts.Average(c => c.health);
+                
+                // Log detailed information periodically (every 3 seconds)
+                if (Time.frameCount % 180 == 0)
+                {
+                    int lowHealthCount = alberts.Count(c => c.health < 0.3f);
+                    int agingCount = alberts.Count(c => c.Lifetime > c.agingStartTime);
+                    float oldestAge = alberts.Max(c => c.Lifetime);
+                    
+                    LogManager.LogMessage($"DEBUG: Population={alberts.Length}, " +
+                        $"AvgAge={currentAverageAge:F1}s, OldestAge={oldestAge:F1}s, " +
+                        $"AvgHealth={currentAverageHealth:F2}, LowHealth={lowHealthCount}, " +
+                        $"Aging={agingCount}, TimeScale={timeScale:F1}x");
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in UpdateDebugStatistics: {e.Message}");
         }
     }
 
@@ -130,88 +196,134 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Count current Alberts
-            int currentAlberts = CountAlberts();
+            int currentCount = CountAlberts();
+            CurrentAlberts = currentCount;
             
-            // Update the inspector-visible count
-            CurrentAlberts = currentAlberts;
-            
-            // Log population count
-            LogManager.LogMessage($"Current Albert population: {currentAlberts}");
-            
-            // Check if we need to spawn more Alberts and if enough time has passed since last spawn
-            if (currentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
+            // Only log every few checks to reduce spam
+            if (Time.frameCount % 30 == 0)
             {
-                LogManager.LogMessage($"Population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
-                
-                // Start a coroutine to spawn a new Albert with a random delay
+                LogManager.LogMessage($"Current Albert population: {currentCount}, Spawned: {creaturesSpawned}, Removed: {creaturesRemoved}, TimeScale: {timeScale:F1}x");
+            }
+
+            // Scale the spawn cooldown with time scale
+            float scaledSpawnCooldown = spawnCooldown / timeScale;
+            
+            if (currentCount < MIN_ALBERTS && !isSpawning && 
+                Time.time - lastSpawnTime >= scaledSpawnCooldown)
+            {
+                lastSpawnTime = Time.time;
                 StartCoroutine(SpawnNewAlbertStaggered());
             }
         }
         catch (System.Exception e)
         {
-            LogManager.LogError($"Error in ManagePopulation: {e.Message}\nStack trace: {e.StackTrace}");
+            LogManager.LogMessage($"Error in ManagePopulation: {e.Message}");
         }
+    }
+
+    private Vector3 GetRandomSpawnPosition()
+    {
+        // Calculate a position with some randomness within the spawn area
+        Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+        return new Vector3(
+            spawnCenter.x + offset.x,
+            spawnCenter.y + offset.y,
+            0f
+        );
     }
 
     private IEnumerator SpawnNewAlbertStaggered()
     {
-        isSpawning = true;
-        lastSpawnTime = Time.time;
+        if (isSpawning) yield break;
         
-        // Add a random delay between 0.5 and 1.5 seconds before spawning
-        yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
+        isSpawning = true;
+        
+        // Scale the delay with time scale, but with a minimum delay to prevent too rapid spawning
+        float scaledDelay = Mathf.Max(0.2f, Random.Range(0.5f, 1.5f) / timeScale);
+        LogManager.LogMessage($"Preparing to spawn with delay: {scaledDelay:F2}s at time scale {timeScale:F1}x");
+        yield return new WaitForSeconds(scaledDelay);
+
+        // Safety check to ensure prefab exists
+        if (albertCreaturePrefab == null)
+        {
+            LogManager.LogError("Albert creature prefab is missing! Cannot spawn creatures.");
+            isSpawning = false;
+            yield break;
+        }
         
         try
         {
-            // Calculate a position with some randomness within the spawn area
-            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
-            Vector3 position = new Vector3(
-                spawnCenter.x + offset.x,
-                spawnCenter.y + offset.y,
-                0f
-            );
-            
-            LogManager.LogMessage($"Spawning new Albert at position: {position}");
+            Vector3 spawnPos = GetRandomSpawnPosition();
+            LogManager.LogMessage($"Spawning new Albert at position: {spawnPos}");
             
             // Spawn the creature with a randomized brain
-            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, spawnPos, Creature.CreatureType.Albert);
             
-            if (creature == null)
+            if (creature != null)
             {
-                LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
-                isSpawning = false;
-                yield break;
+                creaturesSpawned++;
+                
+                // Reduce initial age range further to give creatures more time to live
+                float randomAge = Random.Range(0f, 3f); // Reduced from 5f to 3f
+                float randomReproduction = Random.Range(0f, 1f);
+                
+                // Set the lifetime using the public property
+                creature.Lifetime = randomAge;
+                
+                // Track when creatures are destroyed
+                var creatureGameObject = creature.gameObject;
+                StartCoroutine(TrackCreatureDestruction(creatureGameObject));
+                
+                // IMPORTANT: Don't adjust health for aging if age is less than aging start time
+                // This fixes the premature death bug
+                if (randomAge > creature.agingStartTime)
+                {
+                    float ageBeyondThreshold = randomAge - creature.agingStartTime;
+                    // CRITICAL FIX: Ensure we're using the creature's actual aging rate
+                    // and not applying any additional multipliers
+                    float healthLost = ageBeyondThreshold * creature.agingRate;
+                    creature.health = Mathf.Max(0.2f, creature.maxHealth - healthLost);
+                    LogManager.LogMessage($"Applied aging health adjustment: -{healthLost:F4} (age {randomAge:F1}s > threshold {creature.agingStartTime:F1}s)");
+                }
+                else
+                {
+                    // Ensure full health if not past aging threshold
+                    creature.health = creature.maxHealth;
+                }
+                
+                // IMPORTANT: Make sure the aging rate is correct
+                LogManager.LogMessage($"Creature aging rate: {creature.agingRate:F6} per second");
+                
+                creature.reproduction = randomReproduction;
+                
+                // Set generation to 0 for initially spawned Alberts
+                creature.generation = 0;
+                
+                LogManager.LogMessage($"Successfully spawned new Albert with age: {randomAge}, reproduction: {randomReproduction}, health: {creature.health:F2}");
             }
-            
-            // Initialize with random age and reproduction
-            float startingAge = Random.Range(0f, 10f);  // Reduced max age to 10 seconds
-            creature.Lifetime = startingAge;  // Set the lifetime using the public property
-            
-            // If the creature starts with an age past the aging threshold, give it appropriate health
-            if (startingAge > creature.agingStartTime)
+            else
             {
-                float ageBeyondThreshold = startingAge - creature.agingStartTime;
-                float healthLost = ageBeyondThreshold * creature.agingRate;
-                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
+                LogManager.LogError("Failed to spawn creature - returned null");
             }
-            
-            float startingReproduction = Random.Range(0f, creature.maxReproduction);
-            creature.reproduction = startingReproduction;
-            
-            // Set generation to 0 for initially spawned Alberts
-            creature.generation = 0;
-            
-            LogManager.LogMessage($"Successfully spawned new Albert with age: {startingAge}, reproduction: {startingReproduction}");
         }
         catch (System.Exception e)
         {
-            LogManager.LogError($"Error in SpawnNewAlbertStaggered: {e.Message}\nStack trace: {e.StackTrace}");
+            LogManager.LogError($"Error in SpawnNewAlbertStaggered: {e.Message}\n{e.StackTrace}");
         }
         finally
         {
             isSpawning = false;
         }
+    }
+
+    private IEnumerator TrackCreatureDestruction(GameObject creatureObj)
+    {
+        // Wait until the creature no longer exists
+        yield return new WaitUntil(() => creatureObj == null);
+        
+        // If we get here, the creature was destroyed
+        creaturesRemoved++;
+        LogManager.LogMessage($"Creature destroyed. Total spawned: {creaturesSpawned}, Total removed: {creaturesRemoved}");
     }
 
     // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction
@@ -323,6 +435,10 @@ public class NEATTest : MonoBehaviour
         var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
+        
+        // CRITICAL FIX: Override aging rate from prefab with the configurable value
+        // The prefab has incorrect values (0.26 instead of 0.005)
+        creatureComponent.agingRate = creatureAgingRate;
         
         // Create initial neural network with appropriate genome
         var genome = isKai ? CreateInitialKaiGenome() : CreateInitialGenome();
@@ -484,6 +600,10 @@ public class NEATTest : MonoBehaviour
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
+        // CRITICAL FIX: Override aging rate from prefab with the configurable value
+        // The prefab has incorrect values (0.26 instead of 0.005)
+        creatureComponent.agingRate = creatureAgingRate;
+        
         // Create a base genome
         var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
         
@@ -553,6 +673,10 @@ public class NEATTest : MonoBehaviour
         var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
+        
+        // CRITICAL FIX: Override aging rate from prefab with the configurable value
+        // The prefab has incorrect values (0.26 instead of 0.005)
+        creatureComponent.agingRate = creatureAgingRate;
         
         // Create a custom genome with clear reproduction bias
         var genome = new NEAT.Genome.Genome(0);

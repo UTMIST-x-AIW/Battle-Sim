@@ -244,7 +244,7 @@ MonoBehaviour:
   maxEnergy: 1
   energyRechargeRate: 0.333
   agingStartTime: 2.62
-  agingRate: 0.26
+  agingRate: 0.005
   generation: 0
   moveSpeed: 5
   reproductionRate: 0.1
@@ -320,7 +320,6 @@ MonoBehaviour:
   radius_of_mating: 3
   gameObject_mated_with: []
   pReproduction: 0.8
-  MaxCreatures: 60
   Reproduction_prefab: {fileID: 7896111451434077960}
 --- !u!1001 &5208001705850349615
 PrefabInstance:
