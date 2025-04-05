@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class NEATTest : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class NEATTest : MonoBehaviour
     [SerializeField]
     public static int num_alberts=50;
     public int MIN_ALBERTS = 20;
+    public int MAX_ALBERTS = 100;
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -35,6 +37,10 @@ public class NEATTest : MonoBehaviour
     public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
 
     public int creature_count = 50;
+
+    [Header("Population Settings")]
+    private float lastPopulationCheck = 0f;
+    private float populationCheckInterval = 1f;  // Check population every second
 
     private void Awake()
     {
@@ -92,25 +98,63 @@ public class NEATTest : MonoBehaviour
 
     private void Update()
     {
-        if (num_alberts < MIN_ALBERTS)
+        // Check population periodically
+        if (Time.time - lastPopulationCheck >= populationCheckInterval)
         {
-            Debug.Log("NUM:" + num_alberts.ToString());
-            // Spawn area in top left
-            Vector2 spawnCenter = new Vector2(-5f, -0f);
-            float spreadRadius = 10f;
-            // Calculate a position with some randomness
-            Vector2 offset = UnityEngine.Random.insideUnitCircle * spreadRadius;
-            Vector3 position = new Vector3(
-                spawnCenter.x + offset.x,
-                spawnCenter.y + offset.y,
-                0f
-            );
-            SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
-            num_alberts++;
+            lastPopulationCheck = Time.time;
+            ManagePopulation();
         }
-        Debug.Log(num_alberts);
     }
 
+    private void ManagePopulation()
+    {
+        // Count actual creatures in the scene
+        var actualCreatures = GameObject.FindObjectsOfType<Creature>();
+        int actualCount = actualCreatures.Count(c => c.type == Creature.CreatureType.Albert);
+        
+        // Update the static counter to match reality
+        num_alberts = actualCount;
+        
+        // Log population status
+        Debug.Log($"Current Albert population: {num_alberts} (Min: {MIN_ALBERTS}, Max: {MAX_ALBERTS})");
+        
+        // Handle population management
+        if (num_alberts < MIN_ALBERTS)
+        {
+            SpawnNewAlbert();
+        }
+    }
+
+    private void SpawnNewAlbert()
+    {
+        // Spawn area in top left
+        Vector2 spawnCenter = new Vector2(-5f, -0f);
+        float spreadRadius = 10f;
+        
+        // Calculate a position with some randomness
+        Vector2 offset = Random.insideUnitCircle * spreadRadius;
+        Vector3 position = new Vector3(
+            spawnCenter.x + offset.x,
+            spawnCenter.y + offset.y,
+            0f
+        );
+        
+        // Spawn the creature with a randomized brain
+        var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+        
+        // Initialize with random age and reproduction
+        float startingAge = Random.Range(5f, 15f);
+        float startingReproduction = Random.Range(0f, creature.maxReproduction);
+        
+        num_alberts++;
+        Debug.Log($"Spawned new Albert. Total population: {num_alberts}");
+    }
+
+    // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction
+    public bool CanReproduce()
+    {
+        return num_alberts < MAX_ALBERTS;
+    }
 
     private void SetupNormalGame()
     {
@@ -169,13 +213,19 @@ public class NEATTest : MonoBehaviour
 
     private void SetupAlbertsOnlyTest()
     {
-        Debug.Log("Starting Test: Alberts Only - 8 Alberts with random brains in top left");
+        Debug.Log("Starting Test: Alberts Only - Staggered spawning of Alberts with random brains in top left");
         
+        // Start the coroutine to spawn creatures
+        StartCoroutine(SpawnAlbertsStaggered());
+    }
+
+    private IEnumerator SpawnAlbertsStaggered()
+    {
         // Spawn area in top left
         Vector2 spawnCenter = new Vector2(-5f, -0f);
         float spreadRadius = 10f;
         
-        // Spawn 8 Alberts in the top left corner
+        // Spawn Alberts one at a time with random delays
         for (int i = 0; i < num_alberts; i++)
         {
             // Calculate a position with some randomness
@@ -192,9 +242,12 @@ public class NEATTest : MonoBehaviour
             // Initialize the creature with varied ages to encourage dynamic behavior
             float startingAge = Random.Range(5f, 15f);
             float startingReproduction = Random.Range(0f, creature.maxReproduction);
+            
+            // Wait for a random time between 0.5 and 1 second before spawning the next creature
+            yield return new WaitForSeconds(Random.Range(0.5f, 1f));
         }
         
-        Debug.Log("Test setup complete: 8 Alberts with random brains spawned in top left");
+        Debug.Log("Test setup complete: All Alberts with random brains spawned in top left");
     }
     
     private void SetupReproductionTest()

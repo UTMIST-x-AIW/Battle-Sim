@@ -59,7 +59,9 @@ public class Reproduction : MonoBehaviour
         float matingChance = Random.value;
         if (matingChance > pReproduction)
         {
-            if (NEATTest.num_alberts < MaxCreatures)
+            // Get reference to NEATTest
+            var neatTest = FindObjectOfType<NEATTest>();
+            if (neatTest != null && neatTest.CanReproduce())
             {
                 Reproduction newObj = Instantiate(this);
                 Creature p1 = this.GetComponent<Creature>();
