@@ -147,7 +147,7 @@ public class Creature : MonoBehaviour
             creatureAnimator.SetCreatureType(type);
         }
     }
-    
+
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
     {
         brain = network;
@@ -367,8 +367,9 @@ public class Creature : MonoBehaviour
         
         // Check if we should die
         if (health <= 0f)
-            {
-                Destroy(gameObject);
+        {
+            Destroy(gameObject);
+            NEATTest.num_alberts--;
         }
     }
     
@@ -511,8 +512,7 @@ public class Creature : MonoBehaviour
                 if (actionSuccessful)
                 {
                     // Reset energy after successful action
-                    //energy -= actionEnergyCost;
-                    Debug.Log("Success!!");
+                    energy -= actionEnergyCost;
                 }
             }
         }
@@ -840,4 +840,4 @@ public class Creature : MonoBehaviour
         // Create a new network with the crossover results
         return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
     }
-} 
+}
