@@ -214,133 +214,162 @@ public class Reproduction : MonoBehaviour
         }
 
         // Apply mutations to the child genome
-        var creature = GetComponent<Creature>();
-        if (creature != null)
-        {
-            // Apply weight mutations
-            foreach (var conn in childGenome.Connections.Values)
-            {
-                if (Random.value < creature.weightMutationRate)
-                {
-                    if (Random.value < 0.9f)
-                    {
-                        // Perturb weight
-                        conn.Weight += Random.Range(-creature.mutationRange, creature.mutationRange);
-                        conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
-                    }
-                    else
-                    {
-                        // Assign new random weight
-                        conn.Weight = Random.Range(-1f, 1f);
-                    }
-                }
-            }
-
-            // Add node mutation
-            if (Random.value < creature.addNodeRate && childGenome.Connections.Count > 0)
-            {
-                // Check if we've reached the maximum number of hidden layers
-                int maxCurrentLayer = 0;
-                foreach (var node in childGenome.Nodes.Values)
-                {
-                    if (node.Type == NEAT.Genes.NodeType.Hidden)
-                    {
-                        maxCurrentLayer = Mathf.Max(maxCurrentLayer, node.Layer);
-                    }
-                }
-                
-                // Only proceed if we haven't reached the max hidden layers
-                if (maxCurrentLayer < creature.maxHiddenLayers + 1)
-                {
-                    // Original connection-splitting logic
-                    var connList = new List<NEAT.Genes.ConnectionGene>(childGenome.Connections.Values);
-                    var connToSplit = connList[Random.Range(0, connList.Count)];
-                    connToSplit.Enabled = false;
-
-                    // Create new node
-                    int newNodeKey = childGenome.Nodes.Count;
-                    var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
-                    
-                    // Set layer between input and output nodes
-                    var inputNode = childGenome.Nodes[connToSplit.InputKey];
-                    var outputNode = childGenome.Nodes[connToSplit.OutputKey];
-                    newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-                    
-                    // If the layer would be the same as the input layer, increment it
-                    if (newNode.Layer <= inputNode.Layer)
-                    {
-                        // Check if incrementing would exceed max layers
-                        if (inputNode.Layer + 1 >= creature.maxHiddenLayers + 1)
-                        {
-                            // Skip this mutation if it would exceed max layers
-                            return NEAT.NN.FeedForwardNetwork.Create(childGenome);
-                        }
-                        newNode.Layer = inputNode.Layer + 1;
-                    }
-                    
-                    childGenome.AddNode(newNode);
-
-                    // Add two new connections
-                    var conn1 = new NEAT.Genes.ConnectionGene(
-                        childGenome.Connections.Count,
-                        connToSplit.InputKey,
-                        newNodeKey,
-                        1.0);
-
-                    var conn2 = new NEAT.Genes.ConnectionGene(
-                        childGenome.Connections.Count + 1,
-                        newNodeKey,
-                        connToSplit.OutputKey,
-                        connToSplit.Weight);
-
-                    childGenome.AddConnection(conn1);
-                    childGenome.AddConnection(conn2);
-                }
-            }
-
-            // Add connection mutation
-            if (Random.value < creature.addConnectionRate)
-            {
-                for (int tries = 0; tries < 5; tries++)
-                {
-                    var nodeList = new List<NEAT.Genes.NodeGene>(childGenome.Nodes.Values);
-                    var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
-                    var targetNode = nodeList[Random.Range(0, nodeList.Count)];
-
-                    if (sourceNode.Layer >= targetNode.Layer ||
-                        sourceNode.Type == NEAT.Genes.NodeType.Output ||
-                        targetNode.Type == NEAT.Genes.NodeType.Input)
-                    {
-                        continue;
-                    }
-
-                    bool exists = childGenome.Connections.Values.Any(c =>
-                        c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
-
-                    if (!exists)
-                    {
-                        var newConn = new NEAT.Genes.ConnectionGene(
-                            childGenome.Connections.Count,
-                            sourceNode.Key,
-                            targetNode.Key,
-                            Random.Range(-1f, 1f));
-
-                        childGenome.AddConnection(newConn);
-                        break;
-                    }
-                }
-            }
-
-            // Delete connection mutation
-            if (Random.value < creature.deleteConnectionRate && childGenome.Connections.Count > 1)
-            {
-                var connList = new List<NEAT.Genes.ConnectionGene>(childGenome.Connections.Values);
-                var connToDelete = connList[Random.Range(0, connList.Count)];
-                childGenome.Connections.Remove(connToDelete.Key);
-            }
-        }
+        ApplyMutations(childGenome);
         
         // Create a new network from the child genome
         return NEAT.NN.FeedForwardNetwork.Create(childGenome);
+    }
+
+    private void ApplyMutations(NEAT.Genome.Genome genome)
+    {
+        // Mutation probabilities - increased for more frequent mutations
+        const float ADD_NODE_PROB = 0.3f;        // Was 0.1f
+        const float DELETE_NODE_PROB = 0.2f;     // Was 0.05f
+        const float MODIFY_BIAS_PROB = 0.4f;     // Was 0.2f
+        const float ADD_CONNECTION_PROB = 0.4f;  // Was 0.2f
+        const float DELETE_CONNECTION_PROB = 0.2f; // Was 0.1f
+        const float MODIFY_WEIGHT_PROB = 0.6f;   // Was 0.3f
+
+        // 1. Add new node mutation
+        if (Random.value < ADD_NODE_PROB && genome.Connections.Count > 0)
+        {
+            // Pick a random connection to split
+            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+            var connToSplit = connList[Random.Range(0, connList.Count)];
+            
+            // Create new node
+            int newNodeKey = genome.Nodes.Count;
+            var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+            
+            // Set layer between input and output nodes
+            var inputNode = genome.Nodes[connToSplit.InputKey];
+            var outputNode = genome.Nodes[connToSplit.OutputKey];
+            newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+            
+            // If the layer would be the same as the input layer, increment it
+            if (newNode.Layer <= inputNode.Layer)
+            {
+                newNode.Layer = inputNode.Layer + 1;
+            }
+            
+            // Disable the original connection
+            connToSplit.Enabled = false;
+            
+            // Add the new node
+            genome.AddNode(newNode);
+            
+            // Add two new connections
+            var conn1 = new NEAT.Genes.ConnectionGene(
+                genome.Connections.Count,
+                connToSplit.InputKey,
+                newNodeKey,
+                1.0);
+                
+            var conn2 = new NEAT.Genes.ConnectionGene(
+                genome.Connections.Count + 1,
+                newNodeKey,
+                connToSplit.OutputKey,
+                connToSplit.Weight);
+                
+            genome.AddConnection(conn1);
+            genome.AddConnection(conn2);
+        }
+
+        // 2. Delete node mutation
+        if (Random.value < DELETE_NODE_PROB)
+        {
+            // Get all hidden nodes
+            var hiddenNodes = genome.Nodes.Values
+                .Where(n => n.Type == NEAT.Genes.NodeType.Hidden)
+                .ToList();
+                
+            if (hiddenNodes.Count > 0)
+            {
+                // Pick a random hidden node to delete
+                var nodeToDelete = hiddenNodes[Random.Range(0, hiddenNodes.Count)];
+                
+                // Remove all connections to/from this node
+                var connectionsToRemove = genome.Connections.Values
+                    .Where(c => c.InputKey == nodeToDelete.Key || c.OutputKey == nodeToDelete.Key)
+                    .ToList();
+                    
+                foreach (var conn in connectionsToRemove)
+                {
+                    genome.Connections.Remove(conn.Key);
+                }
+                
+                // Remove the node
+                genome.Nodes.Remove(nodeToDelete.Key);
+            }
+        }
+
+        // 3. Modify bias mutation
+        if (Random.value < MODIFY_BIAS_PROB)
+        {
+            // Pick a random node
+            var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+            var nodeToModify = nodeList[Random.Range(0, nodeList.Count)];
+            
+            // Modify bias by a small random amount
+            nodeToModify.Bias += Random.Range(-0.5f, 0.5f);
+        }
+
+        // 4. Add connection mutation
+        if (Random.value < ADD_CONNECTION_PROB)
+        {
+            // Try a few times to find a valid connection
+            for (int tries = 0; tries < 5; tries++)
+            {
+                var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+                var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
+                var targetNode = nodeList[Random.Range(0, nodeList.Count)];
+                
+                // Skip invalid connections
+                if (sourceNode.Layer >= targetNode.Layer ||
+                    sourceNode.Type == NEAT.Genes.NodeType.Output ||
+                    targetNode.Type == NEAT.Genes.NodeType.Input)
+                {
+                    continue;
+                }
+                
+                // Check if connection already exists
+                bool exists = genome.Connections.Values.Any(c =>
+                    c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
+                
+                if (!exists)
+                {
+                    var newConn = new NEAT.Genes.ConnectionGene(
+                        genome.Connections.Count,
+                        sourceNode.Key,
+                        targetNode.Key,
+                        Random.Range(-1f, 1f));
+                        
+                    genome.AddConnection(newConn);
+                    break;
+                }
+            }
+        }
+
+        // 5. Delete connection mutation
+        if (Random.value < DELETE_CONNECTION_PROB && genome.Connections.Count > 1)
+        {
+            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+            var connToDelete = connList[Random.Range(0, connList.Count)];
+            genome.Connections.Remove(connToDelete.Key);
+        }
+
+        // 6. Modify weight mutation
+        if (Random.value < MODIFY_WEIGHT_PROB)
+        {
+            // Pick a random connection
+            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
+            var connToModify = connList[Random.Range(0, connList.Count)];
+            
+            // Modify weight by a small random amount
+            connToModify.Weight += Random.Range(-0.5f, 0.5f);
+            
+            // Clamp weight to valid range
+            connToModify.Weight = Mathf.Clamp((float)connToModify.Weight, -1f, 1f);
+        }
     }
 }
