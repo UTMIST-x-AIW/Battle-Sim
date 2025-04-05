@@ -49,6 +49,8 @@ public class Creature : MonoBehaviour
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
     public float attackDamage = 1.0f;
+    public float visionRange = 10f;  // Range at which creatures can see other entities
+    public float chopRange = 1.5f;   // Range at which creatures can chop trees
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -761,19 +763,29 @@ public class Creature : MonoBehaviour
     private void OnDrawGizmos()
     {
         // Only draw if visualization is enabled and NEATTest reference exists
-        if (neatTest != null && neatTest.showDetectionRadius)
+        if (neatTest != null)
         {
-            // Set color to be semi-transparent and match creature type
-            Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
-            Gizmos.color = gizmoColor;
+            if (neatTest.showDetectionRadius)
+            {
+                // Set color to be semi-transparent and match creature type
+                Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
+                Gizmos.color = gizmoColor;
+                
+                // Draw filled circle for better visibility
+                Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+                
+                // Draw wire frame with more opacity for better edge definition
+                gizmoColor.a = 0.3f;
+                Gizmos.color = gizmoColor;
+                Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            }
             
-            // Draw filled circle for better visibility
-            Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
-            
-            // Draw wire frame with more opacity for better edge definition
-            gizmoColor.a = 0.3f;
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            // Draw chop range if enabled
+            if (neatTest.showChopRange)
+            {
+                Gizmos.color = neatTest.chopRangeColor;
+                Gizmos.DrawWireSphere(transform.position, chopRange);
+            }
         }
     }
     
