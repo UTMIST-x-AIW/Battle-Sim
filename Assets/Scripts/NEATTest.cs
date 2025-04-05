@@ -9,7 +9,8 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
-    public int num_alberts=50;
+    [SerializeField]
+    public static int num_alberts=50;
     
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -31,6 +32,8 @@ public class NEATTest : MonoBehaviour
     // NEAT instance for access by other classes
     [System.NonSerialized]
     public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
+
+    public int creature_count = 50;
 
     private void Awake()
     {

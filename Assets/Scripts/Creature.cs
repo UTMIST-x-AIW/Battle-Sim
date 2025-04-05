@@ -18,7 +18,7 @@ public class Creature : MonoBehaviour
     [Header("Basic Stats")]
     public float health = 3f;
     public float reproduction = 0f;
-    public float energy = 0f;
+    public float energy = 1000f;
     public float maxHealth = 3f;
     public float maxReproduction = 1f;
     public float maxEnergy = 1f;
@@ -481,6 +481,7 @@ public class Creature : MonoBehaviour
         // We need at least 5 actions: move x, move y, chop, attack, reproduce
         if (actions.Length < 5) return;
         
+
         // Only execute actions if we have enough energy
         if (energy >= actionEnergyCost)
         {
@@ -489,14 +490,16 @@ public class Creature : MonoBehaviour
             float reproduceDesire = actions[4];
             
             // Find the highest desire that is positive
-            float highestDesire = Mathf.Max(chopDesire, attackDesire, reproduceDesire);
+            float highestDesire = Mathf.Max(chopDesire, 0);
+            Debug.Log(highestDesire);
             
             if (highestDesire > 0)
             {
+                
                 bool actionSuccessful = false;
                 
                 // Choose the action with the highest positive value
-                if (highestDesire == chopDesire && chopDesire > 0)
+                if (chopDesire > 0)
                 {
                     actionSuccessful = TryChopTree();
                 }
@@ -508,7 +511,8 @@ public class Creature : MonoBehaviour
                 if (actionSuccessful)
                 {
                     // Reset energy after successful action
-                    energy -= actionEnergyCost;
+                    //energy -= actionEnergyCost;
+                    Debug.Log("Success!!");
                 }
             }
         }
@@ -542,6 +546,7 @@ public class Creature : MonoBehaviour
         // If we found a tree, damage it
         if (nearestTree != null)
         {
+            Debug.Log("AAAAAAAHHHHHH!");
             nearestTree.TakeDamage(chopDamage);
             
             // Restore the creature's health to maximum

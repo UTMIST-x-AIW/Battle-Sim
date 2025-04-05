@@ -4,6 +4,7 @@ using UnityEngine;
 using NEAT.Genes;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Build.Content;
 
 public class Reproduction : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class Reproduction : MonoBehaviour
     //public Collider2D circle_of_mating;
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.9f;
+    public int MaxCreatures = 150;
 
     private void LateUpdate()
     {
@@ -50,7 +52,10 @@ public class Reproduction : MonoBehaviour
         float matingChance = Random.value;
         if (matingChance > pReproduction)
         {
-            Instantiate(this);
+            if (NEATTest.num_alberts < MaxCreatures)
+            {
+                Instantiate(this);
+            }
 
             otherScript.gameObject_mated_with.Add(this.gameObject);
         }

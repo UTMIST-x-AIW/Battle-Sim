@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CreatureObserver : MonoBehaviour
 {
-    public static readonly float DETECTION_RADIUS = 15f;
+    public static readonly float DETECTION_RADIUS = 5f;
     private static int timestep = 0;
     
     private void Start()
@@ -27,7 +27,7 @@ public class CreatureObserver : MonoBehaviour
         Vector2 cherryPos = Vector2.zero;
         Vector2 treePos = Vector2.zero;
 
-        Debug.Log(nearbyColliders.Length);
+        //  Debug.Log(nearbyColliders.Length);
         
         foreach (var collider in nearbyColliders)
         {
@@ -44,7 +44,6 @@ public class CreatureObserver : MonoBehaviour
             }
             else if (collider.CompareTag("Tree"))
             {
-                Debug.Log(collider.tag);
                 if (relativePos.magnitude < treePos.magnitude || treePos.magnitude == 0)
                 {
                     treePos = relativePos;
@@ -53,7 +52,6 @@ public class CreatureObserver : MonoBehaviour
             }
             else
             {
-                Debug.Log(collider.tag);
                 Creature other = collider.GetComponent<Creature>();
                 if (other == null) continue;
                 

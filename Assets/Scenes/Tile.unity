@@ -18440,12 +18440,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 4732040975953563953, guid: b23868e3f4ed36b43a1fb1459c5fba4a, type: 3}
-  num_alberts: 100
   maxHiddenLayers: 10
   maxCreatures: 120
   runTests: 1
   currentTest: 2
   showDetectionRadius: 1
+  creature_count: 50
 --- !u!4 &186563466
 Transform:
   m_ObjectHideFlags: 0
