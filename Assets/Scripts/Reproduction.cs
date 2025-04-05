@@ -49,12 +49,22 @@ public class Reproduction : MonoBehaviour
 
     void MateWith(GameObject other)
     {
-        //Debug.Log(name + " is mating with " + other.name);
+        // Validate input
+        if (other == null)
+        {
+            Debug.LogError("MateWith: Other creature is null");
+            return;
+        }
 
         // Add each other to the mated lists
         gameObject_mated_with.Add(other);
 
         Reproduction otherScript = other.GetComponent<Reproduction>();
+        if (otherScript == null)
+        {
+            Debug.LogError("MateWith: Failed to get Reproduction component from other creature");
+            return;
+        }
 
         float matingChance = Random.value;
         if (matingChance > pReproduction)
@@ -63,33 +73,77 @@ public class Reproduction : MonoBehaviour
             var neatTest = FindObjectOfType<NEATTest>();
             if (neatTest != null && neatTest.CanReproduce())
             {
-                Reproduction newObj = Instantiate(this);
+                // Get parent creatures
                 Creature p1 = this.GetComponent<Creature>();
                 Creature p2 = other.GetComponent<Creature>();
+
+                if (p1 == null || p2 == null)
+                {
+                    Debug.LogError("MateWith: Failed to get Creature components from parents");
+                    return;
+                }
+
+                // Spawn child
                 GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);
-                //Debug.Log("HAAALEELUUJAH");
+                if (child == null)
+                {
+                    Debug.LogError("MateWith: Failed to spawn child");
+                    return;
+                }
+
+                // Add to mated list
+                otherScript.gameObject_mated_with.Add(this.gameObject);
             }
-
-            otherScript.gameObject_mated_with.Add(this.gameObject);
         }
-
     }
 
     private GameObject SpawnChild(Creature p1, Creature p2, GameObject prefab, Vector3 position)
     {
-        var creature = Instantiate(prefab, position, Quaternion.identity);
-        var creatureComponent = creature.GetComponent<Creature>();
+        // Validate input creatures
+        if (p1 == null || p2 == null)
+        {
+            Debug.LogError("SpawnChild: One or both parent creatures are null");
+            return null;
+        }
 
-        // Create initial neural network with appropriate genome
-        NEAT.NN.FeedForwardNetwork network = CreateChildNetwork(p1.GetBrain(), p2.GetBrain());
-        creatureComponent.InitializeNetwork(network);
+        // Get parent brains
+        var brain1 = p1.GetBrain();
+        var brain2 = p2.GetBrain();
 
-        // Pass the max hidden layers setting to the creature
-        creatureComponent.maxHiddenLayers = p1.maxHiddenLayers;
+        if (brain1 == null || brain2 == null)
+        {
+            Debug.LogError($"SpawnChild: One or both parent brains are null. Parent1: {brain1 != null}, Parent2: {brain2 != null}");
+            return null;
+        }
+
+        // Create child network
+        var childNetwork = CreateChildNetwork(brain1, brain2);
+        if (childNetwork == null)
+        {
+            Debug.LogError("SpawnChild: Failed to create child network");
+            return null;
+        }
+
+        // Spawn the child creature
+        var child = Instantiate(prefab, position, Quaternion.identity);
+        var childCreature = child.GetComponent<Creature>();
+        
+        if (childCreature == null)
+        {
+            Debug.LogError("SpawnChild: Failed to get Creature component from spawned prefab");
+            Destroy(child);
+            return null;
+        }
+
+        // Initialize the child's network
+        childCreature.InitializeNetwork(childNetwork);
+        
+        // Copy max hidden layers setting from parent
+        childCreature.maxHiddenLayers = p1.maxHiddenLayers;
 
         NEATTest.num_alberts++;
 
-        return creature;
+        return child;
     }
 
 
@@ -98,65 +152,203 @@ public class Reproduction : MonoBehaviour
     // Creating a child Network
     private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
     {
+        // Validate input networks
+        if (parent1 == null || parent2 == null)
+        {
+            Debug.LogError("CreateChildNetwork: One or both parent networks are null");
+            return null;
+        }
+
         // Create a new genome for the child
         var childGenome = new NEAT.Genome.Genome(0);
         
-        // Create input nodes (13 inputs)
-        for (int i = 0; i < 13; i++)
+        // Get parent genomes with null checks
+        var parent1Genome = parent1.GetGenome();
+        var parent2Genome = parent2.GetGenome();
+
+        if (parent1Genome == null || parent2Genome == null)
         {
-            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
-            node.Layer = 0;  // Input layer
-            node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
-            childGenome.AddNode(node);
+            Debug.LogError($"CreateChildNetwork: Failed to get genome from parent(s). Parent1: {parent1Genome != null}, Parent2: {parent2Genome != null}");
+            return null;
+        }
+
+        if (parent1Genome.Nodes == null || parent2Genome.Nodes == null || 
+            parent1Genome.Connections == null || parent2Genome.Connections == null)
+        {
+            Debug.LogError("CreateChildNetwork: One or both parent genomes have null Nodes or Connections collections");
+            return null;
         }
         
-        // Add output nodes (5 outputs: x,y velocity, chop, attack, reproduce)
-        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
-        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
-        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Reproduction action
-
-        outputNode1.Layer = 2;  // Output layer
-        outputNode2.Layer = 2;  // Output layer
-        outputNode3.Layer = 2;  // Output layer
-        outputNode4.Layer = 2;  // Output layer
-        outputNode5.Layer = 2;  // Output layer
-
-        // Explicitly set bias to 0 for output nodes
-        outputNode1.Bias = 0.0;
-        outputNode2.Bias = 0.0;
-        outputNode3.Bias = 0.0;
-        outputNode4.Bias = 0.0;
-        outputNode5.Bias = 0.0;
-
-        childGenome.AddNode(outputNode1);
-        childGenome.AddNode(outputNode2);
-        childGenome.AddNode(outputNode3);
-        childGenome.AddNode(outputNode4);
-        childGenome.AddNode(outputNode5);
-
-        // Add connections with random weights
-        for(int i = 0; i < 13; i++)
+        // Add all nodes (taking randomly from either parent for matching nodes)
+        var allNodeKeys = new HashSet<int>(parent1Genome.Nodes.Keys.Concat(parent2Genome.Nodes.Keys));
+        foreach (var key in allNodeKeys)
         {
-            for (int j = 17; j < 22; j++)
+            if (parent1Genome.Nodes.ContainsKey(key) && parent2Genome.Nodes.ContainsKey(key))
             {
-                // Randomly choose weight from either parent or create a new one
-                float weight;
-                if (Random.value < 0.5f)
+                // Both parents have this node, randomly choose one
+                childGenome.AddNode(Random.value < 0.5f ?
+                    (NEAT.Genes.NodeGene)parent1Genome.Nodes[key].Clone() :
+                    (NEAT.Genes.NodeGene)parent2Genome.Nodes[key].Clone());
+            }
+            else if (parent1Genome.Nodes.ContainsKey(key))
+            {
+                // Only parent1 has this node
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[key].Clone());
+            }
+            else
+            {
+                // Only parent2 has this node
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[key].Clone());
+            }
+        }
+
+        // Add connections (taking randomly from either parent for matching connections)
+        var allConnectionKeys = new HashSet<int>(parent1Genome.Connections.Keys.Concat(parent2Genome.Connections.Keys));
+        foreach (var key in allConnectionKeys)
+        {
+            if (parent1Genome.Connections.ContainsKey(key) && parent2Genome.Connections.ContainsKey(key))
+            {
+                // Both parents have this connection, randomly choose one
+                childGenome.AddConnection(Random.value < 0.5f ?
+                    (NEAT.Genes.ConnectionGene)parent1Genome.Connections[key].Clone() :
+                    (NEAT.Genes.ConnectionGene)parent2Genome.Connections[key].Clone());
+            }
+            else if (parent1Genome.Connections.ContainsKey(key))
+            {
+                // Only parent1 has this connection
+                childGenome.AddConnection((NEAT.Genes.ConnectionGene)parent1Genome.Connections[key].Clone());
+            }
+            else
+            {
+                // Only parent2 has this connection
+                childGenome.AddConnection((NEAT.Genes.ConnectionGene)parent2Genome.Connections[key].Clone());
+            }
+        }
+
+        // Apply mutations to the child genome
+        var creature = GetComponent<Creature>();
+        if (creature != null)
+        {
+            // Apply weight mutations
+            foreach (var conn in childGenome.Connections.Values)
+            {
+                if (Random.value < creature.weightMutationRate)
                 {
-                    // Use a completely random weight
-                    weight = Random.Range(-1f, 1f);
+                    if (Random.value < 0.9f)
+                    {
+                        // Perturb weight
+                        conn.Weight += Random.Range(-creature.mutationRange, creature.mutationRange);
+                        conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
+                    }
+                    else
+                    {
+                        // Assign new random weight
+                        conn.Weight = Random.Range(-1f, 1f);
+                    }
                 }
-                else
+            }
+
+            // Add node mutation
+            if (Random.value < creature.addNodeRate && childGenome.Connections.Count > 0)
+            {
+                // Check if we've reached the maximum number of hidden layers
+                int maxCurrentLayer = 0;
+                foreach (var node in childGenome.Nodes.Values)
                 {
-                    // Blend weights from parents (if they exist)
-                    float weight1 = Random.Range(-1f, 1f);
-                    float weight2 = Random.Range(-1f, 1f);
-                    weight = (weight1 + weight2) / 2f;
+                    if (node.Type == NEAT.Genes.NodeType.Hidden)
+                    {
+                        maxCurrentLayer = Mathf.Max(maxCurrentLayer, node.Layer);
+                    }
                 }
                 
-                childGenome.AddConnection(new NEAT.Genes.ConnectionGene((i*5 + j + 22), i, j, weight));
+                // Only proceed if we haven't reached the max hidden layers
+                if (maxCurrentLayer < creature.maxHiddenLayers + 1)
+                {
+                    // Original connection-splitting logic
+                    var connList = new List<NEAT.Genes.ConnectionGene>(childGenome.Connections.Values);
+                    var connToSplit = connList[Random.Range(0, connList.Count)];
+                    connToSplit.Enabled = false;
+
+                    // Create new node
+                    int newNodeKey = childGenome.Nodes.Count;
+                    var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+                    
+                    // Set layer between input and output nodes
+                    var inputNode = childGenome.Nodes[connToSplit.InputKey];
+                    var outputNode = childGenome.Nodes[connToSplit.OutputKey];
+                    newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
+                    
+                    // If the layer would be the same as the input layer, increment it
+                    if (newNode.Layer <= inputNode.Layer)
+                    {
+                        // Check if incrementing would exceed max layers
+                        if (inputNode.Layer + 1 >= creature.maxHiddenLayers + 1)
+                        {
+                            // Skip this mutation if it would exceed max layers
+                            return NEAT.NN.FeedForwardNetwork.Create(childGenome);
+                        }
+                        newNode.Layer = inputNode.Layer + 1;
+                    }
+                    
+                    childGenome.AddNode(newNode);
+
+                    // Add two new connections
+                    var conn1 = new NEAT.Genes.ConnectionGene(
+                        childGenome.Connections.Count,
+                        connToSplit.InputKey,
+                        newNodeKey,
+                        1.0);
+
+                    var conn2 = new NEAT.Genes.ConnectionGene(
+                        childGenome.Connections.Count + 1,
+                        newNodeKey,
+                        connToSplit.OutputKey,
+                        connToSplit.Weight);
+
+                    childGenome.AddConnection(conn1);
+                    childGenome.AddConnection(conn2);
+                }
+            }
+
+            // Add connection mutation
+            if (Random.value < creature.addConnectionRate)
+            {
+                for (int tries = 0; tries < 5; tries++)
+                {
+                    var nodeList = new List<NEAT.Genes.NodeGene>(childGenome.Nodes.Values);
+                    var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
+                    var targetNode = nodeList[Random.Range(0, nodeList.Count)];
+
+                    if (sourceNode.Layer >= targetNode.Layer ||
+                        sourceNode.Type == NEAT.Genes.NodeType.Output ||
+                        targetNode.Type == NEAT.Genes.NodeType.Input)
+                    {
+                        continue;
+                    }
+
+                    bool exists = childGenome.Connections.Values.Any(c =>
+                        c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
+
+                    if (!exists)
+                    {
+                        var newConn = new NEAT.Genes.ConnectionGene(
+                            childGenome.Connections.Count,
+                            sourceNode.Key,
+                            targetNode.Key,
+                            Random.Range(-1f, 1f));
+
+                        childGenome.AddConnection(newConn);
+                        break;
+                    }
+                }
+            }
+
+            // Delete connection mutation
+            if (Random.value < creature.deleteConnectionRate && childGenome.Connections.Count > 1)
+            {
+                var connList = new List<NEAT.Genes.ConnectionGene>(childGenome.Connections.Values);
+                var connToDelete = connList[Random.Range(0, connList.Count)];
+                childGenome.Connections.Remove(connToDelete.Key);
             }
         }
         
