@@ -15,18 +15,16 @@ public class NEATTest : MonoBehaviour
     [SerializeField]
     private int _num_alberts = 50;
     public static int num_alberts = 50;  // Keep static for global access
-    public int MIN_ALBERTS = 20;
-    public int MAX_ALBERTS = 100;
-
-    // Property to show in Inspector
-    public int NumAlberts
+    public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
+    public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
+    
+    // Property to display current Albert count in Inspector
+    [SerializeField]
+    private int _current_alberts = 0;
+    public int CurrentAlberts
     {
-        get { return _num_alberts; }
-        set 
-        { 
-            _num_alberts = value;
-            num_alberts = value;  // Keep static field in sync
-        }
+        get { return _current_alberts; }
+        private set { _current_alberts = value; }
     }
 
     [Header("Network Settings")]
@@ -56,8 +54,6 @@ public class NEATTest : MonoBehaviour
     // NEAT instance for access by other classes
     [System.NonSerialized]
     public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
-
-    public int creature_count = 50;
 
     [Header("Population Settings")]
     private float lastPopulationCheck = 0f;
@@ -137,8 +133,8 @@ public class NEATTest : MonoBehaviour
             // Count current Alberts
             int currentAlberts = CountAlberts();
             
-            // Update the static count for global access
-            num_alberts = currentAlberts;
+            // Update the inspector-visible count
+            CurrentAlberts = currentAlberts;
             
             // Log population count
             LogManager.LogMessage($"Current Albert population: {currentAlberts}");
@@ -221,7 +217,7 @@ public class NEATTest : MonoBehaviour
     // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction
     public bool CanReproduce()
     {
-        return num_alberts < MAX_ALBERTS;
+        return CurrentAlberts < MAX_ALBERTS;
     }
 
     private void SetupNormalGame()
