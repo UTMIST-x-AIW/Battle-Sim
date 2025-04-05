@@ -7,19 +7,25 @@ public class SavingTilePos : MonoBehaviour
 {
 
     public TilePosData tiledata;
-    [SerializeField] Tilemap[] tilemaps;
+    [SerializeField] Tilemap tilemap;
+    [SerializeField, Min(10)] int TileMapBounds = 50; 
     // Start is called before the first frame update
     void OnEnable()
     {
-        tiledata.Initialize(tilemaps[0],50);
-    }
-
-    void RecalculatePos(int tilemapNum)
-    {
-        if (tilemapNum <= tilemaps.Length && tilemapNum >= 0){ 
-            tiledata.Initialize(tilemaps[tilemapNum], 50);
+        if (tiledata == null)
+        {
+            tiledata.Initialize(tilemap,TileMapBounds);
         }
     }
+
+
+
+    //void RecalculatePos(int tilemapNum)
+    //{
+    //    if (tilemapNum <= tilemaps.Length && tilemapNum >= 0){ 
+    //        tiledata.Initialize(tilemaps[tilemapNum], 50);
+    //    }
+    //}
 
 
 }

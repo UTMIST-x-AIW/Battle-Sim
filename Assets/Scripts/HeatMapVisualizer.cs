@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NEAT.Genes;
 
 public class HeatMapVisualizer : MonoBehaviour
 {
@@ -17,8 +18,8 @@ public class HeatMapVisualizer : MonoBehaviour
         foreach (var tile in heatMapData.tilePosData.TilePositions)
         {
             float value = heatMapData.GetValue(tile.pos);
-            float new_value = MathEq.Remap(value,0,100,0,1);
-            Gizmos.color = new Color(1 - new_value, new_value, 0f, 0.8f);
+            float new_value = MathEq.Remap(value,0,100,0,5);
+            Gizmos.color = new Color(5 - new_value, new_value, 0f, 0.8f);
             Vector3 pos = new Vector3(tile.pos.x , tile.pos.y + 0.5f, 0);
             Gizmos.DrawCube(pos, Vector3.one * (size * 0.5f));
         }

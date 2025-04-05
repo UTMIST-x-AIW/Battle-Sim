@@ -1,0 +1,94 @@
+using UnityEngine;
+
+public class CreatureObserver : MonoBehaviour
+{
+    public static readonly float DETECTION_RADIUS = 5f;
+    private static int timestep = 0;
+    
+    private void Start()
+    {
+
+    }
+    
+    public float[] GetObservations(Creature self)
+    {
+        float[] obs = new float[13];  // Now 13 observations (0-16)
+        
+        // Basic stats
+        obs[0] = self.health;
+        obs[1] = self.reproduction;
+        obs[2] = self.energy; // Energy meter
+        
+        // Get nearby objects
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
+        
+        Vector2 sameTypePos = Vector2.zero;
+        Vector2 oppositeTypePos = Vector2.zero;
+        Vector2 cherryPos = Vector2.zero;
+        Vector2 treePos = Vector2.zero;
+        
+        foreach (var collider in nearbyColliders)
+        {
+            if (collider.gameObject == gameObject) continue;
+            
+            Vector2 relativePos = (Vector2)(collider.transform.position - transform.position);
+            
+            if (collider.CompareTag("Cherry"))
+            {
+                if (relativePos.magnitude < cherryPos.magnitude || cherryPos.magnitude == 0)
+                {
+                    cherryPos = relativePos;
+                }
+            }
+            else if (collider.CompareTag("Tree"))
+            {
+                if (relativePos.magnitude < treePos.magnitude || treePos.magnitude == 0)
+                {
+                    treePos = relativePos;
+                }
+            }
+            else
+            {
+                Creature other = collider.GetComponent<Creature>();
+                if (other == null) continue;
+                
+                if (other.type == self.type)
+                {
+                    if (relativePos.magnitude < sameTypePos.magnitude || sameTypePos.magnitude == 0)
+                    {
+                        sameTypePos = relativePos;
+                    }
+                }
+                else
+                {
+                    if (relativePos.magnitude < oppositeTypePos.magnitude || oppositeTypePos.magnitude == 0)
+                    {
+                        oppositeTypePos = relativePos;
+                    }
+                }
+            }
+        }
+        
+        // Same type observations (x,y components and absolute sum)
+        obs[3] = sameTypePos.x;
+        obs[4] = sameTypePos.y;
+        
+        // Opposite type observations (x,y components and absolute sum)
+        obs[5] = oppositeTypePos.x;
+        obs[6] = oppositeTypePos.y;
+        
+        // Cherry observations (x,y components and absolute sum)
+        obs[7] = cherryPos.x;
+        obs[8] = cherryPos.y;
+        
+        // Tree observations (x,y components and absolute sum)
+        obs[9] = treePos.x;
+        obs[10] = treePos.y;
+        
+        // Add normalized direction vector (helps with orientation)
+        obs[11] = transform.position.x;   // Current x direction
+        obs[12] = transform.position.y;   // Current y direction
+        
+        return obs;
+    }
+} 
