@@ -106,6 +106,7 @@ public class NEATTest : MonoBehaviour
                 0f
             );
             SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
+            num_alberts++;
         }
         Debug.Log(num_alberts);
     }

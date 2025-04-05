@@ -19,8 +19,14 @@ public class Reproduction : MonoBehaviour
     {
 
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, radius_of_mating);
-        Collider2D collider = nearbycollider[0];
-        EnableMating(collider);
+        if (nearbycollider != null || nearbycollider.Length > 0)
+        {
+            Collider2D collider = nearbycollider[0];
+            if (collider != null)
+            {
+                EnableMating(collider);
+            }
+        }
     }
 
     private void EnableMating(Collider2D col)
