@@ -6,7 +6,7 @@ using NEAT.Genes;
 public class HeatMapVisualizer : MonoBehaviour
 {
     public HeatMapData heatMapData;
-    [Range(0f,2f)]public float size = 0.6f;
+    public float size = 0.6f;
     [Range(0f,2f)]private float offset = 0.5f;
 
     private void OnDrawGizmos()

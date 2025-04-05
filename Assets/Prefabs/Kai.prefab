@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 3725860248335649992}
   - component: {fileID: 3752400893969112301}
   - component: {fileID: 9205314743589739064}
+  - component: {fileID: 3866177930134900298}
   m_Layer: 0
   m_Name: Kai
   m_TagString: Untagged
@@ -220,6 +221,39 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3866177930134900298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732040975953563953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f585aa1579b4f11b9c90a12c24eb46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 3
+  reproduction: 0
+  energy: 0
+  maxHealth: 3
+  maxReproduction: 1
+  maxEnergy: 1
+  energyRechargeRate: 0.333
+  agingStartTime: 10
+  agingRate: 0.03
+  moveSpeed: 5
+  reproductionRate: 0.1
+  weightMutationRate: 0.8
+  mutationRange: 0.5
+  addNodeRate: 0.2
+  addConnectionRate: 0.5
+  deleteConnectionRate: 0.2
+  maxHiddenLayers: 10
+  actionEnergyCost: 1
+  chopDamage: 1
+  attackDamage: 1
+  type: 0
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
