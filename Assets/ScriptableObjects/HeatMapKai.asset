@@ -1715,7 +1715,7 @@ MonoBehaviour:
   - position: {x: -16.5, y: 10.25}
     value: 0
   - position: {x: 8.5, y: -1.75}
-    value: 14.175612
+    value: 0
   - position: {x: 8, y: -1.5}
     value: 0
   - position: {x: 7.5, y: -1.25}

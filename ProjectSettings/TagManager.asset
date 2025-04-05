@@ -8,7 +8,7 @@ TagManager:
   - river
   - AlbertSpawnPoint
   - KaiSpawnPoint
-  - HeatMap
+  - Heatmap
   layers:
   - Default
   - TransparentFX

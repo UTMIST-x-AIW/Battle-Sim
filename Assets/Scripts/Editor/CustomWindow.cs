@@ -1,34 +1,52 @@
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class MyCustomWindow : EditorWindow
+public class HeatmapVisibilityWindow : EditorWindow
 {
-    GameObject[] heatmaps;
-    bool toggleValue = true;
-    float floatValue = 1.0f;
+    // You can manually assign these, or populate them dynamically
+    private List<GameObject> heatmapObjects = new List<GameObject>();
+    private Vector2 scrollPos;
 
-    [MenuItem("Window/HeatMap Window")]
+    [MenuItem("Tools/Heatmap Visibility")]
     public static void ShowWindow()
     {
-        // Show existing window instance. If one doesn't exist, make one.
-        GetWindow<MyCustomWindow>("HeatMap Editor");
-    }
-    private void OnEnable()
-    {
-        heatmaps = GameObject.FindGameObjectsWithTag("heatmap");
+        GetWindow<HeatmapVisibilityWindow>("Heatmap Visibility");
     }
 
     private void OnGUI()
     {
-        GUILayout.Label("This is a custom editor window", EditorStyles.boldLabel);
+        GUILayout.Label("Heatmap Object Visibility", EditorStyles.boldLabel);
 
-      // GUILayout.
-         toggleValue = EditorGUILayout.Toggle("Toggle", toggleValue);
-        floatValue = EditorGUILayout.Slider("Float Slider", floatValue, 0f, 10f);
-
-        if (GUILayout.Button("Click Me"))
+        // Button to auto-find heatmap objects by tag or name
+        if (GUILayout.Button("Find Heatmap Objects"))
         {
-           // Debug.Log("Button clicked! Current Text: " + myText);
+            heatmapObjects = new List<GameObject>(GameObject.FindGameObjectsWithTag("Heatmap"));
         }
+
+        if (heatmapObjects.Count == 0)
+        {
+            EditorGUILayout.HelpBox("No heatmap objects found. Try assigning tag 'Heatmap'.", MessageType.Info);
+        }
+
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+        for (int i = 0; i < heatmapObjects.Count; i++)
+        {
+            GameObject go = heatmapObjects[i];
+            if (go == null) continue;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.ObjectField(go, typeof(GameObject), true);
+
+            string buttonLabel = go.activeSelf ? "Hide" : "Show";
+            if (GUILayout.Button(buttonLabel, GUILayout.Width(60)))
+            {
+                go.hideFlags = HideFlags.HideInHierarchy | HideFlags.HideInInspector;
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUILayout.EndScrollView();
     }
 }
