@@ -25,7 +25,7 @@ public class Reproduction : MonoBehaviour
         // Skip if already in mating process
         if (isMating) return;
 
-        // Skip if creature isn't ready to reproduce (cooldown not filled)
+        // Skip if creature isn't ready to reproduce (meter not filled)
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
         // Use the creature's vision range instead of fixed radius
@@ -121,10 +121,10 @@ public class Reproduction : MonoBehaviour
                     return;
                 }
 
-                // Reset reproduction cooldown for both parents
-                p1.reproductionCooldown = 0f;
+                // Reset reproduction meter for both parents
+                p1.reproductionMeter = 0f;
                 p1.canStartReproducing = false;
-                p2.reproductionCooldown = 0f;
+                p2.reproductionMeter = 0f;
                 p2.canStartReproducing = false;
 
                 // Spawn child

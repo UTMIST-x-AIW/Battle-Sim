@@ -12,12 +12,12 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[13];  // Now 13 observations (0-16)
+        float[] obs = new float[13];  // Now 13 observations (removed unused reproduction)
         
         // Basic stats
         obs[0] = self.health;
-        obs[1] = self.reproduction;
-        obs[2] = self.energy; // Energy meter
+        obs[1] = self.energyMeter; // Energy meter
+        obs[2] = self.reproductionMeter; // Reproduction meter
         
         // Get nearby objects
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
@@ -72,25 +72,34 @@ public class CreatureObserver : MonoBehaviour
             }
         }
         
-        // Same type observations (x,y components and absolute sum)
+        // Same type observations (x,y components)
         obs[3] = sameTypePos.x;
         obs[4] = sameTypePos.y;
         
-        // Opposite type observations (x,y components and absolute sum)
+        // Opposite type observations (x,y components)
         obs[5] = oppositeTypePos.x;
         obs[6] = oppositeTypePos.y;
         
-        // Cherry observations (x,y components and absolute sum)
+        // Cherry observations (x,y components)
         obs[7] = cherryPos.x;
         obs[8] = cherryPos.y;
         
-        // Tree observations (x,y components and absolute sum)
+        // Tree observations (x,y components)
         obs[9] = treePos.x;
         obs[10] = treePos.y;
         
-        // Add normalized direction vector (helps with orientation)
-        obs[11] = transform.position.x;   // Current x direction
-        obs[12] = transform.position.y;   // Current y direction
+        // Add current velocity
+        Rigidbody2D rb = self.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            obs[11] = rb.velocity.x;   // Current x velocity
+            obs[12] = rb.velocity.y;   // Current y velocity
+        }
+        else
+        {
+            obs[11] = 0;
+            obs[12] = 0;
+        }
         
         return obs;
     }

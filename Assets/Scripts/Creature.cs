@@ -17,10 +17,8 @@ public class Creature : MonoBehaviour
 
     [Header("Basic Stats")]
     public float health = 3f;
-    public float reproduction = 0f;
-    public float energy = 0f;
+    public float energyMeter = 0f;  // Renamed from energy
     public float maxHealth = 3f;
-    public float maxReproduction = 1f;
     public float maxEnergy = 1f;
     public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
     public float reproductionRechargeRate = 0.1f; // Fill from 0 to 1 in 10 seconds
@@ -36,7 +34,6 @@ public class Creature : MonoBehaviour
     public float moveSpeed = 5f;  // Maximum speed in any direction
     
     [Header("Reproduction Settings")]
-    public float reproductionRate = 0.1f;  // Points gained per second
     public float weightMutationRate = 0.8f;  // Chance of mutating each connection weight
     public float mutationRange = 0.5f;       // Maximum weight change during mutation
     public float addNodeRate = 0.2f;         // Chance of adding a new node
@@ -74,7 +71,7 @@ public class Creature : MonoBehaviour
     private bool isWaitingForMate = false;
     public bool canStartReproducing = false;  // New flag to control reproduction start, now public
     private Creature targetMate = null;
-    public float reproductionCooldown = 0f; // New cooldown timer, now public
+    public float reproductionMeter = 0f; // Renamed from reproductionCooldown, now public
 
     // Animator reference
     private CreatureAnimator creatureAnimator;
@@ -93,8 +90,7 @@ public class Creature : MonoBehaviour
 
         // Initialize stats
         health = maxHealth;
-        reproduction = 0f;
-        reproductionCooldown = 0f; // Initialize cooldown to 0
+        reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
         
@@ -113,7 +109,7 @@ public class Creature : MonoBehaviour
     private IEnumerator DelayedReproductionStart()
     {
         canStartReproducing = false;
-        reproductionCooldown = 0f; // Reset cooldown to 0
+        reproductionMeter = 0f; // Reset reproduction meter to 0
         // Debug.Log(string.Format("{0}: Starting reproduction delay timer", gameObject.name));
         
         // Wait for 2 seconds before allowing reproduction
@@ -341,16 +337,13 @@ public class Creature : MonoBehaviour
             }
             
             // Replenish energy over time
-            energy = Mathf.Min(energy + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
+            energyMeter = Mathf.Min(energyMeter + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
             
-            // Accumulate reproduction points
-            reproduction = Mathf.Min(reproduction + reproductionRate * Time.fixedDeltaTime, maxReproduction);
+            // Replenish reproduction meter over time
+            reproductionMeter = Mathf.Min(reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime, 1f);
             
-            // Replenish reproduction cooldown over time
-            reproductionCooldown = Mathf.Min(reproductionCooldown + reproductionRechargeRate * Time.fixedDeltaTime, 1f);
-            
-            // Update canStartReproducing based on cooldown
-            if (reproductionCooldown >= 1f && !canStartReproducing)
+            // Update canStartReproducing based on reproduction meter
+            if (reproductionMeter >= 1f && !canStartReproducing)
             {
                 canStartReproducing = true;
             }
@@ -505,7 +498,7 @@ public class Creature : MonoBehaviour
         
 
         // Only execute actions if we have enough energy
-        if (energy >= actionEnergyCost)
+        if (energyMeter >= actionEnergyCost)
         {
             float chopDesire = actions[2];
             float attackDesire = actions[3];
@@ -532,7 +525,7 @@ public class Creature : MonoBehaviour
                 if (actionSuccessful)
                 {
                     // Reset energy after successful action
-                    energy -= actionEnergyCost;
+                    energyMeter -= actionEnergyCost;
                 }
             }
         }
@@ -707,7 +700,6 @@ public class Creature : MonoBehaviour
                 tempMate.isMovingToMate = false;
                 tempMate.isWaitingForMate = false;
                 tempMate.isReproducing = false;
-                tempMate.reproduction = 0f;
                 tempMate.canStartReproducing = false;
                 tempMate.targetMate = null;
                 
@@ -759,7 +751,7 @@ public class Creature : MonoBehaviour
             else if (isReproducing)
                 status = "Reproducing";
             else if (!canStartReproducing)
-                status = $"Repro cooldown: {reproductionCooldown:F2}";
+                status = $"Repro meter: {reproductionMeter:F2}";
 
             // Format age display - handle large values
             string ageDisplay;
