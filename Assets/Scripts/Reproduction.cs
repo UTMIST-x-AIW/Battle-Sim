@@ -8,8 +8,6 @@ using UnityEditor.Build.Content;
 
 public class Reproduction : MonoBehaviour
 {
-    [SerializeField]float radius_of_mating = 3f;
-    //public Collider2D circle_of_mating;
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.9f;
     public GameObject Reproduction_prefab;
@@ -28,13 +26,15 @@ public class Reproduction : MonoBehaviour
         if (isMating) return;
 
         // Skip if creature isn't ready to reproduce (cooldown not filled)
-        if (creatureComponent != null && !creatureComponent.canStartReproducing) return;
+        if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
-        Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, radius_of_mating);
-        if (nearbycollider != null || nearbycollider.Length > 0)
+        // Use the creature's vision range instead of fixed radius
+        float detectionRadius = creatureComponent.visionRange;
+        Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
+        
+        foreach (var collider in nearbycollider)
         {
-            Collider2D collider = nearbycollider[0];
-            if (collider != null)
+            if (collider != null && collider.gameObject != gameObject)
             {
                 EnableMating(collider);
             }
@@ -52,16 +52,35 @@ public class Reproduction : MonoBehaviour
         {
             return;
         }
-        string other_character_name = other_character.name.Substring(0, other_character.name.Length - 7);
-        if (!gameObject_mated_with.Contains(other_character) && other_character_name == this.name.Substring(0, name.Length - 7))
+
+        // Check if this is a creature of the same type
+        Creature otherCreature = other_character.GetComponent<Creature>();
+        if (otherCreature == null || otherCreature.type != creatureComponent.type)
         {
-            // Check if the other creature is ready to reproduce
-            Creature otherCreature = other_character.GetComponent<Creature>();
-            if (otherCreature != null && otherCreature.canStartReproducing)
-            {
-                MateWith(other_character);
-            }
+            return;
         }
+
+        // Check if we've mated before
+        if (gameObject_mated_with.Contains(other_character))
+        {
+            return;
+        }
+
+        // Check if other creature is ready to reproduce
+        if (!otherCreature.canStartReproducing)
+        {
+            return;
+        }
+
+        // Check if we're in each other's vision range (bidirectional check)
+        float distanceBetween = Vector2.Distance(transform.position, other_character.transform.position);
+        if (distanceBetween > creatureComponent.visionRange || distanceBetween > otherCreature.visionRange)
+        {
+            return; // Not in each other's vision range
+        }
+
+        // If we passed all checks, proceed with mating
+        MateWith(other_character);
     }
 
     void MateWith(GameObject other)

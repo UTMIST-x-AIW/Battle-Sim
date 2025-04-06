@@ -243,6 +243,7 @@ MonoBehaviour:
   maxReproduction: 1
   maxEnergy: 1
   energyRechargeRate: 0.333
+  reproductionRechargeRate: 0.5
   agingStartTime: 2.62
   agingRate: 0.26
   generation: 0
@@ -257,7 +258,11 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
+  visionRange: 10
+  chopRange: 1.5
   type: 0
+  canStartReproducing: 0
+  reproductionCooldown: 0
 --- !u!114 &-380665466361591250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,10 +322,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca146219c1a5ad48bee2cb58c5b2301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius_of_mating: 3
   gameObject_mated_with: []
   pReproduction: 0.8
-  MaxCreatures: 60
   Reproduction_prefab: {fileID: 7896111451434077960}
 --- !u!1001 &5208001705850349615
 PrefabInstance:
