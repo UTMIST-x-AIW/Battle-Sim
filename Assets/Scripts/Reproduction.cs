@@ -14,11 +14,21 @@ public class Reproduction : MonoBehaviour
     public float pReproduction = 0.9f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
+    private Creature creatureComponent;
+
+    private void Start()
+    {
+        // Get the Creature component
+        creatureComponent = GetComponent<Creature>();
+    }
 
     private void LateUpdate()
     {
         // Skip if already in mating process
         if (isMating) return;
+
+        // Skip if creature isn't ready to reproduce (cooldown not filled)
+        if (creatureComponent != null && !creatureComponent.canStartReproducing) return;
 
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, radius_of_mating);
         if (nearbycollider != null || nearbycollider.Length > 0)
@@ -45,7 +55,12 @@ public class Reproduction : MonoBehaviour
         string other_character_name = other_character.name.Substring(0, other_character.name.Length - 7);
         if (!gameObject_mated_with.Contains(other_character) && other_character_name == this.name.Substring(0, name.Length - 7))
         {
-            MateWith(other_character);
+            // Check if the other creature is ready to reproduce
+            Creature otherCreature = other_character.GetComponent<Creature>();
+            if (otherCreature != null && otherCreature.canStartReproducing)
+            {
+                MateWith(other_character);
+            }
         }
     }
 
@@ -86,6 +101,12 @@ public class Reproduction : MonoBehaviour
                     isMating = false;
                     return;
                 }
+
+                // Reset reproduction cooldown for both parents
+                p1.reproductionCooldown = 0f;
+                p1.canStartReproducing = false;
+                p2.reproductionCooldown = 0f;
+                p2.canStartReproducing = false;
 
                 // Spawn child
                 GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);

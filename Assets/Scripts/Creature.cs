@@ -23,6 +23,7 @@ public class Creature : MonoBehaviour
     public float maxReproduction = 1f;
     public float maxEnergy = 1f;
     public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
+    public float reproductionRechargeRate = 0.1f; // Fill from 0 to 1 in 10 seconds
     
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
@@ -71,8 +72,9 @@ public class Creature : MonoBehaviour
     private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
     private bool isMovingToMate = false;
     private bool isWaitingForMate = false;
-    private bool canStartReproducing = false;  // New flag to control reproduction start
+    public bool canStartReproducing = false;  // New flag to control reproduction start, now public
     private Creature targetMate = null;
+    public float reproductionCooldown = 0f; // New cooldown timer, now public
 
     // Animator reference
     private CreatureAnimator creatureAnimator;
@@ -92,6 +94,7 @@ public class Creature : MonoBehaviour
         // Initialize stats
         health = maxHealth;
         reproduction = 0f;
+        reproductionCooldown = 0f; // Initialize cooldown to 0
         lifetime = 0f;
         canStartReproducing = false;
         
@@ -110,6 +113,7 @@ public class Creature : MonoBehaviour
     private IEnumerator DelayedReproductionStart()
     {
         canStartReproducing = false;
+        reproductionCooldown = 0f; // Reset cooldown to 0
         // Debug.Log(string.Format("{0}: Starting reproduction delay timer", gameObject.name));
         
         // Wait for 2 seconds before allowing reproduction
@@ -341,6 +345,15 @@ public class Creature : MonoBehaviour
             
             // Accumulate reproduction points
             reproduction = Mathf.Min(reproduction + reproductionRate * Time.fixedDeltaTime, maxReproduction);
+            
+            // Replenish reproduction cooldown over time
+            reproductionCooldown = Mathf.Min(reproductionCooldown + reproductionRechargeRate * Time.fixedDeltaTime, 1f);
+            
+            // Update canStartReproducing based on cooldown
+            if (reproductionCooldown >= 1f && !canStartReproducing)
+            {
+                canStartReproducing = true;
+            }
             
             if (brain != null)
             {
@@ -745,6 +758,8 @@ public class Creature : MonoBehaviour
                 status = "Waiting for mate";
             else if (isReproducing)
                 status = "Reproducing";
+            else if (!canStartReproducing)
+                status = $"Repro cooldown: {reproductionCooldown:F2}";
 
             // Format age display - handle large values
             string ageDisplay;
