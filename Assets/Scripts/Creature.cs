@@ -177,7 +177,7 @@ public class Creature : MonoBehaviour
         if (brain == null)
         {
             // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-            return new float[] { 0f, 0f, 0f, 0f, 0f };  // Add reproduce action as 5th output
+            return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
         }
         
         float[] observations = observer.GetObservations(this);
@@ -368,7 +368,7 @@ public class Creature : MonoBehaviour
                 Vector2 desiredVelocity = moveDirection * moveSpeed;
                 ApplyMovementWithBoundsCheck(desiredVelocity);
                 
-                // Process action commands (chop, attack, and now reproduction)
+                // Process action commands (chop, attack)
                 ProcessActionCommands(actions);
             }
             
@@ -493,31 +493,28 @@ public class Creature : MonoBehaviour
     
     private void ProcessActionCommands(float[] actions)
     {
-        // We need at least 5 actions: move x, move y, chop, attack, reproduce
-        if (actions.Length < 5) return;
+        // We need at least 4 actions: move x, move y, chop, attack
+        if (actions.Length < 4) return;
         
-
         // Only execute actions if we have enough energy
         if (energyMeter >= actionEnergyCost)
         {
             float chopDesire = actions[2];
             float attackDesire = actions[3];
-            float reproduceDesire = actions[4];
             
             // Find the highest desire that is positive
-            float highestDesire = Mathf.Max(chopDesire, 0);
+            float highestDesire = Mathf.Max(chopDesire, attackDesire, 0);
             
             if (highestDesire > 0)
             {
-                
                 bool actionSuccessful = false;
                 
                 // Choose the action with the highest positive value
-                if (chopDesire > 0)
+                if (chopDesire > 0 && chopDesire == highestDesire)
                 {
                     actionSuccessful = TryChopTree();
                 }
-                else if (highestDesire == attackDesire && attackDesire > 0)
+                else if (attackDesire > 0 && attackDesire == highestDesire)
                 {
                     actionSuccessful = TryAttackCreature();
                 }
