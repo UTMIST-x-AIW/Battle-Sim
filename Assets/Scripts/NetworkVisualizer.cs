@@ -9,6 +9,7 @@ public class NetworkVisualizer : MonoBehaviour
     public RectTransform networkPanel;  // Panel to hold the network visualization
     public GameObject nodePrefab;       // Prefab for network nodes (should be a UI element)
     public GameObject connectionPrefab;  // Prefab for connections (should be a UI line element)
+    public CreatureStats creatureStatsPanel; // Reference to the creature stats panel
     
     [Header("Layout Settings")]
     public Vector2 panelOffset = new Vector2(20, 20);  // Offset from top-left corner
@@ -154,6 +155,12 @@ public class NetworkVisualizer : MonoBehaviour
         if (cameraController != null)
         {
             cameraController.SetTarget(creature.transform);
+        }
+        
+        // Show creature stats panel if available
+        if (creatureStatsPanel != null)
+        {
+            creatureStatsPanel.ShowStats(creature);
         }
     }
     
@@ -432,6 +439,12 @@ public class NetworkVisualizer : MonoBehaviour
             networkPanel.gameObject.SetActive(false);
             selectedCreature = null;
             ClearVisualization();
+            
+            // Hide creature stats panel if available
+            if (creatureStatsPanel != null)
+            {
+                creatureStatsPanel.HideStats();
+            }
         }
     }
 } 
