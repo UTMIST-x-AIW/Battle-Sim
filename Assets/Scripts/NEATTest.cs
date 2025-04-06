@@ -195,13 +195,14 @@ public class NEATTest : MonoBehaviour
                 creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
             }
             
-            float startingReproduction = Random.Range(0f, creature.maxReproduction);
-            creature.reproduction = startingReproduction;
+            // Set starting reproduction meter to a random value between 0 and 1
+            float startingReproductionMeter = Random.Range(0f, 1f);
+            creature.reproductionMeter = startingReproductionMeter;
             
             // Set generation to 0 for initially spawned Alberts
             creature.generation = 0;
             
-            LogManager.LogMessage($"Successfully spawned new Albert with age: {startingAge}, reproduction: {startingReproduction}");
+            LogManager.LogMessage($"Successfully spawned new Albert with age: {startingAge}, reproduction meter: {startingReproductionMeter}");
         }
         catch (System.Exception e)
         {
@@ -305,10 +306,10 @@ public class NEATTest : MonoBehaviour
         var lowRepro2 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[3], Creature.CreatureType.Albert, 0.1f);
         
         // Set full energy for all creatures
-        highRepro1.energy = highRepro1.maxEnergy;
-        highRepro2.energy = highRepro2.maxEnergy;
-        lowRepro1.energy = lowRepro1.maxEnergy;
-        lowRepro2.energy = lowRepro2.maxEnergy;
+        highRepro1.energyMeter = highRepro1.maxEnergy;
+        highRepro2.energyMeter = highRepro2.maxEnergy;
+        lowRepro1.energyMeter = lowRepro1.maxEnergy;
+        lowRepro2.energyMeter = lowRepro2.maxEnergy;
         
         Debug.Log("Test 3 Setup Complete:");
         Debug.Log("- Top left & Bottom left: High reproduction desire (0.9)");
@@ -338,16 +339,15 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs total): 
+        // Add input nodes (11 inputs total): 
         // 0: health
-        // 1: reproduction
-        // 2: energy
+        // 1: energyMeter
+        // 2: reproductionMeter
         // 3,4: same type x,y
         // 5,6: opposite type x,y
         // 7,8: cherry x,y
         // 9,10: tree x,y
-        // 11,12: current position x,y
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -381,7 +381,7 @@ public class NEATTest : MonoBehaviour
         genome.AddNode(outputNode4);
         genome.AddNode(outputNode5);
 
-        for(int i = 0; i < 13; i++)
+        for(int i = 0; i < 11; i++)
         {
             for (int j = 17; j <  22; j++)
             {
@@ -396,8 +396,15 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs now, not 17)
-        for (int i = 0; i < 13; i++)
+        // Add input nodes (11 inputs total): 
+        // 0: health
+        // 1: energyMeter
+        // 2: reproductionMeter
+        // 3,4: same type x,y
+        // 5,6: opposite type x,y
+        // 7,8: cherry x,y
+        // 9,10: tree x,y
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -437,20 +444,17 @@ public class NEATTest : MonoBehaviour
         
         // Health to horizontal velocity (more defensive)
         genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, 17, -0.7f));
-        // Reproduction to vertical velocity (less priority)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 1, 18, -0.3f));
+        // ReproductionMeter to vertical velocity (less priority)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 2, 18, -0.3f));
         // Same type x,y position (slightly weaker attraction)
         genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, 17, 0.4f));
         genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, 18, 0.4f));
         // Opposite type x,y position (stronger reaction)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 6, 17, 0.8f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 7, 18, 0.8f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 5, 17, 0.8f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 6, 18, 0.8f));
         // Cherry position (more food-focused)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 9, 17, 0.6f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 10, 18, 0.6f));
-        // Current direction (more momentum)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 11, 17, 0.4f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 12, 18, 0.4f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 7, 17, 0.6f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 8, 18, 0.6f));
         
         // Add base connections for chop action - connect to tree observations
         // Kai is more aggressive about chopping
@@ -462,13 +466,13 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(13, 5, 20, 0.9f)); // Opposite x to attack
         genome.AddConnection(new NEAT.Genes.ConnectionGene(14, 6, 20, 0.9f)); // Opposite y to attack
         
-        // Energy level to actions - enables actions only when energy is high
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 2, 19, 0.6f)); // Energy to chop
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 2, 20, 0.7f)); // Energy to attack - higher weight makes Kai more likely to attack
+        // EnergyMeter level to actions - enables actions only when energy is high
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 1, 19, 0.6f)); // EnergyMeter to chop
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 1, 20, 0.7f)); // EnergyMeter to attack - higher weight makes Kai more likely to attack
         
         // Add connections for reproduction - Kai is less focused on reproduction than Albert
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 1, 21, 0.5f));  // Reproduction readiness to reproduce action
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 2, 21, 0.4f));  // Energy to reproduce - lower weight than attack/chop
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 2, 21, 0.5f));  // ReproductionMeter to reproduce action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 1, 21, 0.4f));  // EnergyMeter to reproduce - lower weight than attack/chop
         genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 3, 21, 0.3f));  // Same type x position to reproduce
         genome.AddConnection(new NEAT.Genes.ConnectionGene(21, 4, 21, 0.3f));  // Same type y position to reproduce
         
@@ -556,8 +560,8 @@ public class NEATTest : MonoBehaviour
         // Create a custom genome with clear reproduction bias
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs, not 17)
-        for (int i = 0; i < 13; i++)
+        // Add input nodes (11 inputs total)
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -595,12 +599,12 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 0, 18, 0.2f)); // Health to y movement
         
         // Add connections for basic actions (medium weights)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 2, 19, 0.5f)); // Energy to chop
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 2, 20, 0.5f)); // Energy to attack
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 1, 19, 0.5f)); // EnergyMeter to chop
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 1, 20, 0.5f)); // EnergyMeter to attack
         
         // Add connections for reproduction - with bias parameter
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 1, 21, reproBias));  // Reproduction readiness to reproduction action
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 2, 21, reproBias));  // Energy to reproduction action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 2, 21, reproBias));  // ReproductionMeter to reproduction action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 1, 21, reproBias));  // EnergyMeter to reproduction action
         
         // Add connections to make creatures see each other
         genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 3, 17, 0.4f));  // Same creature x to x movement

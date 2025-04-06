@@ -12,7 +12,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[13];  // Now 13 observations (removed unused reproduction)
+        float[] obs = new float[11];  // Now 11 observations (removed velocity x,y)
         
         // Basic stats
         obs[0] = self.health;
@@ -87,19 +87,6 @@ public class CreatureObserver : MonoBehaviour
         // Tree observations (x,y components)
         obs[9] = treePos.x;
         obs[10] = treePos.y;
-        
-        // Add current velocity
-        Rigidbody2D rb = self.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            obs[11] = rb.velocity.x;   // Current x velocity
-            obs[12] = rb.velocity.y;   // Current y velocity
-        }
-        else
-        {
-            obs[11] = 0;
-            obs[12] = 0;
-        }
         
         return obs;
     }
