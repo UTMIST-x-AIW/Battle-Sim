@@ -9,6 +9,7 @@ TagManager:
   - Floor
   - Cherry
   - Tree
+  - Ground
   layers:
   - Default
   - TransparentFX

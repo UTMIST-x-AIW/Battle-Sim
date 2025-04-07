@@ -87,42 +87,43 @@ public class Creature : MonoBehaviour
     // Animator reference
     private CreatureAnimator creatureAnimator;
 
-    // Cache floor collider to avoid FindGameObjectWithTag every frame
-    private static PolygonCollider2D cachedFloorCollider;
-    private static Bounds floorBounds;
+    // Cache ground collider to avoid FindGameObjectWithTag every frame
+    private static PolygonCollider2D cachedGroundCollider;
+    private static CompositeCollider2D cachedCompositeCollider;
+    private static Bounds groundBounds;
 
     private bool hasCheckedNeatTest = false;
 
     private void Awake()
     {
         try
+    {
+        // Cache NEATTest reference if not already cached
+        if (neatTest == null)
         {
-            // Cache NEATTest reference if not already cached
-            if (neatTest == null)
-            {
-                neatTest = FindObjectOfType<NEATTest>();
+            neatTest = FindObjectOfType<NEATTest>();
                 if (neatTest == null)
                 {
                     Debug.LogError("NEATTest component not found in the scene!");
                 }
-            }
+        }
 
-            // Initialize stats
-            health = maxHealth;
+        // Initialize stats
+        health = maxHealth;
             reproductionMeter = 0f; // Initialize reproduction meter to 0
-            lifetime = 0f;
-            canStartReproducing = false;
-            
-            // Get CreatureAnimator reference
-            creatureAnimator = GetComponent<CreatureAnimator>();
-            if (creatureAnimator == null)
-            {
-                creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
-            }
-            
-            // Increment counter when creature is created
-            totalCreatures++;
-            // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
+        lifetime = 0f;
+        canStartReproducing = false;
+        
+        // Get CreatureAnimator reference
+        creatureAnimator = GetComponent<CreatureAnimator>();
+        if (creatureAnimator == null)
+        {
+            creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
+        }
+        
+        // Increment counter when creature is created
+        totalCreatures++;
+        // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
         }
         catch (System.Exception e)
         {
@@ -199,23 +200,23 @@ public class Creature : MonoBehaviour
     public float[] GetActions()
     {
         try
+    {
+        if (brain == null)
         {
-            if (brain == null)
-            {
-                // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
+            // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
                 return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
-            }
-            
-            float[] observations = observer.GetObservations(this);
-            double[] doubleObservations = ConvertToDouble(observations);
-            
-            double[] doubleOutputs = brain.Activate(doubleObservations);
-            float[] outputs = ConvertToFloat(doubleOutputs);
-            
+        }
+        
+        float[] observations = observer.GetObservations(this);
+        double[] doubleObservations = ConvertToDouble(observations);
+        
+        double[] doubleOutputs = brain.Activate(doubleObservations);
+        float[] outputs = ConvertToFloat(doubleOutputs);
+        
             // Log the neural network outputs for debugging
             string outputInfo = $"NN outputs for {gameObject.name} (Gen {generation}): Length={outputs.Length}, Values=[";
-            for (int i = 0; i < outputs.Length; i++)
-            {
+        for (int i = 0; i < outputs.Length; i++)
+        {
                 outputInfo += $"{outputs[i]:F3}";
                 if (i < outputs.Length - 1) outputInfo += ", ";
             }
@@ -343,8 +344,8 @@ public class Creature : MonoBehaviour
                     float[] actions = GetActions();
                     
                     // Process the network's action commands
-                    ProcessActionCommands(actions);
-                }
+            ProcessActionCommands(actions);
+        }
                 catch (System.Exception e)
                 {
                     // Log detailed error information
@@ -377,23 +378,36 @@ public class Creature : MonoBehaviour
     
     private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
     {
-        // Find and cache floor collider if not already cached
-        if (cachedFloorCollider == null)
+        // Find and cache ground collider if not already cached
+        if (cachedGroundCollider == null && cachedCompositeCollider == null)
         {
-            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
-            if (floorObj != null)
+            GameObject groundObj = GameObject.FindGameObjectWithTag("Ground");
+            if (groundObj != null)
             {
-                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
-                if (cachedFloorCollider != null)
+                // Try to get PolygonCollider2D first
+                cachedGroundCollider = groundObj.GetComponent<PolygonCollider2D>();
+                
+                // If not found, try CompositeCollider2D
+                if (cachedGroundCollider == null)
                 {
-                    floorBounds = cachedFloorCollider.bounds;
+                    cachedCompositeCollider = groundObj.GetComponent<CompositeCollider2D>();
+                    if (cachedCompositeCollider != null)
+                    {
+                        groundBounds = cachedCompositeCollider.bounds;
+                        Debug.Log($"Found CompositeCollider2D with bounds: {groundBounds}");
+                    }
+                }
+                else
+                {
+                    groundBounds = cachedGroundCollider.bounds;
+                    Debug.Log($"Found PolygonCollider2D with bounds: {groundBounds}");
                 }
             }
         }
         
-        if (cachedFloorCollider == null)
+        if (cachedGroundCollider == null && cachedCompositeCollider == null)
         {
-            // No floor found, just apply the movement
+            // No ground found, just apply the movement
             rb.velocity = desiredVelocity;
                 return;
             }
@@ -403,14 +417,14 @@ public class Creature : MonoBehaviour
         Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
         
         // Quick bounds check first (much faster than OverlapPoint)
-        bool inBounds = floorBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
+        bool inBounds = groundBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
         
         // If definitely outside bounds, stop or redirect
         if (!inBounds)
         {
-            // Try to redirect toward the center of the floor
-            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+            // Try to redirect toward the center of the ground
+            Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
+            Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
             rb.velocity = directionToCenter * moveSpeed * 0.5f;
             return;
         }
@@ -432,7 +446,7 @@ public class Creature : MonoBehaviour
             
             // Center raycast
             RaycastHit2D centerHit = Physics2D.Raycast(currentPos, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (centerHit.collider != null && centerHit.collider != cachedFloorCollider)
+            if (centerHit.collider != null && centerHit.collider != cachedGroundCollider && centerHit.collider != cachedCompositeCollider)
             {
                 anyRayHitsEdge = true;
             }
@@ -440,7 +454,7 @@ public class Creature : MonoBehaviour
             // Bottom raycast (for ground detection)
             Vector2 bottomPoint = currentPos - new Vector2(0, insetDistance);
             RaycastHit2D bottomHit = Physics2D.Raycast(bottomPoint, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (bottomHit.collider != null && bottomHit.collider != cachedFloorCollider)
+            if (bottomHit.collider != null && bottomHit.collider != cachedGroundCollider && bottomHit.collider != cachedCompositeCollider)
             {
                 anyRayHitsEdge = true;
             }
@@ -448,8 +462,8 @@ public class Creature : MonoBehaviour
             if (anyRayHitsEdge)
             {
                 // We're about to hit an edge - redirect toward the center
-                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+                Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
+                Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
                 
                 // Blend between current direction and center direction
                 Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
@@ -458,12 +472,21 @@ public class Creature : MonoBehaviour
             }
             
             // Final precise check - use OverlapPoint for the exact boundary
-            bool pointInFloor = cachedFloorCollider.OverlapPoint(desiredPos);
-            if (!pointInFloor)
+            bool pointInGround = false;
+            if (cachedGroundCollider != null)
+            {
+                pointInGround = cachedGroundCollider.OverlapPoint(desiredPos);
+            }
+            else if (cachedCompositeCollider != null)
+            {
+                pointInGround = cachedCompositeCollider.OverlapPoint(desiredPos);
+            }
+            
+            if (!pointInGround)
             {
                 // Deflect along the boundary instead of stopping
-                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+                Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
+                Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
                 
                 // Project desired velocity onto the direction to center to allow sliding along edges
                 Vector2 projectedVelocity = Vector2.Dot(desiredVelocity, directionToCenter) * directionToCenter;
@@ -748,43 +771,43 @@ public class Creature : MonoBehaviour
                 // If LogManager is already cleaned up, just silently continue
             }
             
-            // If we were someone's target mate, free them but handle exceptions
-            if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
+        // If we were someone's target mate, free them but handle exceptions
+        if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
             {
                 try
+        {
+            // Break the circular reference first
+            var tempMate = targetMate;
+            targetMate = null;
+            
+            // Reset their flags directly instead of using FreeMate which may start coroutines
+            tempMate.isMovingToMate = false;
+            tempMate.isWaitingForMate = false;
+            tempMate.isReproducing = false;
+            tempMate.canStartReproducing = false;
+            tempMate.targetMate = null;
+            
+            // If they're still alive and active, they can start their own timer
+            if (tempMate.gameObject.activeInHierarchy)
+            {
+                try 
                 {
-                    // Break the circular reference first
-                    var tempMate = targetMate;
-                    targetMate = null;
-                    
-                    // Reset their flags directly instead of using FreeMate which may start coroutines
-                    tempMate.isMovingToMate = false;
-                    tempMate.isWaitingForMate = false;
-                    tempMate.isReproducing = false;
-                    tempMate.canStartReproducing = false;
-                    tempMate.targetMate = null;
-                    
-                    // If they're still alive and active, they can start their own timer
-                    if (tempMate.gameObject.activeInHierarchy)
-                    {
-                        try 
-                        {
-                            tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
-                        }
+                    tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
+                }
                         catch (System.Exception e)
-                        {
+                {
                             Debug.LogError($"Error starting reproduction timer for mate: {e.Message}");
-                        }
+                }
                     }
                 }
                 catch (System.Exception e)
                 {
                     Debug.LogError($"Error handling target mate in OnDestroy: {e.Message}");
-                }
             }
+        }
 
-            // Decrement counter when creature is destroyed
-            totalCreatures--;
+        // Decrement counter when creature is destroyed
+        totalCreatures--;
             
             try
             {
@@ -825,14 +848,14 @@ public class Creature : MonoBehaviour
             // If we still don't have a NEATTest reference or labels are disabled, return early
             if (neatTest == null || !neatTest.showCreatureLabels) return;
 
-            // Get screen position for this creature
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            screenPos.y = Screen.height - screenPos.y; // GUI uses top-left origin
+        // Get screen position for this creature
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+        screenPos.y = Screen.height - screenPos.y; // GUI uses top-left origin
 
-            // Only show if on screen
-            if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
-                screenPos.y >= 0 && screenPos.y <= Screen.height)
-            {
+        // Only show if on screen
+        if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
+            screenPos.y >= 0 && screenPos.y <= Screen.height)
+        {
                 // Set text color to black
                 GUI.color = Color.black;
                 
@@ -864,30 +887,137 @@ public class Creature : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Only draw if visualization is enabled and NEATTest reference exists
-        if (neatTest != null)
+        if (neatTest != null && neatTest.showGizmos)
         {
+            // Draw detection radius if enabled
             if (neatTest.showDetectionRadius)
             {
-                // Set color to be semi-transparent and match creature type
-                Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
-                Gizmos.color = gizmoColor;
-                
-                // Draw filled circle for better visibility
-                Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
-                
-                // Draw wire frame with more opacity for better edge definition
-                gizmoColor.a = 0.3f;
-                Gizmos.color = gizmoColor;
-                Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+                Gizmos.color = new Color(0.5f, 0.5f, 1f, 0.2f);  // Semi-transparent blue
+            Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            
+            // Draw wire frame with more opacity for better edge definition
+                Gizmos.color = new Color(0.7f, 0.7f, 1f, 0.5f);
+            Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
             }
             
             // Draw chop range if enabled
             if (neatTest.showChopRange)
             {
                 Gizmos.color = neatTest.chopRangeColor;
-                Gizmos.DrawWireSphere(transform.position, chopRange);
+                Gizmos.DrawSphere(transform.position, 1.5f); // Using ACTION_RADIUS from TryChopTree
+                
+                // Draw wire frame with more opacity
+                Gizmos.color = new Color(neatTest.chopRangeColor.r, neatTest.chopRangeColor.g, 
+                                        neatTest.chopRangeColor.b, neatTest.chopRangeColor.a + 0.3f);
+                Gizmos.DrawWireSphere(transform.position, 1.5f);
             }
+            
+            // Draw edge detection line to nearest edge
+            DrawEdgeDetectionGizmo();
+        }
+    }
+
+    private void DrawEdgeDetectionGizmo()
+    {
+        // Find and cache ground collider if not already cached
+        if (cachedGroundCollider == null && cachedCompositeCollider == null)
+        {
+            GameObject groundObj = GameObject.FindGameObjectWithTag("Ground");
+            if (groundObj != null)
+            {
+                // Try to get PolygonCollider2D first
+                cachedGroundCollider = groundObj.GetComponent<PolygonCollider2D>();
+                
+                // If not found, try CompositeCollider2D
+                if (cachedGroundCollider == null)
+                {
+                    cachedCompositeCollider = groundObj.GetComponent<CompositeCollider2D>();
+                    if (cachedCompositeCollider != null)
+                    {
+                        groundBounds = cachedCompositeCollider.bounds;
+                        Debug.Log($"Gizmo: Found CompositeCollider2D on Ground with bounds: {groundBounds}");
+                    }
+                }
+                else
+                {
+                    groundBounds = cachedGroundCollider.bounds;
+                    Debug.Log($"Gizmo: Found PolygonCollider2D on Ground with bounds: {groundBounds}");
+                }
+            }
+            else
+            {
+                Debug.LogError("No GameObject with tag 'Ground' found for gizmo drawing!");
+                return;
+            }
+        }
+        
+        // Use either PolygonCollider2D or CompositeCollider2D
+        if (cachedGroundCollider != null || cachedCompositeCollider != null)
+        {
+            Vector2 currentPos = transform.position;
+            
+            // Calculate distance to boundaries in X direction
+            float distanceToRightEdge = groundBounds.max.x - currentPos.x;
+            float distanceToLeftEdge = currentPos.x - groundBounds.min.x;
+            
+            // Calculate distance to boundaries in Y direction
+            float distanceToTopEdge = groundBounds.max.y - currentPos.y;
+            float distanceToBottomEdge = currentPos.y - groundBounds.min.y;
+            
+            // Find the shortest edge distance and direction
+            float minDistance = float.MaxValue;
+            Vector2 edgeDirection = Vector2.zero;
+            
+            if (distanceToRightEdge < minDistance)
+            {
+                minDistance = distanceToRightEdge;
+                edgeDirection = new Vector2(1, 0);
+            }
+            
+            if (distanceToLeftEdge < minDistance)
+            {
+                minDistance = distanceToLeftEdge;
+                edgeDirection = new Vector2(-1, 0);
+            }
+            
+            if (distanceToTopEdge < minDistance)
+            {
+                minDistance = distanceToTopEdge;
+                edgeDirection = new Vector2(0, 1);
+            }
+            
+            if (distanceToBottomEdge < minDistance)
+            {
+                minDistance = distanceToBottomEdge;
+                edgeDirection = new Vector2(0, -1);
+            }
+            
+            // Cap the distance at the detection radius - only draw up to the vision radius
+            float displayDistance = Mathf.Min(minDistance, CreatureObserver.DETECTION_RADIUS);
+            
+            // Calculate endpoint for the line
+            Vector2 endPoint = currentPos + (edgeDirection * displayDistance);
+            
+            // Draw the line to the nearest edge (or up to detection radius)
+            Gizmos.color = new Color(1f, 0.5f, 0.5f, 0.8f); // Brighter, more visible color
+            Gizmos.DrawLine(currentPos, endPoint);
+            
+            // If the edge is within detection radius, draw a sphere at the actual edge point
+            if (minDistance <= CreatureObserver.DETECTION_RADIUS)
+            {
+                // Actual edge point
+                Vector2 edgePoint = currentPos + (edgeDirection * minDistance);
+                Gizmos.color = new Color(1f, 0f, 0f, 0.8f); // Bright red for the edge point
+                Gizmos.DrawSphere(edgePoint, 0.15f); // Slightly larger sphere
+            }
+            
+            // Draw a small sphere at the FOV limit along this direction
+            Gizmos.color = new Color(0.7f, 0.7f, 0.7f, 0.6f); // Gray for vision limit
+            Gizmos.DrawSphere(endPoint, 0.1f);
+        }
+        else
+        {
+            Debug.LogWarning("No ground collider available for edge detection gizmo!");
         }
     }
     
