@@ -13,6 +13,14 @@ public class Creature : MonoBehaviour
     // Make TotalCreatures accessible through a property
     public static int TotalCreatures { get { return totalCreatures; } }
     
+    // Method to reset the static reference when scene changes
+    public static void ClearStaticReferences()
+    {
+        neatTest = null;
+        totalCreatures = 0;
+        Debug.Log("Creature static references cleared");
+    }
+    
     // maxCreatures is now accessed from NEATTest
 
     [Header("Basic Stats")]
@@ -84,28 +92,39 @@ public class Creature : MonoBehaviour
 
     private void Awake()
     {
-        // Cache NEATTest reference if not already cached
-        if (neatTest == null)
+        try
         {
-            neatTest = FindObjectOfType<NEATTest>();
-        }
+            // Cache NEATTest reference if not already cached
+            if (neatTest == null)
+            {
+                neatTest = FindObjectOfType<NEATTest>();
+                if (neatTest == null)
+                {
+                    Debug.LogError("NEATTest component not found in the scene!");
+                }
+            }
 
-        // Initialize stats
-        health = maxHealth;
-        reproductionMeter = 0f; // Initialize reproduction meter to 0
-        lifetime = 0f;
-        canStartReproducing = false;
-        
-        // Get CreatureAnimator reference
-        creatureAnimator = GetComponent<CreatureAnimator>();
-        if (creatureAnimator == null)
-        {
-            creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
+            // Initialize stats
+            health = maxHealth;
+            reproductionMeter = 0f; // Initialize reproduction meter to 0
+            lifetime = 0f;
+            canStartReproducing = false;
+            
+            // Get CreatureAnimator reference
+            creatureAnimator = GetComponent<CreatureAnimator>();
+            if (creatureAnimator == null)
+            {
+                creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
+            }
+            
+            // Increment counter when creature is created
+            totalCreatures++;
+            // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
         }
-        
-        // Increment counter when creature is created
-        totalCreatures++;
-        // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error in Creature Awake: {e.Message}\n{e.StackTrace}");
+        }
     }
 
     private IEnumerator DelayedReproductionStart()
@@ -686,105 +705,130 @@ public class Creature : MonoBehaviour
     {
         try
         {
-            LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
+            try
+            {
+                // Try to log, but catch any exceptions if LogManager is gone
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
+                }
+            }
+            catch (System.Exception)
+            {
+                // If LogManager is already cleaned up, just silently continue
+            }
             
             // If we were someone's target mate, free them but handle exceptions
             if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
             {
-                // Break the circular reference first
-                var tempMate = targetMate;
-                targetMate = null;
-                
-                // Reset their flags directly instead of using FreeMate which may start coroutines
-                tempMate.isMovingToMate = false;
-                tempMate.isWaitingForMate = false;
-                tempMate.isReproducing = false;
-                tempMate.canStartReproducing = false;
-                tempMate.targetMate = null;
-                
-                // If they're still alive and active, they can start their own timer
-                if (tempMate.gameObject.activeInHierarchy)
+                try
                 {
-                    try 
+                    // Break the circular reference first
+                    var tempMate = targetMate;
+                    targetMate = null;
+                    
+                    // Reset their flags directly instead of using FreeMate which may start coroutines
+                    tempMate.isMovingToMate = false;
+                    tempMate.isWaitingForMate = false;
+                    tempMate.isReproducing = false;
+                    tempMate.canStartReproducing = false;
+                    tempMate.targetMate = null;
+                    
+                    // If they're still alive and active, they can start their own timer
+                    if (tempMate.gameObject.activeInHierarchy)
                     {
-                        tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
+                        try 
+                        {
+                            tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError($"Error starting reproduction timer for mate: {e.Message}");
+                        }
                     }
-                    catch (System.Exception e)
-                    {
-                        LogManager.LogError($"Error starting reproduction timer for mate: {e.Message}");
-                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error handling target mate in OnDestroy: {e.Message}");
                 }
             }
 
             // Decrement counter when creature is destroyed
             totalCreatures--;
-            LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
+            
+            try
+            {
+                // Try to log, but catch any exceptions if LogManager is gone
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
+                }
+            }
+            catch (System.Exception)
+            {
+                // If LogManager is already cleaned up, just silently continue
+            }
         }
         catch (System.Exception e)
         {
-            LogManager.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
+            Debug.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 
     private void OnGUI()
     {
-        // Only check for NEATTest reference once
-        if (!hasCheckedNeatTest)
+        try
         {
-            if (neatTest == null)
+            // Safety check - if no camera, exit early
+            if (Camera.main == null) return;
+
+            // Only check for NEATTest reference once
+            if (!hasCheckedNeatTest)
             {
-                neatTest = FindObjectOfType<NEATTest>();
+                if (neatTest == null)
+                {
+                    neatTest = FindObjectOfType<NEATTest>();
+                }
+                hasCheckedNeatTest = true;
             }
-            hasCheckedNeatTest = true;
+
+            // If we still don't have a NEATTest reference or labels are disabled, return early
+            if (neatTest == null || !neatTest.showCreatureLabels) return;
+
+            // Get screen position for this creature
+            Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
+            screenPos.y = Screen.height - screenPos.y; // GUI uses top-left origin
+
+            // Only show if on screen
+            if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
+                screenPos.y >= 0 && screenPos.y <= Screen.height)
+            {
+                // Set text color to black
+                GUI.color = Color.black;
+                
+                // Format age display - handle large values
+                string ageDisplay;
+                if (lifetime >= 10000f)
+                {
+                    ageDisplay = "10,000+";
+                }
+                else
+                {
+                    ageDisplay = lifetime.ToString("F1");
+                }
+
+                // Show age and generation with increased width for larger numbers
+                GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 40, 140, 20), 
+                         string.Format("Gen: {0}; Age: {1}", generation, ageDisplay));
+                
+                // Reset color back to white
+                GUI.color = Color.white;
+            }
         }
-
-        // If we still don't have a NEATTest reference or labels are disabled, return early
-        if (neatTest == null || !neatTest.showCreatureLabels) return;
-
-        // Get screen position for this creature
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-        screenPos.y = Screen.height - screenPos.y; // GUI uses top-left origin
-
-        // Only show if on screen
-        if (screenPos.x >= 0 && screenPos.x <= Screen.width && 
-            screenPos.y >= 0 && screenPos.y <= Screen.height)
+        catch (System.Exception e)
         {
-            // Set text color to black
-            GUI.color = Color.black;
-            
-            string status = "";
-            if (isMovingToMate)
-                status = "Moving to mate";
-            else if (isWaitingForMate)
-                status = "Waiting for mate";
-            else if (isReproducing)
-                status = "Reproducing";
-            else if (!canStartReproducing)
-                status = $"Repro meter: {reproductionMeter:F2}";
-
-            // Format age display - handle large values
-            string ageDisplay;
-            if (lifetime >= 10000f)
-            {
-                ageDisplay = "10,000+";
-            }
-            else
-            {
-                ageDisplay = lifetime.ToString("F1");
-            }
-
-            // Show age and status with increased width for larger numbers
-            GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 40, 140, 20), 
-                     string.Format("Gen: {0}; Age: {1}", generation, ageDisplay));
-            
-            if (status != "")
-            {
-                GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 60, 140, 20), 
-                         status);
-            }
-            
-            // Reset color back to white
-            GUI.color = Color.white;
+            // Don't log errors in OnGUI as it can spam the console
+            // Just silently fail
         }
     }
 

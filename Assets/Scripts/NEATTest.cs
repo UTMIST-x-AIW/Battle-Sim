@@ -637,4 +637,26 @@ public class NEATTest : MonoBehaviour
             return 0;  // Return 0 if there's an error
         }
     }
+
+    private void OnDestroy()
+    {
+        // Only clear the static instance if this is the instance being destroyed
+        if (instance == this)
+        {
+            instance = null;
+            // Clear static references in Creature class
+            Creature.ClearStaticReferences();
+            
+            // Call LogManager cleanup to prevent the GameObject from lingering
+            try
+            {
+                LogManager.LogMessage("NEATTest instance has been destroyed and static references cleared.");
+                LogManager.Cleanup();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Error during LogManager cleanup: {e.Message}");
+            }
+        }
+    }
 } 
