@@ -148,6 +148,26 @@ public class NetworkVisualizer : MonoBehaviour
                 {
                     image.color = Color.white;
                 }
+                
+                // Update tooltip if it's showing this node
+                if (activeTooltip != null)
+                {
+                    // Get the node being displayed in tooltip
+                    var eventTrigger = image.GetComponent<EventTrigger>();
+                    if (eventTrigger != null && eventTrigger.triggers.Count > 0)
+                    {
+                        var rect = image.GetComponent<RectTransform>();
+                        if (rect != null)
+                        {
+                            // Check if mouse is over this node
+                            Vector2 mousePos = Input.mousePosition;
+                            if (RectTransformUtility.RectangleContainsScreenPoint(rect, mousePos))
+                            {
+                                ShowNodeTooltip(nodeId, rect);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
