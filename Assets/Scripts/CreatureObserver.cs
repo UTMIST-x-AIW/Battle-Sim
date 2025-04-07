@@ -14,10 +14,10 @@ public class CreatureObserver : MonoBehaviour
     {
         float[] obs = new float[13];  // Now 13 observations (added ground x,y)
         
-        // Basic stats
-        obs[0] = self.health;
-        obs[1] = self.energyMeter; // Energy meter
-        obs[2] = self.reproductionMeter; // Reproduction meter
+        // Basic stats - normalize health to 0-1 range
+        obs[0] = self.health / self.maxHealth; // Normalized health
+        obs[1] = self.energyMeter; // Energy meter (already 0-1)
+        obs[2] = self.reproductionMeter; // Reproduction meter (already 0-1)
         
         // Get nearby objects
         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
