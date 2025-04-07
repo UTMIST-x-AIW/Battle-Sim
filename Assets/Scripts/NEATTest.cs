@@ -640,23 +640,67 @@ public class NEATTest : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Only clear the static instance if this is the instance being destroyed
-        if (instance == this)
+        try
         {
-            instance = null;
-            // Clear static references in Creature class
-            Creature.ClearStaticReferences();
+            Debug.Log($"NEATTest OnDestroy called on {gameObject.name}");
             
-            // Call LogManager cleanup to prevent the GameObject from lingering
-            try
+            // Only clear the static instance if this is the instance being destroyed
+            if (instance == this)
             {
-                LogManager.LogMessage("NEATTest instance has been destroyed and static references cleared.");
-                LogManager.Cleanup();
+                Debug.Log("NEATTest: Main instance being destroyed");
+                
+                try
+                {
+                    // Clear static references in Creature class
+                    Creature.ClearStaticReferences();
+                    Debug.Log("NEATTest: Successfully cleared Creature static references");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"NEATTest: Error clearing Creature static references: {e.Message}");
+                }
+                
+                // Clear the instance reference
+                instance = null;
+                
+                // Call LogManager cleanup to prevent the GameObject from lingering
+                // Use direct reference to LogManager methods without creating new instances
+                if (LogManager.Instance != null)
+                {
+                    try
+                    {
+                        LogManager.LogMessage("NEATTest instance has been destroyed and static references cleared.");
+                        Debug.Log("NEATTest: Successfully logged final message");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"NEATTest: Error logging final message: {e.Message}");
+                    }
+                    
+                    try
+                    {
+                        // Call cleanup separately
+                        LogManager.Cleanup();
+                        Debug.Log("NEATTest: LogManager cleanup completed");
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError($"NEATTest: Error during LogManager cleanup: {e.Message}");
+                    }
+                }
+                else
+                {
+                    Debug.Log("NEATTest: LogManager instance is null, skipping cleanup");
+                }
             }
-            catch (System.Exception e)
+            else
             {
-                Debug.LogError($"Error during LogManager cleanup: {e.Message}");
+                Debug.Log("NEATTest: Not the main instance, skipping cleanup");
             }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"NEATTest: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
         }
     }
 } 

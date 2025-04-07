@@ -216,195 +216,95 @@ public class Creature : MonoBehaviour
         return outputs;
     }
 
-    private void ApplyMutations(NEAT.Genome.Genome genome)
-    {
-        // 1. Weight mutations (configurable chance for each connection)
-        foreach (var conn in genome.Connections.Values)
-        {
-            if (Random.value < weightMutationRate)
-            {
-                if (Random.value < 0.9f)
-                {
-                    // Perturb weight
-                    conn.Weight += Random.Range(-mutationRange, mutationRange);
-                    conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
-                }
-                else
-                {
-                    // Assign new random weight
-                    conn.Weight = Random.Range(-1f, 1f);
-                }
-            }
-        }
+    // Note: The ApplyMutations method has been moved to Reproduction.cs and is no longer used here.
+    // All mutations are now handled during reproduction in the Reproduction.cs script.
+    // This includes weight mutations, node additions/deletions, and connection mutations.
 
-        // 2. Add node mutation (configurable chance)
-        if (Random.value < addNodeRate && genome.Connections.Count > 0)
-        {
-            // Check if we've reached the maximum number of hidden layers
-            int maxCurrentLayer = 0;
-            foreach (var node in genome.Nodes.Values)
-            {
-                if (node.Type == NEAT.Genes.NodeType.Hidden)
-                {
-                    maxCurrentLayer = Mathf.Max(maxCurrentLayer, node.Layer);
-                }
-            }
-            
-            // Only proceed if we haven't reached the max hidden layers
-            if (maxCurrentLayer < maxHiddenLayers + 1) // +1 because layer 0 is input
-                {
-                    // Original connection-splitting logic
-                    var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-                    var connToSplit = connList[Random.Range(0, connList.Count)];
-                    connToSplit.Enabled = false;
-
-                    // Create new node
-                    int newNodeKey = genome.Nodes.Count;
-                    var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
-                    
-                    // Set layer between input and output nodes
-                    var inputNode = genome.Nodes[connToSplit.InputKey];
-                    var outputNode = genome.Nodes[connToSplit.OutputKey];
-                    newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-                    
-                    // If the layer would be the same as the input layer, increment it
-                    if (newNode.Layer <= inputNode.Layer)
-                    {
-                        // Check if incrementing would exceed max layers
-                        if (inputNode.Layer + 1 >= maxHiddenLayers + 1)
-                        {
-                            // Skip this mutation if it would exceed max layers
-                            return;
-                        }
-                        newNode.Layer = inputNode.Layer + 1;
-                    }
-                    
-                    genome.AddNode(newNode);
-
-                    // Add two new connections
-                    var conn1 = new NEAT.Genes.ConnectionGene(
-                        genome.Connections.Count,
-                        connToSplit.InputKey,
-                        newNodeKey,
-                        1.0);
-
-                    var conn2 = new NEAT.Genes.ConnectionGene(
-                        genome.Connections.Count + 1,
-                        newNodeKey,
-                        connToSplit.OutputKey,
-                        connToSplit.Weight);
-
-                    genome.AddConnection(conn1);
-                    genome.AddConnection(conn2);
-            }
-        }
-
-        // 3. Add connection mutation (configurable chance)
-        if (Random.value < addConnectionRate)
-        {
-            for (int tries = 0; tries < 5; tries++) // Try 5 times to find valid connection
-            {
-                var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
-                var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
-                var targetNode = nodeList[Random.Range(0, nodeList.Count)];
-
-                // Skip invalid connections:
-                // - Must be from a lower layer to a higher layer
-                // - Cannot connect input to input or output to output
-                // - Cannot connect to input or from output
-                if (sourceNode.Layer >= targetNode.Layer ||
-                    sourceNode.Type == NEAT.Genes.NodeType.Output ||
-                    targetNode.Type == NEAT.Genes.NodeType.Input)
-                {
-                    continue;
-                }
-
-                // Check if connection already exists
-                bool exists = genome.Connections.Values.Any(c =>
-                    c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
-
-                if (!exists)
-                {
-                    var newConn = new NEAT.Genes.ConnectionGene(
-                        genome.Connections.Count,
-                        sourceNode.Key,
-                        targetNode.Key,
-                        Random.Range(-1f, 1f));
-
-                    genome.AddConnection(newConn);
-                    break;
-                }
-            }
-        }
-
-        // 4. Delete connection mutation (configurable chance)
-        if (Random.value < deleteConnectionRate && genome.Connections.Count > 1)
-        {
-            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-            var connToDelete = connList[Random.Range(0, connList.Count)];
-                genome.Connections.Remove(connToDelete.Key);
-        }
-    }
-    
     private void FixedUpdate()
     {
         try
         {
-            // Apply aging (linear damage based on lifetime after a delay)
+            // Update lifetime and health
             lifetime += Time.fixedDeltaTime;
+            
+            // Start aging process after a threshold time
             if (lifetime > agingStartTime)
             {
+                // Debug.Log(string.Format("{0}: Aging process started at time {1}", gameObject.name, lifetime));
                 health -= agingRate * Time.fixedDeltaTime;
             }
             
-            // Replenish energy over time
-            energyMeter = Mathf.Min(energyMeter + energyRechargeRate * Time.fixedDeltaTime, maxEnergy);
+            // Recharge energy gradually
+            energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
             
-            // Replenish reproduction meter over time
-            reproductionMeter = Mathf.Min(reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime, 1f);
-            
-            // Update canStartReproducing based on reproduction meter
-            if (reproductionMeter >= 1f && !canStartReproducing)
-            {
-                canStartReproducing = true;
-            }
-            
-            if (brain != null)
-            {
-                // Get actions from neural network
-                float[] actions = GetActions();
-                
-                // Apply movement based on neural network output
-                Vector2 moveDirection = Vector2.zero;
-                moveDirection.x = actions[0];  // Left/right movement
-                moveDirection.y = actions[1];  // Up/down movement
-                
-                // Normalize to ensure diagonal movement isn't faster
-                if (moveDirection.magnitude > 1f)
-                {
-                    moveDirection.Normalize();
-                }
-                
-                // Apply move speed with bounds check
-                Vector2 desiredVelocity = moveDirection * moveSpeed;
-                ApplyMovementWithBoundsCheck(desiredVelocity);
-                
-                // Process action commands (chop, attack)
-                ProcessActionCommands(actions);
-            }
-            
-            // Check if we should die
+            // Check if we're dead
             if (health <= 0f)
             {
-                LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                // Log the death
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                }
+                else
+                {
+                    Debug.Log($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                }
+                
+                // Die
                 Destroy(gameObject);
-                // No need to decrement num_alberts as it's now tracked automatically
-                // NEATTest.num_alberts--;
+                return;
+            }
+            
+            // Only get actions if we're not reproducing or moving to mate
+            if (!isReproducing && !isMovingToMate && !isWaitingForMate)
+            {
+                try
+                {
+                    // Fill reproduction meter if not in cooldown
+                    if (!canStartReproducing)
+                    {
+                        reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
+                        
+                        // When meter is full, start cooldown before next reproduction attempt
+                        if (reproductionMeter >= 1f)
+                        {
+                            StartCoroutine(DelayedReproductionStart());
+                        }
+                    }
+                    
+                    // Get network outputs (x, y velocities, chop desire, attack desire)
+                    float[] actions = GetActions();
+                    
+                    // Process the network's action commands
+                    ProcessActionCommands(actions);
+                }
+                catch (System.Exception e)
+                {
+                    // Log detailed error information
+                    string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
+                    if (LogManager.Instance != null)
+                    {
+                        LogManager.LogError(errorMessage);
+                    }
+                    else
+                    {
+                        Debug.LogError(errorMessage);
+                    }
+                }
             }
         }
         catch (System.Exception e)
         {
-            LogManager.LogError($"Error in Creature FixedUpdate: {e.Message}\nStack trace: {e.StackTrace}");
+            // Log very detailed error information if the main loop fails
+            string errorMessage = $"CRITICAL ERROR in Creature FixedUpdate: {e.Message}\nStack trace: {e.StackTrace}\nCreature info: Type={type}, Generation={generation}, Health={health}, Age={lifetime}";
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogError(errorMessage);
+            }
+            else
+            {
+                Debug.LogError(errorMessage);
+            }
         }
     }
     
@@ -514,37 +414,69 @@ public class Creature : MonoBehaviour
     
     private void ProcessActionCommands(float[] actions)
     {
-        // We need at least 4 actions: move x, move y, chop, attack
-        if (actions.Length < 4) return;
-        
-        // Only execute actions if we have enough energy
-        if (energyMeter >= actionEnergyCost)
+        try
         {
+            if (actions == null || actions.Length < 4)
+            {
+                Debug.LogError($"Invalid actions array: {(actions == null ? "null" : $"length {actions.Length}")}");
+                return;
+            }
+            
+            // Apply movement based on neural network output (first two values)
+            Vector2 moveDirection = new Vector2(actions[0], actions[1]);
+            
+            // Normalize to ensure diagonal movement isn't faster
+            if (moveDirection.magnitude > 1f)
+            {
+                moveDirection.Normalize();
+            }
+            
+            // Apply move speed with bounds check
+            Vector2 desiredVelocity = moveDirection * moveSpeed;
+            ApplyMovementWithBoundsCheck(desiredVelocity);
+            
+            // Process action commands for chop and attack (third and fourth values)
             float chopDesire = actions[2];
             float attackDesire = actions[3];
             
-            // Find the highest desire that is positive
-            float highestDesire = Mathf.Max(chopDesire, attackDesire, 0);
-            
-            if (highestDesire > 0)
+            // Energy-limited action: Allow action only if we have sufficient energy
+            if (energyMeter >= actionEnergyCost)
             {
-                bool actionSuccessful = false;
-                
-                // Choose the action with the highest positive value
-                if (chopDesire > 0 && chopDesire == highestDesire)
+                // Check for stronger desire between chop and attack
+                if (chopDesire > 0.5f && chopDesire >= attackDesire)
                 {
-                    actionSuccessful = TryChopTree();
+                    // Try to chop a tree if strongly desired
+                    bool didChop = TryChopTree();
+                    
+                    // Consume energy if we successfully chopped
+                    if (didChop)
+                    {
+                        energyMeter -= actionEnergyCost;
+                    }
                 }
-                else if (attackDesire > 0 && attackDesire == highestDesire)
+                else if (attackDesire > 0.5f)
                 {
-                    actionSuccessful = TryAttackCreature();
+                    // Try to attack another creature if strongly desired
+                    bool didAttack = TryAttackCreature();
+                    
+                    // Consume energy if we successfully attacked
+                    if (didAttack)
+                    {
+                        energyMeter -= actionEnergyCost;
+                    }
                 }
-                
-                if (actionSuccessful)
-                {
-                    // Reset energy after successful action
-                    energyMeter -= actionEnergyCost;
-                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            string errorMsg = $"Error in ProcessActionCommands: {e.Message}\nStack trace: {e.StackTrace}";
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogError(errorMsg);
+            }
+            else
+            {
+                Debug.LogError(errorMsg);
             }
         }
     }

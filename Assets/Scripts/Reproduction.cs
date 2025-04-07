@@ -334,7 +334,7 @@ public class Reproduction : MonoBehaviour
         // 2. Delete node mutation
         if (Random.value < DELETE_NODE_PROB)
         {
-            // Get all hidden nodes
+            // Get all hidden nodes (ONLY hidden nodes - never delete input or output nodes)
             var hiddenNodes = genome.Nodes.Values
                 .Where(n => n.Type == NEAT.Genes.NodeType.Hidden)
                 .ToList();
@@ -409,6 +409,7 @@ public class Reproduction : MonoBehaviour
         // 5. Delete connection mutation
         if (Random.value < DELETE_CONNECTION_PROB && genome.Connections.Count > 1)
         {
+            // Simply pick a random connection to delete - we'll handle disconnected nodes in the neural network
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToDelete = connList[Random.Range(0, connList.Count)];
             genome.Connections.Remove(connToDelete.Key);

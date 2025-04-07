@@ -18,14 +18,23 @@ public class LogManager : MonoBehaviour
             // Don't create a new instance during application quit
             if (isApplicationQuitting)
             {
+                Debug.Log("LogManager: Instance requested during application quit, returning null");
                 return null;
             }
             
             if (instance == null)
             {
-                GameObject go = new GameObject("LogManager");
-                instance = go.AddComponent<LogManager>();
-                DontDestroyOnLoad(go);
+                try
+                {
+                    Debug.Log("LogManager: Creating new instance");
+                    GameObject go = new GameObject("LogManager");
+                    instance = go.AddComponent<LogManager>();
+                    DontDestroyOnLoad(go);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"LogManager: Error creating instance: {e.Message}");
+                }
             }
             return instance;
         }
@@ -33,44 +42,89 @@ public class LogManager : MonoBehaviour
     
     private void Awake()
     {
-        if (instance != null && instance != this)
+        try
         {
-            Destroy(gameObject);
-            return;
+            Debug.Log($"LogManager Awake called on {gameObject.name}");
+            
+            if (instance != null && instance != this)
+            {
+                Debug.LogWarning($"LogManager: Duplicate instance detected on {gameObject.name}, destroying");
+                Destroy(gameObject);
+                return;
+            }
+            
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+            
+            InitializeLogging();
         }
-        
-        instance = this;
-        DontDestroyOnLoad(gameObject);
-        
-        InitializeLogging();
+        catch (Exception e)
+        {
+            Debug.LogError($"LogManager: Error in Awake: {e.Message}\n{e.StackTrace}");
+        }
     }
     
     private void OnDestroy()
     {
-        // Only close the writer if this is the main instance
-        if (instance == this)
+        try
         {
-            CloseLogWriter();
-            instance = null; // Clear the instance reference
+            Debug.Log($"LogManager OnDestroy called on {gameObject.name}");
+            
+            // Only close the writer if this is the main instance
+            if (instance == this)
+            {
+                Debug.Log("LogManager: Main instance being destroyed, closing log writer");
+                CloseLogWriter();
+                instance = null; // Clear the instance reference
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"LogManager: Error in OnDestroy: {e.Message}\n{e.StackTrace}");
         }
     }
     
     private void OnApplicationQuit()
     {
-        isApplicationQuitting = true;
-        CloseLogWriter();
-        instance = null;
+        try
+        {
+            Debug.Log("LogManager: OnApplicationQuit called");
+            isApplicationQuitting = true;
+            CloseLogWriter();
+            instance = null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"LogManager: Error in OnApplicationQuit: {e.Message}\n{e.StackTrace}");
+        }
     }
     
     // Static method to explicitly clean up the LogManager before scene changes
     public static void Cleanup()
     {
-        if (instance != null)
+        try
         {
-            instance.CloseLogWriter();
-            instance = null;
+            Debug.Log("LogManager: Cleanup method called");
+            
+            if (instance != null)
+            {
+                instance.CloseLogWriter();
+                
+                // Don't destroy the instance here - just disable logging
+                // This prevents Unity from creating a new instance when we're trying to clean up
+                isInitialized = false;
+                
+                Debug.Log("LogManager: Cleanup completed successfully");
+            }
+            else
+            {
+                Debug.Log("LogManager: Cleanup called but instance is null");
+            }
         }
-        isInitialized = false;
+        catch (Exception e)
+        {
+            Debug.LogError($"LogManager: Error in Cleanup: {e.Message}\n{e.StackTrace}");
+        }
     }
     
     private void InitializeLogging()
@@ -82,7 +136,7 @@ public class LogManager : MonoBehaviour
             if (!Directory.Exists(logsDirectory))
             {
                 Directory.CreateDirectory(logsDirectory);
-                Debug.Log($"Created logs directory at: {logsDirectory}");
+                Debug.Log($"LogManager: Created logs directory at: {logsDirectory}");
             }
             
             // Create a new log file with timestamp
@@ -97,32 +151,46 @@ public class LogManager : MonoBehaviour
             logWriter.WriteLine($"=== Simulation Log Started at {DateTime.Now} ===");
             
             isInitialized = true;
-            Debug.Log($"LogManager initialized. Log file: {logFilePath}");
+            Debug.Log($"LogManager: Initialized. Log file: {logFilePath}");
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to initialize LogManager: {e.Message}\nStack trace: {e.StackTrace}");
+            Debug.LogError($"LogManager: Failed to initialize: {e.Message}\nStack trace: {e.StackTrace}");
             isInitialized = false;
         }
     }
     
     private void CloseLogWriter()
     {
-        if (logWriter != null)
+        try
         {
-            try
+            Debug.Log("LogManager: CloseLogWriter called");
+            
+            if (logWriter != null)
             {
-                logWriter.WriteLine($"=== Simulation Log Ended at {DateTime.Now} ===");
-                logWriter.Flush();
-                logWriter.Close();
-                logWriter.Dispose();
-                logWriter = null;
-                isInitialized = false;
+                try
+                {
+                    logWriter.WriteLine($"=== Simulation Log Ended at {DateTime.Now} ===");
+                    logWriter.Flush();
+                    logWriter.Close();
+                    logWriter.Dispose();
+                    logWriter = null;
+                    isInitialized = false;
+                    Debug.Log("LogManager: Log file closed successfully");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"LogManager: Error closing log writer: {e.Message}");
+                }
             }
-            catch (Exception e)
+            else
             {
-                Debug.LogError($"Error closing log writer: {e.Message}");
+                Debug.Log("LogManager: CloseLogWriter called but logWriter is null");
             }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"LogManager: Outer error in CloseLogWriter: {e.Message}");
         }
     }
     
@@ -136,7 +204,7 @@ public class LogManager : MonoBehaviour
         
         if (!isInitialized)
         {
-            Debug.LogWarning("Attempted to log message before LogManager was initialized");
+            Debug.LogWarning("LogManager: Attempted to log message before initialized");
             return;
         }
         
@@ -153,7 +221,7 @@ public class LogManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("LogWriter is null, attempting to reinitialize");
+                Debug.LogWarning("LogManager: LogWriter is null, attempting to reinitialize");
                 var inst = Instance;
                 if (inst != null)
                 {
@@ -163,12 +231,15 @@ public class LogManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to write log: {e.Message}\nStack trace: {e.StackTrace}");
+            Debug.LogError($"LogManager: Failed to write log: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
     
     public static void LogError(string message)
     {
+        // Also write to Debug.LogError to ensure we see errors in the console
+        Debug.LogError($"LOG ERROR: {message}");
+        
         // Skip logging if application is quitting
         if (isApplicationQuitting)
         {
@@ -177,7 +248,7 @@ public class LogManager : MonoBehaviour
         
         if (!isInitialized)
         {
-            Debug.LogWarning("Attempted to log error before LogManager was initialized");
+            Debug.LogWarning("LogManager: Attempted to log error before initialized");
             return;
         }
         
@@ -194,7 +265,7 @@ public class LogManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("LogWriter is null, attempting to reinitialize");
+                Debug.LogWarning("LogManager: LogWriter is null while logging error, attempting to reinitialize");
                 var inst = Instance;
                 if (inst != null)
                 {
@@ -204,7 +275,7 @@ public class LogManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to write error log: {e.Message}\nStack trace: {e.StackTrace}");
+            Debug.LogError($"LogManager: Failed to write error log: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 } 
