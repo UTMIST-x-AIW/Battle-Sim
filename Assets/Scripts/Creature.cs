@@ -541,7 +541,7 @@ public class Creature : MonoBehaviour
             if (energyMeter >= actionEnergyCost)
             {
                 // Check for stronger desire between chop and attack
-                if (chopDesire > 0.5f && chopDesire >= attackDesire)
+                if (chopDesire > 0.0f && chopDesire >= attackDesire)
                 {
                     // Try to chop a tree if strongly desired
                     bool didChop = TryChopTree();
@@ -552,7 +552,7 @@ public class Creature : MonoBehaviour
                         energyMeter -= actionEnergyCost;
                     }
                 }
-                else if (attackDesire > 0.5f)
+                else if (attackDesire > 0.0f)
                 {
                     // Try to attack another creature if strongly desired
                     bool didAttack = TryAttackCreature();
