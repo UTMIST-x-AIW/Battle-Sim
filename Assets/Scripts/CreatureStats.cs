@@ -7,6 +7,8 @@ public class CreatureStats : MonoBehaviour
     public TextMeshProUGUI reproductionText;
     public TextMeshProUGUI energyText;
     public TextMeshProUGUI nameText;
+    public TextMeshProUGUI ageText;
+    public TextMeshProUGUI generationText;
     
     // Cached components
     private Creature selectedCreature;
@@ -41,17 +43,31 @@ public class CreatureStats : MonoBehaviour
     {
         if (reproductionText != null)
         {
-            reproductionText.text = $"Reproduction: {selectedCreature.reproductionMeter:F1} / 1.0";
+            // Convert to percentage with no decimal places
+            int reproPercent = Mathf.RoundToInt(selectedCreature.reproductionMeter * 100);
+            reproductionText.text = $"Reproduction Meter: {reproPercent}%";
         }
         
         if (energyText != null)
         {
-            energyText.text = $"Energy: {selectedCreature.energyMeter:F1} / {selectedCreature.maxEnergy:F1}";
+            // Convert to percentage with no decimal places
+            int energyPercent = Mathf.RoundToInt((selectedCreature.energyMeter / selectedCreature.maxEnergy) * 100);
+            energyText.text = $"Energy Meter: {energyPercent}%";
         }
         
         if (nameText != null)
         {
             nameText.text = $"{selectedCreature.type}";
+        }
+        
+        if (ageText != null)
+        {
+            ageText.text = $"Age: {selectedCreature.Lifetime:F1} yrs";
+        }
+        
+        if (generationText != null)
+        {
+            generationText.text = $"Generation: {selectedCreature.generation}";
         }
     }
     
