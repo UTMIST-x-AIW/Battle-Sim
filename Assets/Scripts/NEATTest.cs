@@ -41,8 +41,8 @@ public class NEATTest : MonoBehaviour
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public bool showChopRange = false;  // Toggle for chop range visualization
-    public bool showGizmos = true;     // Master toggle for all gizmos
-    public Color chopRangeColor = new Color(1f, 0.3f, 0.3f, 0.2f);  // Semi-transparent red
+    public bool showGizmos = false;     // Master toggle for all gizmos
+    public Color chopRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
     public bool showCreatureLabels = true;  // Toggle for creature labels
     public bool showSpawnArea = false;  // Toggle for spawn area visualization
     public Color spawnAreaColor = new Color(0.2f, 0.8f, 0.2f, 0.2f);  // Semi-transparent green
@@ -407,7 +407,7 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs total): 
+        // Add input nodes (11 inputs total): 
         // 0: health
         // 1: energyMeter
         // 2: reproductionMeter
@@ -415,8 +415,7 @@ public class NEATTest : MonoBehaviour
         // 5,6: opposite type x,y
         // 7,8: cherry x,y
         // 9,10: tree x,y
-        // 11,12: edge x,y (NEW)
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -446,7 +445,7 @@ public class NEATTest : MonoBehaviour
         genome.AddNode(outputNode3);
         genome.AddNode(outputNode4);
 
-        for(int i = 0; i < 13; i++)  // Updated to include edge detection
+        for(int i = 0; i < 11; i++)
         {
             for (int j = 17; j < 21; j++)
             {
@@ -461,7 +460,7 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs total): 
+        // Add input nodes (11 inputs total): 
         // 0: health
         // 1: energyMeter
         // 2: reproductionMeter
@@ -469,8 +468,7 @@ public class NEATTest : MonoBehaviour
         // 5,6: opposite type x,y
         // 7,8: cherry x,y
         // 9,10: tree x,y
-        // 11,12: edge x,y (NEW)
-        for (int i = 0; i < 13; i++)
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -530,10 +528,6 @@ public class NEATTest : MonoBehaviour
         // EnergyMeter level to actions - enables actions only when energy is high
         genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 1, 19, 0.6f)); // EnergyMeter to chop
         genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 1, 20, 0.7f)); // EnergyMeter to attack - higher weight makes Kai more likely to attack
-        
-        // NEW: Edge detection to movement - help Kai avoid edges
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 11, 17, 0.5f)); // X edge to X velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, 18, 0.5f)); // Y edge to Y velocity
         
         return genome;
     }
@@ -619,8 +613,8 @@ public class NEATTest : MonoBehaviour
         // Create a custom genome with clear reproduction bias
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (13 inputs total)
-        for (int i = 0; i < 13; i++)
+        // Add input nodes (11 inputs total)
+        for (int i = 0; i < 11; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;

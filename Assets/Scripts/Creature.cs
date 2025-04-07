@@ -87,10 +87,9 @@ public class Creature : MonoBehaviour
     // Animator reference
     private CreatureAnimator creatureAnimator;
 
-    // Cache ground collider to avoid FindGameObjectWithTag every frame
-    private static PolygonCollider2D cachedGroundCollider;
-    private static CompositeCollider2D cachedCompositeCollider;
-    private static Bounds groundBounds;
+    // Cache floor collider to avoid FindGameObjectWithTag every frame
+    private static PolygonCollider2D cachedFloorCollider;
+    private static Bounds floorBounds;
 
     private bool hasCheckedNeatTest = false;
 
@@ -378,36 +377,23 @@ public class Creature : MonoBehaviour
     
     private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
     {
-        // Find and cache ground collider if not already cached
-        if (cachedGroundCollider == null && cachedCompositeCollider == null)
+        // Find and cache floor collider if not already cached
+        if (cachedFloorCollider == null)
         {
-            GameObject groundObj = GameObject.FindGameObjectWithTag("Ground");
-            if (groundObj != null)
+            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
+            if (floorObj != null)
             {
-                // Try to get PolygonCollider2D first
-                cachedGroundCollider = groundObj.GetComponent<PolygonCollider2D>();
-                
-                // If not found, try CompositeCollider2D
-                if (cachedGroundCollider == null)
+                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
+                if (cachedFloorCollider != null)
                 {
-                    cachedCompositeCollider = groundObj.GetComponent<CompositeCollider2D>();
-                    if (cachedCompositeCollider != null)
-                    {
-                        groundBounds = cachedCompositeCollider.bounds;
-                        Debug.Log($"Found CompositeCollider2D with bounds: {groundBounds}");
-                    }
-                }
-                else
-                {
-                    groundBounds = cachedGroundCollider.bounds;
-                    Debug.Log($"Found PolygonCollider2D with bounds: {groundBounds}");
+                    floorBounds = cachedFloorCollider.bounds;
                 }
             }
         }
         
-        if (cachedGroundCollider == null && cachedCompositeCollider == null)
+        if (cachedFloorCollider == null)
         {
-            // No ground found, just apply the movement
+            // No floor found, just apply the movement
             rb.velocity = desiredVelocity;
                 return;
             }
@@ -417,14 +403,14 @@ public class Creature : MonoBehaviour
         Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
         
         // Quick bounds check first (much faster than OverlapPoint)
-        bool inBounds = groundBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
+        bool inBounds = floorBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
         
         // If definitely outside bounds, stop or redirect
         if (!inBounds)
         {
-            // Try to redirect toward the center of the ground
-            Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
-            Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
+            // Try to redirect toward the center of the floor
+            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
             rb.velocity = directionToCenter * moveSpeed * 0.5f;
             return;
         }
@@ -446,7 +432,7 @@ public class Creature : MonoBehaviour
             
             // Center raycast
             RaycastHit2D centerHit = Physics2D.Raycast(currentPos, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (centerHit.collider != null && centerHit.collider != cachedGroundCollider && centerHit.collider != cachedCompositeCollider)
+            if (centerHit.collider != null && centerHit.collider != cachedFloorCollider)
             {
                 anyRayHitsEdge = true;
             }
@@ -454,7 +440,7 @@ public class Creature : MonoBehaviour
             // Bottom raycast (for ground detection)
             Vector2 bottomPoint = currentPos - new Vector2(0, insetDistance);
             RaycastHit2D bottomHit = Physics2D.Raycast(bottomPoint, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (bottomHit.collider != null && bottomHit.collider != cachedGroundCollider && bottomHit.collider != cachedCompositeCollider)
+            if (bottomHit.collider != null && bottomHit.collider != cachedFloorCollider)
             {
                 anyRayHitsEdge = true;
             }
@@ -462,8 +448,8 @@ public class Creature : MonoBehaviour
             if (anyRayHitsEdge)
             {
                 // We're about to hit an edge - redirect toward the center
-                Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
-                Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
+                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
                 
                 // Blend between current direction and center direction
                 Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
@@ -472,21 +458,12 @@ public class Creature : MonoBehaviour
             }
             
             // Final precise check - use OverlapPoint for the exact boundary
-            bool pointInGround = false;
-            if (cachedGroundCollider != null)
-            {
-                pointInGround = cachedGroundCollider.OverlapPoint(desiredPos);
-            }
-            else if (cachedCompositeCollider != null)
-            {
-                pointInGround = cachedCompositeCollider.OverlapPoint(desiredPos);
-            }
-            
-            if (!pointInGround)
+            bool pointInFloor = cachedFloorCollider.OverlapPoint(desiredPos);
+            if (!pointInFloor)
             {
                 // Deflect along the boundary instead of stopping
-                Vector2 centerOfGround = new Vector2(groundBounds.center.x, groundBounds.center.y);
-                Vector2 directionToCenter = (centerOfGround - currentPos).normalized;
+                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
                 
                 // Project desired velocity onto the direction to center to allow sliding along edges
                 Vector2 projectedVelocity = Vector2.Dot(desiredVelocity, directionToCenter) * directionToCenter;
@@ -887,16 +864,21 @@ public class Creature : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (neatTest != null && neatTest.showGizmos)
+        // Only draw if visualization is enabled and NEATTest reference exists
+        if (neatTest != null)
         {
-            // Draw detection radius if enabled
             if (neatTest.showDetectionRadius)
-            {
-                Gizmos.color = new Color(0.5f, 0.5f, 1f, 0.2f);  // Semi-transparent blue
+        {
+            // Set color to be semi-transparent and match creature type
+            Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
+            Gizmos.color = gizmoColor;
+            
+            // Draw filled circle for better visibility
             Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
             
             // Draw wire frame with more opacity for better edge definition
-                Gizmos.color = new Color(0.7f, 0.7f, 1f, 0.5f);
+            gizmoColor.a = 0.3f;
+            Gizmos.color = gizmoColor;
             Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
             }
             
@@ -904,120 +886,8 @@ public class Creature : MonoBehaviour
             if (neatTest.showChopRange)
             {
                 Gizmos.color = neatTest.chopRangeColor;
-                Gizmos.DrawSphere(transform.position, 1.5f); // Using ACTION_RADIUS from TryChopTree
-                
-                // Draw wire frame with more opacity
-                Gizmos.color = new Color(neatTest.chopRangeColor.r, neatTest.chopRangeColor.g, 
-                                        neatTest.chopRangeColor.b, neatTest.chopRangeColor.a + 0.3f);
-                Gizmos.DrawWireSphere(transform.position, 1.5f);
+                Gizmos.DrawWireSphere(transform.position, chopRange);
             }
-            
-            // Draw edge detection line to nearest edge
-            DrawEdgeDetectionGizmo();
-        }
-    }
-
-    private void DrawEdgeDetectionGizmo()
-    {
-        // Find and cache ground collider if not already cached
-        if (cachedGroundCollider == null && cachedCompositeCollider == null)
-        {
-            GameObject groundObj = GameObject.FindGameObjectWithTag("Ground");
-            if (groundObj != null)
-            {
-                // Try to get PolygonCollider2D first
-                cachedGroundCollider = groundObj.GetComponent<PolygonCollider2D>();
-                
-                // If not found, try CompositeCollider2D
-                if (cachedGroundCollider == null)
-                {
-                    cachedCompositeCollider = groundObj.GetComponent<CompositeCollider2D>();
-                    if (cachedCompositeCollider != null)
-                    {
-                        groundBounds = cachedCompositeCollider.bounds;
-                        Debug.Log($"Gizmo: Found CompositeCollider2D on Ground with bounds: {groundBounds}");
-                    }
-                }
-                else
-                {
-                    groundBounds = cachedGroundCollider.bounds;
-                    Debug.Log($"Gizmo: Found PolygonCollider2D on Ground with bounds: {groundBounds}");
-                }
-            }
-            else
-            {
-                Debug.LogError("No GameObject with tag 'Ground' found for gizmo drawing!");
-                return;
-            }
-        }
-        
-        // Use either PolygonCollider2D or CompositeCollider2D
-        if (cachedGroundCollider != null || cachedCompositeCollider != null)
-        {
-            Vector2 currentPos = transform.position;
-            
-            // Calculate distance to boundaries in X direction
-            float distanceToRightEdge = groundBounds.max.x - currentPos.x;
-            float distanceToLeftEdge = currentPos.x - groundBounds.min.x;
-            
-            // Calculate distance to boundaries in Y direction
-            float distanceToTopEdge = groundBounds.max.y - currentPos.y;
-            float distanceToBottomEdge = currentPos.y - groundBounds.min.y;
-            
-            // Find the shortest edge distance and direction
-            float minDistance = float.MaxValue;
-            Vector2 edgeDirection = Vector2.zero;
-            
-            if (distanceToRightEdge < minDistance)
-            {
-                minDistance = distanceToRightEdge;
-                edgeDirection = new Vector2(1, 0);
-            }
-            
-            if (distanceToLeftEdge < minDistance)
-            {
-                minDistance = distanceToLeftEdge;
-                edgeDirection = new Vector2(-1, 0);
-            }
-            
-            if (distanceToTopEdge < minDistance)
-            {
-                minDistance = distanceToTopEdge;
-                edgeDirection = new Vector2(0, 1);
-            }
-            
-            if (distanceToBottomEdge < minDistance)
-            {
-                minDistance = distanceToBottomEdge;
-                edgeDirection = new Vector2(0, -1);
-            }
-            
-            // Cap the distance at the detection radius - only draw up to the vision radius
-            float displayDistance = Mathf.Min(minDistance, CreatureObserver.DETECTION_RADIUS);
-            
-            // Calculate endpoint for the line
-            Vector2 endPoint = currentPos + (edgeDirection * displayDistance);
-            
-            // Draw the line to the nearest edge (or up to detection radius)
-            Gizmos.color = new Color(1f, 0.5f, 0.5f, 0.8f); // Brighter, more visible color
-            Gizmos.DrawLine(currentPos, endPoint);
-            
-            // If the edge is within detection radius, draw a sphere at the actual edge point
-            if (minDistance <= CreatureObserver.DETECTION_RADIUS)
-            {
-                // Actual edge point
-                Vector2 edgePoint = currentPos + (edgeDirection * minDistance);
-                Gizmos.color = new Color(1f, 0f, 0f, 0.8f); // Bright red for the edge point
-                Gizmos.DrawSphere(edgePoint, 0.15f); // Slightly larger sphere
-            }
-            
-            // Draw a small sphere at the FOV limit along this direction
-            Gizmos.color = new Color(0.7f, 0.7f, 0.7f, 0.6f); // Gray for vision limit
-            Gizmos.DrawSphere(endPoint, 0.1f);
-        }
-        else
-        {
-            Debug.LogWarning("No ground collider available for edge detection gizmo!");
         }
     }
     

@@ -5,49 +5,14 @@ public class CreatureObserver : MonoBehaviour
     public static readonly float DETECTION_RADIUS = 4f;
     private static int timestep = 0;
     
-    // Cache the ground bounds for edge detection
-    private static PolygonCollider2D cachedGroundCollider;
-    private static CompositeCollider2D cachedCompositeCollider;
-    private static Bounds groundBounds;
-    
     private void Start()
     {
-        // Get the ground collider if not already cached
-        if (cachedGroundCollider == null && cachedCompositeCollider == null)
-        {
-            GameObject ground = GameObject.FindWithTag("Ground");
-            if (ground != null)
-            {
-                // Try to get PolygonCollider2D first
-                cachedGroundCollider = ground.GetComponent<PolygonCollider2D>();
-                
-                // If not found, try CompositeCollider2D
-                if (cachedGroundCollider == null)
-                {
-                    cachedCompositeCollider = ground.GetComponent<CompositeCollider2D>();
-                    if (cachedCompositeCollider != null)
-                    {
-                        groundBounds = cachedCompositeCollider.bounds;
-                        Debug.Log($"Found CompositeCollider2D on Ground with bounds: {groundBounds}");
-                    }
-                }
-                else
-                {
-                    groundBounds = cachedGroundCollider.bounds;
-                    Debug.Log($"Found PolygonCollider2D on Ground with bounds: {groundBounds}");
-                }
-            }
-            else
-            {
-                Debug.LogError("No GameObject with tag 'Ground' found!");
-            }
-        }
+
     }
     
     public float[] GetObservations(Creature self)
     {
-        // Expanding to 13 observations to include edge detection
-        float[] obs = new float[13];  
+        float[] obs = new float[11];  // Now 11 observations (removed velocity x,y)
         
         // Basic stats
         obs[0] = self.health;
@@ -62,27 +27,33 @@ public class CreatureObserver : MonoBehaviour
         Vector2 cherryPos = Vector2.zero;
         Vector2 treePos = Vector2.zero;
 
-        //  Debug.Log(nearbyColliders.Length);
+        float sameTypeDistance = float.MaxValue;
+        float oppositeTypeDistance = float.MaxValue;
+        float cherryDistance = float.MaxValue;
+        float treeDistance = float.MaxValue;
         
         foreach (var collider in nearbyColliders)
         {
             if (collider.gameObject == gameObject) continue;
             
-            Vector2 relativePos = (Vector2)(collider.transform.position - transform.position);
+            // Calculate relative position from the object to the creature (reversed direction)
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
 
             if (collider.CompareTag("Cherry"))
             {
-                if (relativePos.magnitude < cherryPos.magnitude || cherryPos.magnitude == 0)
+                if (distance < cherryDistance)
                 {
                     cherryPos = relativePos;
+                    cherryDistance = distance;
                 }
             }
             else if (collider.CompareTag("Tree"))
             {
-                if (relativePos.magnitude < treePos.magnitude || treePos.magnitude == 0)
+                if (distance < treeDistance)
                 {
                     treePos = relativePos;
-                    
+                    treeDistance = distance;
                 }
             }
             else
@@ -92,123 +63,106 @@ public class CreatureObserver : MonoBehaviour
                 
                 if (other.type == self.type)
                 {
-                    if (relativePos.magnitude < sameTypePos.magnitude || sameTypePos.magnitude == 0)
+                    if (distance < sameTypeDistance)
                     {
                         sameTypePos = relativePos;
+                        sameTypeDistance = distance;
                     }
                 }
                 else
                 {
-                    if (relativePos.magnitude < oppositeTypePos.magnitude || oppositeTypePos.magnitude == 0)
+                    if (distance < oppositeTypeDistance)
                     {
                         oppositeTypePos = relativePos;
+                        oppositeTypeDistance = distance;
                     }
                 }
             }
         }
+        
+        // Transform the observations according to the new formula:
+        // 0 when outside FOV, 0 at FOV border, increases linearly to DETECTION_RADIUS when hugging creature
         
         // Same type observations (x,y components)
-        obs[3] = sameTypePos.x;
-        obs[4] = sameTypePos.y;
-        
-        // Opposite type observations (x,y components)
-        obs[5] = oppositeTypePos.x;
-        obs[6] = oppositeTypePos.y;
-        
-        // Cherry observations (x,y components)
-        obs[7] = cherryPos.x;
-        obs[8] = cherryPos.y;
-        
-        // Tree observations (x,y components)
-        obs[9] = treePos.x;
-        obs[10] = treePos.y;
-        
-        // Edge detection observations (x,y distances to edge)
-        // Make sure ground bounds are initialized
-        if (cachedGroundCollider == null && cachedCompositeCollider == null)
+        if (sameTypeDistance <= DETECTION_RADIUS)
         {
-            GameObject ground = GameObject.FindWithTag("Ground");
-            if (ground != null)
+            if (sameTypeDistance > 0)
             {
-                // Try to get PolygonCollider2D first
-                cachedGroundCollider = ground.GetComponent<PolygonCollider2D>();
+                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
+                float intensityFactor = 1.0f - sameTypeDistance / DETECTION_RADIUS;
                 
-                // If not found, try CompositeCollider2D
-                if (cachedGroundCollider == null)
-                {
-                    cachedCompositeCollider = ground.GetComponent<CompositeCollider2D>();
-                    if (cachedCompositeCollider != null)
-                    {
-                        groundBounds = cachedCompositeCollider.bounds;
-                        Debug.Log($"Found CompositeCollider2D on Ground with bounds: {groundBounds}");
-                    }
-                }
-                else
-                {
-                    groundBounds = cachedGroundCollider.bounds;
-                    Debug.Log($"Found PolygonCollider2D on Ground with bounds: {groundBounds}");
-                }
-            }
-            else
-            {
-                Debug.LogError("No GameObject with tag 'Ground' found!");
-                // Default to detection radius when ground not found
-                obs[11] = DETECTION_RADIUS;
-                obs[12] = DETECTION_RADIUS;
-                return obs;
-            }
-        }
-        
-        // Calculate normalized distances to map edges
-        if (cachedGroundCollider != null || cachedCompositeCollider != null)
-        {
-            Vector2 currentPos = transform.position;
-            
-            // Calculate distance to boundaries in X direction
-            float distanceToRightEdge = groundBounds.max.x - currentPos.x;
-            float distanceToLeftEdge = currentPos.x - groundBounds.min.x;
-            // Use the closest X edge
-            float closestXDistance = Mathf.Min(distanceToRightEdge, distanceToLeftEdge);
-            
-            // Calculate distance to boundaries in Y direction
-            float distanceToTopEdge = groundBounds.max.y - currentPos.y;
-            float distanceToBottomEdge = currentPos.y - groundBounds.min.y;
-            // Use the closest Y edge
-            float closestYDistance = Mathf.Min(distanceToTopEdge, distanceToBottomEdge);
-            
-            // Cap the distances at DETECTION_RADIUS
-            // This way, edges beyond vision radius all look the same
-            closestXDistance = Mathf.Min(closestXDistance, DETECTION_RADIUS);
-            closestYDistance = Mathf.Min(closestYDistance, DETECTION_RADIUS);
-            
-            // Assign raw distance values (in world units)
-            obs[11] = closestXDistance;
-            obs[12] = closestYDistance;
-            
-            // More frequent logging for debugging edge detection issues
-            if (Random.value < 0.01f)
-            {
-                string debugMsg = $"Edge distances - Creature: {self.gameObject.name}, " +
-                    $"Position: {currentPos}, " +
-                    $"Raw X: {closestXDistance:F2}, " +
-                    $"Raw Y: {closestYDistance:F2}, " +
-                    $"Detection radius: {DETECTION_RADIUS:F2}";
-                
-                Debug.Log(debugMsg);
-                
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage(debugMsg);
-                }
+                // Apply intensity factor directly to the relative position vector
+                sameTypePos *= intensityFactor;
             }
         }
         else
         {
-            Debug.LogWarning("No valid ground collider found for edge detection!");
-            // If ground collider not found, use default values
-            obs[11] = DETECTION_RADIUS; // Default to maximum distance (edge not detected)
-            obs[12] = DETECTION_RADIUS; // Default to maximum distance (edge not detected)
+            sameTypePos = Vector2.zero; // Outside detection radius
         }
+        
+        // Opposite type observations (x,y components)
+        if (oppositeTypeDistance <= DETECTION_RADIUS)
+        {
+            if (oppositeTypeDistance > 0)
+            {
+                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
+                float intensityFactor = 1.0f - oppositeTypeDistance / DETECTION_RADIUS;
+                
+                // Apply intensity factor directly to the relative position vector
+                oppositeTypePos *= intensityFactor;
+            }
+        }
+        else
+        {
+            oppositeTypePos = Vector2.zero; // Outside detection radius
+        }
+        
+        // Cherry observations (x,y components)
+        if (cherryDistance <= DETECTION_RADIUS)
+        {
+            if (cherryDistance > 0)
+            {
+                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
+                float intensityFactor = 1.0f - cherryDistance / DETECTION_RADIUS;
+                
+                // Apply intensity factor directly to the relative position vector
+                cherryPos *= intensityFactor;
+            }
+        }
+        else
+        {
+            cherryPos = Vector2.zero; // Outside detection radius
+        }
+        
+        // Tree observations (x,y components)
+        if (treeDistance <= DETECTION_RADIUS)
+        {
+            if (treeDistance > 0)
+            {
+                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
+                float intensityFactor = 1.0f - treeDistance / DETECTION_RADIUS;
+                
+                // Apply intensity factor directly to the relative position vector
+                treePos *= intensityFactor;
+            }
+        }
+        else
+        {
+            treePos = Vector2.zero; // Outside detection radius
+        }
+        
+        // Assign the transformed values to the observation array
+        obs[3] = sameTypePos.x;
+        obs[4] = sameTypePos.y;
+        
+        obs[5] = oppositeTypePos.x;
+        obs[6] = oppositeTypePos.y;
+        
+        obs[7] = cherryPos.x;
+        obs[8] = cherryPos.y;
+        
+        obs[9] = treePos.x;
+        obs[10] = treePos.y;
         
         return obs;
     }
