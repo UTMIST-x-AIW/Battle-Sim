@@ -72,6 +72,12 @@ public class Reproduction : MonoBehaviour
             return;
         }
 
+        // New check for minimum age requirement (21 years)
+        if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        {
+            return; // At least one creature is too young
+        }
+
         // Check if we're in each other's vision range (bidirectional check)
         float distanceBetween = Vector2.Distance(transform.position, other_character.transform.position);
         if (distanceBetween > creatureComponent.visionRange || distanceBetween > otherCreature.visionRange)
@@ -119,6 +125,12 @@ public class Reproduction : MonoBehaviour
                 {
                     isMating = false;
                     return;
+                }
+
+                // Log the mating event with ages
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Mating between {p1.type} (Age: {p1.Lifetime:F1}, Gen: {p1.generation}) and {p2.type} (Age: {p2.Lifetime:F1}, Gen: {p2.generation})");
                 }
 
                 // Reset reproduction meter for both parents

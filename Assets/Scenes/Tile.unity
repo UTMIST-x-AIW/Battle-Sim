@@ -38932,8 +38932,8 @@ MonoBehaviour:
   reproductionText: {fileID: 1418025678}
   energyText: {fileID: 819898665}
   nameText: {fileID: 2137468666}
-  ageText: {fileID: 0}
-  generationText: {fileID: 0}
+  ageText: {fileID: 417709800}
+  generationText: {fileID: 1716402761}
 --- !u!114 &777694460
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -62,7 +62,7 @@ public class CreatureStats : MonoBehaviour
         
         if (ageText != null)
         {
-            ageText.text = $"Age: {selectedCreature.Lifetime:F1} yrs";
+            ageText.text = $"Age: {selectedCreature.Lifetime:F0} yrs";
         }
         
         if (generationText != null)
