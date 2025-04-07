@@ -5,17 +5,21 @@ public class NodeTooltip : MonoBehaviour
 {
     public TextMeshProUGUI tooltipText;
     private RectTransform rectTransform;
-    private Camera mainCamera;
     private Canvas canvas;
+    private Vector2 offset = new Vector2(0, 0);
 
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        mainCamera = Camera.main;
         canvas = GetComponentInParent<Canvas>();
         
         if (tooltipText == null)
             tooltipText = GetComponentInChildren<TextMeshProUGUI>();
+
+        // Set proper anchoring for the tooltip
+        // rectTransform.pivot = new Vector2(0, 1);        // Pivot at top-left
+        // rectTransform.anchorMin = Vector2.zero;         // Anchor to bottom-left
+        // rectTransform.anchorMax = Vector2.zero;
     }
 
     public void SetTooltipText(string text)
@@ -28,34 +32,52 @@ public class NodeTooltip : MonoBehaviour
 
     void LateUpdate()
     {
-        if (canvas == null || mainCamera == null) return;
+        if (canvas == null) return;
 
-        // Convert screen position to canvas position
-        Vector2 screenPos = mainCamera.WorldToScreenPoint(transform.position);
+        // Get mouse position
+        Vector2 mousePos = Input.mousePosition;
+
+        // Convert to canvas space
         Vector2 canvasPos;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvas.transform as RectTransform,
-            screenPos,
-            canvas.worldCamera,
-            out canvasPos);
+        RectTransform canvasRect = canvas.transform as RectTransform;
+        Camera cam = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : Camera.main;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, mousePos, cam, out canvasPos);
 
-        // Keep tooltip within screen bounds
-        Vector2 size = rectTransform.sizeDelta;
-        Vector2 screenSize = new Vector2(Screen.width, Screen.height);
-        
-        // Adjust position to keep tooltip on screen
-        float rightEdge = canvasPos.x + size.x;
-        float topEdge = canvasPos.y + size.y;
-        
-        if (rightEdge > screenSize.x)
-            canvasPos.x = screenSize.x - size.x;
-        if (topEdge > screenSize.y)
-            canvasPos.y = screenSize.y - size.y;
-        if (canvasPos.x < 0)
-            canvasPos.x = 0;
-        if (canvasPos.y < 0)
-            canvasPos.y = 0;
+        // Get canvas scale factor
+        float scaleFactor = canvas.scaleFactor;
 
+        // Get tooltip size in screen space
+        Vector2 tooltipSize = rectTransform.rect.size * scaleFactor;
+
+        // Get screen bounds in canvas space
+        Vector2 screenMin = Vector2.zero;
+        Vector2 screenMax = new Vector2(Screen.width, Screen.height);
+        Vector2 screenMinCanvas, screenMaxCanvas;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenMin, cam, out screenMinCanvas);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenMax, cam, out screenMaxCanvas);
+
+        // Apply initial offset
+        canvasPos += offset;
+
+        // Check right edge
+        if (mousePos.x + tooltipSize.x + offset.x > Screen.width)
+        {
+            // Place tooltip to the left of the cursor
+            canvasPos.x = canvasPos.x - tooltipSize.x/scaleFactor - offset.x * 2;
+        }
+
+        // Check top edge
+        if (mousePos.y + tooltipSize.y + offset.y > Screen.height)
+        {
+            // Place tooltip below the cursor
+            canvasPos.y = canvasPos.y - tooltipSize.y/scaleFactor - offset.y * 2;
+        }
+
+        // Ensure tooltip stays within screen bounds
+        // canvasPos.x = Mathf.Clamp(canvasPos.x, screenMinCanvas.x + offset.x, screenMaxCanvas.x - tooltipSize.x/scaleFactor - offset.x);
+        // canvasPos.y = Mathf.Clamp(canvasPos.y, screenMinCanvas.y + tooltipSize.y/scaleFactor + offset.y, screenMaxCanvas.y - offset.y);
+
+        // Apply position
         rectTransform.anchoredPosition = canvasPos;
     }
 } 

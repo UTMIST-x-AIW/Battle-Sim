@@ -469,12 +469,9 @@ public class NetworkVisualizer : MonoBehaviour
                 valueText = $"Value: {value:F4}";
             }
             
-            // Create the tooltip
-            activeTooltip = Instantiate(tooltipPrefab, networkPanel);
-            RectTransform tooltipRect = activeTooltip.GetComponent<RectTransform>();
-            
-            // Position above the node
-            tooltipRect.anchoredPosition = nodeRect.anchoredPosition + new Vector2(0, nodeSize);
+            // Create the tooltip under the canvas
+            Canvas canvas = networkPanel.GetComponentInParent<Canvas>();
+            activeTooltip = Instantiate(tooltipPrefab, canvas.transform);
             
             // Set the tooltip text with NodeTooltip component
             NodeTooltip tooltipComponent = activeTooltip.GetComponent<NodeTooltip>();
