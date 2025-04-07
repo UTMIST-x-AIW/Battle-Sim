@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System;
+// Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
+using Random = UnityEngine.Random;
 using NEAT.Genes;
 
 public class Creature : MonoBehaviour
@@ -63,8 +66,8 @@ public class Creature : MonoBehaviour
     public CreatureType type;
     
     // Neural Network
-    private NEAT.NN.FeedForwardNetwork brain;
-    private CreatureObserver observer;
+    public NEAT.NN.FeedForwardNetwork brain;
+    public CreatureObserver observer;
     private Rigidbody2D rb;
     
     // Add method to get brain
@@ -195,25 +198,89 @@ public class Creature : MonoBehaviour
     
     public float[] GetActions()
     {
-        if (brain == null)
+        try
         {
-            // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-            return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
+            if (brain == null)
+            {
+                // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
+                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
+            }
+            
+            float[] observations = observer.GetObservations(this);
+            double[] doubleObservations = ConvertToDouble(observations);
+            
+            double[] doubleOutputs = brain.Activate(doubleObservations);
+            float[] outputs = ConvertToFloat(doubleOutputs);
+            
+            // Log the neural network outputs for debugging
+            string outputInfo = $"NN outputs for {gameObject.name} (Gen {generation}): Length={outputs.Length}, Values=[";
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                outputInfo += $"{outputs[i]:F3}";
+                if (i < outputs.Length - 1) outputInfo += ", ";
+            }
+            outputInfo += "]";
+            
+            if (LogManager.Instance != null)
+            {
+                // Only log if the output length is not 4 (to avoid too many log entries)
+                if (outputs.Length != 4)
+                {
+                    LogManager.LogError(outputInfo);
+                }
+                else if (Random.value < 0.01) // Log only 1% of normal outputs as samples
+                {
+                    LogManager.LogMessage(outputInfo);
+                }
+            }
+            
+            // Ensure outputs are in range [-1, 1]
+            for (int i = 0; i < outputs.Length; i++)
+            {
+                outputs[i] = Mathf.Clamp(outputs[i], -1f, 1f);
+            }
+            
+            // Double-check that we're getting the expected number of outputs
+            if (outputs.Length != 4)
+            {
+                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of 4. Creating adjusted array.";
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError(errorMsg);
+                }
+                else
+                {
+                    Debug.LogError(errorMsg);
+                }
+                
+                // Create a new array of exactly 4 elements
+                float[] adjustedOutputs = new float[4];
+                
+                // Copy the values we have
+                for (int i = 0; i < Mathf.Min(outputs.Length, 4); i++)
+                {
+                    adjustedOutputs[i] = outputs[i];
+                }
+                
+                return adjustedOutputs;
+            }
+            
+            return outputs;
         }
-        
-        float[] observations = observer.GetObservations(this);
-        double[] doubleObservations = ConvertToDouble(observations);
-        
-        double[] doubleOutputs = brain.Activate(doubleObservations);
-        float[] outputs = ConvertToFloat(doubleOutputs);
-        
-        // Ensure outputs are in range [-1, 1]
-        for (int i = 0; i < outputs.Length; i++)
+        catch (System.Exception e)
         {
-            outputs[i] = Mathf.Clamp(outputs[i], -1f, 1f);
+            string errorMsg = $"Error in GetActions for {gameObject.name}: {e.Message}";
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogError($"{errorMsg}\nStack trace: {e.StackTrace}");
+            }
+            else
+            {
+                Debug.LogError(errorMsg);
+            }
+            
+            return new float[] { 0f, 0f, 0f, 0f };  // Return default values on error
         }
-        
-        return outputs;
     }
 
     // Note: The ApplyMutations method has been moved to Reproduction.cs and is no longer used here.
@@ -416,14 +483,45 @@ public class Creature : MonoBehaviour
     {
         try
         {
-            if (actions == null || actions.Length < 4)
+            // Validate actions array
+            if (actions == null)
             {
-                Debug.LogError($"Invalid actions array: {(actions == null ? "null" : $"length {actions.Length}")}");
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError($"ProcessActionCommands for {gameObject.name}: actions array is null");
+                }
+                else
+                {
+                    Debug.LogError($"ProcessActionCommands for {gameObject.name}: actions array is null");
+                }
                 return;
             }
             
+            // Create a safe array that guarantees 4 elements
+            float[] safeActions = new float[4];
+            
+            // Copy values from original array, up to 4 elements
+            for (int i = 0; i < Mathf.Min(actions.Length, 4); i++)
+            {
+                safeActions[i] = actions[i];
+            }
+            
+            // Log if the array length wasn't 4
+            if (actions.Length != 4)
+            {
+                string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}, created safe array with values [{safeActions[0]}, {safeActions[1]}, {safeActions[2]}, {safeActions[3]}]";
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError(errorMsg);
+                }
+                else
+                {
+                    Debug.LogError(errorMsg);
+                }
+            }
+            
             // Apply movement based on neural network output (first two values)
-            Vector2 moveDirection = new Vector2(actions[0], actions[1]);
+            Vector2 moveDirection = new Vector2(safeActions[0], safeActions[1]);
             
             // Normalize to ensure diagonal movement isn't faster
             if (moveDirection.magnitude > 1f)
@@ -436,8 +534,8 @@ public class Creature : MonoBehaviour
             ApplyMovementWithBoundsCheck(desiredVelocity);
             
             // Process action commands for chop and attack (third and fourth values)
-            float chopDesire = actions[2];
-            float attackDesire = actions[3];
+            float chopDesire = safeActions[2];
+            float attackDesire = safeActions[3];
             
             // Energy-limited action: Allow action only if we have sufficient energy
             if (energyMeter >= actionEnergyCost)
@@ -469,7 +567,7 @@ public class Creature : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            string errorMsg = $"Error in ProcessActionCommands: {e.Message}\nStack trace: {e.StackTrace}";
+            string errorMsg = $"Error in ProcessActionCommands for {gameObject.name}: {e.Message}\nStack trace: {e.StackTrace}";
             if (LogManager.Instance != null)
             {
                 LogManager.LogError(errorMsg);

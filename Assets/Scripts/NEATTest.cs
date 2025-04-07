@@ -41,6 +41,7 @@ public class NEATTest : MonoBehaviour
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public bool showChopRange = false;  // Toggle for chop range visualization
+    public bool showGizmos = false;     // Master toggle for all gizmos
     public Color chopRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
     public bool showCreatureLabels = true;  // Toggle for creature labels
     public bool showSpawnArea = false;  // Toggle for spawn area visualization
@@ -60,6 +61,8 @@ public class NEATTest : MonoBehaviour
     private float lastSpawnTime = 0f;
     private float spawnCooldown = 1.0f;  // Minimum time between spawns
     private bool isSpawning = false;  // Flag to prevent multiple spawn coroutines
+
+    private float countTimer = 0f;
 
     private void Awake()
     {
@@ -117,11 +120,76 @@ public class NEATTest : MonoBehaviour
 
     private void Update()
     {
-        // Check population periodically
-        if (Time.time - lastPopulationCheck >= populationCheckInterval)
+        try
         {
-            lastPopulationCheck = Time.time;
-            ManagePopulation();
+            // Check for population management (only for Tests 1 and 4 to not interfere with other tests)
+            if (currentTest == TEST_MATING_MOVEMENT || currentTest == TEST_ALBERTS_ONLY)
+            {
+                // Check current Albert count every second
+                countTimer += Time.deltaTime;
+                if (countTimer >= 0.4f)
+                {
+                    CountAlberts();
+                    countTimer = 0f;
+                }
+                
+                // Automatic population management
+                ManagePopulation();
+            }
+            
+            // Testing controls
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                currentTest = TEST_MATING_MOVEMENT;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                currentTest = TEST_ALBERTS_ONLY;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                currentTest = TEST_REPRODUCTION;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                currentTest = TEST_NORMAL_GAME;
+                RestartTest();
+            }
+            
+            // Toggle creature labels display
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                LogManager.LogMessage($"Toggle labels: {!showCreatureLabels} -> {showCreatureLabels}");
+                showCreatureLabels = !showCreatureLabels;
+            }
+            
+            // Toggle gizmos display
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                LogManager.LogMessage($"Toggle gizmos: {!showGizmos} -> {showGizmos}");
+                showGizmos = !showGizmos;
+            }
+
+            // Add this to the Update method, after the other key checks
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                LogManager.LogMessage("Running neural network diagnostics...");
+                RunNeuralNetworkDiagnostics();
+            }
+        }
+        catch (System.Exception e)
+        {
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogError($"CRITICAL ERROR in NEATTest.Update: {e.Message}\nStack trace: {e.StackTrace}");
+            }
+            else
+            {
+                Debug.LogError($"CRITICAL ERROR in NEATTest.Update: {e.Message}\nStack trace: {e.StackTrace}");
+            }
         }
     }
 
@@ -701,6 +769,147 @@ public class NEATTest : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError($"NEATTest: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
+        }
+    }
+
+    private void RunNeuralNetworkDiagnostics()
+    {
+        try
+        {
+            var creatures = GameObject.FindObjectsOfType<Creature>();
+            int total = creatures.Length;
+            int withValidNetwork = 0;
+            int withNoNetwork = 0;
+            List<string> anomalies = new List<string>();
+            
+            LogManager.LogMessage($"Checking {total} creatures for neural network integrity...");
+            
+            foreach (var creature in creatures)
+            {
+                if (creature.brain == null)
+                {
+                    withNoNetwork++;
+                    continue;
+                }
+                
+                // Get and analyze neural network output
+                try
+                {
+                    float[] observations = creature.observer.GetObservations(creature);
+                    double[] doubleObservations = new double[observations.Length];
+                    for (int i = 0; i < observations.Length; i++)
+                    {
+                        doubleObservations[i] = (double)observations[i];
+                    }
+                    
+                    double[] doubleOutputs = creature.brain.Activate(doubleObservations);
+                    
+                    // Analyze outputs
+                    if (doubleOutputs.Length != 4)
+                    {
+                        anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.type}): " +
+                                     $"Neural network returned {doubleOutputs.Length} outputs instead of 4");
+                    }
+                    else
+                    {
+                        withValidNetwork++;
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    anomalies.Add($"Error processing creature {creature.gameObject.name}: {e.Message}");
+                }
+            }
+            
+            // Log summary
+            LogManager.LogMessage($"Neural Network Diagnostics Complete");
+            LogManager.LogMessage($"Total creatures: {total}");
+            LogManager.LogMessage($"With valid networks (4 outputs): {withValidNetwork}");
+            LogManager.LogMessage($"With no network: {withNoNetwork}");
+            
+            // Log anomalies
+            if (anomalies.Count > 0)
+            {
+                LogManager.LogMessage($"Found {anomalies.Count} anomalies:");
+                foreach (var anomaly in anomalies)
+                {
+                    LogManager.LogError(anomaly);
+                }
+            }
+            else
+            {
+                LogManager.LogMessage("No anomalies found! All networks are outputting 4 values.");
+            }
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error running neural network diagnostics: {e.Message}\nStack trace: {e.StackTrace}");
+        }
+    }
+
+    private void RestartTest()
+    {
+        try
+        {
+            LogManager.LogMessage($"Restarting test {currentTest}...");
+            
+            // Clear any existing creatures
+            var existingCreatures = GameObject.FindObjectsOfType<Creature>();
+            LogManager.LogMessage($"Destroying {existingCreatures.Length} existing creatures");
+            
+            foreach (var creature in existingCreatures)
+            {
+                Destroy(creature.gameObject);
+            }
+            
+            // Wait a frame to ensure cleanup completes
+            StartCoroutine(RestartAfterCleanup());
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in RestartTest: {e.Message}\nStack trace: {e.StackTrace}");
+        }
+    }
+
+    private IEnumerator RestartAfterCleanup()
+    {
+        yield return null; // Wait one frame
+        
+        try
+        {
+            // Re-initialize based on current test
+            if (runTests)
+            {
+                switch (currentTest)
+                {
+                    case TEST_NORMAL_GAME:
+                        SetupNormalGame();
+                        break;
+                    case TEST_MATING_MOVEMENT:
+                        SetupMatingMovementTest();
+                        break;
+                    case TEST_ALBERTS_ONLY:
+                        SetupAlbertsOnlyTest();
+                        break;
+                    case TEST_REPRODUCTION:
+                        SetupReproductionTest();
+                        break;
+                    default:
+                        SetupNormalGame();
+                        break;
+                }
+                
+                LogManager.LogMessage($"Test {currentTest} restarted successfully");
+            }
+            else
+            {
+                SetupNormalGame();
+                LogManager.LogMessage("Normal game restarted successfully");
+            }
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in RestartAfterCleanup: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 } 
