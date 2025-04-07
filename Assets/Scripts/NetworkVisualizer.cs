@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using NEAT.Genes;
+using TMPro;
 
 public class NetworkVisualizer : MonoBehaviour
 {
@@ -20,6 +22,9 @@ public class NetworkVisualizer : MonoBehaviour
     [Header("Visualization Settings")]
     public float outlineThickness = 3f;  // Thickness of the node outline for bias visualization
     
+    [Header("Tooltip Settings")]
+    public GameObject tooltipPrefab;    // Prefab for the tooltip (can be a UI Text element with background)
+    
     private Dictionary<int, Vector2> nodePositions = new Dictionary<int, Vector2>();
     private Dictionary<int, Image> nodeImages = new Dictionary<int, Image>();
     private Dictionary<int, Outline> nodeOutlines = new Dictionary<int, Outline>();
@@ -27,6 +32,7 @@ public class NetworkVisualizer : MonoBehaviour
     private Creature selectedCreature;
     private CameraController cameraController;
     private Dictionary<int, double> lastNodeValues = new Dictionary<int, double>();
+    private GameObject activeTooltip;    // Reference to the currently displayed tooltip
     
     void Start()
     {
@@ -364,6 +370,25 @@ public class NetworkVisualizer : MonoBehaviour
         outline.effectColor = GetBiasColor((float)node.Bias);
         outline.effectDistance = new Vector2(outlineThickness, outlineThickness);
         outline.useGraphicAlpha = false;
+        
+        // Add event trigger component for hover tooltips
+        EventTrigger eventTrigger = nodeObj.GetComponent<EventTrigger>();
+        if (eventTrigger == null)
+        {
+            eventTrigger = nodeObj.AddComponent<EventTrigger>();
+        }
+        
+        // Add pointer enter event (hover)
+        EventTrigger.Entry enterEntry = new EventTrigger.Entry();
+        enterEntry.eventID = EventTriggerType.PointerEnter;
+        enterEntry.callback.AddListener((eventData) => { ShowNodeTooltip(node.Key, rect); });
+        eventTrigger.triggers.Add(enterEntry);
+        
+        // Add pointer exit event (hover end)
+        EventTrigger.Entry exitEntry = new EventTrigger.Entry();
+        exitEntry.eventID = EventTriggerType.PointerExit;
+        exitEntry.callback.AddListener((eventData) => { HideTooltip(); });
+        eventTrigger.triggers.Add(exitEntry);
     }
     
     // Helper method to convert bias value to color
@@ -417,6 +442,71 @@ public class NetworkVisualizer : MonoBehaviour
         }
     }
     
+    void ShowNodeTooltip(int nodeId, RectTransform nodeRect)
+    {
+        // Hide any existing tooltip
+        HideTooltip();
+        
+        // Create tooltip if prefab exists
+        if (tooltipPrefab != null)
+        {
+            // Get the node gene to access bias
+            var brain = selectedCreature.GetBrain();
+            if (brain == null) return;
+            
+            var nodesField = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (nodesField == null) return;
+            
+            var nodes = nodesField.GetValue(brain) as Dictionary<int, NodeGene>;
+            if (nodes == null || !nodes.ContainsKey(nodeId)) return;
+            
+            NodeGene node = nodes[nodeId];
+            
+            // Get the current node value (if available)
+            string valueText = "No value";
+            if (lastNodeValues.TryGetValue(nodeId, out double value))
+            {
+                valueText = $"Value: {value:F4}";
+            }
+            
+            // Create the tooltip
+            activeTooltip = Instantiate(tooltipPrefab, networkPanel);
+            RectTransform tooltipRect = activeTooltip.GetComponent<RectTransform>();
+            
+            // Position above the node
+            tooltipRect.anchoredPosition = nodeRect.anchoredPosition + new Vector2(0, nodeSize);
+            
+            // Set the tooltip text with NodeTooltip component
+            NodeTooltip tooltipComponent = activeTooltip.GetComponent<NodeTooltip>();
+            if (tooltipComponent != null)
+            {
+                string nodeType = node.Type.ToString();
+                string biasText = $"Bias: {node.Bias:F4}";
+                tooltipComponent.SetTooltipText($"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}");
+            }
+            else
+            {
+                // Fallback to standard Text component if NodeTooltip not found
+                TextMeshProUGUI tooltipText = activeTooltip.GetComponentInChildren<TextMeshProUGUI>();
+                if (tooltipText != null)
+                {
+                    string nodeType = node.Type.ToString();
+                    string biasText = $"Bias: {node.Bias:F4}";
+                    tooltipText.text = $"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}";
+                }
+            }
+        }
+    }
+    
+    void HideTooltip()
+    {
+        if (activeTooltip != null)
+        {
+            Destroy(activeTooltip);
+            activeTooltip = null;
+        }
+    }
+    
     void ClearVisualization()
     {
         // Clear all node and connection objects
@@ -430,6 +520,9 @@ public class NetworkVisualizer : MonoBehaviour
         nodeOutlines.Clear();
         connectionObjects.Clear();
         lastNodeValues.Clear();
+        
+        // Ensure tooltip is destroyed
+        HideTooltip();
     }
     
     void HideNetwork()
