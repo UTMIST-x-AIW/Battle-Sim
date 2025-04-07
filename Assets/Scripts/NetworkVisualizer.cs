@@ -444,11 +444,15 @@ public class NetworkVisualizer : MonoBehaviour
     
     void ShowNodeTooltip(int nodeId, RectTransform nodeRect)
     {
-        // Hide any existing tooltip
-        HideTooltip();
-        
-        // Create tooltip if prefab exists
-        if (tooltipPrefab != null)
+        // Create tooltip if it doesn't exist
+        if (activeTooltip == null && tooltipPrefab != null)
+        {
+            // Create the tooltip under the canvas
+            Canvas canvas = networkPanel.GetComponentInParent<Canvas>();
+            activeTooltip = Instantiate(tooltipPrefab, canvas.transform);
+        }
+
+        if (activeTooltip != null)
         {
             // Get the node gene to access bias
             var brain = selectedCreature.GetBrain();
@@ -462,23 +466,21 @@ public class NetworkVisualizer : MonoBehaviour
             
             NodeGene node = nodes[nodeId];
             
-            // Get the current node value (if available)
+            // Get the current node value (if available) and round to 2 decimal places
             string valueText = "No value";
             if (lastNodeValues.TryGetValue(nodeId, out double value))
             {
-                valueText = $"Value: {value:F4}";
+                float roundedValue = Mathf.Round((float)value * 100f) / 100f;
+                valueText = $"Value: {roundedValue:F2}";
             }
-            
-            // Create the tooltip under the canvas
-            Canvas canvas = networkPanel.GetComponentInParent<Canvas>();
-            activeTooltip = Instantiate(tooltipPrefab, canvas.transform);
             
             // Set the tooltip text with NodeTooltip component
             NodeTooltip tooltipComponent = activeTooltip.GetComponent<NodeTooltip>();
             if (tooltipComponent != null)
             {
                 string nodeType = node.Type.ToString();
-                string biasText = $"Bias: {node.Bias:F4}";
+                float roundedBias = Mathf.Round((float)node.Bias * 100f) / 100f;
+                string biasText = $"Bias: {roundedBias:F2}";
                 tooltipComponent.SetTooltipText($"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}");
             }
             else
@@ -488,7 +490,8 @@ public class NetworkVisualizer : MonoBehaviour
                 if (tooltipText != null)
                 {
                     string nodeType = node.Type.ToString();
-                    string biasText = $"Bias: {node.Bias:F4}";
+                    float roundedBias = Mathf.Round((float)node.Bias * 100f) / 100f;
+                    string biasText = $"Bias: {roundedBias:F2}";
                     tooltipText.text = $"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}";
                 }
             }
