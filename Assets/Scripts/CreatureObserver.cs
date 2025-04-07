@@ -12,7 +12,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[11];  // Now 11 observations (removed velocity x,y)
+        float[] obs = new float[13];  // Now 13 observations (added ground x,y)
         
         // Basic stats
         obs[0] = self.health;
@@ -26,11 +26,13 @@ public class CreatureObserver : MonoBehaviour
         Vector2 oppositeTypePos = Vector2.zero;
         Vector2 cherryPos = Vector2.zero;
         Vector2 treePos = Vector2.zero;
+        Vector2 groundPos = Vector2.zero;
 
         float sameTypeDistance = float.MaxValue;
         float oppositeTypeDistance = float.MaxValue;
         float cherryDistance = float.MaxValue;
         float treeDistance = float.MaxValue;
+        float groundDistance = float.MaxValue;
         
         foreach (var collider in nearbyColliders)
         {
@@ -54,6 +56,19 @@ public class CreatureObserver : MonoBehaviour
                 {
                     treePos = relativePos;
                     treeDistance = distance;
+                }
+            }
+            else if (collider.CompareTag("Ground"))
+            {
+                // For ground tiles, we want the closest point on the collider
+                Vector2 closestPoint = collider.ClosestPoint(transform.position);
+                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                float groundPointDistance = groundRelativePos.magnitude;
+                
+                if (groundPointDistance < groundDistance)
+                {
+                    groundPos = groundRelativePos;
+                    groundDistance = groundPointDistance;
                 }
             }
             else
@@ -150,6 +165,23 @@ public class CreatureObserver : MonoBehaviour
         {
             treePos = Vector2.zero; // Outside detection radius
         }
+
+        // Ground observations (x,y components)
+        if (groundDistance <= DETECTION_RADIUS)
+        {
+            if (groundDistance > 0)
+            {
+                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
+                float intensityFactor = 1.0f - groundDistance / DETECTION_RADIUS;
+                
+                // Apply intensity factor directly to the relative position vector
+                groundPos *= intensityFactor;
+            }
+        }
+        else
+        {
+            groundPos = Vector2.zero; // Outside detection radius
+        }
         
         // Assign the transformed values to the observation array
         obs[3] = sameTypePos.x;
@@ -163,6 +195,9 @@ public class CreatureObserver : MonoBehaviour
         
         obs[9] = treePos.x;
         obs[10] = treePos.y;
+
+        obs[11] = groundPos.x;
+        obs[12] = groundPos.y;
         
         return obs;
     }

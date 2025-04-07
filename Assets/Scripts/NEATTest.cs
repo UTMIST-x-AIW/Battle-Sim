@@ -407,7 +407,7 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (11 inputs total): 
+        // Add input nodes (13 inputs total): 
         // 0: health
         // 1: energyMeter
         // 2: reproductionMeter
@@ -415,7 +415,8 @@ public class NEATTest : MonoBehaviour
         // 5,6: opposite type x,y
         // 7,8: cherry x,y
         // 9,10: tree x,y
-        for (int i = 0; i < 11; i++)
+        // 11,12: ground x,y
+        for (int i = 0; i < 13; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -445,7 +446,7 @@ public class NEATTest : MonoBehaviour
         genome.AddNode(outputNode3);
         genome.AddNode(outputNode4);
 
-        for(int i = 0; i < 11; i++)
+        for(int i = 0; i < 13; i++)
         {
             for (int j = 17; j < 21; j++)
             {
@@ -460,7 +461,7 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (11 inputs total): 
+        // Add input nodes (13 inputs total): 
         // 0: health
         // 1: energyMeter
         // 2: reproductionMeter
@@ -468,7 +469,8 @@ public class NEATTest : MonoBehaviour
         // 5,6: opposite type x,y
         // 7,8: cherry x,y
         // 9,10: tree x,y
-        for (int i = 0; i < 11; i++)
+        // 11,12: ground x,y
+        for (int i = 0; i < 13; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -528,6 +530,10 @@ public class NEATTest : MonoBehaviour
         // EnergyMeter level to actions - enables actions only when energy is high
         genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 1, 19, 0.6f)); // EnergyMeter to chop
         genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 1, 20, 0.7f)); // EnergyMeter to attack - higher weight makes Kai more likely to attack
+        
+        // Ground avoidance/attraction connections
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 11, 17, 0.5f)); // Ground x to horizontal velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, 18, 0.5f)); // Ground y to vertical velocity
         
         return genome;
     }
@@ -613,8 +619,16 @@ public class NEATTest : MonoBehaviour
         // Create a custom genome with clear reproduction bias
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (11 inputs total)
-        for (int i = 0; i < 11; i++)
+        // Add input nodes (13 inputs total)
+        // 0: health
+        // 1: energyMeter
+        // 2: reproductionMeter
+        // 3,4: same type x,y
+        // 5,6: opposite type x,y
+        // 7,8: cherry x,y
+        // 9,10: tree x,y
+        // 11,12: ground x,y
+        for (int i = 0; i < 13; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -658,6 +672,10 @@ public class NEATTest : MonoBehaviour
         // Add connections to make creatures see each other
         genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 3, 17, 0.4f * reproBias));  // Same creature x to x movement (weighted by repro bias)
         genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 4, 18, 0.4f * reproBias));  // Same creature y to y movement (weighted by repro bias)
+        
+        // Add connections for ground detection
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 11, 17, 0.3f));  // Ground x to x movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 12, 18, 0.3f));  // Ground y to y movement
         
         // Create the neural network and initialize the creature
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
