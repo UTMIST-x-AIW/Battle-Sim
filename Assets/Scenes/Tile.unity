@@ -79199,7 +79199,7 @@ MonoBehaviour:
   networkPanel: {fileID: 233269537}
   nodePrefab: {fileID: 1157373685560444732, guid: 5f3ea1b4123334b0dbd0e94e95e49222, type: 3}
   connectionPrefab: {fileID: 2012536095769304235, guid: f37956c9c4fa24b88b197d73e6af3e53, type: 3}
-  creatureStatsPanel: {fileID: 0}
+  creatureStatsPanel: {fileID: 777694459}
   panelOffset: {x: 0, y: 0}
   panelSize: {x: 600, y: 450}
   nodeSize: 80

@@ -80,6 +80,8 @@ public class Creature : MonoBehaviour
     private static PolygonCollider2D cachedFloorCollider;
     private static Bounds floorBounds;
 
+    private bool hasCheckedNeatTest = false;
+
     private void Awake()
     {
         // Cache NEATTest reference if not already cached
@@ -726,7 +728,17 @@ public class Creature : MonoBehaviour
 
     private void OnGUI()
     {
-        // Only proceed if labels are enabled and NEATTest reference exists
+        // Only check for NEATTest reference once
+        if (!hasCheckedNeatTest)
+        {
+            if (neatTest == null)
+            {
+                neatTest = FindObjectOfType<NEATTest>();
+            }
+            hasCheckedNeatTest = true;
+        }
+
+        // If we still don't have a NEATTest reference or labels are disabled, return early
         if (neatTest == null || !neatTest.showCreatureLabels) return;
 
         // Get screen position for this creature
