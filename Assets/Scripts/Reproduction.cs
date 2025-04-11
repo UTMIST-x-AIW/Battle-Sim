@@ -235,10 +235,81 @@ public class Reproduction : MonoBehaviour
             return null;
         }
         
-        // Add all nodes (taking randomly from either parent for matching nodes)
+        // First, ensure we copy all input and output nodes
+        // These are essential nodes that should never be missing
+
+        // Add all input nodes (0-12)
+        for (int i = 0; i <= 12; i++)
+        {
+            // Check if either parent has this input node
+            if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
+            {
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
+            }
+            else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
+            {
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
+            }
+            else
+            {
+                // Create a new input node if neither parent has it
+                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+                newNode.Layer = 0;
+                newNode.Bias = 0.0;
+                childGenome.AddNode(newNode);
+                
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Input node {i} missing from both parents, creating new one");
+                }
+                else
+                {
+                    Debug.LogWarning($"Input node {i} missing from both parents, creating new one");
+                }
+            }
+        }
+        
+        // Add all output nodes (17-20)
+        for (int i = 17; i <= 20; i++)
+        {
+            // Check if either parent has this output node
+            if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
+            {
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
+            }
+            else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
+            {
+                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
+            }
+            else
+            {
+                // Create a new output node if neither parent has it
+                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
+                newNode.Layer = 2;
+                newNode.Bias = 0.0;
+                childGenome.AddNode(newNode);
+                
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Output node {i} missing from both parents, creating new one");
+                }
+                else
+                {
+                    Debug.LogWarning($"Output node {i} missing from both parents, creating new one");
+                }
+            }
+        }
+        
+        // Add remaining hidden nodes (taking randomly from either parent for matching nodes)
         var allNodeKeys = new HashSet<int>(parent1Genome.Nodes.Keys.Concat(parent2Genome.Nodes.Keys));
         foreach (var key in allNodeKeys)
         {
+            // Skip input and output nodes which we've already handled
+            if (key <= 12 || (key >= 17 && key <= 20))
+            {
+                continue;
+            }
+            
             if (parent1Genome.Nodes.ContainsKey(key) && parent2Genome.Nodes.ContainsKey(key))
             {
                 // Both parents have this node, randomly choose one
@@ -262,6 +333,15 @@ public class Reproduction : MonoBehaviour
         var allConnectionKeys = new HashSet<int>(parent1Genome.Connections.Keys.Concat(parent2Genome.Connections.Keys));
         foreach (var key in allConnectionKeys)
         {
+            // Make sure the connection's input and output nodes exist in the child
+            var conn = parent1Genome.Connections.ContainsKey(key) ? 
+                parent1Genome.Connections[key] : parent2Genome.Connections[key];
+                
+            if (!childGenome.Nodes.ContainsKey(conn.InputKey) || !childGenome.Nodes.ContainsKey(conn.OutputKey))
+            {
+                continue;
+            }
+            
             if (parent1Genome.Connections.ContainsKey(key) && parent2Genome.Connections.ContainsKey(key))
             {
                 // Both parents have this connection, randomly choose one
@@ -278,6 +358,28 @@ public class Reproduction : MonoBehaviour
             {
                 // Only parent2 has this connection
                 childGenome.AddConnection((NEAT.Genes.ConnectionGene)parent2Genome.Connections[key].Clone());
+            }
+        }
+
+        // Ensure all output nodes have at least one connection
+        for (int i = 17; i <= 20; i++)
+        {
+            bool hasConnection = childGenome.Connections.Values
+                .Any(c => c.OutputKey == i && c.Enabled);
+                
+            if (!hasConnection)
+            {
+                // Find an input node to connect to this output
+                for (int j = 0; j <= 12; j++)
+                {
+                    if (childGenome.Nodes.ContainsKey(j))
+                    {
+                        int connKey = childGenome.Connections.Count;
+                        childGenome.AddConnection(new NEAT.Genes.ConnectionGene(
+                            connKey, j, i, Random.Range(-1f, 1f)));
+                        break;
+                    }
+                }
             }
         }
 
@@ -421,10 +523,23 @@ public class Reproduction : MonoBehaviour
         // 5. Delete connection mutation
         if (Random.value < DELETE_CONNECTION_PROB && genome.Connections.Count > 1)
         {
-            // Simply pick a random connection to delete - we'll handle disconnected nodes in the neural network
-            var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
-            var connToDelete = connList[Random.Range(0, connList.Count)];
-            genome.Connections.Remove(connToDelete.Key);
+            // Only consider connections that don't connect to input or output nodes for deletion
+            var deletableConnections = genome.Connections.Values
+                .Where(c => 
+                    // Don't delete connections to output nodes
+                    (!genome.Nodes.ContainsKey(c.OutputKey) || 
+                     genome.Nodes[c.OutputKey].Type != NEAT.Genes.NodeType.Output) &&
+                    // Don't delete connections from input nodes
+                    (!genome.Nodes.ContainsKey(c.InputKey) || 
+                     genome.Nodes[c.InputKey].Type != NEAT.Genes.NodeType.Input))
+                .ToList();
+            
+            if (deletableConnections.Count > 0)
+            {
+                // Pick a random connection to delete that doesn't affect input or output nodes
+                var connToDelete = deletableConnections[Random.Range(0, deletableConnections.Count)];
+                genome.Connections.Remove(connToDelete.Key);
+            }
         }
 
         // 6. Modify weight mutation
@@ -439,6 +554,168 @@ public class Reproduction : MonoBehaviour
             
             // Clamp weight to valid range
             connToModify.Weight = Mathf.Clamp((float)connToModify.Weight, -1f, 1f);
+        }
+        
+        // 7. Validation: Ensure all input and output nodes exist
+        EnsureRequiredNodes(genome);
+    }
+
+    // Updated method to ensure all required nodes exist in the genome
+    private void EnsureRequiredNodes(NEAT.Genome.Genome genome)
+    {
+        // Ensure all input nodes (0-12) exist
+        for (int i = 0; i <= 12; i++)
+        {
+            // If the input node doesn't exist, recreate it
+            if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Input)
+            {
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Missing input node {i} detected during mutation. Recreating it.");
+                }
+                else
+                {
+                    Debug.LogWarning($"Missing input node {i} detected during mutation. Recreating it.");
+                }
+                
+                // Create the input node
+                var inputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+                inputNode.Layer = 0;
+                inputNode.Bias = 0.0;
+                
+                // If it already exists but with wrong type, remove it first
+                if (genome.Nodes.ContainsKey(i))
+                {
+                    genome.Nodes.Remove(i);
+                }
+                
+                // Add the input node
+                genome.AddNode(inputNode);
+                
+                // Connect this input to at least one output to ensure it's used
+                for (int j = 17; j <= 20; j++)
+                {
+                    if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
+                    {
+                        int connKey = genome.Connections.Count;
+                        genome.AddConnection(new NEAT.Genes.ConnectionGene(
+                            connKey,
+                            i,
+                            j,
+                            Random.Range(-1f, 1f)));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Check for output nodes 17-20 (existing code)
+        for (int i = 17; i <= 20; i++)
+        {
+            // If the output node doesn't exist, recreate it
+            if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Output)
+            {
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Missing output node {i} detected during mutation. Recreating it.");
+                }
+                else
+                {
+                    Debug.LogWarning($"Missing output node {i} detected during mutation. Recreating it.");
+                }
+                
+                // Create the output node
+                var outputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
+                outputNode.Layer = 2;
+                outputNode.Bias = 0.0;
+                
+                // If it already exists but with wrong type, remove it first
+                if (genome.Nodes.ContainsKey(i))
+                {
+                    genome.Nodes.Remove(i);
+                }
+                
+                // Add the output node
+                genome.AddNode(outputNode);
+                
+                // Add at least one connection to this output node to ensure it's used
+                // Find the first available input node and connect to it
+                var inputNode = genome.Nodes.Values.FirstOrDefault(n => n.Type == NEAT.Genes.NodeType.Input);
+                if (inputNode != null)
+                {
+                    int connKey = genome.Connections.Count;
+                    genome.AddConnection(new NEAT.Genes.ConnectionGene(
+                        connKey,
+                        inputNode.Key,
+                        i,
+                        Random.Range(-1f, 1f)));
+                }
+            }
+        }
+        
+        // Ensure all output nodes have at least one incoming connection
+        for (int i = 17; i <= 20; i++)
+        {
+            bool hasConnection = genome.Connections.Values
+                .Any(c => c.OutputKey == i && c.Enabled);
+                
+            if (!hasConnection)
+            {
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Output node {i} has no connections. Adding one.");
+                }
+                else
+                {
+                    Debug.LogWarning($"Output node {i} has no connections. Adding one.");
+                }
+                
+                // Find an appropriate node to connect to this output
+                var inputNode = genome.Nodes.Values.FirstOrDefault(n => n.Type == NEAT.Genes.NodeType.Input);
+                if (inputNode != null)
+                {
+                    int connKey = genome.Connections.Count;
+                    genome.AddConnection(new NEAT.Genes.ConnectionGene(
+                        connKey,
+                        inputNode.Key,
+                        i,
+                        Random.Range(-1f, 1f)));
+                }
+            }
+        }
+        
+        // Ensure all input nodes have at least one outgoing connection
+        for (int i = 0; i <= 12; i++)
+        {
+            bool hasConnection = genome.Connections.Values
+                .Any(c => c.InputKey == i && c.Enabled);
+                
+            if (!hasConnection)
+            {
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogMessage($"Input node {i} has no connections. Adding one.");
+                }
+                else
+                {
+                    Debug.LogWarning($"Input node {i} has no connections. Adding one.");
+                }
+                
+                // Connect to an output node
+                for (int j = 17; j <= 20; j++)
+                {
+                    if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
+                    {
+                        int connKey = genome.Connections.Count;
+                        genome.AddConnection(new NEAT.Genes.ConnectionGene(
+                            connKey,
+                            i,
+                            j,
+                            Random.Range(-1f, 1f)));
+                        break;
+                    }
+                }
+            }
         }
     }
 }
