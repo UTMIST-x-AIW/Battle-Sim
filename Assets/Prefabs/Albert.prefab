@@ -237,10 +237,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
-  reproduction: 0
-  energy: 0
+  energyMeter: 0
   maxHealth: 3
-  maxReproduction: 1
   maxEnergy: 1
   energyRechargeRate: 0.333
   reproductionRechargeRate: 0.5
@@ -248,7 +246,6 @@ MonoBehaviour:
   agingRate: 0.26
   generation: 0
   moveSpeed: 5
-  reproductionRate: 0.1
   weightMutationRate: 0.8
   mutationRange: 0.5
   addNodeRate: 0.2
@@ -258,11 +255,12 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
-  visionRange: 10
+  visionRange: 20
   chopRange: 1.5
   type: 0
+  observer: {fileID: 0}
   canStartReproducing: 0
-  reproductionCooldown: 0
+  reproductionMeter: 0
 --- !u!114 &-380665466361591250
 MonoBehaviour:
   m_ObjectHideFlags: 0
