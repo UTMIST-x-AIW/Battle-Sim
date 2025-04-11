@@ -199,23 +199,60 @@ public class Creature : MonoBehaviour
     public float[] GetActions()
     {
         try
-    {
-        if (brain == null)
         {
-            // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
+            if (brain == null)
+            {
+                // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
                 return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
-        }
-        
-        float[] observations = observer.GetObservations(this);
-        double[] doubleObservations = ConvertToDouble(observations);
-        
-        double[] doubleOutputs = brain.Activate(doubleObservations);
-        float[] outputs = ConvertToFloat(doubleOutputs);
-        
+            }
+            
+            float[] observations = observer.GetObservations(this);
+            double[] doubleObservations = ConvertToDouble(observations);
+            
+            // Use a separate try-catch for the activation to detect stack overflow specifically
+            double[] doubleOutputs;
+            try
+            {
+                // Add a timeout or stack overflow protection here
+                doubleOutputs = brain.Activate(doubleObservations);
+            }
+            catch (System.StackOverflowException e)
+            {
+                // Create a simple backup neural network or return default values
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError($"Stack overflow in neural network for {gameObject.name} (Gen {generation}). Creating fallback outputs.");
+                }
+                else
+                {
+                    Debug.LogError($"Stack overflow in neural network for {gameObject.name} (Gen {generation}). Creating fallback outputs.");
+                }
+                
+                // Return safe values
+                return new float[] { 0f, 0f, 0f, 0f };
+            }
+            catch (System.Exception e)
+            {
+                // Handle other activation errors
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError($"Neural network activation error for {gameObject.name} (Gen {generation}): {e.Message}");
+                }
+                else
+                {
+                    Debug.LogError($"Neural network activation error for {gameObject.name} (Gen {generation}): {e.Message}");
+                }
+                
+                // Return safe values
+                return new float[] { 0f, 0f, 0f, 0f };
+            }
+            
+            float[] outputs = ConvertToFloat(doubleOutputs);
+            
             // Log the neural network outputs for debugging
             string outputInfo = $"NN outputs for {gameObject.name} (Gen {generation}): Length={outputs.Length}, Values=[";
-        for (int i = 0; i < outputs.Length; i++)
-        {
+            for (int i = 0; i < outputs.Length; i++)
+            {
                 outputInfo += $"{outputs[i]:F3}";
                 if (i < outputs.Length - 1) outputInfo += ", ";
             }

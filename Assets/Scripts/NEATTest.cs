@@ -930,4 +930,146 @@ public class NEATTest : MonoBehaviour
             LogManager.LogError($"Error in RestartAfterCleanup: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
+
+    // Add this method in the NEATTest class, ideally near other genome-related methods
+    private void ValidateGenome(NEAT.Genome.Genome genome)
+    {
+        if (genome == null)
+        {
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogMessage("Error: Attempting to validate a null genome");
+            }
+            else
+            {
+                Debug.LogError("Attempting to validate a null genome");
+            }
+            return;
+        }
+
+        // 1. Ensure at least one connection exists between input and output layers
+        bool hasIOConnection = false;
+        foreach (var conn in genome.Connections.Values)
+        {
+            if (!conn.Enabled) continue;
+            
+            if (genome.Nodes.ContainsKey(conn.InputKey) && 
+                genome.Nodes.ContainsKey(conn.OutputKey) &&
+                genome.Nodes[conn.InputKey].Type == NEAT.Genes.NodeType.Input &&
+                genome.Nodes[conn.OutputKey].Type == NEAT.Genes.NodeType.Output)
+            {
+                hasIOConnection = true;
+                break;
+            }
+        }
+        
+        // If no direct I/O connections, add some
+        if (!hasIOConnection)
+        {
+            var inputNodes = genome.Nodes.Values.Where(n => n.Type == NEAT.Genes.NodeType.Input).ToList();
+            var outputNodes = genome.Nodes.Values.Where(n => n.Type == NEAT.Genes.NodeType.Output).ToList();
+            
+            if (inputNodes.Count > 0 && outputNodes.Count > 0)
+            {
+                // Add at least one connection from each input to a random output
+                foreach (var input in inputNodes)
+                {
+                    var output = outputNodes[UnityEngine.Random.Range(0, outputNodes.Count)];
+                    
+                    var newConn = new NEAT.Genes.ConnectionGene(
+                        genome.Connections.Count,
+                        input.Key,
+                        output.Key,
+                        UnityEngine.Random.Range(-0.5f, 0.5f));
+                        
+                    genome.AddConnection(newConn);
+                    
+                    if (LogManager.Instance != null)
+                    {
+                        LogManager.LogMessage($"Added connection from input {input.Key} to output {output.Key} to repair genome");
+                    }
+                    else
+                    {
+                        Debug.Log($"Added connection from input {input.Key} to output {output.Key} to repair genome");
+                    }
+                }
+            }
+        }
+        
+        // 2. Ensure proper node layers
+        foreach (var node in genome.Nodes.Values)
+        {
+            // Input nodes should be layer 0
+            if (node.Type == NEAT.Genes.NodeType.Input && node.Layer != 0)
+            {
+                node.Layer = 0;
+            }
+            
+            // Output nodes should be at least layer 1
+            if (node.Type == NEAT.Genes.NodeType.Output && node.Layer <= 0)
+            {
+                node.Layer = 1;
+            }
+        }
+        
+        // 3. Verify hidden nodes have proper layers (between input and output)
+        var inputLayer = 0;
+        var minOutputLayer = genome.Nodes.Values
+            .Where(n => n.Type == NEAT.Genes.NodeType.Output)
+            .Min(n => n.Layer);
+        
+        foreach (var node in genome.Nodes.Values)
+        {
+            if (node.Type == NEAT.Genes.NodeType.Hidden)
+            {
+                // Ensure hidden nodes are between input and output layers
+                if (node.Layer <= inputLayer || node.Layer >= minOutputLayer)
+                {
+                    node.Layer = inputLayer + 1;
+                }
+            }
+        }
+        
+        // 4. Verify connection directions follow layer hierarchy
+        foreach (var conn in genome.Connections.Values)
+        {
+            if (!conn.Enabled) continue;
+            
+            if (genome.Nodes.ContainsKey(conn.InputKey) && 
+                genome.Nodes.ContainsKey(conn.OutputKey))
+            {
+                var inputNode = genome.Nodes[conn.InputKey];
+                var outputNode = genome.Nodes[conn.OutputKey];
+                
+                // If connection goes backward (from higher to lower layer), disable it
+                if (inputNode.Layer >= outputNode.Layer)
+                {
+                    if (LogManager.Instance != null)
+                    {
+                        LogManager.LogMessage($"Disabling backward connection from node {conn.InputKey} (layer {inputNode.Layer}) to {conn.OutputKey} (layer {outputNode.Layer})");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Disabling backward connection from node {conn.InputKey} (layer {inputNode.Layer}) to {conn.OutputKey} (layer {outputNode.Layer})");
+                    }
+                    conn.Enabled = false;
+                }
+            }
+        }
+    }
+
+    // Add this call in the SpawnCreature method, right before the genome is used
+    private void SpawnCreature(Vector3 pos, bool isInitial = false, NEAT.Genome.Genome genome = null, Creature parent1 = null, Creature parent2 = null)
+    {
+        // ... existing code ...
+        
+        // Validate and fix genome right before it's used to create a creature
+        if (genome != null)
+        {
+            ValidateGenome(genome);
+        }
+        
+        // Create creature
+        // ... existing code ...
+    }
 } 

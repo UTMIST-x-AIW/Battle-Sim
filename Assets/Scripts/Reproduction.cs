@@ -409,6 +409,9 @@ public class Reproduction : MonoBehaviour
             
             // Create new node
             int newNodeKey = genome.Nodes.Count;
+            while (genome.Nodes.ContainsKey(newNodeKey)) {
+                newNodeKey++; // Ensure we use a unique key
+            }
             var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
             
             // Set layer between input and output nodes
@@ -506,7 +509,8 @@ public class Reproduction : MonoBehaviour
                 bool exists = genome.Connections.Values.Any(c =>
                     c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
                 
-                if (!exists)
+                // Check if adding this connection would create a cycle
+                if (!exists && !WouldCreateCycle(genome, sourceNode.Key, targetNode.Key))
                 {
                     var newConn = new NEAT.Genes.ConnectionGene(
                         genome.Connections.Count,
@@ -558,6 +562,223 @@ public class Reproduction : MonoBehaviour
         
         // 7. Validation: Ensure all input and output nodes exist
         EnsureRequiredNodes(genome);
+        
+        // 8. Final check: Remove any cycles in the network
+        RemoveCycles(genome);
+    }
+
+    // Checks if adding a connection from sourceKey to targetKey would create a cycle
+    private bool WouldCreateCycle(NEAT.Genome.Genome genome, int sourceKey, int targetKey)
+    {
+        // Simple check: if source layer is strictly less than target layer, no cycle is possible
+        if (genome.Nodes.ContainsKey(sourceKey) && 
+            genome.Nodes.ContainsKey(targetKey) && 
+            genome.Nodes[sourceKey].Layer < genome.Nodes[targetKey].Layer)
+        {
+            return false;
+        }
+        
+        // Otherwise, we need to do a depth-first search to check for cycles
+        var visited = new HashSet<int>();
+        var path = new HashSet<int>();
+        
+        // Add the connection we're considering
+        var tempConnections = new Dictionary<int, List<int>>();
+        
+        // Build connection graph
+        foreach (var conn in genome.Connections.Values)
+        {
+            if (!conn.Enabled) continue;
+            
+            if (!tempConnections.ContainsKey(conn.InputKey))
+            {
+                tempConnections[conn.InputKey] = new List<int>();
+            }
+            tempConnections[conn.InputKey].Add(conn.OutputKey);
+        }
+        
+        // Add the potential new connection
+        if (!tempConnections.ContainsKey(sourceKey))
+        {
+            tempConnections[sourceKey] = new List<int>();
+        }
+        tempConnections[sourceKey].Add(targetKey);
+        
+        // Check for cycles starting from the sourceKey
+        return HasCycle(tempConnections, sourceKey, visited, path);
+    }
+
+    // Depth-first search to detect cycles
+    private bool HasCycle(Dictionary<int, List<int>> connections, int nodeKey, HashSet<int> visited, HashSet<int> path)
+    {
+        // If node is not in the graph, it can't be part of a cycle
+        if (!connections.ContainsKey(nodeKey)) return false;
+        
+        // If we've seen this node in the current path, we found a cycle
+        if (path.Contains(nodeKey)) return true;
+        
+        // If we've already visited this node and found no cycles, skip it
+        if (visited.Contains(nodeKey)) return false;
+        
+        // Mark node as visited and add to current path
+        visited.Add(nodeKey);
+        path.Add(nodeKey);
+        
+        // Check all connections from this node
+        foreach (var nextNodeKey in connections[nodeKey])
+        {
+            // Skip if there's no outgoing connections
+            if (!connections.ContainsKey(nextNodeKey)) continue;
+            
+            // Recursively check for cycles
+            if (HasCycle(connections, nextNodeKey, visited, path))
+            {
+                return true;
+            }
+        }
+        
+        // Remove from current path as we backtrack
+        path.Remove(nodeKey);
+        
+        return false;
+    }
+
+    // Remove any cycles in the network
+    private void RemoveCycles(NEAT.Genome.Genome genome)
+    {
+        // Build a connection graph
+        var connections = new Dictionary<int, List<int>>();
+        
+        foreach (var conn in genome.Connections.Values)
+        {
+            if (!conn.Enabled) continue;
+            
+            if (!connections.ContainsKey(conn.InputKey))
+            {
+                connections[conn.InputKey] = new List<int>();
+            }
+            connections[conn.InputKey].Add(conn.OutputKey);
+        }
+        
+        // Try to find and break cycles
+        var visited = new HashSet<int>();
+        var path = new Stack<int>();
+        var currentPath = new HashSet<int>();
+        
+        // Start DFS from each unvisited node
+        foreach (var node in genome.Nodes.Values)
+        {
+            if (!visited.Contains(node.Key))
+            {
+                FindAndBreakCycles(genome, connections, node.Key, visited, path, currentPath);
+            }
+        }
+    }
+
+    private void FindAndBreakCycles(NEAT.Genome.Genome genome, Dictionary<int, List<int>> connections, 
+                                  int nodeKey, HashSet<int> visited, Stack<int> path, HashSet<int> currentPath)
+    {
+        // If node is not in the graph, it can't be part of a cycle
+        if (!connections.ContainsKey(nodeKey)) 
+        {
+            visited.Add(nodeKey);
+            return;
+        }
+        
+        // If we've seen this node in current path, we found a cycle
+        if (currentPath.Contains(nodeKey))
+        {
+            // Break the cycle by removing the last connection
+            BreakCycle(genome, path, nodeKey);
+            return;
+        }
+        
+        // If we've already visited this node and found no cycles, skip it
+        if (visited.Contains(nodeKey)) return;
+        
+        // Mark node as visited and add to current path
+        visited.Add(nodeKey);
+        currentPath.Add(nodeKey);
+        path.Push(nodeKey);
+        
+        // Check all connections from this node
+        if (connections.ContainsKey(nodeKey))
+        {
+            foreach (var nextNodeKey in new List<int>(connections[nodeKey]))
+            {
+                FindAndBreakCycles(genome, connections, nextNodeKey, visited, path, currentPath);
+            }
+        }
+        
+        // Remove from current path as we backtrack
+        currentPath.Remove(nodeKey);
+        path.Pop();
+    }
+
+    private void BreakCycle(NEAT.Genome.Genome genome, Stack<int> path, int cycleStartNode)
+    {
+        // Create a list to track the cycle
+        var cycle = new List<int>();
+        var tempStack = new Stack<int>(path);
+        
+        // Find the start of the cycle
+        while (tempStack.Count > 0)
+        {
+            int node = tempStack.Pop();
+            cycle.Add(node);
+            if (node == cycleStartNode) break;
+        }
+        
+        // Reverse to get the proper order
+        cycle.Reverse();
+        
+        // Identify connection to remove (use the one with highest layer difference)
+        int connectionToRemove = -1;
+        int maxLayerDiff = -1;
+        
+        for (int i = 0; i < cycle.Count - 1; i++)
+        {
+            int from = cycle[i];
+            int to = cycle[i + 1];
+            
+            // Find the connection ID
+            foreach (var conn in genome.Connections.Values)
+            {
+                if (conn.InputKey == from && conn.OutputKey == to && conn.Enabled)
+                {
+                    if (genome.Nodes.ContainsKey(from) && genome.Nodes.ContainsKey(to))
+                    {
+                        int layerDiff = genome.Nodes[to].Layer - genome.Nodes[from].Layer;
+                        if (layerDiff > maxLayerDiff)
+                        {
+                            maxLayerDiff = layerDiff;
+                            connectionToRemove = conn.Key;
+                        }
+                        else if (connectionToRemove == -1)
+                        {
+                            // If we haven't found a connection yet, use this one
+                            connectionToRemove = conn.Key;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        
+        // Remove the identified connection
+        if (connectionToRemove != -1 && genome.Connections.ContainsKey(connectionToRemove))
+        {
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogMessage($"Removing connection {connectionToRemove} to break a cycle");
+            }
+            else
+            {
+                Debug.LogWarning($"Removing connection {connectionToRemove} to break a cycle");
+            }
+            
+            genome.Connections[connectionToRemove].Enabled = false; // Just disable rather than remove
+        }
     }
 
     // Updated method to ensure all required nodes exist in the genome
