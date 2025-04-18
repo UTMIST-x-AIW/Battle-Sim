@@ -197,8 +197,8 @@ MonoBehaviour:
   maxEnergy: 1
   energyRechargeRate: 1.2
   reproductionRechargeRate: 0.5
-  agingStartTime: 2.62
-  agingRate: 0.26
+  agingStartTime: 7.5
+  agingRate: 0.05
   generation: 0
   moveSpeed: 5
   pushForce: 20

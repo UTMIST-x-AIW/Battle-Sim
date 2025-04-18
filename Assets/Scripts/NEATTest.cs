@@ -14,6 +14,9 @@ public class NEATTest : MonoBehaviour
     [Header("Population Settings")]
     public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
     public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
+    public int INITIAL_ALBERTS = 10; // Number of Alberts to spawn initially in Test 2
+    public float MIN_STARTING_AGE = 0f; // Minimum starting age for initial Alberts
+    public float MAX_STARTING_AGE = 30f; // Maximum starting age for initial Alberts
     
     // Property to display current Albert count in Inspector
     [SerializeField]
@@ -345,10 +348,53 @@ public class NEATTest : MonoBehaviour
 
     private void SetupAlbertsOnlyTest()
     {
-        Debug.Log("Starting Test: Alberts Only - Population will be managed automatically");
+        Debug.Log("Starting Test: Alberts Only - Spawning initial Alberts");
         
-        // No need to spawn initial creatures - the population management system will handle it
-        // The system will detect that we're below MIN_ALBERTS and start spawning creatures
+        // Spawn initial Alberts as specified by INITIAL_ALBERTS parameter
+        for (int i = 0; i < INITIAL_ALBERTS; i++)
+        {
+            // Calculate a position with some randomness within the spawn area
+            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+            
+            // Spawn the creature with a randomized brain
+            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            
+            if (creature != null)
+            {
+                // Initialize with random age based on parameters
+                float startingAge = Random.Range(MIN_STARTING_AGE, MAX_STARTING_AGE);
+                creature.Lifetime = startingAge;
+                
+                // If the creature starts with an age past the aging threshold, adjust health
+                if (startingAge > creature.agingStartTime)
+                {
+                    float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                    float healthLost = ageBeyondThreshold * creature.agingRate;
+                    creature.health = Mathf.Max(0.5f, creature.maxHealth - healthLost);
+                }
+                
+                // Set starting reproduction meter to a random value
+                creature.reproductionMeter = Random.Range(0f, 1f);
+                
+                // Set generation to 0 for initial Alberts
+                creature.generation = 0;
+                
+                LogManager.LogMessage($"Spawned initial Albert {i+1}/{INITIAL_ALBERTS} at {position}, age: {startingAge:F1}");
+            }
+        }
+        
+        // Report on the setup
+        LogManager.LogMessage($"Initial setup complete: {INITIAL_ALBERTS} Alberts spawned");
+        LogManager.LogMessage($"Age range: {MIN_STARTING_AGE}-{MAX_STARTING_AGE}");
+        LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
+        
+        // Check current count
+        CountAlberts();
     }
 
     private void SetupReproductionTest()
