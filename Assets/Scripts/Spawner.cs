@@ -9,9 +9,11 @@ public class Spawner : MonoBehaviour
     [SerializeField] private HeatMapData heatmapData; // Heatmap data for spawn probabilities
     [SerializeField, Range(0.1f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
+    [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
     [SerializeField, Range(0.1f, 2f)] private float checkInterval = 0.5f; // How often to check for replenishment (seconds)
 
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
+    private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
     private bool isSpawning = false; // Flag to track if a spawn is in progress
     private List<TilePosData.TilePos> highProbabilityPositions; // Cache of good spawn positions
     private float nextCheckTime = 0f; // Time of next replenishment check
@@ -32,10 +34,14 @@ public class Spawner : MonoBehaviour
         prefabParent = GameObject.Find($"{prefab.name} Parent");
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
         
+        // Create a parent for extra objects
+        extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");
+        if (extraPrefabParent == null) extraPrefabParent = new GameObject($"{prefab.name} Extra Parent");
+        
         // Pre-calculate and cache high probability positions
         CacheHighProbabilityPositions();
         
-        // Initial population of trees
+        // Initial population of objects
         StartCoroutine(InitialSpawning());
     }
 
@@ -46,13 +52,13 @@ public class Spawner : MonoBehaviour
         {
             nextCheckTime = Time.time + checkInterval;
             
-            // Check if we need to spawn more trees
+            // Check if we need to spawn more regular objects (not counting extras)
             int currentCount = prefabParent.transform.childCount;
             if (currentCount < maxNumOfSpawns && !isSpawning)
             {
-                // Spawn trees to reach the desired count
-                int treesToSpawn = maxNumOfSpawns - currentCount;
-                StartCoroutine(ReplenishSpawns(treesToSpawn));
+                // Spawn objects to reach the desired count
+                int objectsToSpawn = maxNumOfSpawns - currentCount;
+                StartCoroutine(ReplenishSpawns(objectsToSpawn));
             }
         }
     }
@@ -75,7 +81,7 @@ public class Spawner : MonoBehaviour
         }
         
         // If we don't have enough high probability positions, use all positions
-        if (highProbabilityPositions.Count < maxNumOfSpawns * 2)
+        if (highProbabilityPositions.Count < maxNumOfSpawns * 2 + numExtraObjects)
         {
             highProbabilityPositions = allPositions;
         }
@@ -97,8 +103,8 @@ public class Spawner : MonoBehaviour
         int positionIndex = 0;
         int numAttempts = 0;
         const int maxAttempts = 100; // Safety limit
-
-        // Continue spawning until the maximum number of spawns is reached
+        
+        // First spawn the regular objects
         while (prefabParent.transform.childCount < maxNumOfSpawns && numAttempts < maxAttempts)
         {
             // Get the next position
@@ -113,8 +119,41 @@ public class Spawner : MonoBehaviour
 
             if (spawnProbability > randomVal)
             {
-                // Spawn the prefab at the tile's position
-                SpawnPrefab(tile.pos);
+                // Spawn the regular prefab at the tile's position
+                SpawnPrefab(tile.pos, false);
+
+                // Reset attempts counter on successful spawn
+                numAttempts = 0;
+                
+                // Wait for the specified interval before the next spawn attempt
+                yield return new WaitForSeconds(spawnInterval);
+            }
+            
+            // Yield every few attempts to avoid freezing
+            if (numAttempts % 10 == 0)
+            {
+                yield return null;
+            }
+        }
+        
+        // Then spawn the extra objects that won't respawn
+        numAttempts = 0;
+        while (extraPrefabParent.transform.childCount < numExtraObjects && numAttempts < maxAttempts)
+        {
+            // Get the next position
+            var tile = highProbabilityPositions[positionIndex];
+            positionIndex = (positionIndex + 1) % highProbabilityPositions.Count; // Wrap around
+            
+            numAttempts++;
+            
+            // Calculate spawn probability and compare with a random value
+            float spawnProbability = heatmapData.GetValue(tile.pos);
+            float randomVal = Random.Range(0f, 100f);
+
+            if (spawnProbability > randomVal)
+            {
+                // Spawn the extra prefab at the tile's position
+                SpawnPrefab(tile.pos, true);
 
                 // Reset attempts counter on successful spawn
                 numAttempts = 0;
@@ -153,8 +192,8 @@ public class Spawner : MonoBehaviour
 
             if (spawnProbability > randomVal)
             {
-                // Spawn the prefab at the tile's position
-                SpawnPrefab(tile.pos);
+                // Spawn the regular prefab at the tile's position (never respawn extras)
+                SpawnPrefab(tile.pos, false);
                 spawned++;
                 
                 // Wait for the specified interval
@@ -171,7 +210,7 @@ public class Spawner : MonoBehaviour
         isSpawning = false;
     }
 
-    private void SpawnPrefab(Vector2 position)
+    private void SpawnPrefab(Vector2 position, bool isExtra)
     {
         // Check if there's already something at this position
         Collider2D existingObject = Physics2D.OverlapCircle(position, 0.5f);
@@ -182,7 +221,16 @@ public class Spawner : MonoBehaviour
         
         // Instantiate the prefab and set its parent
         GameObject spawnedPrefab = Instantiate(prefab, position, Quaternion.identity);
-        spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+        
+        // Assign to the appropriate parent based on whether it's an extra object
+        if (isExtra)
+        {
+            spawnedPrefab.transform.SetParent(extraPrefabParent.transform, false);
+        }
+        else
+        {
+            spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+        }
     }
 
     void Shuffle<T>(List<T> list)
