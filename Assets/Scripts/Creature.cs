@@ -43,6 +43,7 @@ public class Creature : MonoBehaviour
     
     [Header("Movement Settings")]
     public float moveSpeed = 5f;  // Maximum speed in any direction
+    public float pushForce = 20f; // Force applied for pushing, higher value means stronger pushing
     
     [Header("Reproduction Settings")]
     public float weightMutationRate = 0.8f;  // Chance of mutating each connection weight
@@ -158,11 +159,16 @@ public class Creature : MonoBehaviour
             rb = gameObject.AddComponent<Rigidbody2D>();
         }
         
-        // Configure Rigidbody2D
+        // Configure Rigidbody2D for physics interactions
         rb.gravityScale = 0f;
         rb.drag = 1f;
         rb.angularDrag = 1f;
+        rb.mass = 1f;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
+        
+        // NOTE: CircleCollider2D should be manually added to the prefab instead of via code
         
         // Update the animator with the creature type
         if (creatureAnimator != null)
@@ -430,29 +436,31 @@ public class Creature : MonoBehaviour
         
         if (cachedFloorCollider == null)
         {
-            // No floor found, just apply the movement
-            rb.velocity = desiredVelocity;
-                return;
-            }
-        
-        // Current position and desired position
-        Vector2 currentPos = rb.position;
-        Vector2 desiredPos = currentPos + desiredVelocity * Time.fixedDeltaTime;
-        
-        // Quick bounds check first (much faster than OverlapPoint)
-        bool inBounds = floorBounds.Contains(new Vector3(desiredPos.x, desiredPos.y, 0));
-        
-        // If definitely outside bounds, stop or redirect
-        if (!inBounds)
-        {
-            // Try to redirect toward the center of the floor
-            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
-            rb.velocity = directionToCenter * moveSpeed * 0.5f;
+            // No floor found, just apply the movement using force
+            // Use ForceMode2D.Force for continuous, physics-based movement
+            rb.AddForce(desiredVelocity, ForceMode2D.Force);
             return;
         }
         
-        // For positions near the edge, do a more precise check using the polygon collider
+        // Current position
+        Vector2 currentPos = rb.position;
+        
+        // Quick bounds check first (much faster than OverlapPoint)
+        bool inBounds = floorBounds.Contains(new Vector3(currentPos.x, currentPos.y, 0));
+        
+        // If definitely outside bounds, redirect toward center
+        if (!inBounds)
+        {
+            // Redirect toward the center of the floor
+            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
+            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
+            
+            // Apply a stronger force to return to bounds
+            rb.AddForce(directionToCenter * moveSpeed * 3f, ForceMode2D.Force);
+            return;
+        }
+        
+        // For positions near the edge, do a more precise check
         // Only do this check if we're moving significantly
         if (desiredVelocity.sqrMagnitude > 0.1f)
         {
@@ -460,9 +468,39 @@ public class Creature : MonoBehaviour
             Vector2 rayDirection = desiredVelocity.normalized;
             float rayDistance = desiredVelocity.magnitude * Time.fixedDeltaTime * 2; // Look a bit ahead
             
-            // Use a point slightly inward from the creature's edge
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            float insetDistance = spriteRenderer != null ? spriteRenderer.bounds.extents.x * 0.8f : 0.5f;
+            // Get collider radius for edge detection
+            // Default inset distance if no proper collider is found
+            float insetDistance = 0.5f;
+            
+            // Look for a non-trigger CircleCollider2D for physical interactions
+            CircleCollider2D[] circleColliders = GetComponents<CircleCollider2D>();
+            CircleCollider2D physicsCollider = null;
+            
+            // Find the first non-trigger CircleCollider2D
+            foreach (var collider in circleColliders)
+            {
+                if (!collider.isTrigger)
+                {
+                    physicsCollider = collider;
+                    break;
+                }
+            }
+            
+            // If we found a non-trigger circle collider, use its radius
+            if (physicsCollider != null)
+            {
+                insetDistance = physicsCollider.radius * 0.8f;
+            }
+            // Otherwise try to find a BoxCollider2D and use its size
+            else
+            {
+                BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
+                if (boxCollider != null && !boxCollider.isTrigger)
+                {
+                    // Use half of the smaller dimension of the box
+                    insetDistance = Mathf.Min(boxCollider.size.x, boxCollider.size.y) * 0.4f;
+                }
+            }
             
             // Multiple raycasts from different points on the creature
             bool anyRayHitsEdge = false;
@@ -490,12 +528,12 @@ public class Creature : MonoBehaviour
                 
                 // Blend between current direction and center direction
                 Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
-                rb.velocity = blendedDirection * moveSpeed;
+                rb.AddForce(blendedDirection * moveSpeed * 2f, ForceMode2D.Force);
                 return;
             }
             
             // Final precise check - use OverlapPoint for the exact boundary
-            bool pointInFloor = cachedFloorCollider.OverlapPoint(desiredPos);
+            bool pointInFloor = cachedFloorCollider.OverlapPoint(currentPos + rayDirection * insetDistance);
             if (!pointInFloor)
             {
                 // Deflect along the boundary instead of stopping
@@ -507,13 +545,19 @@ public class Creature : MonoBehaviour
                 Vector2 tangentialVelocity = desiredVelocity - projectedVelocity;
                 
                 // Use mostly tangential movement with a bit of inward movement
-                rb.velocity = tangentialVelocity * 0.8f + directionToCenter * moveSpeed * 0.3f;
+                rb.AddForce((tangentialVelocity * 0.8f + directionToCenter * moveSpeed * 0.5f), ForceMode2D.Force);
                 return;
             }
         }
         
-        // All checks passed, apply the original movement
-        rb.velocity = desiredVelocity;
+        // All checks passed, apply the original movement force
+        rb.AddForce(desiredVelocity, ForceMode2D.Force);
+        
+        // Limit maximum velocity to prevent excessive speeds from accumulating forces
+        if (rb.velocity.magnitude > moveSpeed * 1.2f)
+        {
+            rb.velocity = rb.velocity.normalized * moveSpeed * 1.2f;
+        }
     }
     
     private void ProcessActionCommands(float[] actions)
@@ -566,8 +610,8 @@ public class Creature : MonoBehaviour
                 moveDirection.Normalize();
             }
             
-            // Apply move speed with bounds check
-            Vector2 desiredVelocity = moveDirection * moveSpeed;
+            // Apply move speed with physics force (using pushForce value)
+            Vector2 desiredVelocity = moveDirection * pushForce;
             ApplyMovementWithBoundsCheck(desiredVelocity);
             
             // Process action commands for chop and attack (third and fourth values)
