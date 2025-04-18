@@ -59,7 +59,7 @@ public class NEATTest : MonoBehaviour
     private float lastPopulationCheck = 0f;
     private float populationCheckInterval = 0.1f;  // Check population every 0.1 seconds
     private float lastSpawnTime = 0f;
-    private float spawnCooldown = 1.0f;  // Minimum time between spawns
+    private float spawnCooldown = 0.01f;  // Minimum time between spawns
     private bool isSpawning = false;  // Flag to prevent multiple spawn coroutines
 
     private float countTimer = 0f;
@@ -227,7 +227,7 @@ public class NEATTest : MonoBehaviour
         lastSpawnTime = Time.time;
         
         // Add a random delay between 0.5 and 1.5 seconds before spawning
-        yield return new WaitForSeconds(Random.Range(0.5f, 1.5f));
+        yield return new WaitForSeconds(Random.Range(0.01f, 0.3f));
         
         try
         {
@@ -252,7 +252,7 @@ public class NEATTest : MonoBehaviour
             }
             
             // Initialize with random age and reproduction
-            float startingAge = Random.Range(0f, 10f);  // Reduced max age to 10 seconds
+            float startingAge = 0f;  // Reduced max age to 10 seconds
             creature.Lifetime = startingAge;  // Set the lifetime using the public property
             
             // If the creature starts with an age past the aging threshold, give it appropriate health

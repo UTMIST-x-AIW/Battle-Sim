@@ -240,7 +240,7 @@ MonoBehaviour:
   energyMeter: 0
   maxHealth: 3
   maxEnergy: 1
-  energyRechargeRate: 0.333
+  energyRechargeRate: 1.2
   reproductionRechargeRate: 0.5
   agingStartTime: 2.62
   agingRate: 0.26
@@ -321,7 +321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObject_mated_with: []
-  pReproduction: 0.8
+  pReproduction: 0.95
   Reproduction_prefab: {fileID: 7896111451434077960}
 --- !u!1001 &5208001705850349615
 PrefabInstance:

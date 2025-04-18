@@ -18440,8 +18440,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 4732040975953563953, guid: b23868e3f4ed36b43a1fb1459c5fba4a, type: 3}
-  MIN_ALBERTS: 20
-  MAX_ALBERTS: 40
+  MIN_ALBERTS: 50
+  MAX_ALBERTS: 100
   _current_alberts: 0
   maxHiddenLayers: 10
   maxCreatures: 120
@@ -79460,12 +79460,16 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: checkInterval
+      value: 0.298
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.5
+      value: 0.21
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 2
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: m_LocalPosition.x
