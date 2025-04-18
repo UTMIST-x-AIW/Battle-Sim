@@ -60,12 +60,6 @@ public class Reproduction : MonoBehaviour
             return;
         }
 
-        // Check if we've mated before
-        if (gameObject_mated_with.Contains(other_character))
-        {
-            return;
-        }
-
         // Check if other creature is ready to reproduce
         if (!otherCreature.canStartReproducing)
         {
@@ -100,7 +94,7 @@ public class Reproduction : MonoBehaviour
         // Set mating flag
         isMating = true;
 
-        // Add each other to the mated lists
+        // Still tracking past mates for reference, but not restricting repeat mating
         gameObject_mated_with.Add(other);
 
         Reproduction otherScript = other.GetComponent<Reproduction>();
@@ -147,7 +141,7 @@ public class Reproduction : MonoBehaviour
                     return;
                 }
 
-                // Add to mated list
+                // Still tracking past mates for reference, but not restricting repeat mating
                 otherScript.gameObject_mated_with.Add(this.gameObject);
             }
         }
