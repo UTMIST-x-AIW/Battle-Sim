@@ -196,9 +196,9 @@ MonoBehaviour:
   maxHealth: 3
   maxEnergy: 1
   energyRechargeRate: 1.2
-  reproductionRechargeRate: 0.5
-  agingStartTime: 7.5
-  agingRate: 0.05
+  reproductionRechargeRate: 1.2
+  agingStartTime: 5.81
+  agingRate: 0.25
   generation: 0
   moveSpeed: 5
   pushForce: 20
@@ -215,7 +215,7 @@ MonoBehaviour:
   chopRange: 1.5
   type: 0
   observer: {fileID: 0}
-  canStartReproducing: 0
+  canStartReproducing: 1
   reproductionMeter: 0
 --- !u!114 &-380665466361591250
 MonoBehaviour:

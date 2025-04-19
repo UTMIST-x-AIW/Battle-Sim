@@ -51,7 +51,7 @@ public class NEATTest : MonoBehaviour
     public Color spawnAreaColor = new Color(0.2f, 0.8f, 0.2f, 0.2f);  // Semi-transparent green
     
     [Header("Spawn Area Settings")]
-    public Vector2 spawnCenter = new Vector2(-10f, -0f);  // Center of the spawn area
+    public Vector2 spawnCenter = new Vector2(-25f, -0f);  // Center of the spawn area
     public float spawnSpreadRadius = 2f;  // Radius of the spawn area
     
     // NEAT instance for access by other classes

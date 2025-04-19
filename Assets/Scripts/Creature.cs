@@ -32,7 +32,7 @@ public class Creature : MonoBehaviour
     public float maxHealth = 3f;
     public float maxEnergy = 1f;
     public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
-    public float reproductionRechargeRate = 0.1f; // Fill from 0 to 1 in 10 seconds
+    public float reproductionRechargeRate = 0.333f; // Fill from 0 to 1 in 10 seconds
     
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
@@ -138,7 +138,7 @@ public class Creature : MonoBehaviour
         // Debug.Log(string.Format("{0}: Starting reproduction delay timer", gameObject.name));
         
         // Wait for 2 seconds before allowing reproduction
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.1f);
         
         // Double check we're still alive before enabling reproduction
         if (this != null && gameObject != null)
@@ -342,6 +342,11 @@ public class Creature : MonoBehaviour
             {
                 // Debug.Log(string.Format("{0}: Aging process started at time {1}", gameObject.name, lifetime));
                 health -= agingRate * Time.fixedDeltaTime;
+            }
+
+            if (Lifetime > 150)
+            {
+                health = 0;
             }
             
             // Recharge energy gradually

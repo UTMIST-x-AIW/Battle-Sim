@@ -7,10 +7,10 @@ public class Spawner : MonoBehaviour
 {
     [SerializeField] private GameObject prefab; // Prefab to spawn
     [SerializeField] private HeatMapData heatmapData; // Heatmap data for spawn probabilities
-    [SerializeField, Range(0.1f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
+    [SerializeField, Range(0.01f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
     [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
-    [SerializeField, Range(0.1f, 2f)] private float checkInterval = 0.5f; // How often to check for replenishment (seconds)
+    [SerializeField, Range(0.01f, 2f)] private float checkInterval = 0.5f; // How often to check for replenishment (seconds)
 
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
     private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
