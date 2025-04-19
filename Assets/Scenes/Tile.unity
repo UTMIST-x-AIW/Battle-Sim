@@ -82534,6 +82534,10 @@ PrefabInstance:
       propertyPath: numExtraObjects
       value: 201
       objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraHeatmapData
+      value: 
+      objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
     - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -82590,6 +82594,7 @@ SceneRoots:
   - {fileID: 1548064609}
   - {fileID: 1146894589}
   - {fileID: 1521058403}
+  - {fileID: 854105065}
   - {fileID: 302579215}
   - {fileID: 7016299647965348102}
   - {fileID: 260676806}
