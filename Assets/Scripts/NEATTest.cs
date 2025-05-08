@@ -40,6 +40,7 @@ public class NEATTest : MonoBehaviour
     private const int TEST_MATING_MOVEMENT = 1;
     private const int TEST_ALBERTS_ONLY = 2;  // New test case
     private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
+    private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
@@ -66,6 +67,9 @@ public class NEATTest : MonoBehaviour
     private bool isSpawning = false;  // Flag to prevent multiple spawn coroutines
 
     private float countTimer = 0f;
+
+    [Header("Creature Loading Settings")]
+    public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
     private void Awake()
     {
@@ -109,6 +113,9 @@ public class NEATTest : MonoBehaviour
                     break;
                 case TEST_REPRODUCTION:
                     SetupReproductionTest();
+                    break;
+                case TEST_LOAD_CREATURE:
+                    SetupLoadCreatureTest();
                     break;
                 default:
                     SetupNormalGame();
@@ -159,6 +166,11 @@ public class NEATTest : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 currentTest = TEST_NORMAL_GAME;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                currentTest = TEST_LOAD_CREATURE;
                 RestartTest();
             }
             
@@ -958,6 +970,9 @@ public class NEATTest : MonoBehaviour
                     case TEST_REPRODUCTION:
                         SetupReproductionTest();
                         break;
+                    case TEST_LOAD_CREATURE:
+                        SetupLoadCreatureTest();
+                        break;
                     default:
                         SetupNormalGame();
                         break;
@@ -1117,5 +1132,37 @@ public class NEATTest : MonoBehaviour
         
         // Create creature
         // ... existing code ...
+    }
+
+    private void SetupLoadCreatureTest()
+    {
+        if (string.IsNullOrEmpty(savedCreaturePath))
+        {
+            Debug.LogError("No saved creature path specified. Please set the path in the inspector.");
+            return;
+        }
+
+        Debug.Log($"Starting Test: Load Creature - Loading from {savedCreaturePath}");
+
+        // Calculate spawn position
+        Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+        Vector3 position = new Vector3(
+            spawnCenter.x + offset.x,
+            spawnCenter.y + offset.y,
+            0f
+        );
+
+        // Load the creature
+        var creature = CreatureLoader.LoadCreature(albertCreaturePrefab, position, savedCreaturePath);
+        
+        if (creature != null)
+        {
+            Debug.Log($"Successfully loaded creature at position {position}");
+            Debug.Log($"Creature properties: Type={creature.type}, Generation={creature.generation}, Age={creature.Lifetime:F1}");
+        }
+        else
+        {
+            Debug.LogError("Failed to load creature");
+        }
     }
 } 
