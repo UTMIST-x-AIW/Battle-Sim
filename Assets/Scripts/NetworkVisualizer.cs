@@ -104,6 +104,12 @@ public class NetworkVisualizer : MonoBehaviour
             }
         }
         
+        // Check for 'S' key to save selected creature
+        if (Input.GetKeyDown(KeyCode.S) && selectedCreature != null)
+        {
+            CreatureSaver.SaveCreature(selectedCreature);
+        }
+        
         // Update visualization if we have a selected creature
         if (selectedCreature != null && networkPanel != null && networkPanel.gameObject.activeSelf)
         {
