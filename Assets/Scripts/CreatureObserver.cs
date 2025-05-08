@@ -4,12 +4,10 @@ public class CreatureObserver : MonoBehaviour
 {
     public static readonly float DETECTION_RADIUS = 8f;
     private static int timestep = 0;
-    
-    private void Start()
-    {
+    Collider2D[] nearbyColliders = new Collider2D[20];
 
-    }
-    
+
+
     public float[] GetObservations(Creature self)
     {
         float[] obs = new float[13];  // Now 13 observations (added ground x,y)
@@ -18,10 +16,10 @@ public class CreatureObserver : MonoBehaviour
         obs[0] = self.health / self.maxHealth; // Normalized health
         obs[1] = self.energyMeter; // Energy meter (already 0-1)
         obs[2] = self.reproductionMeter; // Reproduction meter (already 0-1)
-        
+
         // Get nearby objects
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
-        
+        Physics2D.OverlapCircleNonAlloc(transform.position, DETECTION_RADIUS, nearbyColliders);
+
         Vector2 sameTypePos = Vector2.zero;
         Vector2 oppositeTypePos = Vector2.zero;
         Vector2 cherryPos = Vector2.zero;

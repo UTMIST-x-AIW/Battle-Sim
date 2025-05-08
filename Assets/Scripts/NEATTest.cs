@@ -33,15 +33,17 @@ public class NEATTest : MonoBehaviour
 
     [Header("Test Settings")]
     public bool runTests = true;
-    public int currentTest = 1;
+    public enum CurrentTest
+    {
+        NormalGame,
+        MatingMovement,
+        AlbertsOnly,
+        Reproduction,
+        LoadCreatures
+    }
+    public CurrentTest currentTest;
 
-    // Test scenarios
-    private const int TEST_NORMAL_GAME = 0;
-    private const int TEST_MATING_MOVEMENT = 1;
-    private const int TEST_ALBERTS_ONLY = 2;  // New test case
-    private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
-    private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
-
+ 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public bool showChopRange = false;  // Toggle for chop range visualization
@@ -71,16 +73,11 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Loading Settings")]
     public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
+
     private void Awake()
     {
-        // Check if there's already an instance
-        if (instance != null && instance != this)
-        {
-            Debug.LogError($"Found duplicate NEATTest on {gameObject.name}. There should only be one NEATTest component in the scene!");
-            Destroy(this);
-            return;
-        }
-        instance = this;
+
+       
     }
     
     void Start()
@@ -95,26 +92,26 @@ public class NEATTest : MonoBehaviour
         // Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
         foreach (var creature in existingCreatures)
         {
-            Destroy(creature.gameObject);
+            ObjectPoolManager.ReturnObjectToPool(creature.gameObject);
         }
 
         if (runTests)
         {
             switch (currentTest)
             {
-                case TEST_NORMAL_GAME:
+                case CurrentTest.NormalGame:
                     SetupNormalGame();
                     break;
-                case TEST_MATING_MOVEMENT:
+                case CurrentTest.MatingMovement:
                     SetupMatingMovementTest();
                     break;
-                case TEST_ALBERTS_ONLY:
+                case CurrentTest.AlbertsOnly:
                     SetupAlbertsOnlyTest();
                     break;
-                case TEST_REPRODUCTION:
+                case CurrentTest.Reproduction:
                     SetupReproductionTest();
                     break;
-                case TEST_LOAD_CREATURE:
+                case CurrentTest.LoadCreatures:
                     SetupLoadCreatureTest();
                     break;
                 default:
@@ -133,7 +130,7 @@ public class NEATTest : MonoBehaviour
         try
         {
             // Check for population management (only for Tests 1 and 4 to not interfere with other tests)
-            if (currentTest == TEST_MATING_MOVEMENT || currentTest == TEST_ALBERTS_ONLY)
+            if (currentTest == CurrentTest.MatingMovement || currentTest == CurrentTest.AlbertsOnly)
             {
                 // Check current Albert count every second
                 countTimer += Time.deltaTime;
@@ -150,27 +147,27 @@ public class NEATTest : MonoBehaviour
             // Testing controls
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                currentTest = TEST_MATING_MOVEMENT;
+                currentTest = CurrentTest.MatingMovement;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                currentTest = TEST_ALBERTS_ONLY;
+                currentTest = CurrentTest.AlbertsOnly;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                currentTest = TEST_REPRODUCTION;
+                currentTest = CurrentTest.Reproduction;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                currentTest = TEST_NORMAL_GAME;
+                currentTest = CurrentTest.NormalGame;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                currentTest = TEST_LOAD_CREATURE;
+                currentTest = CurrentTest.LoadCreatures;
                 RestartTest();
             }
             
@@ -258,7 +255,7 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            
+            Debug.Log(ObjectPoolManager.ObjectPools);
             if (creature == null)
             {
                 LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
@@ -375,7 +372,6 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            
             if (creature != null)
             {
                 // Initialize with random age based on parameters
@@ -446,7 +442,7 @@ public class NEATTest : MonoBehaviour
     
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
@@ -600,8 +596,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithRandomizedBrain(GameObject prefab, Vector3 position, Creature.CreatureType type)
     {
         // Create the creature instance
-        var creature = Instantiate(prefab, position, Quaternion.identity);
-        var creatureComponent = creature.GetComponent<Creature>();
+        GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        Creature creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
         // Create a base genome
@@ -670,7 +666,7 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithReproductionBias(GameObject prefab, Vector2 position, Creature.CreatureType type, float reproBias)
     {
         // Create the creature instance
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
@@ -935,7 +931,7 @@ public class NEATTest : MonoBehaviour
             
             foreach (var creature in existingCreatures)
             {
-                Destroy(creature.gameObject);
+                ObjectPoolManager.ReturnObjectToPool(creature.gameObject);
             }
             
             // Wait a frame to ensure cleanup completes
@@ -958,26 +954,26 @@ public class NEATTest : MonoBehaviour
             {
                 switch (currentTest)
                 {
-                    case TEST_NORMAL_GAME:
+                    case CurrentTest.NormalGame:
                         SetupNormalGame();
                         break;
-                    case TEST_MATING_MOVEMENT:
+                    case CurrentTest.MatingMovement:
                         SetupMatingMovementTest();
                         break;
-                    case TEST_ALBERTS_ONLY:
+                    case CurrentTest.AlbertsOnly:
                         SetupAlbertsOnlyTest();
                         break;
-                    case TEST_REPRODUCTION:
+                    case CurrentTest.Reproduction:
                         SetupReproductionTest();
                         break;
-                    case TEST_LOAD_CREATURE:
+                    case CurrentTest.LoadCreatures:
                         SetupLoadCreatureTest();
                         break;
                     default:
                         SetupNormalGame();
                         break;
                 }
-                
+
                 LogManager.LogMessage($"Test {currentTest} restarted successfully");
             }
             else

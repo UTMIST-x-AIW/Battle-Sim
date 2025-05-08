@@ -15,13 +15,13 @@ public class MultiRayShooter : MonoBehaviour
     [SerializeField] Color lineColor = Color.white;
     [SerializeField] LayerMask layer;
     
-    private DebugMovement characterMovement;
+    private Movement characterMovement;
     private List<GameObject> lines = new List<GameObject>();
     
 
     void Start()
     {
-        characterMovement = GetComponent<DebugMovement>();
+        characterMovement = GetComponent<Movement>();
         for (int i = 0; i < _rayCount; i++)
         {
             GameObject line = Instantiate(linePrefab);

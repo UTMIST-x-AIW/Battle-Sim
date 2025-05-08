@@ -250,7 +250,7 @@ public class Spawner : MonoBehaviour
         }
         
         // Instantiate the prefab and set its parent
-        GameObject spawnedPrefab = Instantiate(prefab, position, Quaternion.identity);
+        GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         
         // Assign to the appropriate parent based on whether it's an extra object
         if (isExtra)
