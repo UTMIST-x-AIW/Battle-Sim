@@ -340,10 +340,10 @@ public class Creature : MonoBehaviour
                 health -= agingRate * Time.fixedDeltaTime;
             }
 
-            if (Lifetime > 150)
-            {
-                health = 0;
-            }
+            // if (Lifetime > 150)
+            // {
+            //     health = 0;
+            // }
             
             // Recharge energy gradually
             energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
