@@ -1292,14 +1292,18 @@ public class NEATTest : MonoBehaviour
         {
             int generation = creature.generation;
             
-            // Check if we've already saved a creature at this generation milestone
-            // We save one creature per generation milestone
+            // Save every creature that reaches the milestone
+            SaveCreatureAtMilestone(creature, generation);
+            
+            // Keep track of generation milestones we've seen (for logging/stats purposes)
             if (!savedGenerations.Contains(generation))
             {
-                SaveCreatureAtMilestone(creature, generation);
                 savedGenerations.Add(generation);
-                
-                Debug.Log($"Saved first creature at generation {generation}");
+                Debug.Log($"First creature reached generation milestone {generation}");
+            }
+            else
+            {
+                Debug.Log($"Another creature reached generation milestone {generation}");
             }
         }
     }
@@ -1414,7 +1418,7 @@ public class NEATTest : MonoBehaviour
         Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
         
         // Spawn 5 Alberts on the left side
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 20; i++)
         {
             // Calculate a position with randomness within the left spawn area
             Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
@@ -1444,7 +1448,7 @@ public class NEATTest : MonoBehaviour
         }
         
         // Spawn 5 Kais on the right side
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 20; i++)
         {
             // Calculate a position with randomness within the right spawn area
             Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
