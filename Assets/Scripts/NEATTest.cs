@@ -46,6 +46,7 @@ public class NEATTest : MonoBehaviour
     private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
     private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
     private const int TEST_ALBERTS_VS_KAIS = 5; // New test case for Alberts vs Kais
+    private const int TEST_LOAD_CREATURES_BATTLE = 6; // Test for loading creatures from folders for battle
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
@@ -79,6 +80,11 @@ public class NEATTest : MonoBehaviour
 
     [Header("Creature Loading Settings")]
     public string savedCreaturePath = "";  // Path to the saved creature JSON file
+    
+    [Header("Creatures Battle Loading Settings")]
+    public string albertsFolderPath = "";  // Folder containing JSONs for Alberts
+    public string kaisFolderPath = "";     // Folder containing JSONs for Kais
+    public int maxCreaturesToLoadPerSide = 5; // Maximum number of creatures to load per side
 
     [Header("Creature Saving Settings")]
     public bool saveCreatures = false;  // Option to save creatures at generation milestones
@@ -143,6 +149,9 @@ public class NEATTest : MonoBehaviour
                 case TEST_ALBERTS_VS_KAIS:
                     SetupAlbertsVsKaisTest();
                     break;
+                case TEST_LOAD_CREATURES_BATTLE:
+                    SetupLoadCreaturesBattleTest();
+                    break;
                 default:
                     SetupNormalGame();
                     break;
@@ -202,6 +211,11 @@ public class NEATTest : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 currentTest = TEST_ALBERTS_VS_KAIS;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                currentTest = TEST_LOAD_CREATURES_BATTLE;
                 RestartTest();
             }
             
@@ -1026,6 +1040,9 @@ public class NEATTest : MonoBehaviour
                     case TEST_ALBERTS_VS_KAIS:
                         SetupAlbertsVsKaisTest();
                         break;
+                    case TEST_LOAD_CREATURES_BATTLE:
+                        SetupLoadCreaturesBattleTest();
+                        break;
                     default:
                         SetupNormalGame();
                         break;
@@ -1459,5 +1476,228 @@ public class NEATTest : MonoBehaviour
         LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
         LogManager.LogMessage("Left side (Alberts): 5 creatures near " + spawnCenter);
         LogManager.LogMessage("Right side (Kais): 5 creatures near " + rightSpawnCenter);
+    }
+
+    private void SetupLoadCreaturesBattleTest()
+    {
+        Debug.Log("Starting Test: Load Creatures Battle");
+        
+        if (string.IsNullOrEmpty(albertsFolderPath) || string.IsNullOrEmpty(kaisFolderPath))
+        {
+            Debug.LogError("Please specify folder paths for both Alberts and Kais in the inspector!");
+            return;
+        }
+        
+        // Load and spawn Alberts from folder
+        int albertsLoaded = LoadAndSpawnCreaturesFromFolder(
+            albertsFolderPath, 
+            spawnCenter, 
+            spawnSpreadRadius, 
+            albertCreaturePrefab, 
+            Creature.CreatureType.Albert
+        );
+        
+        // Load and spawn Kais from folder
+        int kaisLoaded = LoadAndSpawnCreaturesFromFolder(
+            kaisFolderPath, 
+            rightSpawnCenter, 
+            rightSpawnSpreadRadius, 
+            kaiCreaturePrefab, 
+            Creature.CreatureType.Kai
+        );
+        
+        Debug.Log($"Creatures Battle Setup Complete: Loaded {albertsLoaded} Alberts and {kaisLoaded} Kais");
+        
+        if (albertsLoaded == 0 && kaisLoaded == 0)
+        {
+            Debug.LogWarning("No creatures were loaded from either folder. Please check the folder paths.");
+        }
+    }
+    
+    private int LoadAndSpawnCreaturesFromFolder(string folderPath, Vector2 spawnCenter, float spreadRadius, GameObject prefab, Creature.CreatureType type)
+    {
+        try
+        {
+            // Check if directory exists
+            if (!System.IO.Directory.Exists(folderPath))
+            {
+                Debug.LogError($"Directory not found: {folderPath}");
+                return 0;
+            }
+            
+            // Get all JSON files in the folder
+            string[] jsonFiles = System.IO.Directory.GetFiles(folderPath, "*.json");
+            
+            if (jsonFiles.Length == 0)
+            {
+                Debug.LogWarning($"No JSON files found in {folderPath}");
+                return 0;
+            }
+            
+            Debug.Log($"Found {jsonFiles.Length} JSON files in {folderPath}");
+            
+            // Limit to maximum number per side
+            int filesToProcess = Mathf.Min(jsonFiles.Length, maxCreaturesToLoadPerSide);
+            int creaturesLoaded = 0;
+            
+            // Process each JSON file
+            for (int i = 0; i < filesToProcess; i++)
+            {
+                try
+                {
+                    // Calculate spawn position with random offset
+                    Vector2 offset = UnityEngine.Random.insideUnitCircle * spreadRadius;
+                    Vector3 position = new Vector3(
+                        spawnCenter.x + offset.x,
+                        spawnCenter.y + offset.y,
+                        0f
+                    );
+                    
+                    // Load the creature, but override its type
+                    var creature = LoadCreatureFromFile(jsonFiles[i], prefab, position, type);
+                    
+                    if (creature != null)
+                    {
+                        creaturesLoaded++;
+                        Debug.Log($"Successfully loaded {type} #{creaturesLoaded} from {System.IO.Path.GetFileName(jsonFiles[i])}");
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error loading creature from {jsonFiles[i]}: {e.Message}");
+                }
+            }
+            
+            return creaturesLoaded;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error loading creatures from folder {folderPath}: {e.Message}");
+            return 0;
+        }
+    }
+    
+    private Creature LoadCreatureFromFile(string filePath, GameObject prefab, Vector3 position, Creature.CreatureType overrideType)
+    {
+        try
+        {
+            // Read the JSON file
+            if (!System.IO.File.Exists(filePath))
+            {
+                Debug.LogError($"File not found: {filePath}");
+                return null;
+            }
+            
+            string json = System.IO.File.ReadAllText(filePath);
+            SavedCreature savedCreature = JsonUtility.FromJson<SavedCreature>(json);
+            
+            if (savedCreature == null)
+            {
+                Debug.LogError($"Failed to parse JSON from {filePath}");
+                return null;
+            }
+            
+            // Override the type with our desired type
+            savedCreature.type = overrideType;
+            
+            // Instantiate the creature prefab at the specified position
+            GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
+            Creature creatureComponent = creatureObj.GetComponent<Creature>();
+            
+            if (creatureComponent == null)
+            {
+                Debug.LogError("Prefab does not have a Creature component");
+                Destroy(creatureObj);
+                return null;
+            }
+            
+            // Set the type from our override
+            creatureComponent.type = overrideType;
+            
+            // Copy properties from saved creature
+            creatureComponent.health = savedCreature.health;
+            creatureComponent.maxHealth = savedCreature.maxHealth;
+            creatureComponent.energyMeter = savedCreature.energyMeter;
+            creatureComponent.maxEnergy = savedCreature.maxEnergy;
+            creatureComponent.Lifetime = savedCreature.lifetime;
+            creatureComponent.generation = savedCreature.generation;
+            creatureComponent.moveSpeed = savedCreature.moveSpeed;
+            creatureComponent.pushForce = savedCreature.pushForce;
+            creatureComponent.visionRange = savedCreature.visionRange;
+            creatureComponent.chopRange = savedCreature.chopRange;
+            creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
+            creatureComponent.chopDamage = savedCreature.chopDamage;
+            creatureComponent.attackDamage = savedCreature.attackDamage;
+            
+            // Copy neural network parameters
+            creatureComponent.weightMutationRate = savedCreature.weightMutationRate;
+            creatureComponent.mutationRange = savedCreature.mutationRange;
+            creatureComponent.addNodeRate = savedCreature.addNodeRate;
+            creatureComponent.addConnectionRate = savedCreature.addConnectionRate;
+            creatureComponent.deleteConnectionRate = savedCreature.deleteConnectionRate;
+            creatureComponent.maxHiddenLayers = savedCreature.maxHiddenLayers;
+            
+            // Set up the neural network
+            if (savedCreature.brain != null)
+            {
+                try
+                {
+                    // Reconstruct the neural network from the saved brain data
+                    var nodes = new Dictionary<int, NEAT.Genes.NodeGene>();
+                    var connections = new Dictionary<int, NEAT.Genes.ConnectionGene>();
+                    
+                    // Create nodes
+                    foreach (var nodeData in savedCreature.brain.nodes)
+                    {
+                        var nodeType = (NEAT.Genes.NodeType)nodeData.type;
+                        var node = new NEAT.Genes.NodeGene(nodeData.key, nodeType);
+                        node.Layer = nodeData.layer;
+                        node.Bias = nodeData.bias;
+                        nodes.Add(nodeData.key, node);
+                    }
+                    
+                    // Create connections
+                    foreach (var connData in savedCreature.brain.connections)
+                    {
+                        var conn = new NEAT.Genes.ConnectionGene(
+                            connData.key,
+                            connData.inputKey,
+                            connData.outputKey,
+                            connData.weight
+                        );
+                        conn.Enabled = connData.enabled;
+                        connections.Add(connData.key, conn);
+                    }
+                    
+                    // Create the network
+                    var network = new NEAT.NN.FeedForwardNetwork(nodes, connections);
+                    creatureComponent.InitializeNetwork(network);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error reconstructing neural network: {e.Message}");
+                    
+                    // Fall back to a randomized brain
+                    var genome = CreateInitialGenome();
+                    var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+                    creatureComponent.InitializeNetwork(network);
+                }
+            }
+            else
+            {
+                // If no brain data, create a randomized brain
+                Debug.LogWarning("No brain data found in saved creature, creating a randomized brain");
+                var genome = CreateInitialGenome();
+                var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+                creatureComponent.InitializeNetwork(network);
+            }
+            
+            return creatureComponent;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Error loading creature from {filePath}: {e.Message}");
+            return null;
+        }
     }
 } 
