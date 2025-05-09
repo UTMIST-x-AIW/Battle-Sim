@@ -26,6 +26,23 @@ public class NEATTest : MonoBehaviour
         get { return _current_alberts; }
         private set { _current_alberts = value; }
     }
+    
+    // New properties for total population tracking
+    [SerializeField]
+    private int _totalCreatures = 0;
+    public int TotalCreatures 
+    { 
+        get { return _totalCreatures; } 
+        private set { _totalCreatures = value; } 
+    }
+    
+    [SerializeField]
+    private int _totalKai = 0;
+    public int TotalKai
+    { 
+        get { return _totalKai; } 
+        private set { _totalKai = value; } 
+    }
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
@@ -135,11 +152,11 @@ public class NEATTest : MonoBehaviour
             // Check for population management (only for Tests 1 and 4 to not interfere with other tests)
             if (currentTest == TEST_MATING_MOVEMENT || currentTest == TEST_ALBERTS_ONLY)
             {
-                // Check current Albert count every second
+                // Check current creature counts periodically
                 countTimer += Time.deltaTime;
                 if (countTimer >= 0.4f)
                 {
-                    CountAlberts();
+                    CountAllCreatures(); // Replace CountAlberts with the new method
                     countTimer = 0f;
                 }
                 
@@ -212,17 +229,13 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Count current Alberts
-            int currentAlberts = CountAlberts();
-            
-            // Update the inspector-visible count
-            CurrentAlberts = currentAlberts;
+            // Use the already tracked CurrentAlberts count (no need to recount)
             
             // Log population count
-            LogManager.LogMessage($"Current Albert population: {currentAlberts}");
+            LogManager.LogMessage($"Current population: {TotalCreatures} total ({CurrentAlberts} Alberts, {TotalKai} Kai)");
             
             // Check if we need to spawn more Alberts and if enough time has passed since last spawn
-            if (currentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
+            if (CurrentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
             {
                 LogManager.LogMessage($"Population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
                 
@@ -406,7 +419,7 @@ public class NEATTest : MonoBehaviour
         LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
         
         // Check current count
-        CountAlberts();
+        CountAllCreatures();
     }
 
     private void SetupReproductionTest()
@@ -762,23 +775,29 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    private int CountAlberts()
+    private void CountAllCreatures()
     {
         try
         {
             // Find all creatures in the scene
             var creatures = GameObject.FindObjectsOfType<Creature>();
             
-            // Count only Alberts
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Albert);
+            // Count total creatures
+            TotalCreatures = creatures.Length;
             
-            LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
-            return count;
+            // Count by specific type
+            CurrentAlberts = creatures.Count(c => c.type == Creature.CreatureType.Albert);
+            TotalKai = creatures.Count(c => c.type == Creature.CreatureType.Kai);
+            
+            LogManager.LogMessage($"Population counts updated: {TotalCreatures} total ({CurrentAlberts} Alberts, {TotalKai} Kai)");
         }
         catch (System.Exception e)
         {
-            LogManager.LogError($"Error in CountAlberts: {e.Message}\nStack trace: {e.StackTrace}");
-            return 0;  // Return 0 if there's an error
+            LogManager.LogError($"Error in CountAllCreatures: {e.Message}\nStack trace: {e.StackTrace}");
+            // Set to 0 in case of error to avoid unexpected behavior
+            TotalCreatures = 0;
+            CurrentAlberts = 0;
+            TotalKai = 0;
         }
     }
 
@@ -1164,5 +1183,14 @@ public class NEATTest : MonoBehaviour
         {
             Debug.LogError("Failed to load creature");
         }
+    }
+
+    // Add back the legacy counting method for backward compatibility
+    private int CountAlberts()
+    {
+        // Call the new comprehensive counting method
+        CountAllCreatures();
+        // Return the Albert count for backward compatibility
+        return CurrentAlberts;
     }
 } 
