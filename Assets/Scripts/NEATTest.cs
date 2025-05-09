@@ -45,6 +45,7 @@ public class NEATTest : MonoBehaviour
     private const int TEST_ALBERTS_ONLY = 2;  // New test case
     private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
     private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
+    private const int TEST_ALBERTS_VS_KAIS = 5; // New test case for Alberts vs Kais
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
@@ -58,6 +59,10 @@ public class NEATTest : MonoBehaviour
     [Header("Spawn Area Settings")]
     public Vector2 spawnCenter = new Vector2(-25f, -0f);  // Center of the spawn area
     public float spawnSpreadRadius = 2f;  // Radius of the spawn area
+    
+    // Additional spawn area for Kais in the dual-species test
+    public Vector2 rightSpawnCenter = new Vector2(25f, 0f);  // Center of the Kai spawn area (right side)
+    public float rightSpawnSpreadRadius = 2f;  // Radius of the right spawn area
     
     // NEAT instance for access by other classes
     [System.NonSerialized]
@@ -135,6 +140,9 @@ public class NEATTest : MonoBehaviour
                 case TEST_LOAD_CREATURE:
                     SetupLoadCreatureTest();
                     break;
+                case TEST_ALBERTS_VS_KAIS:
+                    SetupAlbertsVsKaisTest();
+                    break;
                 default:
                     SetupNormalGame();
                     break;
@@ -189,6 +197,11 @@ public class NEATTest : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 currentTest = TEST_LOAD_CREATURE;
+                RestartTest();
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                currentTest = TEST_ALBERTS_VS_KAIS;
                 RestartTest();
             }
             
@@ -780,6 +793,21 @@ public class NEATTest : MonoBehaviour
             // Draw a wire frame for better visibility
             Gizmos.color = new Color(spawnAreaColor.r, spawnAreaColor.g, spawnAreaColor.b, 0.5f);
             Gizmos.DrawWireSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
+            
+            // Draw the right spawn area as well (for Alberts vs Kais test)
+            if (currentTest == TEST_ALBERTS_VS_KAIS)
+            {
+                // Use a different color tint for the right spawn area (more blue)
+                Color rightSpawnColor = new Color(spawnAreaColor.r * 0.7f, spawnAreaColor.g, spawnAreaColor.b * 1.3f, spawnAreaColor.a);
+                Gizmos.color = rightSpawnColor;
+                
+                // Draw the right spawn area
+                Gizmos.DrawSphere(new Vector3(rightSpawnCenter.x, rightSpawnCenter.y, 0), rightSpawnSpreadRadius);
+                
+                // Draw wire frame
+                Gizmos.color = new Color(rightSpawnColor.r, rightSpawnColor.g, rightSpawnColor.b, 0.5f);
+                Gizmos.DrawWireSphere(new Vector3(rightSpawnCenter.x, rightSpawnCenter.y, 0), rightSpawnSpreadRadius);
+            }
         }
     }
 
@@ -993,6 +1021,9 @@ public class NEATTest : MonoBehaviour
                         break;
                     case TEST_LOAD_CREATURE:
                         SetupLoadCreatureTest();
+                        break;
+                    case TEST_ALBERTS_VS_KAIS:
+                        SetupAlbertsVsKaisTest();
                         break;
                     default:
                         SetupNormalGame();
@@ -1358,5 +1389,74 @@ public class NEATTest : MonoBehaviour
         };
         
         return serializedBrain;
+    }
+
+    private void SetupAlbertsVsKaisTest()
+    {
+        Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
+        
+        // Spawn 5 Alberts on the left side
+        for (int i = 0; i < 5; i++)
+        {
+            // Calculate a position with randomness within the left spawn area
+            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+            
+            // Spawn Albert with a randomized brain
+            var albert = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            
+            if (albert != null)
+            {
+                // Initialize with random age
+                float startingAge = Random.Range(0f, 2f);
+                albert.Lifetime = startingAge;
+                
+                // Set starting reproduction meter to a high value
+                albert.reproductionMeter = Random.Range(0f, 0.2f);
+                
+                // Set generation to 0 for initial Alberts
+                albert.generation = 0;
+                
+                LogManager.LogMessage($"Spawned Albert {i+1}/5 at {position}, age: {startingAge:F1}");
+            }
+        }
+        
+        // Spawn 5 Kais on the right side
+        for (int i = 0; i < 5; i++)
+        {
+            // Calculate a position with randomness within the right spawn area
+            Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
+            Vector3 position = new Vector3(
+                rightSpawnCenter.x + offset.x,
+                rightSpawnCenter.y + offset.y,
+                0f
+            );
+            
+            // Spawn Kai with a randomized brain
+            var kai = SpawnCreatureWithRandomizedBrain(kaiCreaturePrefab, position, Creature.CreatureType.Kai);
+            
+            if (kai != null)
+            {
+                // Initialize with random age
+                float startingAge = Random.Range(30f, 60f); // Make adults
+                kai.Lifetime = startingAge;
+                
+                // Set starting reproduction meter to a high value
+                kai.reproductionMeter = Random.Range(0.7f, 1f);
+                
+                // Set generation to 0 for initial Kais
+                kai.generation = 0;
+                
+                LogManager.LogMessage($"Spawned Kai {i+1}/5 at {position}, age: {startingAge:F1}");
+            }
+        }
+        
+        LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
+        LogManager.LogMessage("Left side (Alberts): 5 creatures near " + spawnCenter);
+        LogManager.LogMessage("Right side (Kais): 5 creatures near " + rightSpawnCenter);
     }
 } 

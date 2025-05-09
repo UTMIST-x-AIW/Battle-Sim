@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 9205314743589739064}
   - component: {fileID: 3866177930134900298}
   m_Layer: 0
-  m_Name: Kai
+  m_Name: Kai 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   lineColor: {r: 0.98742133, g: 0.027945718, b: 0.027945718, a: 1}
   layer:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
 --- !u!95 &9205314743589739064
 Animator:
   serializedVersion: 5
@@ -234,16 +234,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 3
-  reproduction: 0
-  energy: 0
+  energyMeter: 0
   maxHealth: 3
-  maxReproduction: 1
   maxEnergy: 1
-  energyRechargeRate: 0.333
-  agingStartTime: 10
-  agingRate: 0.03
+  energyRechargeRate: 1.2
+  reproductionRechargeRate: 1.2
+  agingStartTime: 5.81
+  agingRate: 0.25
+  generation: 0
   moveSpeed: 5
-  reproductionRate: 0.1
+  pushForce: 20
   weightMutationRate: 0.8
   mutationRange: 0.5
   addNodeRate: 0.2
@@ -253,7 +253,12 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
-  type: 0
+  visionRange: 20
+  chopRange: 1.5
+  type: 1
+  observer: {fileID: 0}
+  canStartReproducing: 1
+  reproductionMeter: 0
 --- !u!1001 &6497524986097735374
 PrefabInstance:
   m_ObjectHideFlags: 0
