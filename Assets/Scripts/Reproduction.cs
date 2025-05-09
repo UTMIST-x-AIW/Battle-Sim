@@ -67,7 +67,8 @@ public class Reproduction : MonoBehaviour
         }
 
         // New check for minimum age requirement (21 years)
-        if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        // if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
         {
             return; // At least one creature is too young
         }
@@ -199,6 +200,13 @@ public class Reproduction : MonoBehaviour
 
         // Set child's generation to max parent generation + 1
         childCreature.generation = Mathf.Max(p1.generation, p2.generation) + 1;
+
+        // Check if this creature should be saved (milestone generation)
+        NEATTest neatTest = FindObjectOfType<NEATTest>();
+        if (neatTest != null)
+        {
+            neatTest.CheckCreatureForSaving(childCreature);
+        }
 
         return child;
     }

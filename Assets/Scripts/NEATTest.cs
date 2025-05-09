@@ -2,6 +2,10 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using System.IO;
+using System;
+// Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
+using Random = UnityEngine.Random;
 
 public class NEATTest : MonoBehaviour
 {
@@ -71,6 +75,14 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Loading Settings")]
     public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
+    [Header("Creature Saving Settings")]
+    public bool saveCreatures = false;  // Option to save creatures at generation milestones
+    public int genSavingFrequency = 5;  // Save creatures every X generations (5 = gen 5, 10, 15, etc.)
+
+    // Generation tracking for auto-saving
+    private string currentRunSaveFolder = "";
+    private HashSet<int> savedGenerations = new HashSet<int>();
+
     private void Awake()
     {
         // Check if there's already an instance
@@ -87,6 +99,12 @@ public class NEATTest : MonoBehaviour
     {
         // Only proceed if we're the main instance
         if (instance != this) return;
+
+        // Create save folder for this run if auto-saving is enabled
+        if (saveCreatures)
+        {
+            CreateRunSaveFolder();
+        }
 
         // Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
 
@@ -284,6 +302,9 @@ public class NEATTest : MonoBehaviour
             
             // Set generation to 0 for initially spawned Alberts
             creature.generation = 0;
+            
+            // Check if this creature should be saved (generation milestone)
+            CheckCreatureForSaving(creature);
             
             LogManager.LogMessage($"Successfully spawned new Albert with age: {startingAge}, reproduction meter: {startingReproductionMeter}");
         }
@@ -1035,13 +1056,13 @@ public class NEATTest : MonoBehaviour
                 // Add at least one connection from each input to a random output
                 foreach (var input in inputNodes)
                 {
-                    var output = outputNodes[UnityEngine.Random.Range(0, outputNodes.Count)];
+                    var output = outputNodes[Random.Range(0, outputNodes.Count)];
                     
                     var newConn = new NEAT.Genes.ConnectionGene(
                         genome.Connections.Count,
                         input.Key,
                         output.Key,
-                        UnityEngine.Random.Range(-0.5f, 0.5f));
+                        Random.Range(-0.5f, 0.5f));
                         
                     genome.AddConnection(newConn);
                     
@@ -1164,5 +1185,178 @@ public class NEATTest : MonoBehaviour
         {
             Debug.LogError("Failed to load creature");
         }
+    }
+
+    private void CreateRunSaveFolder()
+    {
+        try
+        {
+            // Format the timestamp: yyyymmdd__[am/pm]_hh_mm_ss
+            DateTime now = DateTime.Now;
+            string ampm = now.Hour < 12 ? "am" : "pm";
+            // Use 00 for 12 AM to maintain chronological order
+            int hourDisplay = now.Hour % 12;
+            if (hourDisplay == 0) hourDisplay = 12;
+            if (now.Hour == 0) hourDisplay = 0; // Special case for midnight (00am)
+            
+            string timestamp = string.Format("{0:yyyyMMdd}__{1}_{2:D2}_{3:D2}_{4:D2}", 
+                now, ampm, hourDisplay, now.Minute, now.Second);
+            
+            // Get the base save directory
+            string baseDir = Path.Combine(Application.persistentDataPath, "SavedCreatures");
+            
+            // Create the run-specific directory
+            currentRunSaveFolder = Path.Combine(baseDir, timestamp);
+            
+            if (!Directory.Exists(baseDir))
+            {
+                Directory.CreateDirectory(baseDir);
+            }
+            
+            if (!Directory.Exists(currentRunSaveFolder))
+            {
+                Directory.CreateDirectory(currentRunSaveFolder);
+                Debug.Log($"Created run save folder: {currentRunSaveFolder}");
+            }
+            
+            // Initialize tracking set
+            savedGenerations.Clear();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to create run save folder: {e.Message}");
+            currentRunSaveFolder = ""; // Reset so we don't try to save
+        }
+    }
+
+    // Check if a creature should be saved based on its generation
+    public void CheckCreatureForSaving(Creature creature)
+    {
+        // Only proceed if saving is enabled and we have a valid save folder
+        if (!saveCreatures || string.IsNullOrEmpty(currentRunSaveFolder)) return;
+        
+        // Make sure creature is valid
+        if (creature == null) return;
+        
+        // Only save at generation milestones (gen intervals based on genSavingFrequency)
+        if (creature.generation % genSavingFrequency == 0 && creature.generation >= genSavingFrequency)
+        {
+            int generation = creature.generation;
+            
+            // Check if we've already saved a creature at this generation milestone
+            // We save one creature per generation milestone
+            if (!savedGenerations.Contains(generation))
+            {
+                SaveCreatureAtMilestone(creature, generation);
+                savedGenerations.Add(generation);
+                
+                Debug.Log($"Saved first creature at generation {generation}");
+            }
+        }
+    }
+    
+    private void SaveCreatureAtMilestone(Creature creature, int milestone)
+    {
+        try
+        {
+            // Create the milestone folder if it doesn't exist
+            string milestoneFolder = Path.Combine(currentRunSaveFolder, $"gen{milestone}");
+            if (!Directory.Exists(milestoneFolder))
+            {
+                Directory.CreateDirectory(milestoneFolder);
+                Debug.Log($"Created milestone folder: {milestoneFolder}");
+            }
+            
+            // Generate a unique filename
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string filename = $"{creature.type}_Gen{creature.generation}_{timestamp}.json";
+            string savePath = Path.Combine(milestoneFolder, filename);
+            
+            // Save the creature
+            SaveCreatureToPath(creature, savePath);
+            
+            Debug.Log($"Saved milestone creature (gen {milestone}) to: {savePath}");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to save creature at milestone: {e.Message}");
+        }
+    }
+    
+    private void SaveCreatureToPath(Creature creature, string path)
+    {
+        try
+        {
+            // This calls our existing CreatureSaver functionality but with a custom path
+            var savedCreature = new SavedCreature
+            {
+                type = creature.type,
+                health = creature.health,
+                maxHealth = creature.maxHealth,
+                energyMeter = creature.energyMeter,
+                maxEnergy = creature.maxEnergy,
+                lifetime = creature.Lifetime,
+                generation = creature.generation,
+                moveSpeed = creature.moveSpeed,
+                pushForce = creature.pushForce,
+                visionRange = creature.visionRange,
+                chopRange = creature.chopRange,
+                actionEnergyCost = creature.actionEnergyCost,
+                chopDamage = creature.chopDamage,
+                attackDamage = creature.attackDamage,
+                weightMutationRate = creature.weightMutationRate,
+                mutationRange = creature.mutationRange,
+                addNodeRate = creature.addNodeRate,
+                addConnectionRate = creature.addConnectionRate,
+                deleteConnectionRate = creature.deleteConnectionRate,
+                maxHiddenLayers = creature.maxHiddenLayers,
+                brain = SerializeBrain(creature.GetBrain())
+            };
+            
+            // Convert to JSON and save
+            string json = JsonUtility.ToJson(savedCreature, true);
+            File.WriteAllText(path, json);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to save creature to path: {e.Message}");
+        }
+    }
+    
+    private SerializedBrain SerializeBrain(NEAT.NN.FeedForwardNetwork brain)
+    {
+        if (brain == null) return null;
+        
+        var nodesField = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var connectionsField = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        
+        if (nodesField == null || connectionsField == null) return null;
+        
+        var nodes = nodesField.GetValue(brain) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var connections = connectionsField.GetValue(brain) as Dictionary<int, NEAT.Genes.ConnectionGene>;
+        
+        if (nodes == null || connections == null) return null;
+        
+        var serializedBrain = new SerializedBrain
+        {
+            nodes = nodes.Values.Select(n => new SerializedNode
+            {
+                key = n.Key,
+                type = (int)n.Type,
+                layer = n.Layer,
+                bias = n.Bias
+            }).ToArray(),
+            
+            connections = connections.Values.Select(c => new SerializedConnection
+            {
+                key = c.Key,
+                inputKey = c.InputKey,
+                outputKey = c.OutputKey,
+                weight = c.Weight,
+                enabled = c.Enabled
+            }).ToArray()
+        };
+        
+        return serializedBrain;
     }
 } 

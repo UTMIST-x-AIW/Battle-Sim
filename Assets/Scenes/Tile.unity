@@ -18688,11 +18688,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 4732040975953563953, guid: b23868e3f4ed36b43a1fb1459c5fba4a, type: 3}
-  MIN_ALBERTS: 51
-  MAX_ALBERTS: 201
-  INITIAL_ALBERTS: 132
+  MIN_ALBERTS: 5
+  MAX_ALBERTS: 40
+  INITIAL_ALBERTS: 20
   MIN_STARTING_AGE: 0
-  MAX_STARTING_AGE: 5
+  MAX_STARTING_AGE: 1
   _current_alberts: 0
   maxHiddenLayers: 10
   maxCreatures: 120
@@ -18707,6 +18707,9 @@ MonoBehaviour:
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: -0}
   spawnSpreadRadius: 1.23
+  savedCreaturePath: /Users/anooprehman/Library/Application Support/DefaultCompany/Battle-Sim/SavedCreatures/Albert_Gen0_20250508_120819.json
+  saveCreatures: 1
+  genSavingFrequency: 5
 --- !u!4 &186563466
 Transform:
   m_ObjectHideFlags: 0
@@ -82594,7 +82597,6 @@ SceneRoots:
   - {fileID: 1548064609}
   - {fileID: 1146894589}
   - {fileID: 1521058403}
-  - {fileID: 854105065}
   - {fileID: 302579215}
   - {fileID: 7016299647965348102}
   - {fileID: 260676806}
