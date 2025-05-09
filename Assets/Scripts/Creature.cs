@@ -131,21 +131,17 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private IEnumerator DelayedReproductionStart()
+    public IEnumerator DelayedReproductionStart()
     {
+        // Reset flags and meter after reproduction
         canStartReproducing = false;
         reproductionMeter = 0f; // Reset reproduction meter to 0
-        // Debug.Log(string.Format("{0}: Starting reproduction delay timer", gameObject.name));
         
-        // Wait for 2 seconds before allowing reproduction
-        yield return new WaitForSeconds(0.1f);
+        // Wait a short time before allowing the meter to start filling again
+        yield return new WaitForSeconds(0.05f);
         
-        // Double check we're still alive before enabling reproduction
-        if (this != null && gameObject != null)
-        {
-            canStartReproducing = true;
-            // Debug.Log(string.Format("{0} can now start reproducing", gameObject.name));
-        }
+        // No need to set canStartReproducing=true here anymore
+        // It will be set when the meter fills to 1.0
     }
     
     private void Start()
@@ -375,15 +371,17 @@ public class Creature : MonoBehaviour
             {
                 try
                 {
-                    // Fill reproduction meter if not in cooldown
-                    if (!canStartReproducing)
+                    // FIXED: Only fill reproduction meter if it's not full yet and the creature
+                    // is not already ready to reproduce
+                    if (reproductionMeter < 1.0f && !canStartReproducing)
                     {
                         reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
                         
-                        // When meter is full, start cooldown before next reproduction attempt
+                        // When meter is full, set canStartReproducing to true but don't reset the meter
                         if (reproductionMeter >= 1f)
                         {
-                            StartCoroutine(DelayedReproductionStart());
+                            canStartReproducing = true;
+                            // Don't call DelayedReproductionStart here anymore
                         }
                     }
                     
