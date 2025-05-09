@@ -639,7 +639,8 @@ public class NEATTest : MonoBehaviour
         creatureComponent.type = type;
         
         // Create a base genome
-        var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
+        // var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
+        var genome = CreateInitialGenome();
         
         // Randomize the weights to create more diverse behaviors
         foreach (var connection in genome.Connections.Values)
@@ -1442,11 +1443,11 @@ public class NEATTest : MonoBehaviour
             if (kai != null)
             {
                 // Initialize with random age
-                float startingAge = Random.Range(30f, 60f); // Make adults
+                float startingAge = Random.Range(0f, 2f); // Make adults
                 kai.Lifetime = startingAge;
                 
                 // Set starting reproduction meter to a high value
-                kai.reproductionMeter = Random.Range(0.7f, 1f);
+                kai.reproductionMeter = Random.Range(0f, 0.2f);
                 
                 // Set generation to 0 for initial Kais
                 kai.generation = 0;
