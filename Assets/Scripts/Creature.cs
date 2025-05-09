@@ -371,9 +371,8 @@ public class Creature : MonoBehaviour
             {
                 try
                 {
-                    // FIXED: Only fill reproduction meter if it's not full yet and the creature
-                    // is not already ready to reproduce
-                    if (reproductionMeter < 1.0f && !canStartReproducing)
+                    // FIXED: Only fill reproduction meter if it's not full yet
+                    if (reproductionMeter < 1.0f)
                     {
                         reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
                         
