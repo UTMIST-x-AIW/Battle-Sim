@@ -119,12 +119,6 @@ public class NEATTest : MonoBehaviour
 
         // Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
 
-        // Set up save folder if auto-saving is enabled
-        if (autoSaveCreatures)
-        {
-            SetupSaveFolder();
-        }
-
         // Clear any existing creatures first
         var existingCreatures = GameObject.FindObjectsOfType<Creature>();
         // Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
@@ -244,16 +238,6 @@ public class NEATTest : MonoBehaviour
             {
                 LogManager.LogMessage("Running neural network diagnostics...");
                 RunNeuralNetworkDiagnostics();
-            }
-
-            // Check for creatures reaching save-worthy generations
-            if (autoSaveCreatures)
-            {
-                var creatures = GameObject.FindObjectsOfType<Creature>();
-                foreach (var creature in creatures)
-                {
-                    CheckAndSaveCreature(creature);
-                }
             }
         }
         catch (System.Exception e)
@@ -522,12 +506,6 @@ public class NEATTest : MonoBehaviour
         // Pass the max hidden layers setting to the creature
         creatureComponent.maxHiddenLayers = maxHiddenLayers;
 
-        // Check if we should save this creature
-        if (creatureComponent != null)
-        {
-            CheckAndSaveCreature(creatureComponent);
-        }
-
         return creatureComponent;
     }
     
@@ -700,12 +678,6 @@ public class NEATTest : MonoBehaviour
         // Pass the max hidden layers setting to the creature
         creatureComponent.maxHiddenLayers = maxHiddenLayers;
         
-        // Check if we should save this creature
-        if (creatureComponent != null)
-        {
-            CheckAndSaveCreature(creatureComponent);
-        }
-
         return creatureComponent;
     }
     
@@ -819,12 +791,6 @@ public class NEATTest : MonoBehaviour
         // Pass the max hidden layers setting to the creature
         creatureComponent.maxHiddenLayers = maxHiddenLayers;
         
-        // Check if we should save this creature
-        if (creatureComponent != null)
-        {
-            CheckAndSaveCreature(creatureComponent);
-        }
-
         return creatureComponent;
     }
 
@@ -938,16 +904,6 @@ public class NEATTest : MonoBehaviour
             else
             {
                 Debug.Log("NEATTest: Not the main instance, skipping cleanup");
-            }
-
-            // Add this to the OnDestroy method to ensure we save any final creatures
-            if (autoSaveCreatures)
-            {
-                var creatures = GameObject.FindObjectsOfType<Creature>();
-                foreach (var creature in creatures)
-                {
-                    CheckAndSaveCreature(creature);
-                }
             }
         }
         catch (System.Exception e)
