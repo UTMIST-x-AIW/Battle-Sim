@@ -17,8 +17,6 @@ public class Spawner : MonoBehaviour
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
     private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
     private bool isSpawning = false; // Flag to track if a spawn is in progress
-    private List<TilePosData.TilePos> highProbabilityPositions; // Cache of good spawn positions for regular objects
-    private List<TilePosData.TilePos> extraHighProbabilityPositions; // Cache of good spawn positions for extra objects
     private float nextCheckTime = 0f; // Time of next replenishment check
 
     private void OnEnable()
@@ -47,9 +45,6 @@ public class Spawner : MonoBehaviour
         extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");
         if (extraPrefabParent == null) extraPrefabParent = new GameObject($"{prefab.name} Extra Parent");
         
-        // Pre-calculate and cache high probability positions
-        CacheHighProbabilityPositions();
-        
         // Initial population of objects
         StartCoroutine(InitialSpawning());
     }
@@ -72,75 +67,45 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    private void CacheHighProbabilityPositions()
-    {
-        // Cache positions for regular spawns
-        highProbabilityPositions = CacheProbabilityPositionsForHeatmap(heatmapData, maxNumOfSpawns * 2);
-        
-        // Cache positions for extra objects - use specific heatmap if available, otherwise use the regular one
-        HeatMapData extraMap = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
-        extraHighProbabilityPositions = CacheProbabilityPositionsForHeatmap(extraMap, numExtraObjects * 2);
-    }
-    
-    private List<TilePosData.TilePos> CacheProbabilityPositionsForHeatmap(HeatMapData map, int neededPositions)
-    {
-        // Get all tile positions
-        var allPositions = map.tilePosData.TilePositions.ToList();
-        
-        // Pre-filter positions with decent spawn probability
-        var highProbPositions = new List<TilePosData.TilePos>();
-        
-        foreach (var tile in allPositions)
-        {
-            float probability = map.GetValue(tile.pos);
-            if (probability > 50f) // Only keep positions with >50% spawn probability
-            {
-                highProbPositions.Add(tile);
-            }
-        }
-        
-        // If we don't have enough high probability positions, use all positions
-        if (highProbPositions.Count < neededPositions)
-        {
-            highProbPositions = allPositions;
-        }
-        
-        // Shuffle the array for random access
-        Shuffle(highProbPositions);
-        
-        return highProbPositions;
-    }
-
     private IEnumerator InitialSpawning()
     {
-        // Ensure tile positions are available for regular objects
-        if (highProbabilityPositions == null || highProbabilityPositions.Count == 0)
+        // Ensure tile positions are available
+        if (heatmapData.tilePosData == null || heatmapData.tilePosData.TilePositions == null)
         {
-            Debug.LogError("Error: No valid spawn positions available for regular objects", this);
-            yield break;
-        }
-        
-        // Ensure tile positions are available for extra objects
-        if (extraHighProbabilityPositions == null || extraHighProbabilityPositions.Count == 0)
-        {
-            Debug.LogError("Error: No valid spawn positions available for extra objects", this);
+            Debug.LogError("Error: TilePosData or TilePositions are uninitialized", this);
             yield break;
         }
 
         isSpawning = true;
-        int regularPositionIndex = 0;
-        int extraPositionIndex = 0;
-        int numAttempts = 0;
-        const int maxAttempts = 100; // Safety limit
+        
+        // Get and shuffle tile positions for regular objects
+        List<TilePosData.TilePos> regularTilePositions = heatmapData.tilePosData.TilePositions.ToList();
+        Shuffle(regularTilePositions);
+        
+        // Get and shuffle tile positions for extra objects
+        List<TilePosData.TilePos> extraTilePositions;
+        if (useDistinctHeatmaps && extraHeatmapData != null)
+        {
+            extraTilePositions = extraHeatmapData.tilePosData.TilePositions.ToList();
+        }
+        else
+        {
+            extraTilePositions = new List<TilePosData.TilePos>(regularTilePositions);
+        }
+        Shuffle(extraTilePositions);
         
         // First spawn the regular objects
-        while (prefabParent.transform.childCount < maxNumOfSpawns && numAttempts < maxAttempts)
+        int regularAttempts = 0;
+        const int maxAttempts = 100; // Safety limit
+        
+        int regularIdx = 0;
+        while (prefabParent.transform.childCount < maxNumOfSpawns && regularAttempts < maxAttempts)
         {
             // Get the next position
-            var tile = highProbabilityPositions[regularPositionIndex];
-            regularPositionIndex = (regularPositionIndex + 1) % highProbabilityPositions.Count; // Wrap around
+            var tile = regularTilePositions[regularIdx];
+            regularIdx = (regularIdx + 1) % regularTilePositions.Count; // Wrap around
             
-            numAttempts++;
+            regularAttempts++;
             
             // Calculate spawn probability and compare with a random value
             float spawnProbability = heatmapData.GetValue(tile.pos);
@@ -152,28 +117,30 @@ public class Spawner : MonoBehaviour
                 SpawnPrefab(tile.pos, false);
 
                 // Reset attempts counter on successful spawn
-                numAttempts = 0;
+                regularAttempts = 0;
                 
                 // Wait for the specified interval before the next spawn attempt
                 yield return new WaitForSeconds(spawnInterval);
             }
             
             // Yield every few attempts to avoid freezing
-            if (numAttempts % 10 == 0)
+            if (regularAttempts % 10 == 0)
             {
                 yield return null;
             }
         }
         
         // Then spawn the extra objects that won't respawn
-        numAttempts = 0;
-        while (extraPrefabParent.transform.childCount < numExtraObjects && numAttempts < maxAttempts)
+        int extraAttempts = 0;
+        int extraIdx = 0;
+        
+        while (extraPrefabParent.transform.childCount < numExtraObjects && extraAttempts < maxAttempts)
         {
-            // Get the next position from the extra positions
-            var tile = extraHighProbabilityPositions[extraPositionIndex];
-            extraPositionIndex = (extraPositionIndex + 1) % extraHighProbabilityPositions.Count; // Wrap around
+            // Get the next position
+            var tile = extraTilePositions[extraIdx];
+            extraIdx = (extraIdx + 1) % extraTilePositions.Count; // Wrap around
             
-            numAttempts++;
+            extraAttempts++;
             
             // Calculate spawn probability using the appropriate heatmap
             HeatMapData mapToUse = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
@@ -186,14 +153,14 @@ public class Spawner : MonoBehaviour
                 SpawnPrefab(tile.pos, true);
 
                 // Reset attempts counter on successful spawn
-                numAttempts = 0;
+                extraAttempts = 0;
                 
                 // Wait for the specified interval before the next spawn attempt
                 yield return new WaitForSeconds(spawnInterval);
             }
             
             // Yield every few attempts to avoid freezing
-            if (numAttempts % 10 == 0)
+            if (extraAttempts % 10 == 0)
             {
                 yield return null;
             }
@@ -208,13 +175,18 @@ public class Spawner : MonoBehaviour
         
         isSpawning = true;
         int spawned = 0;
-        int positionIndex = Random.Range(0, highProbabilityPositions.Count);
+        
+        // Get and shuffle tile positions for replenishment
+        List<TilePosData.TilePos> tilePositions = heatmapData.tilePosData.TilePositions.ToList();
+        Shuffle(tilePositions);
+        
+        int posIndex = 0;
         
         while (spawned < count)
         {
-            // Get the next position from regular positions
-            var tile = highProbabilityPositions[positionIndex];
-            positionIndex = (positionIndex + 1) % highProbabilityPositions.Count; // Wrap around
+            // Get the next position
+            var tile = tilePositions[posIndex];
+            posIndex = (posIndex + 1) % tilePositions.Count; // Wrap around
             
             // Calculate spawn probability and compare with a random value
             float spawnProbability = heatmapData.GetValue(tile.pos);
@@ -231,7 +203,7 @@ public class Spawner : MonoBehaviour
             }
             
             // Occasionally yield to avoid freezing
-            if (positionIndex % 10 == 0)
+            if (posIndex % 10 == 0)
             {
                 yield return null;
             }
