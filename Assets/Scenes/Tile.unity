@@ -18688,11 +18688,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 10
-  MAX_ALBERTS: 20
-  INITIAL_ALBERTS: 10
+  MIN_ALBERTS: 51
+  MAX_ALBERTS: 201
+  INITIAL_ALBERTS: 132
   MIN_STARTING_AGE: 0
-  MAX_STARTING_AGE: 1
+  MAX_STARTING_AGE: 5
   _current_alberts: 0
   maxHiddenLayers: 10
   maxCreatures: 120
