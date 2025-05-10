@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using System;
+using Unity.Burst;
 // Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
 using Random = UnityEngine.Random;
 using NEAT.Genes;
 
+[BurstCompile]
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
@@ -366,7 +368,7 @@ public class Creature : MonoBehaviour
                 }
                 
                 // Die
-                Destroy(gameObject);
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
             
@@ -789,11 +791,11 @@ public class Creature : MonoBehaviour
                 // If the damage killed either creature, destroy them
                 if (health <= 0)
                 {
-                    Destroy(gameObject);
+                    ObjectPoolManager.ReturnObjectToPool(gameObject);
                 }
                 if (otherCreature.health <= 0)
                 {
-                    Destroy(otherCreature.gameObject);
+                    ObjectPoolManager.ReturnObjectToPool(otherCreature.gameObject);
                 }
             }
             // Only handle the collision once (let the creature with higher health handle it)
@@ -806,12 +808,12 @@ public class Creature : MonoBehaviour
                 health = Mathf.Max(0, health - damage);
                 
                 // Kill the creature with lower health
-                Destroy(otherCreature.gameObject);
+                ObjectPoolManager.ReturnObjectToPool(otherCreature.gameObject);
                 
                 // If the damage killed us too, destroy ourselves
                 if (health <= 0)
                 {
-                    Destroy(gameObject);
+                    ObjectPoolManager.ReturnObjectToPool(gameObject);
                 }
             }
         }
