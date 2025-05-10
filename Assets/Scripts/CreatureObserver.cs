@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class CreatureObserver : MonoBehaviour
 {
-    public static readonly float DETECTION_RADIUS = 8f;
     private static int timestep = 0;
     
     private void Start()
@@ -19,8 +18,8 @@ public class CreatureObserver : MonoBehaviour
         obs[1] = self.energyMeter; // Energy meter (already 0-1)
         obs[2] = self.reproductionMeter; // Reproduction meter (already 0-1)
         
-        // Get nearby objects
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
+        // Get nearby objects using the creature's vision range
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, self.visionRange);
         
         Vector2 sameTypePos = Vector2.zero;
         Vector2 oppositeTypePos = Vector2.zero;
@@ -96,15 +95,15 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Transform the observations according to the new formula:
-        // 0 when outside FOV, 0 at FOV border, increases linearly to DETECTION_RADIUS when hugging creature
+        // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
         
         // Same type observations (x,y components)
-        if (sameTypeDistance <= DETECTION_RADIUS)
+        if (sameTypeDistance <= self.visionRange)
         {
             if (sameTypeDistance > 0)
             {
-                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
-                float intensityFactor = 1.0f - sameTypeDistance / DETECTION_RADIUS;
+                // Calculate intensity (0 at border, visionRange when hugging)
+                float intensityFactor = 1.0f - sameTypeDistance / self.visionRange;
                 
                 // Apply intensity factor directly to the relative position vector
                 sameTypePos *= intensityFactor;
@@ -116,12 +115,12 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Opposite type observations (x,y components)
-        if (oppositeTypeDistance <= DETECTION_RADIUS)
+        if (oppositeTypeDistance <= self.visionRange)
         {
             if (oppositeTypeDistance > 0)
             {
-                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
-                float intensityFactor = 1.0f - oppositeTypeDistance / DETECTION_RADIUS;
+                // Calculate intensity (0 at border, visionRange when hugging)
+                float intensityFactor = 1.0f - oppositeTypeDistance / self.visionRange;
                 
                 // Apply intensity factor directly to the relative position vector
                 oppositeTypePos *= intensityFactor;
@@ -133,12 +132,12 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Cherry observations (x,y components)
-        if (cherryDistance <= DETECTION_RADIUS)
+        if (cherryDistance <= self.visionRange)
         {
             if (cherryDistance > 0)
             {
-                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
-                float intensityFactor = 1.0f - cherryDistance / DETECTION_RADIUS;
+                // Calculate intensity (0 at border, visionRange when hugging)
+                float intensityFactor = 1.0f - cherryDistance / self.visionRange;
                 
                 // Apply intensity factor directly to the relative position vector
                 cherryPos *= intensityFactor;
@@ -150,12 +149,12 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Tree observations (x,y components)
-        if (treeDistance <= DETECTION_RADIUS)
+        if (treeDistance <= self.visionRange)
         {
             if (treeDistance > 0)
             {
-                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
-                float intensityFactor = 1.0f - treeDistance / DETECTION_RADIUS;
+                // Calculate intensity (0 at border, visionRange when hugging)
+                float intensityFactor = 1.0f - treeDistance / self.visionRange;
                 
                 // Apply intensity factor directly to the relative position vector
                 treePos *= intensityFactor;
@@ -167,12 +166,12 @@ public class CreatureObserver : MonoBehaviour
         }
 
         // Ground observations (x,y components)
-        if (groundDistance <= DETECTION_RADIUS)
+        if (groundDistance <= self.visionRange)
         {
             if (groundDistance > 0)
             {
-                // Calculate intensity (0 at border, DETECTION_RADIUS when hugging)
-                float intensityFactor = 1.0f - groundDistance / DETECTION_RADIUS;
+                // Calculate intensity (0 at border, visionRange when hugging)
+                float intensityFactor = 1.0f - groundDistance / self.visionRange;
                 
                 // Apply intensity factor directly to the relative position vector
                 groundPos *= intensityFactor;

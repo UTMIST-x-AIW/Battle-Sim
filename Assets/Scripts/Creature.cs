@@ -59,9 +59,9 @@ public class Creature : MonoBehaviour
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
     public float attackDamage = 1.0f;
-    public float visionRange = 10f;  // Range at which creatures can see other entities
+    public float visionRange = 8f;  // Range at which creatures can see other entities
     public float chopRange = 1.5f;   // Range at which creatures can chop trees
-    
+    public float attackRange = 1.5f;  // Range at which creatures can attack other entities
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -668,8 +668,7 @@ public class Creature : MonoBehaviour
         TreeHealth nearestTree = null;
         float nearestDistance = float.MaxValue;
 
-        float ACTION_RADIUS = 1.5f;
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, ACTION_RADIUS);
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, chopRange);
         
         foreach (var collider in nearbyColliders)
         {
@@ -723,7 +722,7 @@ public class Creature : MonoBehaviour
         Creature nearestOpponent = null;
         float nearestDistance = float.MaxValue;
         
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, CreatureObserver.DETECTION_RADIUS);
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
         
         foreach (var collider in nearbyColliders)
         {
@@ -957,12 +956,12 @@ public class Creature : MonoBehaviour
             Gizmos.color = gizmoColor;
             
             // Draw filled circle for better visibility
-            Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            Gizmos.DrawSphere(transform.position, visionRange);
             
             // Draw wire frame with more opacity for better edge definition
             gizmoColor.a = 0.3f;
             Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
+            Gizmos.DrawWireSphere(transform.position, visionRange);
             }
             
             // Draw chop range if enabled
