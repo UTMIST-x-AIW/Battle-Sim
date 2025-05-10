@@ -4,7 +4,7 @@ using UnityEngine;
 using NEAT.Genes;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.Build.Content;
+//using UnityEditor.Build.Content;
 
 public class Reproduction : MonoBehaviour
 {
@@ -183,12 +183,12 @@ public class Reproduction : MonoBehaviour
         }
 
         // Spawn the child creature
-        var child = Instantiate(prefab, position, Quaternion.identity);
+        var child = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         var childCreature = child.GetComponent<Creature>();
         
         if (childCreature == null)
         {
-            Destroy(child);
+            ObjectPoolManager.ReturnObjectToPool(child);
             return null;
         }
 

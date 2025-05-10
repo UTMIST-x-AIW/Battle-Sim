@@ -3,12 +3,8 @@ using UnityEngine;
 public class CreatureObserver : MonoBehaviour
 {
     private static int timestep = 0;
-    
-    private void Start()
-    {
+    private Collider2D[] nearbyColliders = new Collider2D[20];  // Pre-allocated array for better performance
 
-    }
-    
     public float[] GetObservations(Creature self)
     {
         float[] obs = new float[13];  // Now 13 observations (added ground x,y)
@@ -19,7 +15,7 @@ public class CreatureObserver : MonoBehaviour
         obs[2] = self.reproductionMeter; // Reproduction meter (already 0-1)
         
         // Get nearby objects using the creature's vision range
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, self.visionRange);
+        int numColliders = Physics2D.OverlapCircleNonAlloc(transform.position, self.visionRange, nearbyColliders);
         
         Vector2 sameTypePos = Vector2.zero;
         Vector2 oppositeTypePos = Vector2.zero;
@@ -33,8 +29,10 @@ public class CreatureObserver : MonoBehaviour
         float treeDistance = float.MaxValue;
         float groundDistance = float.MaxValue;
         
-        foreach (var collider in nearbyColliders)
+        // Only process up to numColliders to avoid processing null entries
+        for (int i = 0; i < numColliders; i++)
         {
+            var collider = nearbyColliders[i];
             if (collider.gameObject == gameObject) continue;
             
             // Calculate relative position from the object to the creature (reversed direction)

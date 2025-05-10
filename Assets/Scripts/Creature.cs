@@ -11,7 +11,7 @@ public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
     private static int totalCreatures = 0;
-    private static NEATTest neatTest;  // Cache NEATTest reference
+    [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
     
     // Make TotalCreatures accessible through a property
     public static int TotalCreatures { get { return totalCreatures; } }
@@ -150,19 +150,19 @@ public class Creature : MonoBehaviour
         
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-        if (rb == null)
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-        }
+        //if (rb == null)
+        //{
+        //    rb = gameObject.AddComponent<Rigidbody2D>();
+        //}
         
         // Configure Rigidbody2D for physics interactions
-        rb.gravityScale = 0f;
-        rb.drag = 1f;
-        rb.angularDrag = 1f;
-        rb.mass = 1f;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
+        //rb.gravityScale = 0f;
+        //rb.drag = 1f;
+        //rb.angularDrag = 1f;
+        //rb.mass = 1f;
+        //rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+        //rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
         
         // NOTE: CircleCollider2D should be manually added to the prefab instead of via code
         
@@ -889,23 +889,14 @@ public class Creature : MonoBehaviour
 
     private void OnGUI()
     {
-        try
-        {
-            // Safety check - if no camera, exit early
-            if (Camera.main == null) return;
+        // Safety check - if no camera, exit early
+        if (Camera.main == null) return;
 
-            // Only check for NEATTest reference once
-            if (!hasCheckedNeatTest)
-            {
-                if (neatTest == null)
-                {
-                    neatTest = FindObjectOfType<NEATTest>();
-                }
-                hasCheckedNeatTest = true;
-            }
+        // Only check for NEATTest reference once
+        if (!hasCheckedNeatTest) hasCheckedNeatTest = true;
 
-            // If we still don't have a NEATTest reference or labels are disabled, return early
-            if (neatTest == null || !neatTest.showCreatureLabels) return;
+        // If we still don't have a NEATTest reference or labels are disabled, return early
+        if (neatTest == null || !neatTest.showCreatureLabels) return;
 
         // Get screen position for this creature
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -931,17 +922,11 @@ public class Creature : MonoBehaviour
 
                 // Show age and generation with increased width for larger numbers
                 GUI.Label(new Rect(screenPos.x - 70, screenPos.y - 40, 140, 20), 
-                         string.Format("Gen: {0}; Age: {1}", generation, ageDisplay));
+                            string.Format("Gen: {0}; Age: {1}", generation, ageDisplay));
                 
                 // Reset color back to white
                 GUI.color = Color.white;
             }
-        }
-        catch (System.Exception e)
-        {
-            // Don't log errors in OnGUI as it can spam the console
-            // Just silently fail
-        }
     }
 
     private void OnDrawGizmos()
@@ -950,7 +935,7 @@ public class Creature : MonoBehaviour
         if (neatTest != null)
         {
             if (neatTest.showDetectionRadius)
-        {
+            {
             // Set color to be semi-transparent and match creature type
             Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
             Gizmos.color = gizmoColor;

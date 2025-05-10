@@ -11,7 +11,7 @@ public class Cherry : MonoBehaviour
         {
             // Restore health, capped at maxHealth
             creature.health = Mathf.Min(creature.health + healthRestoration, creature.maxHealth);
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 } 
