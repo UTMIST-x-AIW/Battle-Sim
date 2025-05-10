@@ -9,13 +9,19 @@ public class HealthbarIntializer : MonoBehaviour
         // This is so each healthbar can independently change its _Health Property
         
         Renderer renderer = GetComponent<Renderer>();
-        if (Shader.Find("Custom/HealthBar"))
+        // Try several possible shader names that exist in the project
+        Shader healthBarShader = Shader.Find("HealthBar 2") ?? 
+                                 Shader.Find("HealthBar 2 simple") ?? 
+                                 Shader.Find("Custom/HealthBar");
+        
+        if (healthBarShader != null)
         {
-            _healthBarMat = new Material(Shader.Find("Custom/HealthBar"));
+            _healthBarMat = new Material(healthBarShader);
             renderer.material = _healthBarMat;
         }
         else
         {
+            Debug.LogWarning("HealthBar shader not found! Using Standard shader as fallback.");
             _healthBarMat = new Material(Shader.Find("Standard"));
             renderer.material = _healthBarMat;
         }
