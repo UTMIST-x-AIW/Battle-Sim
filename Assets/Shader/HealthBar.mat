@@ -31,6 +31,6 @@ Material:
     m_Floats:
     - _BorderRadius: 0.1
     - _Clamp: 0.6
-    - _Health: 1
+    - _Health: 0.671
     m_Colors: []
   m_BuildTextureStacks: []
