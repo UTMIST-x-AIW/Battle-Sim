@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: HealthBar
-  m_Shader: {fileID: 4800000, guid: a8d6177b521730643afdf03d025b83e2, type: 3}
+  m_Shader: {fileID: 4800000, guid: 5e546313fde1c43a9b327129edb231e2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -31,6 +31,6 @@ Material:
     m_Floats:
     - _BorderRadius: 0.1
     - _Clamp: 0.6
-    - _Health: 0.671
+    - _Health: 1
     m_Colors: []
   m_BuildTextureStacks: []
