@@ -199,8 +199,9 @@ MonoBehaviour:
   attackDamage: 1
   visionRange: 20
   chopRange: 1.5
+  attackRange: 1.5
   type: 0
-  observer: {fileID: 0}
+  observer: {fileID: -380665466361591250}
   canStartReproducing: 1
   reproductionMeter: 0
 --- !u!114 &-380665466361591250

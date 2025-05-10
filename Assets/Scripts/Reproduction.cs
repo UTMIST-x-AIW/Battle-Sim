@@ -67,8 +67,8 @@ public class Reproduction : MonoBehaviour
         }
 
         // New check for minimum age requirement (21 years)
-        // if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
-        if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
+        if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        // if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
         {
             return; // At least one creature is too young
         }

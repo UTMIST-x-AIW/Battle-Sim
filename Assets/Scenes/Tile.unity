@@ -19122,16 +19122,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 4
-  MAX_ALBERTS: 6
-  INITIAL_ALBERTS: 0
+  MIN_ALBERTS: 51
+  MAX_ALBERTS: 201
+  INITIAL_ALBERTS: 132
   MIN_STARTING_AGE_ALBERT: 0
-  MAX_STARTING_AGE_ALBERT: 2
-  MIN_KAIS: 3
-  MAX_KAIS: 5
-  INITIAL_KAIS: 0
+  MAX_STARTING_AGE_ALBERT: 5
+  MIN_KAIS: 51
+  MAX_KAIS: 201
+  INITIAL_KAIS: 132
   MIN_STARTING_AGE_KAI: 0
-  MAX_STARTING_AGE_KAI: 2
+  MAX_STARTING_AGE_KAI: 5
   _current_alberts: 0
   _current_kais: 0
   maxHiddenLayers: 10
@@ -19143,18 +19143,18 @@ MonoBehaviour:
   showGizmos: 1
   chopRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 0
+  showSpawnArea: 1
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
-  spawnCenter: {x: -22, y: 0}
+  spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
-  rightSpawnCenter: {x: 22, y: 0}
+  rightSpawnCenter: {x: 21, y: 0}
   rightSpawnSpreadRadius: 1.23
   savedCreaturePath: /Users/anooprehman/Library/Application Support/DefaultCompany/Battle-Sim/SavedCreatures/Albert_Gen0_20250508_120819.json
   albertsFolderPath: 
   kaisFolderPath: 
   maxCreaturesToLoadPerSide: 5
   saveCreatures: 1
-  genSavingFrequency: 2
+  genSavingFrequency: 5
 --- !u!4 &186563466
 Transform:
   m_ObjectHideFlags: 0
