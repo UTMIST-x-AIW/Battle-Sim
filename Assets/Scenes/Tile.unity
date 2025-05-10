@@ -19139,11 +19139,11 @@ MonoBehaviour:
   runTests: 1
   currentTest: 5
   showDetectionRadius: 0
-  showChopRange: 1
+  showChopRange: 0
   showGizmos: 1
   chopRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 1
+  showSpawnArea: 0
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23

@@ -109,7 +109,10 @@ public class NEATTest : MonoBehaviour
     [Header("Creatures Battle Loading Settings")]
     public string albertsFolderPath = "";  // Folder containing JSONs for Alberts
     public string kaisFolderPath = "";     // Folder containing JSONs for Kais
-    public int maxCreaturesToLoadPerSide = 5; // Maximum number of creatures to load per side
+    [Tooltip("If checked, the system will resample from the folder until the target population is reached")]
+    public bool resampleCreatures = false;  // Whether to resample from the folder to reach the target count
+    public bool respectTypeInFiles = true;  // Whether to respect the creature type in the files (or override with folder type)
+    public int maxCreaturesToLoadPerSide = 5; // Maximum number of creatures to load per side - legacy option
 
     [Header("Creature Saving Settings")]
     public bool saveCreatures = false;  // Option to save creatures at generation milestones
@@ -199,14 +202,16 @@ public class NEATTest : MonoBehaviour
             // Check for population management (only for specific tests)
             if (currentTest == CurrentTest.MatingMovement || 
                 currentTest == CurrentTest.AlbertsOnly || 
-                currentTest == CurrentTest.AlbertsVsKais)
+                currentTest == CurrentTest.AlbertsVsKais ||
+                currentTest == CurrentTest.LoadCreaturesBattle)  // Add LoadCreaturesBattle test
             {
                 // Check current creature counts periodically
                 countTimer += Time.deltaTime;
                 if (countTimer >= 0.4f)
                 {
                     CountAlberts();
-                    if (currentTest == CurrentTest.AlbertsVsKais)
+                    if (currentTest == CurrentTest.AlbertsVsKais || 
+                        currentTest == CurrentTest.LoadCreaturesBattle)  // Also count Kais for LoadCreaturesBattle
                     {
                         CountKais();
                     }
@@ -1653,13 +1658,20 @@ public class NEATTest : MonoBehaviour
             return;
         }
         
+        // Use population settings for loading creatures instead of maxCreaturesToLoadPerSide
+        int albertTarget = INITIAL_ALBERTS;
+        int kaisTarget = INITIAL_KAIS;
+        
         // Load and spawn Alberts from folder
         int albertsLoaded = LoadAndSpawnCreaturesFromFolder(
             albertsFolderPath, 
             spawnCenter, 
             spawnSpreadRadius, 
             albertCreaturePrefab, 
-            Creature.CreatureType.Albert
+            Creature.CreatureType.Albert,
+            albertTarget,
+            resampleCreatures,
+            respectTypeInFiles
         );
         
         // Load and spawn Kais from folder
@@ -1668,8 +1680,15 @@ public class NEATTest : MonoBehaviour
             rightSpawnCenter, 
             rightSpawnSpreadRadius, 
             kaiCreaturePrefab, 
-            Creature.CreatureType.Kai
+            Creature.CreatureType.Kai,
+            kaisTarget,
+            resampleCreatures,
+            respectTypeInFiles
         );
+        
+        // Update creature counts
+        CurrentAlberts = albertsLoaded;
+        CurrentKais = kaisLoaded;
         
         Debug.Log($"Creatures Battle Setup Complete: Loaded {albertsLoaded} Alberts and {kaisLoaded} Kais");
         
@@ -1679,7 +1698,15 @@ public class NEATTest : MonoBehaviour
         }
     }
     
-    private int LoadAndSpawnCreaturesFromFolder(string folderPath, Vector2 spawnCenter, float spreadRadius, GameObject prefab, Creature.CreatureType type)
+    private int LoadAndSpawnCreaturesFromFolder(
+        string folderPath, 
+        Vector2 spawnCenter, 
+        float spreadRadius, 
+        GameObject prefab, 
+        Creature.CreatureType type,
+        int targetCount,
+        bool resample,
+        bool respectTypeInFile)
     {
         try
         {
@@ -1701,9 +1728,19 @@ public class NEATTest : MonoBehaviour
             
             Debug.Log($"Found {jsonFiles.Length} JSON files in {folderPath}");
             
-            // Limit to maximum number per side
-            int filesToProcess = Mathf.Min(jsonFiles.Length, maxCreaturesToLoadPerSide);
+            // If resampling is enabled, we'll use the target count
+            // Otherwise, limit to minimum of files found or target
+            int filesToProcess = resample ? 
+                targetCount : 
+                Mathf.Min(jsonFiles.Length, targetCount);
+            
             int creaturesLoaded = 0;
+            
+            // If resampling and not enough files, we'll need to reuse some files
+            if (resample && jsonFiles.Length < targetCount)
+            {
+                Debug.LogWarning($"Only {jsonFiles.Length} files available for {type}s, but target is {targetCount}. Will sample with replacement.");
+            }
             
             // Process each JSON file
             for (int i = 0; i < filesToProcess; i++)
@@ -1718,18 +1755,31 @@ public class NEATTest : MonoBehaviour
                         0f
                     );
                     
-                    // Load the creature, but override its type
-                    var creature = LoadCreatureFromFile(jsonFiles[i], prefab, position, type);
+                    // If resampling, pick a random file; otherwise use sequential
+                    string jsonFile = resample ? 
+                        jsonFiles[UnityEngine.Random.Range(0, jsonFiles.Length)] : 
+                        jsonFiles[i % jsonFiles.Length];
+                    
+                    // Load the creature, overriding type if needed
+                    var creature = LoadCreatureFromFile(jsonFile, prefab, position, respectTypeInFile ? null : type);
                     
                     if (creature != null)
                     {
+                        // Initialize with creature's values but adjust age if needed
+                        float startingAge = type == Creature.CreatureType.Albert ? 
+                            Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT) :
+                            Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
+                        
+                        // Override age if desired (comment out to keep saved ages)
+                        creature.Lifetime = startingAge;
+                        
                         creaturesLoaded++;
-                        Debug.Log($"Successfully loaded {type} #{creaturesLoaded} from {System.IO.Path.GetFileName(jsonFiles[i])}");
+                        Debug.Log($"Successfully loaded {type} #{creaturesLoaded} from {System.IO.Path.GetFileName(jsonFile)}");
                     }
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"Error loading creature from {jsonFiles[i]}: {e.Message}");
+                    Debug.LogError($"Error loading creature #{i}: {e.Message}");
                 }
             }
             
@@ -1742,7 +1792,7 @@ public class NEATTest : MonoBehaviour
         }
     }
     
-    private Creature LoadCreatureFromFile(string filePath, GameObject prefab, Vector3 position, Creature.CreatureType overrideType)
+    private Creature LoadCreatureFromFile(string filePath, GameObject prefab, Vector3 position, Creature.CreatureType? overrideType)
     {
         try
         {
@@ -1762,22 +1812,25 @@ public class NEATTest : MonoBehaviour
                 return null;
             }
             
-            // Override the type with our desired type
-            savedCreature.type = overrideType;
+            // Override the type if requested
+            if (overrideType.HasValue)
+            {
+                savedCreature.type = overrideType.Value;
+            }
             
             // Instantiate the creature prefab at the specified position
-            GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
+            GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
             Creature creatureComponent = creatureObj.GetComponent<Creature>();
             
             if (creatureComponent == null)
             {
                 Debug.LogError("Prefab does not have a Creature component");
-                Destroy(creatureObj);
+                ObjectPoolManager.ReturnObjectToPool(creatureObj);
                 return null;
             }
             
-            // Set the type from our override
-            creatureComponent.type = overrideType;
+            // Set the type from our override or the file
+            creatureComponent.type = savedCreature.type;
             
             // Copy properties from saved creature
             creatureComponent.health = savedCreature.health;
