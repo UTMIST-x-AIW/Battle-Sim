@@ -430,7 +430,7 @@ public class NEATTest : MonoBehaviour
                 spawnCenter.y + offset.y,
                 0f
             );
-            
+        
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
             
@@ -1057,7 +1057,7 @@ public class NEATTest : MonoBehaviour
                         SetupNormalGame();
                         break;
                 }
-
+                
                 LogManager.LogMessage($"Test {currentTest} restarted successfully");
             }
             else

@@ -19137,7 +19137,7 @@ MonoBehaviour:
   showGizmos: 1
   chopRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 1
+  showSpawnArea: 0
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -22, y: 0}
   spawnSpreadRadius: 1.23
@@ -19147,8 +19147,8 @@ MonoBehaviour:
   albertsFolderPath: 
   kaisFolderPath: 
   maxCreaturesToLoadPerSide: 5
-  saveCreatures: 0
-  genSavingFrequency: 5
+  saveCreatures: 1
+  genSavingFrequency: 2
 --- !u!4 &186563466
 Transform:
   m_ObjectHideFlags: 0

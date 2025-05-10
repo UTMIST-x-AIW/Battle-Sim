@@ -4,7 +4,7 @@ public class CreatureObserver : MonoBehaviour
 {
     private static int timestep = 0;
     private Collider2D[] nearbyColliders = new Collider2D[20];  // Pre-allocated array for better performance
-
+    
     public float[] GetObservations(Creature self)
     {
         float[] obs = new float[13];  // Now 13 observations (added ground x,y)

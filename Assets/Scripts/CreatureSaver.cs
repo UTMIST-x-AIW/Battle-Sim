@@ -82,13 +82,9 @@ public static class CreatureSaver
     {
         if (brain == null) return null;
         
-        var nodesField = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var connectionsField = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
-        if (nodesField == null || connectionsField == null) return null;
-        
-        var nodes = nodesField.GetValue(brain) as Dictionary<int, NodeGene>;
-        var connections = connectionsField.GetValue(brain) as Dictionary<int, ConnectionGene>;
+        // Use public methods instead of reflection - fixes build serialization issues
+        var nodes = brain.GetNodes();
+        var connections = brain.GetConnections();
         
         if (nodes == null || connections == null) return null;
         
