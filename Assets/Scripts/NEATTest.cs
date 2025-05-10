@@ -112,7 +112,6 @@ public class NEATTest : MonoBehaviour
     [Tooltip("If checked, the system will resample from the folder until the target population is reached")]
     public bool resampleCreatures = false;  // Whether to resample from the folder to reach the target count
     public bool respectTypeInFiles = true;  // Whether to respect the creature type in the files (or override with folder type)
-    public int maxCreaturesToLoadPerSide = 5; // Maximum number of creatures to load per side - legacy option
 
     [Header("Creature Saving Settings")]
     public bool saveCreatures = false;  // Option to save creatures at generation milestones
@@ -1658,7 +1657,6 @@ public class NEATTest : MonoBehaviour
             return;
         }
         
-        // Use population settings for loading creatures instead of maxCreaturesToLoadPerSide
         int albertTarget = INITIAL_ALBERTS;
         int kaisTarget = INITIAL_KAIS;
         
