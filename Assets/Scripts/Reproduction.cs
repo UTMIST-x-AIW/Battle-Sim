@@ -110,7 +110,7 @@ public class Reproduction : MonoBehaviour
         {
             // Get reference to NEATTest
             var neatTest = FindObjectOfType<NEATTest>();
-            if (neatTest != null && neatTest.CanReproduce())
+            if (neatTest != null)
             {
                 // Get parent creatures
                 Creature p1 = this.GetComponent<Creature>();
@@ -118,6 +118,29 @@ public class Reproduction : MonoBehaviour
 
                 if (p1 == null || p2 == null)
                 {
+                    isMating = false;
+                    return;
+                }
+                
+                // Check if reproduction is allowed based on creature type
+                bool canReproduce = false;
+                if (neatTest.currentTest == NEATTest.CurrentTest.AlbertsVsKais)
+                {
+                    // For Alberts vs Kais test, use type-specific population check
+                    canReproduce = neatTest.CanReproduce(p1.type);
+                }
+                else
+                {
+                    // For other tests, use the old general check
+                    canReproduce = neatTest.CanReproduce();
+                }
+                
+                if (!canReproduce)
+                {
+                    if (LogManager.Instance != null)
+                    {
+                        LogManager.LogMessage($"Reproduction aborted - {p1.type} population is at maximum limit");
+                    }
                     isMating = false;
                     return;
                 }

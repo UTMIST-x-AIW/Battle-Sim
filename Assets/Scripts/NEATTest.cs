@@ -15,20 +15,35 @@ public class NEATTest : MonoBehaviour
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
     
-    [Header("Population Settings")]
+    [Header("Albert Population Settings")]
     public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
     public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
-    public int INITIAL_ALBERTS = 10; // Number of Alberts to spawn initially in Test 2
-    public float MIN_STARTING_AGE = 0f; // Minimum starting age for initial Alberts
-    public float MAX_STARTING_AGE = 30f; // Maximum starting age for initial Alberts
+    public int INITIAL_ALBERTS = 10; // Number of Alberts to spawn initially
+    public float MIN_STARTING_AGE_ALBERT = 0f; // Minimum starting age for initial Alberts
+    public float MAX_STARTING_AGE_ALBERT = 5f; // Maximum starting age for initial Alberts
     
-    // Property to display current Albert count in Inspector
+    [Header("Kai Population Settings")]
+    public int MIN_KAIS = 20;  // Minimum number of Kais to maintain
+    public int MAX_KAIS = 100; // Maximum number of Kais allowed
+    public int INITIAL_KAIS = 10; // Number of Kais to spawn initially
+    public float MIN_STARTING_AGE_KAI = 0f; // Minimum starting age for initial Kais
+    public float MAX_STARTING_AGE_KAI = 5f; // Maximum starting age for initial Kais
+    
+    // Property to display current creature counts in Inspector
     [SerializeField]
     private int _current_alberts = 0;
     public int CurrentAlberts
     {
         get { return _current_alberts; }
         private set { _current_alberts = value; }
+    }
+    
+    [SerializeField]
+    private int _current_kais = 0;
+    public int CurrentKais
+    {
+        get { return _current_kais; }
+        private set { _current_kais = value; }
     }
 
     [Header("Network Settings")]
@@ -104,6 +119,10 @@ public class NEATTest : MonoBehaviour
     private string currentRunSaveFolder = "";
     private HashSet<int> savedGenerations = new HashSet<int>();
 
+    // Add new variables for Kai spawning
+    private float lastKaiSpawnTime = 0f;
+    private bool isSpawningKai = false;
+
     private void Awake()
     {
         // Check if there's already an instance
@@ -177,14 +196,20 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Check for population management (only for Tests 1 and 4 to not interfere with other tests)
-            if (currentTest == CurrentTest.MatingMovement || currentTest == CurrentTest.AlbertsOnly)
+            // Check for population management (only for specific tests)
+            if (currentTest == CurrentTest.MatingMovement || 
+                currentTest == CurrentTest.AlbertsOnly || 
+                currentTest == CurrentTest.AlbertsVsKais)
             {
-                // Check current Albert count every second
+                // Check current creature counts periodically
                 countTimer += Time.deltaTime;
                 if (countTimer >= 0.4f)
                 {
                     CountAlberts();
+                    if (currentTest == CurrentTest.AlbertsVsKais)
+                    {
+                        CountKais();
+                    }
                     countTimer = 0f;
                 }
                 
@@ -279,10 +304,32 @@ public class NEATTest : MonoBehaviour
             // Check if we need to spawn more Alberts and if enough time has passed since last spawn
             if (currentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
             {
-                LogManager.LogMessage($"Population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
+                LogManager.LogMessage($"Albert population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
                 
                 // Start a coroutine to spawn a new Albert with a random delay
                 StartCoroutine(SpawnNewAlbertStaggered());
+            }
+            
+            // If this is an Alberts vs Kais test, also manage Kai population
+            if (currentTest == CurrentTest.AlbertsVsKais)
+            {
+                // Count current Kais
+                int currentKais = CountKais();
+                
+                // Update the inspector-visible count
+                CurrentKais = currentKais;
+                
+                // Log population count
+                LogManager.LogMessage($"Current Kai population: {currentKais}");
+                
+                // Check if we need to spawn more Kais
+                if (currentKais < MIN_KAIS && Time.time - lastKaiSpawnTime >= spawnCooldown && !isSpawningKai)
+                {
+                    LogManager.LogMessage($"Kai population below minimum ({MIN_KAIS}). Spawning new Kai with staggered timing.");
+                    
+                    // Start a coroutine to spawn a new Kai with a random delay
+                    StartCoroutine(SpawnNewKaiStaggered());
+                }
             }
         }
         catch (System.Exception e)
@@ -321,16 +368,16 @@ public class NEATTest : MonoBehaviour
                 yield break;
             }
             
-            // Initialize with random age and reproduction
-            float startingAge = 0f;  // Reduced max age to 10 seconds
-            creature.Lifetime = startingAge;  // Set the lifetime using the public property
+            // Initialize with random age
+            float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
+            creature.Lifetime = startingAge;
             
             // If the creature starts with an age past the aging threshold, give it appropriate health
             if (startingAge > creature.agingStartTime)
             {
                 float ageBeyondThreshold = startingAge - creature.agingStartTime;
                 float healthLost = ageBeyondThreshold * creature.agingRate;
-                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
+                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);
             }
             
             // Set starting reproduction meter to a random value between 0 and 1
@@ -355,10 +402,108 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    // Modify Reproduction class to check MAX_ALBERTS before allowing reproduction
+    private IEnumerator SpawnNewKaiStaggered()
+    {
+        isSpawningKai = true;
+        lastKaiSpawnTime = Time.time;
+        
+        // Add a random delay between 0.5 and 1.5 seconds before spawning
+        yield return new WaitForSeconds(Random.Range(0.01f, 0.3f));
+        
+        try
+        {
+            // Calculate a position with some randomness within the spawn area
+            Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
+            Vector3 position = new Vector3(
+                rightSpawnCenter.x + offset.x,
+                rightSpawnCenter.y + offset.y,
+                0f
+            );
+            
+            LogManager.LogMessage($"Spawning new Kai at position: {position}");
+            
+            // Spawn the creature with a randomized brain
+            var creature = SpawnCreatureWithRandomizedBrain(kaiCreaturePrefab, position, Creature.CreatureType.Kai);
+            
+            if (creature == null)
+            {
+                LogManager.LogError("Failed to spawn new Kai - SpawnCreatureWithRandomizedBrain returned null");
+                isSpawningKai = false;
+                yield break;
+            }
+            
+            // Initialize with random age
+            float startingAge = Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
+            creature.Lifetime = startingAge;
+            
+            // If the creature starts with an age past the aging threshold, give it appropriate health
+            if (startingAge > creature.agingStartTime)
+            {
+                float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                float healthLost = ageBeyondThreshold * creature.agingRate;
+                creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);
+            }
+            
+            // Set starting reproduction meter to a random value between 0 and 1
+            float startingReproductionMeter = Random.Range(0f, 1f);
+            creature.reproductionMeter = startingReproductionMeter;
+            
+            // Set generation to 0 for initially spawned Kais
+            creature.generation = 0;
+            
+            // Check if this creature should be saved (generation milestone)
+            CheckCreatureForSaving(creature);
+            
+            LogManager.LogMessage($"Successfully spawned new Kai with age: {startingAge}, reproduction meter: {startingReproductionMeter}");
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in SpawnNewKaiStaggered: {e.Message}\nStack trace: {e.StackTrace}");
+        }
+        finally
+        {
+            isSpawningKai = false;
+        }
+    }
+
+    // Modify the CanReproduce method to check species-specific limits
+    public bool CanReproduce(Creature.CreatureType type)
+    {
+        if (type == Creature.CreatureType.Albert)
+        {
+            return CurrentAlberts < MAX_ALBERTS;
+        }
+        else if (type == Creature.CreatureType.Kai)
+        {
+            return CurrentKais < MAX_KAIS;
+        }
+        return true; // Allow other types to reproduce without limit
+    }
+    
+    // Keep the old method for backward compatibility
     public bool CanReproduce()
     {
         return CurrentAlberts < MAX_ALBERTS;
+    }
+
+    private int CountKais()
+    {
+        try
+        {
+            // Find all creatures in the scene
+            var creatures = GameObject.FindObjectsOfType<Creature>();
+            
+            // Count only Kais
+            int count = creatures.Count(c => c.type == Creature.CreatureType.Kai);
+            
+            LogManager.LogMessage($"Counted {count} Kai creatures in the scene");
+            return count;
+        }
+        catch (System.Exception e)
+        {
+            LogManager.LogError($"Error in CountKais: {e.Message}\nStack trace: {e.StackTrace}");
+            return 0;  // Return 0 if there's an error
+        }
     }
 
     private void SetupNormalGame()
@@ -437,7 +582,7 @@ public class NEATTest : MonoBehaviour
             if (creature != null)
             {
                 // Initialize with random age based on parameters
-                float startingAge = Random.Range(MIN_STARTING_AGE, MAX_STARTING_AGE);
+                float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
                 creature.Lifetime = startingAge;
                 
                 // If the creature starts with an age past the aging threshold, adjust health
@@ -460,7 +605,7 @@ public class NEATTest : MonoBehaviour
         
         // Report on the setup
         LogManager.LogMessage($"Initial setup complete: {INITIAL_ALBERTS} Alberts spawned");
-        LogManager.LogMessage($"Age range: {MIN_STARTING_AGE}-{MAX_STARTING_AGE}");
+        LogManager.LogMessage($"Age range: {MIN_STARTING_AGE_ALBERT}-{MAX_STARTING_AGE_ALBERT}");
         LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
         
         // Check current count
@@ -1428,7 +1573,7 @@ public class NEATTest : MonoBehaviour
         Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
         
         // Spawn Alberts 
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < INITIAL_ALBERTS; i++)
         {
             // Calculate a position with randomness within the left spawn area
             Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
@@ -1444,21 +1589,21 @@ public class NEATTest : MonoBehaviour
             if (albert != null)
             {
                 // Initialize with random age
-                float startingAge = Random.Range(0f, 2f);
+                float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
                 albert.Lifetime = startingAge;
                 
-                // Set starting reproduction meter to a high value
+                // Set starting reproduction meter to a random value
                 albert.reproductionMeter = Random.Range(0f, 0.2f);
                 
                 // Set generation to 0 for initial Alberts
                 albert.generation = 0;
                 
-                LogManager.LogMessage($"Spawned Albert {i+1}/5 at {position}, age: {startingAge:F1}");
+                LogManager.LogMessage($"Spawned Albert {i+1}/{INITIAL_ALBERTS} at {position}, age: {startingAge:F1}");
             }
         }
         
         // Spawn Kais
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < INITIAL_KAIS; i++)
         {
             // Calculate a position with randomness within the right spawn area
             Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
@@ -1474,22 +1619,28 @@ public class NEATTest : MonoBehaviour
             if (kai != null)
             {
                 // Initialize with random age
-                float startingAge = Random.Range(0f, 2f); // Make adults
+                float startingAge = Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
                 kai.Lifetime = startingAge;
                 
-                // Set starting reproduction meter to a high value
+                // Set starting reproduction meter to a random value
                 kai.reproductionMeter = Random.Range(0f, 0.2f);
                 
                 // Set generation to 0 for initial Kais
                 kai.generation = 0;
                 
-                LogManager.LogMessage($"Spawned Kai {i+1}/5 at {position}, age: {startingAge:F1}");
+                LogManager.LogMessage($"Spawned Kai {i+1}/{INITIAL_KAIS} at {position}, age: {startingAge:F1}");
             }
         }
         
+        // Update counts
+        CountAlberts();
+        CountKais();
+        
         LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
-        LogManager.LogMessage("Left side (Alberts): 5 creatures near " + spawnCenter);
-        LogManager.LogMessage("Right side (Kais): 5 creatures near " + rightSpawnCenter);
+        LogManager.LogMessage($"Left side (Alberts): {INITIAL_ALBERTS} creatures near {spawnCenter}");
+        LogManager.LogMessage($"Right side (Kais): {INITIAL_KAIS} creatures near {rightSpawnCenter}");
+        LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
+        LogManager.LogMessage($"Population management: MIN_KAIS={MIN_KAIS}, MAX_KAIS={MAX_KAIS}");
     }
 
     private void SetupLoadCreaturesBattleTest()
