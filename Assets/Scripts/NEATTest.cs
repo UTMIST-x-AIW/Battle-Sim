@@ -106,8 +106,14 @@ public class NEATTest : MonoBehaviour
 
     private void Awake()
     {
-
-       
+        // Check if there's already an instance
+        if (instance != null && instance != this)
+        {
+            Debug.LogError($"Found duplicate NEATTest on {gameObject.name}. There should only be one NEATTest component in the scene!");
+            Destroy(this);
+            return;
+        }
+        instance = this;
     }
     
     void Start()
@@ -147,13 +153,13 @@ public class NEATTest : MonoBehaviour
                 case CurrentTest.Reproduction:
                     SetupReproductionTest();
                     break;
-                case CurrentTest.LoadCreatures:
+                case CurrentTest.LoadCreature:
                     SetupLoadCreatureTest();
                     break;
-                case TEST_ALBERTS_VS_KAIS:
+                case CurrentTest.AlbertsVsKais:
                     SetupAlbertsVsKaisTest();
                     break;
-                case TEST_LOAD_CREATURES_BATTLE:
+                case CurrentTest.LoadCreaturesBattle:
                     SetupLoadCreaturesBattleTest();
                     break;
                 default:
@@ -427,6 +433,7 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+            
             if (creature != null)
             {
                 // Initialize with random age based on parameters
@@ -813,7 +820,7 @@ public class NEATTest : MonoBehaviour
             Gizmos.DrawWireSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
             
             // Draw the right spawn area as well (for Alberts vs Kais test)
-            if (currentTest == TEST_ALBERTS_VS_KAIS)
+            if (currentTest == CurrentTest.AlbertsVsKais)
             {
                 // Use a different color tint for the right spawn area (more blue)
                 Color rightSpawnColor = new Color(spawnAreaColor.r * 0.7f, spawnAreaColor.g, spawnAreaColor.b * 1.3f, spawnAreaColor.a);
@@ -1037,13 +1044,13 @@ public class NEATTest : MonoBehaviour
                     case CurrentTest.Reproduction:
                         SetupReproductionTest();
                         break;
-                    case CurrentTest.LoadCreatures:
+                    case CurrentTest.LoadCreature:
                         SetupLoadCreatureTest();
                         break;
-                    case TEST_ALBERTS_VS_KAIS:
+                    case CurrentTest.AlbertsVsKais:
                         SetupAlbertsVsKaisTest();
                         break;
-                    case TEST_LOAD_CREATURES_BATTLE:
+                    case CurrentTest.LoadCreaturesBattle:
                         SetupLoadCreaturesBattleTest();
                         break;
                     default:
@@ -1420,7 +1427,7 @@ public class NEATTest : MonoBehaviour
     {
         Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
         
-        // Spawn 5 Alberts on the left side
+        // Spawn Alberts 
         for (int i = 0; i < 20; i++)
         {
             // Calculate a position with randomness within the left spawn area
@@ -1450,7 +1457,7 @@ public class NEATTest : MonoBehaviour
             }
         }
         
-        // Spawn 5 Kais on the right side
+        // Spawn Kais
         for (int i = 0; i < 20; i++)
         {
             // Calculate a position with randomness within the right spawn area

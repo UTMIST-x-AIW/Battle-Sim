@@ -50,7 +50,12 @@ public class ObjectPoolManager : MonoBehaviour
 
     public static void ReturnObjectToPool(GameObject obj)
     {
-        string goName = obj.name.Substring(0, obj.name.Length - 7);
+        // Get the base name without "(Clone)" suffix if it exists
+        string goName = obj.name;
+        if (goName.EndsWith("(Clone)"))
+        {
+            goName = goName.Substring(0, goName.Length - 7); // Remove "(Clone)"
+        }
 
         PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
 
@@ -62,10 +67,8 @@ public class ObjectPoolManager : MonoBehaviour
         {
             obj.SetActive(false);
             pool.InactiveObject.Add(obj);
-            Debug.Log(obj.name + " was killed and was added to the pool inactive list");
+            Debug.Log(obj.name + " was returned to the pool");
         }
-
-
     }
 }
 
