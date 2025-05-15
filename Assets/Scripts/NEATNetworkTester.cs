@@ -1,4 +1,7 @@
 using UnityEngine;
+using NEAT.NN;
+using NEAT.Genes;
+using NEAT.Genome;
 
 public class NEATNetworkTester : MonoBehaviour
 {
@@ -30,7 +33,7 @@ public class NEATNetworkTester : MonoBehaviour
         genome.AddConnection(connection);
         
         // Create a neural network from the genome
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        var network = FeedForwardNetwork.Create(genome);
         
         // Test the network with different input values
         double[] input1 = new double[] { 0.0 };

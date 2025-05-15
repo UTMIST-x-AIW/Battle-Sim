@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 3866177930134900298}
   m_Layer: 0
   m_Name: Kai
-  m_TagString: Untagged
+  m_TagString: Kai
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -254,6 +254,9 @@ MonoBehaviour:
   attackDamage: 1
   visionRange: 10
   chopRange: 1.5
+  treeLayer:
+    serializedVersion: 2
+    m_Bits: 128
   type: 1
   observer: {fileID: 0}
   canStartReproducing: 0

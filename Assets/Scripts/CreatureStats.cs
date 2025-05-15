@@ -57,7 +57,7 @@ public class CreatureStats : MonoBehaviour
         
         if (nameText != null)
         {
-            nameText.text = $"{selectedCreature.type}";
+            nameText.text = $"{selectedCreature.creatureType}";
         }
         
         if (ageText != null)

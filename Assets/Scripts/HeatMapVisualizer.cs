@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class HeatMapVisualizer : MonoBehaviour
 {
+    [ExposedScriptableObject]
     public HeatMapData heatMapData;
     public float size = 0.6f;
     private float offset = 0.5f;
@@ -17,9 +18,9 @@ public class HeatMapVisualizer : MonoBehaviour
         foreach (var tile in heatMapData.tilePosData.TilePositions)
         {
             float value = heatMapData.GetValue(tile.pos);
-            float new_value = MathEq.Remap(value,0,100,0,1);
+            float new_value = MathEq.Remap(value, 0, 100, 0, 1);
             Gizmos.color = new Color(1 - new_value, new_value, 0f, 0.8f);
-            Vector3 pos = new Vector3(tile.pos.x , tile.pos.y + 0.5f, 0);
+            Vector3 pos = new Vector3(tile.pos.x, tile.pos.y + 0.5f, 0);
             Gizmos.DrawCube(pos, Vector3.one * (size * 0.5f));
         }
     }

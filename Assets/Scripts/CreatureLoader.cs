@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using NEAT.Genes;
 using System.Collections.Generic;
+using NEAT.NN;
 
 public static class CreatureLoader
 {
@@ -23,8 +24,9 @@ public static class CreatureLoader
             var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
             var creatureComponent = creature.GetComponent<Creature>();
 
+            #region Loading Basic Properties
             // Load basic properties
-            creatureComponent.type = savedCreature.type;
+            creatureComponent.creatureType = savedCreature.type;
             creatureComponent.health = savedCreature.health;
             creatureComponent.maxHealth = savedCreature.maxHealth;
             creatureComponent.energyMeter = savedCreature.energyMeter;
@@ -44,7 +46,7 @@ public static class CreatureLoader
             creatureComponent.addConnectionRate = savedCreature.addConnectionRate;
             creatureComponent.deleteConnectionRate = savedCreature.deleteConnectionRate;
             creatureComponent.maxHiddenLayers = savedCreature.maxHiddenLayers;
-
+            #endregion
             // Reconstruct the brain
             if (savedCreature.brain != null)
             {
@@ -73,7 +75,7 @@ public static class CreatureLoader
                 }
 
                 // Create and initialize the neural network
-                var network = new NEAT.NN.FeedForwardNetwork(nodes, connections);
+                var network = new FeedForwardNetwork(nodes, connections);
                 creatureComponent.InitializeNetwork(network);
             }
             else

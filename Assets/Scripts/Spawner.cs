@@ -42,6 +42,9 @@ public class Spawner : MonoBehaviour
         // Create a parent object to organize spawned prefabs
         prefabParent = GameObject.Find($"{prefab.name} Parent");
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
+        prefabParent = SavingParentTransforms.GetParentForPrefab(prefab).gameObject;
+
+        Debug.Log(prefabParent.name);
         
         // Create a parent for extra objects
         extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");
@@ -248,18 +251,18 @@ public class Spawner : MonoBehaviour
         {
             return; // Skip spawning to avoid overlaps
         }
-        
+
         // Instantiate the prefab and set its parent
+
         GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        
         // Assign to the appropriate parent based on whether it's an extra object
         if (isExtra)
         {
-            spawnedPrefab.transform.SetParent(extraPrefabParent.transform, false);
+            spawnedPrefab.transform.SetParent(extraPrefabParent.transform);
         }
         else
         {
-            spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+            spawnedPrefab.transform.SetParent(prefabParent.transform);
         }
     }
 

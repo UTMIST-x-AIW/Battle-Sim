@@ -10,6 +10,9 @@ TagManager:
   - Cherry
   - Tree
   - Ground
+  - Albert
+  - Kai
+  - Rock
   layers:
   - Default
   - TransparentFX

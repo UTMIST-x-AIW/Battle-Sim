@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using System;
-using Unity.Burst;
 // Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
 using Random = UnityEngine.Random;
 using NEAT.Genes;
+using NEAT.NN;
 
-[BurstCompile]
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
@@ -37,7 +36,7 @@ public class Creature : MonoBehaviour
     public float reproductionRechargeRate = 0.333f; // Fill from 0 to 1 in 10 seconds
     
     [Header("Aging Settings")]
-    public float agingStartTime = 20f;  // Start aging after 20 seconds
+    public float TimeBeforeStartingAging = 20f;  // Start aging after 20 seconds
     public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
     private float lifetime = 0f;        // How long the creature has lived
     public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
@@ -63,18 +62,19 @@ public class Creature : MonoBehaviour
     public float attackDamage = 1.0f;
     public float visionRange = 10f;  // Range at which creatures can see other entities
     public float chopRange = 1.5f;   // Range at which creatures can chop trees
+    public LayerMask treeLayer;
     
     // Type
     public enum CreatureType { Albert, Kai }
-    public CreatureType type;
+    public CreatureType creatureType;
     
     // Neural Network
-    public NEAT.NN.FeedForwardNetwork brain;
+    public FeedForwardNetwork brain;
     public CreatureObserver observer;
     private Rigidbody2D rb;
     
     // Add method to get brain
-    public NEAT.NN.FeedForwardNetwork GetBrain()
+    public FeedForwardNetwork GetBrain()
     {
         return brain;
     }
@@ -175,11 +175,11 @@ public class Creature : MonoBehaviour
         // Update the animator with the creature type
         if (creatureAnimator != null)
         {
-            creatureAnimator.SetCreatureType(type);
+            creatureAnimator.SetCreatureType(creatureType);
         }
     }
 
-    public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
+    public void InitializeNetwork(FeedForwardNetwork network)
     {
         brain = network;
     }
@@ -206,8 +206,7 @@ public class Creature : MonoBehaviour
     
     public float[] GetActions()
     {
-        try
-        {
+        
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
@@ -215,45 +214,16 @@ public class Creature : MonoBehaviour
             }
             
             float[] observations = observer.GetObservations(this);
-            double[] doubleObservations = ConvertToDouble(observations);
+            Debug.Log("Get Observations was ran");
+
+        double[] doubleObservations = ConvertToDouble(observations);
             
             // Use a separate try-catch for the activation to detect stack overflow specifically
             double[] doubleOutputs;
-            try
-            {
-                // Add a timeout or stack overflow protection here
-                doubleOutputs = brain.Activate(doubleObservations);
-            }
-            catch (System.StackOverflowException e)
-            {
-                // Create a simple backup neural network or return default values
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogError($"Stack overflow in neural network for {gameObject.name} (Gen {generation}). Creating fallback outputs.");
-                }
-                else
-                {
-                    Debug.LogError($"Stack overflow in neural network for {gameObject.name} (Gen {generation}). Creating fallback outputs.");
-                }
-                
-                // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
-            }
-            catch (System.Exception e)
-            {
-                // Handle other activation errors
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogError($"Neural network activation error for {gameObject.name} (Gen {generation}): {e.Message}");
-                }
-                else
-                {
-                    Debug.LogError($"Neural network activation error for {gameObject.name} (Gen {generation}): {e.Message}");
-                }
-                
-                // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
-            }
+
+            // Add a timeout or stack overflow protection here
+            doubleOutputs = brain.Activate(doubleObservations);
+          
             
             float[] outputs = ConvertToFloat(doubleOutputs);
             
@@ -311,21 +281,7 @@ public class Creature : MonoBehaviour
             }
             
             return outputs;
-        }
-        catch (System.Exception e)
-        {
-            string errorMsg = $"Error in GetActions for {gameObject.name}: {e.Message}";
-            if (LogManager.Instance != null)
-            {
-                LogManager.LogError($"{errorMsg}\nStack trace: {e.StackTrace}");
-            }
-            else
-            {
-                Debug.LogError(errorMsg);
-            }
-            
-            return new float[] { 0f, 0f, 0f, 0f };  // Return default values on error
-        }
+           
     }
 
     // Note: The ApplyMutations method has been moved to Reproduction.cs and is no longer used here.
@@ -334,13 +290,12 @@ public class Creature : MonoBehaviour
 
     private void FixedUpdate()
     {
-        try
-        {
+        
             // Update lifetime and health
             lifetime += Time.fixedDeltaTime;
             
             // Start aging process after a threshold time
-            if (lifetime > agingStartTime)
+            if (lifetime > TimeBeforeStartingAging)
             {
                 // Debug.Log(string.Format("{0}: Aging process started at time {1}", gameObject.name, lifetime));
                 health -= agingRate * Time.fixedDeltaTime;
@@ -360,14 +315,14 @@ public class Creature : MonoBehaviour
                 // Log the death
                 if (LogManager.Instance != null)
                 {
-                    LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                    LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {creatureType}, Health: {health}, Age: {lifetime}, Generation: {generation}");
                 }
                 else
                 {
-                    Debug.Log($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
+                    Debug.Log($"Creature dying due to health <= 0 - Type: {creatureType}, Health: {health}, Age: {lifetime}, Generation: {generation}");
                 }
                 
-                // Die
+                // This creature will die
                 ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
@@ -375,8 +330,6 @@ public class Creature : MonoBehaviour
             // Only get actions if we're not reproducing or moving to mate
             if (!isReproducing && !isMovingToMate && !isWaitingForMate)
             {
-                try
-                {
                     // Fill reproduction meter if not in cooldown
                     if (!canStartReproducing)
                     {
@@ -391,63 +344,18 @@ public class Creature : MonoBehaviour
                     
                     // Get network outputs (x, y velocities, chop desire, attack desire)
                     float[] actions = GetActions();
-                    
-                    // Process the network's action commands
+            Debug.Log("GetActions was ran");
+
+            // Process the network's action commands
             ProcessActionCommands(actions);
-        }
-                catch (System.Exception e)
-                {
-                    // Log detailed error information
-                    string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
-                    if (LogManager.Instance != null)
-                    {
-                        LogManager.LogError(errorMessage);
-                    }
-                    else
-                    {
-                        Debug.LogError(errorMessage);
-                    }
-                }
+                
             }
-        }
-        catch (System.Exception e)
-        {
-            // Log very detailed error information if the main loop fails
-            string errorMessage = $"CRITICAL ERROR in Creature FixedUpdate: {e.Message}\nStack trace: {e.StackTrace}\nCreature info: Type={type}, Generation={generation}, Health={health}, Age={lifetime}";
-            if (LogManager.Instance != null)
-            {
-                LogManager.LogError(errorMessage);
-            }
-            else
-            {
-                Debug.LogError(errorMessage);
-            }
-        }
+        
     }
     
     private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
     {
-        // Find and cache floor collider if not already cached
-        if (cachedFloorCollider == null)
-        {
-            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
-            if (floorObj != null)
-            {
-                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
-                if (cachedFloorCollider != null)
-                {
-                    floorBounds = cachedFloorCollider.bounds;
-                }
-            }
-        }
-        
-        if (cachedFloorCollider == null)
-        {
-            // No floor found, just apply the movement using force
-            // Use ForceMode2D.Force for continuous, physics-based movement
-            rb.AddForce(desiredVelocity, ForceMode2D.Force);
-            return;
-        }
+
         
         // Current position
         Vector2 currentPos = rb.position;
@@ -463,7 +371,7 @@ public class Creature : MonoBehaviour
             Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
             
             // Apply a stronger force to return to bounds
-            rb.AddForce(directionToCenter * moveSpeed * 3f, ForceMode2D.Force);
+            rb.AddForce(3f * moveSpeed * directionToCenter, ForceMode2D.Force);
             return;
         }
         
@@ -535,7 +443,7 @@ public class Creature : MonoBehaviour
                 
                 // Blend between current direction and center direction
                 Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
-                rb.AddForce(blendedDirection * moveSpeed * 2f, ForceMode2D.Force);
+                rb.AddForce(2f * moveSpeed * blendedDirection, ForceMode2D.Force);
                 return;
             }
             
@@ -552,7 +460,7 @@ public class Creature : MonoBehaviour
                 Vector2 tangentialVelocity = desiredVelocity - projectedVelocity;
                 
                 // Use mostly tangential movement with a bit of inward movement
-                rb.AddForce((tangentialVelocity * 0.8f + directionToCenter * moveSpeed * 0.5f), ForceMode2D.Force);
+                rb.AddForce((tangentialVelocity * 0.8f + 0.5f * moveSpeed * directionToCenter), ForceMode2D.Force);
                 return;
             }
         }
@@ -563,14 +471,13 @@ public class Creature : MonoBehaviour
         // Limit maximum velocity to prevent excessive speeds from accumulating forces
         if (rb.velocity.magnitude > moveSpeed * 1.2f)
         {
-            rb.velocity = rb.velocity.normalized * moveSpeed * 1.2f;
+            rb.velocity = 1.2f * moveSpeed * rb.velocity.normalized;
         }
     }
     
     private void ProcessActionCommands(float[] actions)
     {
-        try
-        {
+       
             // Validate actions array
             if (actions == null)
             {
@@ -594,29 +501,12 @@ public class Creature : MonoBehaviour
                 safeActions[i] = actions[i];
             }
             
-            // Log if the array length wasn't 4
-            if (actions.Length != 4)
-            {
-                string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}, created safe array with values [{safeActions[0]}, {safeActions[1]}, {safeActions[2]}, {safeActions[3]}]";
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogError(errorMsg);
-                }
-                else
-                {
-                    Debug.LogError(errorMsg);
-                }
-            }
-            
+          
             // Apply movement based on neural network output (first two values)
             Vector2 moveDirection = new Vector2(safeActions[0], safeActions[1]);
             
-            // Normalize to ensure diagonal movement isn't faster
-            if (moveDirection.magnitude > 1f)
-            {
-                moveDirection.Normalize();
-            }
-            
+            moveDirection.Normalize();
+
             // Apply move speed with physics force (using pushForce value)
             Vector2 desiredVelocity = moveDirection * pushForce;
             ApplyMovementWithBoundsCheck(desiredVelocity);
@@ -652,19 +542,7 @@ public class Creature : MonoBehaviour
                     }
                 }
             }
-        }
-        catch (System.Exception e)
-        {
-            string errorMsg = $"Error in ProcessActionCommands for {gameObject.name}: {e.Message}\nStack trace: {e.StackTrace}";
-            if (LogManager.Instance != null)
-            {
-                LogManager.LogError(errorMsg);
-            }
-            else
-            {
-                Debug.LogError(errorMsg);
-            }
-        }
+       
     }
 
     private bool TryChopTree()
@@ -674,21 +552,18 @@ public class Creature : MonoBehaviour
         float nearestDistance = float.MaxValue;
 
         float ACTION_RADIUS = 1.5f;
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, ACTION_RADIUS);
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, ACTION_RADIUS, treeLayer);
         
         foreach (var collider in nearbyColliders)
         {
-            if (collider.CompareTag("Tree"))
+            float distance = Vector2.Distance(transform.position, collider.transform.position);
+            if (distance < nearestDistance)
             {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < nearestDistance)
+                TreeHealth treeHealth = collider.GetComponent<TreeHealth>();
+                if (treeHealth != null)
                 {
-                    TreeHealth treeHealth = collider.GetComponent<TreeHealth>();
-                    if (treeHealth != null)
-                    {
-                        nearestTree = treeHealth;
-                        nearestDistance = distance;
-                    }
+                    nearestTree = treeHealth;
+                    nearestDistance = distance;
                 }
             }
         }
@@ -733,7 +608,7 @@ public class Creature : MonoBehaviour
         foreach (var collider in nearbyColliders)
         {
             Creature otherCreature = collider.GetComponent<Creature>();
-            if (otherCreature != null && otherCreature.type != this.type)
+            if (otherCreature != null && otherCreature.creatureType != this.creatureType)
             {
                 float distance = Vector2.Distance(transform.position, collider.transform.position);
                 if (distance < nearestDistance)
@@ -778,7 +653,7 @@ public class Creature : MonoBehaviour
     {
         // Check if we collided with another creature
         Creature otherCreature = collision.gameObject.GetComponent<Creature>();
-        if (otherCreature != null && otherCreature.type != type)
+        if (otherCreature != null && otherCreature.creatureType != creatureType)
         {
             // Check if healths are approximately equal (within 0.1)
             if (Mathf.Abs(health - otherCreature.health) < 0.1f)
@@ -828,7 +703,7 @@ public class Creature : MonoBehaviour
                 // Try to log, but catch any exceptions if LogManager is gone
                 if (LogManager.Instance != null)
                 {
-                    LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
+                    LogManager.LogMessage($"Creature being destroyed - Type: {creatureType}, Health: {health}, Generation: {generation}");
                 }
             }
             catch (System.Exception)
@@ -943,7 +818,7 @@ public class Creature : MonoBehaviour
             if (neatTest.showDetectionRadius)
             {
             // Set color to be semi-transparent and match creature type
-            Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
+            Color gizmoColor = (creatureType == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
             Gizmos.color = gizmoColor;
             
             // Draw filled circle for better visibility
@@ -964,7 +839,7 @@ public class Creature : MonoBehaviour
         }
     }
     
-    private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
+    private FeedForwardNetwork CreateChildNetwork(FeedForwardNetwork parent1, FeedForwardNetwork parent2)
     {
         // Get parent network details via reflection
         System.Reflection.FieldInfo nodesField = parent1.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -976,10 +851,10 @@ public class Creature : MonoBehaviour
             return null;
         }
         
-        var parent1Nodes = nodesField.GetValue(parent1) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent1Nodes = nodesField.GetValue(parent1) as Dictionary<int, NodeGene>;
         var parent1Connections = connectionsField.GetValue(parent1) as Dictionary<int, NEAT.Genes.ConnectionGene>;
         
-        var parent2Nodes = nodesField.GetValue(parent2) as Dictionary<int, NEAT.Genes.NodeGene>;
+        var parent2Nodes = nodesField.GetValue(parent2) as Dictionary<int, NodeGene>;
         var parent2Connections = connectionsField.GetValue(parent2) as Dictionary<int, NEAT.Genes.ConnectionGene>;
         
         if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
@@ -989,7 +864,7 @@ public class Creature : MonoBehaviour
         }
         
         // Create new dictionaries for the child
-        var childNodes = new Dictionary<int, NEAT.Genes.NodeGene>();
+        var childNodes = new Dictionary<int, NodeGene>();
         var childConnections = new Dictionary<int, NEAT.Genes.ConnectionGene>();
         
         // Add all nodes (taking randomly from either parent for matching nodes)
@@ -1000,18 +875,18 @@ public class Creature : MonoBehaviour
             {
                 // Both parents have this node, randomly choose one
                 childNodes[key] = Random.value < 0.5f ? 
-                    (NEAT.Genes.NodeGene)parent1Nodes[key].Clone() : 
-                    (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
+                    (NodeGene)parent1Nodes[key].Clone() : 
+                    (NodeGene)parent2Nodes[key].Clone();
             }
             else if (parent1Nodes.ContainsKey(key))
             {
                 // Only parent1 has this node
-                childNodes[key] = (NEAT.Genes.NodeGene)parent1Nodes[key].Clone();
+                childNodes[key] = (NodeGene)parent1Nodes[key].Clone();
             }
             else
             {
                 // Only parent2 has this node
-                childNodes[key] = (NEAT.Genes.NodeGene)parent2Nodes[key].Clone();
+                childNodes[key] = (NodeGene)parent2Nodes[key].Clone();
             }
         }
         
@@ -1047,6 +922,6 @@ public class Creature : MonoBehaviour
         }
         
         // Create a new network with the crossover results
-        return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
+        return new FeedForwardNetwork(childNodes, childConnections);
     }
 }

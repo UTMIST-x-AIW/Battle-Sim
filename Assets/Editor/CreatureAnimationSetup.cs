@@ -172,7 +172,7 @@ public class CreatureAnimationSetup : EditorWindow
         Creature creature = prefabInstance.GetComponent<Creature>();
         if (creature != null)
         {
-            creature.type = creatureType;
+            creature.creatureType = creatureType;
         }
         
         // Apply changes back to the prefab

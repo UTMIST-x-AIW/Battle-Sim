@@ -49,7 +49,7 @@ public class CreatureAnimator : MonoBehaviour
         InitializeSpriteArrays();
         
         // Set initial sprites based on creature type
-        SetCreatureType(creature.type);
+        SetCreatureType(creature.creatureType);
     }
     
     private void InitializeSpriteArrays()

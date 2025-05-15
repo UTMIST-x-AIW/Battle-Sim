@@ -2,6 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
+using NEAT.NN;
+using NEAT.Genes;
+using NEAT.Genome;
 
 public class NEATTest : MonoBehaviour
 {
@@ -59,7 +62,7 @@ public class NEATTest : MonoBehaviour
     
     // NEAT instance for access by other classes
     [System.NonSerialized]
-    public NEAT.Genome.Genome neat = new NEAT.Genome.Genome(0);
+    public Genome neat = new Genome(0);
 
     [Header("Population Settings")]
     private float lastPopulationCheck = 0f;
@@ -73,13 +76,6 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Loading Settings")]
     public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
-
-    private void Awake()
-    {
-
-       
-    }
-    
     void Start()
     {
         // Only proceed if we're the main instance
@@ -255,7 +251,7 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            Debug.Log(ObjectPoolManager.ObjectPools);
+            
             if (creature == null)
             {
                 LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
@@ -268,9 +264,9 @@ public class NEATTest : MonoBehaviour
             creature.Lifetime = startingAge;  // Set the lifetime using the public property
             
             // If the creature starts with an age past the aging threshold, give it appropriate health
-            if (startingAge > creature.agingStartTime)
+            if (startingAge > creature.TimeBeforeStartingAging)
             {
-                float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                float ageBeyondThreshold = startingAge - creature.TimeBeforeStartingAging;
                 float healthLost = ageBeyondThreshold * creature.agingRate;
                 creature.health = Mathf.Max(0.1f, creature.maxHealth - healthLost);  // Ensure at least 0.1 health
             }
@@ -379,9 +375,9 @@ public class NEATTest : MonoBehaviour
                 creature.Lifetime = startingAge;
                 
                 // If the creature starts with an age past the aging threshold, adjust health
-                if (startingAge > creature.agingStartTime)
+                if (startingAge > creature.TimeBeforeStartingAging)
                 {
-                    float ageBeyondThreshold = startingAge - creature.agingStartTime;
+                    float ageBeyondThreshold = startingAge - creature.TimeBeforeStartingAging;
                     float healthLost = ageBeyondThreshold * creature.agingRate;
                     creature.health = Mathf.Max(0.5f, creature.maxHealth - healthLost);
                 }
@@ -444,11 +440,11 @@ public class NEATTest : MonoBehaviour
     {
         var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
-        creatureComponent.type = type;
+        creatureComponent.creatureType = type;
         
         // Create initial neural network with appropriate genome
         var genome = isKai ? CreateInitialKaiGenome() : CreateInitialGenome();
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        var network = FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
         
         // Pass the max hidden layers setting to the creature
@@ -457,9 +453,9 @@ public class NEATTest : MonoBehaviour
         return creatureComponent;
     }
     
-    NEAT.Genome.Genome CreateInitialGenome()
+    Genome CreateInitialGenome()
     {
-        var genome = new NEAT.Genome.Genome(0);
+        var genome = new Genome(0);
         
         // Add input nodes (13 inputs total): 
         // 0: health
@@ -472,17 +468,17 @@ public class NEATTest : MonoBehaviour
         // 11,12: ground x,y
         for (int i = 0; i < 13; i++)
         {
-            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            var node = new NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
             node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
             genome.AddNode(node);
         }
         
         // Add output nodes (4 outputs: x,y velocity, chop, attack)
-        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
-        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode1 = new NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
+        var outputNode4 = new NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
 
         outputNode1.Layer = 2;  // Output layer
         outputNode2.Layer = 2;  // Output layer
@@ -511,9 +507,9 @@ public class NEATTest : MonoBehaviour
         return genome;
     }
     
-    NEAT.Genome.Genome CreateInitialKaiGenome()
+    Genome CreateInitialKaiGenome()
     {
-        var genome = new NEAT.Genome.Genome(0);
+        var genome = new Genome(0);
         
         // Add input nodes (13 inputs total): 
         // 0: health
@@ -526,17 +522,17 @@ public class NEATTest : MonoBehaviour
         // 11,12: ground x,y
         for (int i = 0; i < 13; i++)
         {
-            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            var node = new NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
             node.Bias = 0.0; // Explicitly set bias to 0 for input nodes
             genome.AddNode(node);
         }
         
         // Add output nodes (4 outputs: x,y velocity, chop, attack)
-        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
-        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode1 = new NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
+        var outputNode4 = new NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
         
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
@@ -598,7 +594,7 @@ public class NEATTest : MonoBehaviour
         // Create the creature instance
         GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         Creature creatureComponent = creature.GetComponent<Creature>();
-        creatureComponent.type = type;
+        creatureComponent.creatureType = type;
         
         // Create a base genome
         var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
@@ -619,7 +615,7 @@ public class NEATTest : MonoBehaviour
         }
         
         // Create the neural network from the randomized genome
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        var network = FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
         
         // Pass the max hidden layers setting to the creature
@@ -628,12 +624,12 @@ public class NEATTest : MonoBehaviour
         return creatureComponent;
     }
     
-    private void ApplyRandomConnectionMutation(NEAT.Genome.Genome genome, int maxHiddenLayers)
+    private void ApplyRandomConnectionMutation(Genome genome, int maxHiddenLayers)
     {
         // Try a few times to find a valid connection
         for (int tries = 0; tries < 5; tries++)
         {
-            var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+            var nodeList = new List<NodeGene>(genome.Nodes.Values);
             var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
             var targetNode = nodeList[Random.Range(0, nodeList.Count)];
             
@@ -668,10 +664,10 @@ public class NEATTest : MonoBehaviour
         // Create the creature instance
         var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
-        creatureComponent.type = type;
+        creatureComponent.creatureType = type;
         
         // Create a custom genome with clear reproduction bias
-        var genome = new NEAT.Genome.Genome(0);
+        var genome = new Genome(0);
         
         // Add input nodes (13 inputs total)
         // 0: health
@@ -684,17 +680,17 @@ public class NEATTest : MonoBehaviour
         // 11,12: ground x,y
         for (int i = 0; i < 13; i++)
         {
-            var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+            var node = new NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
             node.Bias = 0.0;
             genome.AddNode(node);
         }
         
         // Add output nodes
-        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
-        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode1 = new NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
+        var outputNode4 = new NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
         
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
@@ -732,7 +728,7 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 12, 18, 0.3f));  // Ground y to y movement
         
         // Create the neural network and initialize the creature
-        var network = NEAT.NN.FeedForwardNetwork.Create(genome);
+        var network = FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
         
         // Pass the max hidden layers setting to the creature
@@ -766,7 +762,7 @@ public class NEATTest : MonoBehaviour
             var creatures = GameObject.FindObjectsOfType<Creature>();
             
             // Count only Alberts
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Albert);
+            int count = creatures.Count(c => c.creatureType == Creature.CreatureType.Albert);
             
             LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
             return count;
@@ -879,7 +875,7 @@ public class NEATTest : MonoBehaviour
                     // Analyze outputs
                     if (doubleOutputs.Length != 4)
                     {
-                        anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.type}): " +
+                        anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.creatureType}): " +
                                      $"Neural network returned {doubleOutputs.Length} outputs instead of 4");
                     }
                     else
@@ -989,7 +985,7 @@ public class NEATTest : MonoBehaviour
     }
 
     // Add this method in the NEATTest class, ideally near other genome-related methods
-    private void ValidateGenome(NEAT.Genome.Genome genome)
+    private void ValidateGenome(Genome genome)
     {
         if (genome == null)
         {
@@ -1116,7 +1112,7 @@ public class NEATTest : MonoBehaviour
     }
 
     // Add this call in the SpawnCreature method, right before the genome is used
-    private void SpawnCreature(Vector3 pos, bool isInitial = false, NEAT.Genome.Genome genome = null, Creature parent1 = null, Creature parent2 = null)
+    private void SpawnCreature(Vector3 pos, bool isInitial = false, Genome genome = null, Creature parent1 = null, Creature parent2 = null)
     {
         // ... existing code ...
         
@@ -1154,7 +1150,7 @@ public class NEATTest : MonoBehaviour
         if (creature != null)
         {
             Debug.Log($"Successfully loaded creature at position {position}");
-            Debug.Log($"Creature properties: Type={creature.type}, Generation={creature.generation}, Age={creature.Lifetime:F1}");
+            Debug.Log($"Creature properties: Type={creature.creatureType}, Generation={creature.generation}, Age={creature.Lifetime:F1}");
         }
         else
         {

@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 2731702346108235746}
   m_Layer: 0
   m_Name: Albert
-  m_TagString: Untagged
+  m_TagString: Albert
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -183,7 +183,7 @@ MonoBehaviour:
   maxEnergy: 1
   energyRechargeRate: 1.2
   reproductionRechargeRate: 1.2
-  agingStartTime: 5.81
+  TimeBeforeStartingAging: 20
   agingRate: 0.25
   generation: 0
   moveSpeed: 5
@@ -199,8 +199,11 @@ MonoBehaviour:
   attackDamage: 1
   visionRange: 20
   chopRange: 1.5
+  treeLayer:
+    serializedVersion: 2
+    m_Bits: 0
   type: 0
-  observer: {fileID: 0}
+  observer: {fileID: -380665466361591250}
   canStartReproducing: 1
   reproductionMeter: 0
 --- !u!114 &-380665466361591250

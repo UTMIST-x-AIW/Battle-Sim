@@ -9,6 +9,15 @@ public class ObjectPoolManager : MonoBehaviour
 {
     public static List<PooledObjectInfo> ObjectPools = new List<PooledObjectInfo>();
 
+    [SerializeField]
+    public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
+
+    private void LateUpdate()
+    {
+        pooledObjectInfos.Clear();
+        pooledObjectInfos.AddRange(ObjectPools);
+    }
+
     public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPosition, Quaternion spawnRotation)
     {
         PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == objectToSpawn.name);
@@ -21,7 +30,7 @@ public class ObjectPoolManager : MonoBehaviour
         }
 
         GameObject spawnableObj = null;
-        foreach (GameObject obj in pool.InactiveObject)
+        foreach (GameObject obj in pool.InactiveObjects)
         {
             if (obj != null)
             {
@@ -33,6 +42,7 @@ public class ObjectPoolManager : MonoBehaviour
         if (spawnableObj == null)
         {
             spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
+            pool.ActiveObjects.Add(spawnableObj);
             Debug.Log(spawnableObj.name + " was instantiated and added to the pool");
         }
         
@@ -41,7 +51,8 @@ public class ObjectPoolManager : MonoBehaviour
         {
             spawnableObj.transform.position = spawnPosition;
             spawnableObj.transform.rotation = spawnRotation;
-            pool.InactiveObject.Remove(spawnableObj);
+            pool.InactiveObjects.Remove(spawnableObj);
+            pool.ActiveObjects.Add(spawnableObj);
             spawnableObj.SetActive(true);
         }
 
@@ -61,17 +72,20 @@ public class ObjectPoolManager : MonoBehaviour
         else
         {
             obj.SetActive(false);
-            pool.InactiveObject.Add(obj);
+            pool.InactiveObjects.Add(obj);
+            pool.ActiveObjects.Remove(obj);
             Debug.Log(obj.name + " was killed and was added to the pool inactive list");
         }
 
 
     }
+
 }
 
-
+[Serializable]
 public class PooledObjectInfo
 {
     public string LookupString;
-    public List<GameObject> InactiveObject = new List<GameObject>();
+    public List<GameObject> InactiveObjects = new List<GameObject>();
+    public List<GameObject> ActiveObjects = new List<GameObject>();
 }

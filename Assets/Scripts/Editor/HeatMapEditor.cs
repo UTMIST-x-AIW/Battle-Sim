@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+
 [CustomEditor(typeof(HeatMapVisualizer))]
 public class HeatMapEditor : Editor
 {
-    private HeatMapVisualizer visualizer;
     private bool _enabledediting = false;
+    HeatMapVisualizer visualizer;
     private bool EraserOn = false;
     private float brushstrength = 0.6f;
     private float brushRadius = 0.6f;
@@ -27,9 +28,8 @@ public class HeatMapEditor : Editor
 
     private void OnEnable()
     {
-        visualizer = (HeatMapVisualizer)target;
-        // Make sure the Scene view gets keyboard events
         SceneView.duringSceneGui += OnSceneGUI;
+        visualizer = (HeatMapVisualizer)target;
     }
     
     private void OnDisable()
@@ -41,6 +41,8 @@ public class HeatMapEditor : Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
+
+        HeatMapVisualizer visualizer = (HeatMapVisualizer)target;
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Heatmap Editing Controls", EditorStyles.boldLabel);

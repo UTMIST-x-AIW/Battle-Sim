@@ -4,6 +4,7 @@ using System;
 using NEAT.Genes;
 using System.Collections.Generic;
 using System.Linq;
+using NEAT.NN;
 
 [Serializable]
 public class SerializedNode
@@ -78,7 +79,7 @@ public static class CreatureSaver
         }
     }
     
-    private static SerializedBrain SerializeBrain(NEAT.NN.FeedForwardNetwork brain)
+    private static SerializedBrain SerializeBrain(FeedForwardNetwork brain)
     {
         if (brain == null) return null;
         
@@ -126,7 +127,7 @@ public static class CreatureSaver
             
             var savedCreature = new SavedCreature
             {
-                type = creature.type,
+                type = creature.creatureType,
                 health = creature.health,
                 maxHealth = creature.maxHealth,
                 energyMeter = creature.energyMeter,
@@ -151,7 +152,7 @@ public static class CreatureSaver
             
             // Generate a unique filename based on creature type, generation, and timestamp
             string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            string filename = $"{creature.type}_Gen{creature.generation}_{timestamp}.json";
+            string filename = $"{creature.creatureType}_Gen{creature.generation}_{timestamp}.json";
             string filepath = Path.Combine(SaveDirectory, filename);
             
             // Convert to JSON and save

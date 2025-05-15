@@ -18,7 +18,7 @@ public class CreatureObserver : MonoBehaviour
         obs[2] = self.reproductionMeter; // Reproduction meter (already 0-1)
 
         // Get nearby objects
-        Physics2D.OverlapCircleNonAlloc(transform.position, DETECTION_RADIUS, nearbyColliders);
+        nearbyColliders =  Physics2D.OverlapCircleAll(transform.position, DETECTION_RADIUS);
 
         Vector2 sameTypePos = Vector2.zero;
         Vector2 oppositeTypePos = Vector2.zero;
@@ -32,10 +32,9 @@ public class CreatureObserver : MonoBehaviour
         float treeDistance = float.MaxValue;
         float groundDistance = float.MaxValue;
         
-        foreach (var collider in nearbyColliders)
+        foreach (Collider2D collider in nearbyColliders)
         {
             if (collider.gameObject == gameObject) continue;
-            
             // Calculate relative position from the object to the creature (reversed direction)
             Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
             float distance = relativePos.magnitude;
@@ -74,7 +73,7 @@ public class CreatureObserver : MonoBehaviour
                 Creature other = collider.GetComponent<Creature>();
                 if (other == null) continue;
                 
-                if (other.type == self.type)
+                if (other.creatureType == self.creatureType)
                 {
                     if (distance < sameTypeDistance)
                     {

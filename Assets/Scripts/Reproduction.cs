@@ -4,6 +4,8 @@ using UnityEngine;
 using NEAT.Genes;
 using System.Linq;
 using Unity.VisualScripting;
+using NEAT.NN;
+using NEAT.Genome;
 //using UnityEditor.Build.Content;
 
 public class Reproduction : MonoBehaviour
@@ -55,7 +57,7 @@ public class Reproduction : MonoBehaviour
 
         // Check if this is a creature of the same type
         Creature otherCreature = other_character.GetComponent<Creature>();
-        if (otherCreature == null || otherCreature.type != creatureComponent.type)
+        if (otherCreature == null || otherCreature.creatureType != creatureComponent.creatureType)
         {
             return;
         }
@@ -124,7 +126,7 @@ public class Reproduction : MonoBehaviour
                 // Log the mating event with ages
                 if (LogManager.Instance != null)
                 {
-                    LogManager.LogMessage($"Mating between {p1.type} (Age: {p1.Lifetime:F1}, Gen: {p1.generation}) and {p2.type} (Age: {p2.Lifetime:F1}, Gen: {p2.generation})");
+                    LogManager.LogMessage($"Mating between {p1.creatureType} (Age: {p1.Lifetime:F1}, Gen: {p1.generation}) and {p2.creatureType} (Age: {p2.Lifetime:F1}, Gen: {p2.generation})");
                 }
 
                 // Reset reproduction meter for both parents
@@ -203,7 +205,7 @@ public class Reproduction : MonoBehaviour
         return child;
     }
 
-    private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
+    private FeedForwardNetwork CreateChildNetwork(FeedForwardNetwork parent1, FeedForwardNetwork parent2)
     {
         // Validate input networks
         if (parent1 == null || parent2 == null)
@@ -212,7 +214,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // Create a new genome for the child
-        var childGenome = new NEAT.Genome.Genome(0);
+        var childGenome = new Genome(0);
         
         // Get parent genomes with null checks
         var parent1Genome = parent1.GetGenome();
@@ -238,16 +240,16 @@ public class Reproduction : MonoBehaviour
             // Check if either parent has this input node
             if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
             {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
+                childGenome.AddNode((NodeGene)parent1Genome.Nodes[i].Clone());
             }
             else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
             {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
+                childGenome.AddNode((NodeGene)parent2Genome.Nodes[i].Clone());
             }
             else
             {
                 // Create a new input node if neither parent has it
-                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+                var newNode = new NodeGene(i, NEAT.Genes.NodeType.Input);
                 newNode.Layer = 0;
                 newNode.Bias = 0.0;
                 childGenome.AddNode(newNode);
@@ -269,16 +271,16 @@ public class Reproduction : MonoBehaviour
             // Check if either parent has this output node
             if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
             {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
+                childGenome.AddNode((NodeGene)parent1Genome.Nodes[i].Clone());
             }
             else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
             {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
+                childGenome.AddNode((NodeGene)parent2Genome.Nodes[i].Clone());
             }
             else
             {
                 // Create a new output node if neither parent has it
-                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
+                var newNode = new NodeGene(i, NEAT.Genes.NodeType.Output);
                 newNode.Layer = 2;
                 newNode.Bias = 0.0;
                 childGenome.AddNode(newNode);
@@ -308,18 +310,18 @@ public class Reproduction : MonoBehaviour
             {
                 // Both parents have this node, randomly choose one
                 childGenome.AddNode(Random.value < 0.5f ?
-                    (NEAT.Genes.NodeGene)parent1Genome.Nodes[key].Clone() :
-                    (NEAT.Genes.NodeGene)parent2Genome.Nodes[key].Clone());
+                    (NodeGene)parent1Genome.Nodes[key].Clone() :
+                    (NodeGene)parent2Genome.Nodes[key].Clone());
             }
             else if (parent1Genome.Nodes.ContainsKey(key))
             {
                 // Only parent1 has this node
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[key].Clone());
+                childGenome.AddNode((NodeGene)parent1Genome.Nodes[key].Clone());
             }
             else
             {
                 // Only parent2 has this node
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[key].Clone());
+                childGenome.AddNode((NodeGene)parent2Genome.Nodes[key].Clone());
             }
         }
 
@@ -381,10 +383,10 @@ public class Reproduction : MonoBehaviour
         ApplyMutations(childGenome);
         
         // Create a new network from the child genome
-        return NEAT.NN.FeedForwardNetwork.Create(childGenome);
+        return FeedForwardNetwork.Create(childGenome);
     }
 
-    private void ApplyMutations(NEAT.Genome.Genome genome)
+    private void ApplyMutations(Genome genome)
     {
         // Mutation probabilities - increased for more frequent mutations
         const float ADD_NODE_PROB = 0.3f;        // Was 0.1f
@@ -406,7 +408,7 @@ public class Reproduction : MonoBehaviour
             while (genome.Nodes.ContainsKey(newNodeKey)) {
                 newNodeKey++; // Ensure we use a unique key
             }
-            var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
+            var newNode = new NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
             
             // Set layer between input and output nodes
             var inputNode = genome.Nodes[connToSplit.InputKey];
@@ -474,7 +476,7 @@ public class Reproduction : MonoBehaviour
         if (Random.value < MODIFY_BIAS_PROB)
         {
             // Pick a random node
-            var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+            var nodeList = new List<NodeGene>(genome.Nodes.Values);
             var nodeToModify = nodeList[Random.Range(0, nodeList.Count)];
             
             // Modify bias by a small random amount
@@ -487,7 +489,7 @@ public class Reproduction : MonoBehaviour
             // Try a few times to find a valid connection
             for (int tries = 0; tries < 5; tries++)
             {
-                var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
+                var nodeList = new List<NodeGene>(genome.Nodes.Values);
                 var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
                 var targetNode = nodeList[Random.Range(0, nodeList.Count)];
                 
@@ -562,7 +564,7 @@ public class Reproduction : MonoBehaviour
     }
 
     // Checks if adding a connection from sourceKey to targetKey would create a cycle
-    private bool WouldCreateCycle(NEAT.Genome.Genome genome, int sourceKey, int targetKey)
+    private bool WouldCreateCycle(Genome genome, int sourceKey, int targetKey)
     {
         // Simple check: if source layer is strictly less than target layer, no cycle is possible
         if (genome.Nodes.ContainsKey(sourceKey) && 
@@ -638,7 +640,7 @@ public class Reproduction : MonoBehaviour
     }
 
     // Remove any cycles in the network
-    private void RemoveCycles(NEAT.Genome.Genome genome)
+    private void RemoveCycles(Genome genome)
     {
         // Build a connection graph
         var connections = new Dictionary<int, List<int>>();
@@ -669,7 +671,7 @@ public class Reproduction : MonoBehaviour
         }
     }
 
-    private void FindAndBreakCycles(NEAT.Genome.Genome genome, Dictionary<int, List<int>> connections, 
+    private void FindAndBreakCycles(Genome genome, Dictionary<int, List<int>> connections, 
                                   int nodeKey, HashSet<int> visited, Stack<int> path, HashSet<int> currentPath)
     {
         // If node is not in the graph, it can't be part of a cycle
@@ -709,7 +711,7 @@ public class Reproduction : MonoBehaviour
         path.Pop();
     }
 
-    private void BreakCycle(NEAT.Genome.Genome genome, Stack<int> path, int cycleStartNode)
+    private void BreakCycle(Genome genome, Stack<int> path, int cycleStartNode)
     {
         // Create a list to track the cycle
         var cycle = new List<int>();
@@ -776,7 +778,7 @@ public class Reproduction : MonoBehaviour
     }
 
     // Updated method to ensure all required nodes exist in the genome
-    private void EnsureRequiredNodes(NEAT.Genome.Genome genome)
+    private void EnsureRequiredNodes(Genome genome)
     {
         // Ensure all input nodes (0-12) exist
         for (int i = 0; i <= 12; i++)
@@ -794,7 +796,7 @@ public class Reproduction : MonoBehaviour
                 }
                 
                 // Create the input node
-                var inputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
+                var inputNode = new NodeGene(i, NEAT.Genes.NodeType.Input);
                 inputNode.Layer = 0;
                 inputNode.Bias = 0.0;
                 
@@ -840,7 +842,7 @@ public class Reproduction : MonoBehaviour
                 }
                 
                 // Create the output node
-                var outputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
+                var outputNode = new NodeGene(i, NEAT.Genes.NodeType.Output);
                 outputNode.Layer = 2;
                 outputNode.Bias = 0.0;
                 

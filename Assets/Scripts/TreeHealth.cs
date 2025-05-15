@@ -12,19 +12,6 @@ public class TreeHealth : MonoBehaviour
     private void Start()
     {
         health = maxHealth;
-        
-        // Add a collider if one doesn't exist
-        if (GetComponent<Collider2D>() == null)
-        {
-            BoxCollider2D collider = gameObject.AddComponent<BoxCollider2D>();
-            collider.isTrigger = false;
-        }
-        
-        // Make sure it has the "Tree" tag
-        if (gameObject.tag != "Tree")
-        {
-            gameObject.tag = "Tree";
-        }
     }
     
     public void TakeDamage(float damage)
@@ -63,6 +50,6 @@ public class TreeHealth : MonoBehaviour
         
         // Spawn some resources or particle effects
         // For now, just destroy the tree
-        Destroy(gameObject);
+        ObjectPoolManager.ReturnObjectToPool(gameObject);
     }
 } 

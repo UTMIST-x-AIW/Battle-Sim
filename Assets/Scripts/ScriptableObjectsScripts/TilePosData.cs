@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -21,7 +22,7 @@ public class TilePosData : ScriptableObject
     }
 
 
-    public void Initialize(Tilemap tilemap, int boundsize)
+    public void Initialize(Tilemap tilemap)
     {
         if (tilemap == null)
         {
@@ -29,20 +30,19 @@ public class TilePosData : ScriptableObject
             return;
         }
 
+        BoundsInt bounds = tilemap.cellBounds;
         _tilePositions.Clear();
-        for (int x = -boundsize; x < boundsize; x++)
+        foreach (Vector3Int cellPosition in bounds.allPositionsWithin)
         {
-            for (int y = -boundsize; y < boundsize; y++)
-            {
-                Vector3Int cellPosition = new Vector3Int(x, y, 0);
+
                 if (tilemap.HasTile(cellPosition))
                 {
                     Vector3 worldPos = tilemap.CellToWorld(cellPosition);
                     _tilePositions.Add(new TilePos { pos = new Vector2(worldPos.x, worldPos.y) });
                 }
-            }
-
         }
+          
         Debug.Log($"Stored {_tilePositions.Count} tile positions.");
     }
 }
+

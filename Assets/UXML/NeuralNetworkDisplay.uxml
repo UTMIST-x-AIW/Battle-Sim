@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UXML/NeuralNetworkDisplay.uss?fileID=7433441132597879392&amp;guid=9c93e33b70325b443b7f87ded118f1af&amp;type=3#NeuralNetworkDisplay" />
+    <ui:VisualElement name="NeuralNetworkContainer" class="neural-network-container">
+        <ui:Label name="Title" text="Neural Network" class="title" />
+        <ui:VisualElement name="NetworkGraph" class="network-graph" />
+    </ui:VisualElement>
+</ui:UXML>
