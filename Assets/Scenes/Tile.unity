@@ -19149,10 +19149,11 @@ MonoBehaviour:
   spawnSpreadRadius: 1.23
   rightSpawnCenter: {x: 21, y: 0}
   rightSpawnSpreadRadius: 1.23
-  savedCreaturePath: /Users/anooprehman/Library/Application Support/DefaultCompany/Battle-Sim/SavedCreatures/Albert_Gen0_20250508_120819.json
+  savedCreaturePath: 
   albertsFolderPath: 
   kaisFolderPath: 
-  maxCreaturesToLoadPerSide: 5
+  resampleCreatures: 0
+  respectTypeInFiles: 1
   saveCreatures: 1
   genSavingFrequency: 5
 --- !u!4 &186563466
@@ -85690,12 +85691,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 201
+      value: 202
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
       value: 
       objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraObjectSecondsToExtinction
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

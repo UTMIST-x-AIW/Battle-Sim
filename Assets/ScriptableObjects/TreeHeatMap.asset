@@ -781,11 +781,11 @@ MonoBehaviour:
   - position: {x: -27, y: 0}
     value: 41.221565
   - position: {x: 4, y: -15}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -14.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -14.5}
-    value: 100
+    value: 0
   - position: {x: 0, y: -13}
     value: 100
   - position: {x: -0.5, y: -12.75}
@@ -895,13 +895,13 @@ MonoBehaviour:
   - position: {x: -26.5, y: 0.25}
     value: 48.27065
   - position: {x: 4, y: -14.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -14.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -14}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -13.75}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: -12.75}
     value: 100
   - position: {x: 0, y: -12.5}
@@ -1121,15 +1121,15 @@ MonoBehaviour:
   - position: {x: -26, y: 1}
     value: 53.051105
   - position: {x: 6, y: -14.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -14.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -14}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -13.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -13.5}
-    value: 100
+    value: 0
   - position: {x: 1, y: -12}
     value: 100
   - position: {x: 0.5, y: -11.75}
@@ -1239,21 +1239,21 @@ MonoBehaviour:
   - position: {x: -25.5, y: 1.25}
     value: 57.046993
   - position: {x: 6.5, y: -14.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -14}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -13.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -13.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -13.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -13}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 1, y: -11.5}
     value: 100
   - position: {x: 0.5, y: -11.25}
@@ -1361,21 +1361,21 @@ MonoBehaviour:
   - position: {x: -25, y: 1.5}
     value: 59.00545
   - position: {x: 7, y: -14}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -13.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -13.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -13.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -13}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 0, y: -10.5}
     value: 100
   - position: {x: -0.5, y: -10.25}
@@ -1477,23 +1477,23 @@ MonoBehaviour:
   - position: {x: -24.5, y: 1.75}
     value: 59.18408
   - position: {x: 7.5, y: -13.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -13.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -13.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -13}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -12}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: -1.5, y: -9.25}
     value: 100
   - position: {x: -2, y: -9}
@@ -1587,23 +1587,23 @@ MonoBehaviour:
   - position: {x: -24, y: 2}
     value: 57.5686
   - position: {x: 8, y: -13.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -13.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -13}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -12}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: -1, y: -9}
     value: 100
   - position: {x: -1.5, y: -8.75}
@@ -1697,31 +1697,31 @@ MonoBehaviour:
   - position: {x: -23.5, y: 2.25}
     value: 54.875008
   - position: {x: 8.5, y: -13.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -13}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -12}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -11}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -10}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: -1.5, y: -8.25}
     value: 100
   - position: {x: -2, y: -8}
@@ -1809,37 +1809,37 @@ MonoBehaviour:
   - position: {x: -22.5, y: 2.25}
     value: 54.07141
   - position: {x: 9, y: -13}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -12.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -12}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -11}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -10}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: -1, y: -8}
     value: 100
   - position: {x: -1.5, y: -7.75}
@@ -1927,35 +1927,35 @@ MonoBehaviour:
   - position: {x: -22, y: 2.5}
     value: 49.14813
   - position: {x: 9, y: -12.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -12}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -11}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -10}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: -9}
-    value: 100
+    value: 0
   - position: {x: -0.5, y: -7.75}
     value: 100
   - position: {x: -1, y: -7.5}
@@ -2041,35 +2041,35 @@ MonoBehaviour:
   - position: {x: -21, y: 2.5}
     value: 45.142174
   - position: {x: 9.5, y: -12.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -12}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -11.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -11}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -10}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -9}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 0, y: -7.5}
     value: 100
   - position: {x: -0.5, y: -7.25}
@@ -2155,31 +2155,31 @@ MonoBehaviour:
   - position: {x: -20.5, y: 2.75}
     value: 40.280098
   - position: {x: 9, y: -11.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -11}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -10}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -9}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 1, y: -7.5}
     value: 100
   - position: {x: 0.5, y: -7.25}
@@ -2267,31 +2267,31 @@ MonoBehaviour:
   - position: {x: -20, y: 3}
     value: 35.263653
   - position: {x: 9.5, y: -11.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -11}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -10}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -9}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: -7}
     value: 100
   - position: {x: 0.5, y: -6.75}
@@ -2377,35 +2377,35 @@ MonoBehaviour:
   - position: {x: -19.5, y: 3.25}
     value: 30.117567
   - position: {x: 10, y: -11}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -10}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -9}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -8}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -6.75}
     value: 100
   - position: {x: 1, y: -6.5}
@@ -2491,37 +2491,37 @@ MonoBehaviour:
   - position: {x: -19, y: 3.5}
     value: 25.119835
   - position: {x: 10.5, y: -10.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -10}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -9}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -8}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -7}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -6.25}
     value: 100
   - position: {x: 1, y: -6}
@@ -2607,39 +2607,39 @@ MonoBehaviour:
   - position: {x: -19, y: 4}
     value: 20.385113
   - position: {x: 11, y: -10.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -10}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -9}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -8}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -7}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -5.75}
-    value: 100
+    value: 97.46635
   - position: {x: -3, y: -3.5}
     value: 100
   - position: {x: -3.5, y: -3.25}
@@ -2705,37 +2705,37 @@ MonoBehaviour:
   - position: {x: -18.5, y: 4.25}
     value: 15.882149
   - position: {x: 11.5, y: -10.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -10}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -9}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -8}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -7}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: -3, y: -3}
     value: 100
   - position: {x: -3.5, y: -2.75}
@@ -2799,39 +2799,39 @@ MonoBehaviour:
   - position: {x: -18, y: 4.5}
     value: 11.950395
   - position: {x: 12, y: -10}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -9}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -8}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -7}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -6}
-    value: 100
+    value: 0
   - position: {x: -3, y: -2.5}
     value: 100
   - position: {x: -3.5, y: -2.25}
@@ -2893,59 +2893,59 @@ MonoBehaviour:
   - position: {x: -17.5, y: 4.75}
     value: 8.730689
   - position: {x: 12.5, y: -9.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -9}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -8}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -7}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -6}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: -4}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 0, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: -0.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: -2.5, y: -2.25}
     value: 100
   - position: {x: -3, y: -2}
@@ -3007,59 +3007,59 @@ MonoBehaviour:
   - position: {x: -17, y: 5}
     value: 5.617459
   - position: {x: 13, y: -9.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -9}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -8}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -7}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -6}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: -4}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 0, y: -3}
-    value: 100
+    value: 0
   - position: {x: -2, y: -2}
     value: 100
   - position: {x: -2.5, y: -1.75}
@@ -3121,61 +3121,61 @@ MonoBehaviour:
   - position: {x: -16.5, y: 5.25}
     value: 12.992111
   - position: {x: 13.5, y: -9.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: -9}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -8}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -7}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -6}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -4}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: -3}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 0, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: -1.5, y: -1.75}
     value: 100
   - position: {x: -2, y: -1.5}
@@ -3239,61 +3239,61 @@ MonoBehaviour:
   - position: {x: -16.5, y: 5.75}
     value: 8.930916
   - position: {x: 14, y: -9}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -8}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -7}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -6}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -4}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: -3}
-    value: 100
+    value: 15.417017
   - position: {x: 1.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: -1, y: -1.5}
     value: 100
   - position: {x: -1.5, y: -1.25}
@@ -3357,61 +3357,61 @@ MonoBehaviour:
   - position: {x: -16, y: 6}
     value: 42.95724
   - position: {x: 14.5, y: -8.75}
-    value: 100
+    value: 0
   - position: {x: 14, y: -8.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: -8.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: -8}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -7}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -6}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -4}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -3}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -2.75}
-    value: 100
+    value: 10.325607
   - position: {x: 2, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: -2}
-    value: 100
+    value: 0
   - position: {x: -0.5, y: -1.25}
     value: 100
   - position: {x: -1, y: -1}
@@ -3477,61 +3477,61 @@ MonoBehaviour:
   - position: {x: -16, y: 6.5}
     value: 31.132587
   - position: {x: 15, y: -8.5}
-    value: 46.234818
+    value: 0
   - position: {x: 14.5, y: -8.25}
-    value: 88.517395
+    value: 0
   - position: {x: 14, y: -8}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: -7.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -7}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -6}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -4}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -3}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: -2}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: -3.5, y: 0.75}
     value: 100
   - position: {x: -4, y: 1}
@@ -3583,63 +3583,63 @@ MonoBehaviour:
   - position: {x: -15.5, y: 6.75}
     value: 62.224174
   - position: {x: 15.5, y: -8.25}
-    value: 18.088177
+    value: 0
   - position: {x: 15, y: -8}
-    value: 40.92232
+    value: 0
   - position: {x: 14.5, y: -7.75}
-    value: 72.30139
+    value: 0
   - position: {x: 14, y: -7.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: -7.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: -7}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -6}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -4}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -3}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -2}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: -3, y: 1}
     value: 100
   - position: {x: -3.5, y: 1.25}
@@ -3691,63 +3691,63 @@ MonoBehaviour:
   - position: {x: -15, y: 7}
     value: 90.95072
   - position: {x: 16, y: -8}
-    value: 1.4886441
+    value: 0
   - position: {x: 15.5, y: -7.75}
-    value: 14.76144
+    value: 0
   - position: {x: 15, y: -7.5}
-    value: 34.635094
+    value: 0
   - position: {x: 14.5, y: -7.25}
-    value: 60.41807
+    value: 0
   - position: {x: 14, y: -7}
-    value: 88.7042
+    value: 0
   - position: {x: 13.5, y: -6.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: -6.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -6.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -6}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -4}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -3}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -2}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: -1}
-    value: 100
+    value: 0
   - position: {x: -2.5, y: 1.25}
     value: 100
   - position: {x: -3, y: 1.5}
@@ -3799,75 +3799,75 @@ MonoBehaviour:
   - position: {x: -14.5, y: 7.25}
     value: 100
   - position: {x: 16.5, y: -7.75}
-    value: 2.1328533
+    value: 0
   - position: {x: 16, y: -7.5}
-    value: 1.5919719
+    value: 0
   - position: {x: 15.5, y: -7.25}
-    value: 10.930107
+    value: 0
   - position: {x: 15, y: -7}
-    value: 27.35213
+    value: 0
   - position: {x: 14.5, y: -6.75}
-    value: 49.12666
+    value: 0
   - position: {x: 14, y: -6.5}
-    value: 72.61792
+    value: 0
   - position: {x: 13.5, y: -6.25}
-    value: 98.323524
+    value: 0
   - position: {x: 13, y: -6}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -5.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -4}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -3}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -2}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: -1}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 0}
-    value: 100
+    value: 78.68976
   - position: {x: 0.5, y: 0.25}
-    value: 100
+    value: 34.35566
   - position: {x: 0, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: -0.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: -2.5, y: 1.75}
     value: 100
   - position: {x: -3, y: 2}
@@ -3917,75 +3917,75 @@ MonoBehaviour:
   - position: {x: -14, y: 7.5}
     value: 100
   - position: {x: 17, y: -7.5}
-    value: 4.159297
+    value: 0
   - position: {x: 16.5, y: -7.25}
-    value: 3.4953816
+    value: 0
   - position: {x: 16, y: -7}
-    value: 2.6639745
+    value: 0
   - position: {x: 15.5, y: -6.75}
-    value: 7.1742053
+    value: 0
   - position: {x: 15, y: -6.5}
-    value: 20.459717
+    value: 0
   - position: {x: 14.5, y: -6.25}
-    value: 38.392685
+    value: 0
   - position: {x: 14, y: -6}
-    value: 59.562313
+    value: 0
   - position: {x: 13.5, y: -5.75}
-    value: 83.4842
+    value: 0
   - position: {x: 13, y: -5.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: -5.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -4}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -3}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -2}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: -1}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 0}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 0, y: 1}
-    value: 100
+    value: 0
   - position: {x: -2, y: 2}
     value: 100
   - position: {x: -2.5, y: 2.25}
@@ -4035,73 +4035,73 @@ MonoBehaviour:
   - position: {x: -13.5, y: 7.75}
     value: 100
   - position: {x: 17, y: -7}
-    value: 6.0203404
+    value: 0
   - position: {x: 16.5, y: -6.75}
-    value: 4.9925075
+    value: 0
   - position: {x: 16, y: -6.5}
-    value: 4.0508027
+    value: 0
   - position: {x: 15.5, y: -6.25}
-    value: 5.7981544
+    value: 0
   - position: {x: 15, y: -6}
-    value: 13.884445
+    value: 0
   - position: {x: 14.5, y: -5.75}
-    value: 29.281622
+    value: 0
   - position: {x: 14, y: -5.5}
-    value: 49.58357
+    value: 0
   - position: {x: 13.5, y: -5.25}
-    value: 72.720474
+    value: 0
   - position: {x: 13, y: -5}
-    value: 96.404175
+    value: 0
   - position: {x: 12.5, y: -4.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -4.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -4}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -3}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -2}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: -1}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 0}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: 1}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: -1.5, y: 2.25}
     value: 100
   - position: {x: -2, y: 2.5}
@@ -4151,75 +4151,75 @@ MonoBehaviour:
   - position: {x: -13, y: 8}
     value: 100
   - position: {x: 17.5, y: -6.75}
-    value: 9.621075
+    value: 0
   - position: {x: 17, y: -6.5}
-    value: 8.289383
+    value: 0
   - position: {x: 16.5, y: -6.25}
-    value: 6.844733
+    value: 0
   - position: {x: 16, y: -6}
-    value: 5.4639783
+    value: 0
   - position: {x: 15.5, y: -5.75}
-    value: 6.4630632
+    value: 0
   - position: {x: 15, y: -5.5}
-    value: 12.059799
+    value: 0
   - position: {x: 14.5, y: -5.25}
-    value: 23.385677
+    value: 0
   - position: {x: 14, y: -5}
-    value: 41.863304
+    value: 0
   - position: {x: 13.5, y: -4.75}
-    value: 64.347824
+    value: 0
   - position: {x: 13, y: -4.5}
-    value: 86.674576
+    value: 0
   - position: {x: 12.5, y: -4.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -4}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -3}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -2}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: -1}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 0}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: 1}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: -1.5, y: 2.75}
     value: 100
   - position: {x: -2, y: 3}
@@ -4267,79 +4267,79 @@ MonoBehaviour:
   - position: {x: -12.5, y: 8.25}
     value: 100
   - position: {x: 18.5, y: -6.75}
-    value: 14.073821
+    value: 0
   - position: {x: 18, y: -6.5}
-    value: 13.6074
+    value: 0
   - position: {x: 17.5, y: -6.25}
-    value: 12.461062
+    value: 0
   - position: {x: 17, y: -6}
-    value: 10.667887
+    value: 0
   - position: {x: 16.5, y: -5.75}
-    value: 8.772883
+    value: 0
   - position: {x: 16, y: -5.5}
-    value: 6.944846
+    value: 0
   - position: {x: 15.5, y: -5.25}
-    value: 7.4972177
+    value: 0
   - position: {x: 15, y: -5}
-    value: 12.984793
+    value: 0
   - position: {x: 14.5, y: -4.75}
-    value: 24.50515
+    value: 0
   - position: {x: 14, y: -4.5}
-    value: 42.31732
+    value: 0
   - position: {x: 13.5, y: -4.25}
-    value: 62.434258
+    value: 0
   - position: {x: 13, y: -4}
-    value: 83.42606
+    value: 0
   - position: {x: 12.5, y: -3.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -3.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -3}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -2}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: -1}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 0}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 1}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: 2}
-    value: 100
+    value: 0
   - position: {x: -1, y: 3}
-    value: 100
+    value: 99.381836
   - position: {x: -1.5, y: 3.25}
     value: 100
   - position: {x: -2, y: 3.5}
@@ -4383,83 +4383,83 @@ MonoBehaviour:
   - position: {x: -11.5, y: 8.25}
     value: 100
   - position: {x: 19.5, y: -6.75}
-    value: 17.087776
+    value: 0
   - position: {x: 19, y: -6.5}
-    value: 18.095287
+    value: 0
   - position: {x: 18.5, y: -6.25}
-    value: 18.29464
+    value: 0
   - position: {x: 18, y: -6}
-    value: 17.511393
+    value: 0
   - position: {x: 17.5, y: -5.75}
-    value: 15.797231
+    value: 0
   - position: {x: 17, y: -5.5}
-    value: 13.45989
+    value: 0
   - position: {x: 16.5, y: -5.25}
-    value: 11.00707
+    value: 0
   - position: {x: 16, y: -5}
-    value: 8.379509
+    value: 0
   - position: {x: 15.5, y: -4.75}
-    value: 9.16695
+    value: 0
   - position: {x: 15, y: -4.5}
-    value: 14.394573
+    value: 0
   - position: {x: 14.5, y: -4.25}
-    value: 27.106737
+    value: 0
   - position: {x: 14, y: -4}
-    value: 45.000343
+    value: 0
   - position: {x: 13.5, y: -3.75}
-    value: 63.901054
+    value: 0
   - position: {x: 13, y: -3.5}
-    value: 83.880226
+    value: 0
   - position: {x: 12.5, y: -3.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -3}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -2}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: -1}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 0}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 1}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: 2}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: -0.5, y: 3.25}
-    value: 100
+    value: 16.606012
   - position: {x: -1, y: 3.5}
-    value: 100
+    value: 82.394966
   - position: {x: -1.5, y: 3.75}
     value: 100
   - position: {x: -2, y: 4}
@@ -4501,79 +4501,79 @@ MonoBehaviour:
   - position: {x: -11, y: 8.5}
     value: 100
   - position: {x: 20, y: -6.5}
-    value: 19.801908
+    value: 0
   - position: {x: 19.5, y: -6.25}
-    value: 21.789465
+    value: 0
   - position: {x: 19, y: -6}
-    value: 23.035091
+    value: 0
   - position: {x: 18.5, y: -5.75}
-    value: 22.941067
+    value: 0
   - position: {x: 18, y: -5.5}
-    value: 21.59326
+    value: 0
   - position: {x: 17.5, y: -5.25}
-    value: 19.23715
+    value: 0
   - position: {x: 17, y: -5}
-    value: 16.154888
+    value: 0
   - position: {x: 16.5, y: -4.75}
-    value: 13.123215
+    value: 0
   - position: {x: 16, y: -4.5}
-    value: 10.200909
+    value: 0
   - position: {x: 15.5, y: -4.25}
-    value: 11.350943
+    value: 0
   - position: {x: 15, y: -4}
-    value: 15.67992
+    value: 0
   - position: {x: 14.5, y: -3.75}
-    value: 30.022396
+    value: 0
   - position: {x: 14, y: -3.5}
-    value: 47.130898
+    value: 0
   - position: {x: 13.5, y: -3.25}
-    value: 65.92621
+    value: 0
   - position: {x: 13, y: -3}
-    value: 85.98652
+    value: 0
   - position: {x: 12.5, y: -2.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -2.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -2}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: -1}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 0}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 1}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 2}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: -2, y: 4.5}
     value: 100
   - position: {x: -2.5, y: 4.75}
@@ -4609,81 +4609,81 @@ MonoBehaviour:
   - position: {x: -10, y: 8.5}
     value: 87.273476
   - position: {x: 21, y: -6.5}
-    value: 18.622711
+    value: 0
   - position: {x: 20.5, y: -6.25}
-    value: 21.80724
+    value: 0
   - position: {x: 20, y: -6}
-    value: 24.899582
+    value: 0
   - position: {x: 19.5, y: -5.75}
-    value: 27.132162
+    value: 0
   - position: {x: 19, y: -5.5}
-    value: 28.167795
+    value: 0
   - position: {x: 18.5, y: -5.25}
-    value: 27.561386
+    value: 0
   - position: {x: 18, y: -5}
-    value: 25.615364
+    value: 0
   - position: {x: 17.5, y: -4.75}
-    value: 22.562214
+    value: 0
   - position: {x: 17, y: -4.5}
-    value: 18.80063
+    value: 0
   - position: {x: 16.5, y: -4.25}
-    value: 15.008277
+    value: 0
   - position: {x: 16, y: -4}
-    value: 12.160175
+    value: 0
   - position: {x: 15.5, y: -3.75}
-    value: 13.091108
+    value: 0
   - position: {x: 15, y: -3.5}
-    value: 19.25156
+    value: 0
   - position: {x: 14.5, y: -3.25}
-    value: 32.37977
+    value: 0
   - position: {x: 14, y: -3}
-    value: 49.27284
+    value: 0
   - position: {x: 13.5, y: -2.75}
-    value: 68.339035
+    value: 0
   - position: {x: 13, y: -2.5}
-    value: 88.17151
+    value: 0
   - position: {x: 12.5, y: -2.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -2}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: -1}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 0}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 1}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 2}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: -2.5, y: 5.25}
     value: 100
   - position: {x: -3, y: 5.5}
@@ -4715,89 +4715,89 @@ MonoBehaviour:
   - position: {x: -9.5, y: 8.75}
     value: 28.197834
   - position: {x: 21.5, y: -6.25}
-    value: 19.096272
+    value: 0
   - position: {x: 21, y: -6}
-    value: 23.045208
+    value: 0
   - position: {x: 20.5, y: -5.75}
-    value: 27.029198
+    value: 0
   - position: {x: 20, y: -5.5}
-    value: 30.394047
+    value: 0
   - position: {x: 19.5, y: -5.25}
-    value: 32.724323
+    value: 0
   - position: {x: 19, y: -5}
-    value: 33.464104
+    value: 0
   - position: {x: 18.5, y: -4.75}
-    value: 32.373863
+    value: 0
   - position: {x: 18, y: -4.5}
-    value: 29.723705
+    value: 0
   - position: {x: 17.5, y: -4.25}
-    value: 25.887482
+    value: 0
   - position: {x: 17, y: -4}
-    value: 21.410017
+    value: 0
   - position: {x: 16.5, y: -3.75}
-    value: 16.73946
+    value: 0
   - position: {x: 16, y: -3.5}
-    value: 13.992582
+    value: 0
   - position: {x: 15.5, y: -3.25}
-    value: 14.591431
+    value: 0
   - position: {x: 15, y: -3}
-    value: 22.021217
+    value: 0
   - position: {x: 14.5, y: -2.75}
-    value: 35.286697
+    value: 0
   - position: {x: 14, y: -2.5}
-    value: 52.485825
+    value: 0
   - position: {x: 13.5, y: -2.25}
-    value: 71.31877
+    value: 0
   - position: {x: 13, y: -2}
-    value: 90.64896
+    value: 0
   - position: {x: 12.5, y: -1.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -1.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: -1}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 0}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 1}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 2}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 3}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: 4}
-    value: 100
+    value: 0
   - position: {x: -2, y: 5.5}
     value: 100
   - position: {x: -2.5, y: 5.75}
@@ -4829,95 +4829,95 @@ MonoBehaviour:
   - position: {x: -9, y: 9}
     value: 0
   - position: {x: 22, y: -6}
-    value: 18.787638
+    value: 0
   - position: {x: 21.5, y: -5.75}
-    value: 23.359137
+    value: 0
   - position: {x: 21, y: -5.5}
-    value: 28.130798
+    value: 0
   - position: {x: 20.5, y: -5.25}
-    value: 32.63695
+    value: 0
   - position: {x: 20, y: -5}
-    value: 36.356094
+    value: 0
   - position: {x: 19.5, y: -4.75}
-    value: 38.43302
+    value: 0
   - position: {x: 19, y: -4.5}
-    value: 38.602676
+    value: 0
   - position: {x: 18.5, y: -4.25}
-    value: 36.63623
+    value: 0
   - position: {x: 18, y: -4}
-    value: 33.135433
+    value: 0
   - position: {x: 17.5, y: -3.75}
-    value: 28.567703
+    value: 0
   - position: {x: 17, y: -3.5}
-    value: 23.567072
+    value: 0
   - position: {x: 16.5, y: -3.25}
-    value: 18.232521
+    value: 0
   - position: {x: 16, y: -3}
-    value: 15.513153
+    value: 0
   - position: {x: 15.5, y: -2.75}
-    value: 16.161663
+    value: 0
   - position: {x: 15, y: -2.5}
-    value: 24.235504
+    value: 0
   - position: {x: 14.5, y: -2.25}
-    value: 38.050907
+    value: 0
   - position: {x: 14, y: -2}
-    value: 55.636776
+    value: 0
   - position: {x: 13.5, y: -1.75}
-    value: 74.57606
+    value: 0
   - position: {x: 13, y: -1.5}
-    value: 93.92661
+    value: 0
   - position: {x: 12.5, y: -1.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: -1}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 0}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 1}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 2}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 3}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: 4}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 0, y: 5}
-    value: 100
+    value: 0
   - position: {x: -2, y: 6}
     value: 100
   - position: {x: -2.5, y: 6.25}
@@ -4947,97 +4947,97 @@ MonoBehaviour:
   - position: {x: -8.5, y: 9.25}
     value: 0
   - position: {x: 22.5, y: -5.75}
-    value: 17.595758
+    value: 0
   - position: {x: 22, y: -5.5}
-    value: 22.910702
+    value: 0
   - position: {x: 21.5, y: -5.25}
-    value: 28.426966
+    value: 0
   - position: {x: 21, y: -5}
-    value: 33.579933
+    value: 0
   - position: {x: 20.5, y: -4.75}
-    value: 38.29667
+    value: 0
   - position: {x: 20, y: -4.5}
-    value: 41.59109
+    value: 0
   - position: {x: 19.5, y: -4.25}
-    value: 43.249474
+    value: 0
   - position: {x: 19, y: -4}
-    value: 42.900246
+    value: 0
   - position: {x: 18.5, y: -3.75}
-    value: 40.13285
+    value: 0
   - position: {x: 18, y: -3.5}
-    value: 35.850216
+    value: 0
   - position: {x: 17.5, y: -3.25}
-    value: 30.669529
+    value: 0
   - position: {x: 17, y: -3}
-    value: 25.118393
+    value: 0
   - position: {x: 16.5, y: -2.75}
-    value: 19.432001
+    value: 0
   - position: {x: 16, y: -2.5}
-    value: 16.652979
+    value: 0
   - position: {x: 15.5, y: -2.25}
-    value: 17.021832
+    value: 0
   - position: {x: 15, y: -2}
-    value: 26.55453
+    value: 0
   - position: {x: 14.5, y: -1.75}
-    value: 41.22989
+    value: 0
   - position: {x: 14, y: -1.5}
-    value: 59.01361
+    value: 0
   - position: {x: 13.5, y: -1.25}
-    value: 77.94855
+    value: 0
   - position: {x: 13, y: -1}
-    value: 96.700485
+    value: 0
   - position: {x: 12.5, y: -0.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: -0.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 0}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 1}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 2}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 3}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 4}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: 5}
-    value: 100
+    value: 0
   - position: {x: 0.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 0, y: 5.5}
-    value: 98.72419
+    value: 0
   - position: {x: -2, y: 6.5}
     value: 99.70915
   - position: {x: -2.5, y: 6.75}
@@ -5065,97 +5065,97 @@ MonoBehaviour:
   - position: {x: -8, y: 9.5}
     value: 0
   - position: {x: 23, y: -5.5}
-    value: 15.945875
+    value: 0
   - position: {x: 22.5, y: -5.25}
-    value: 21.490152
+    value: 0
   - position: {x: 22, y: -5}
-    value: 27.75054
+    value: 0
   - position: {x: 21.5, y: -4.75}
-    value: 33.609802
+    value: 0
   - position: {x: 21, y: -4.5}
-    value: 38.80548
+    value: 0
   - position: {x: 20.5, y: -4.25}
-    value: 43.02187
+    value: 0
   - position: {x: 20, y: -4}
-    value: 45.961594
+    value: 0
   - position: {x: 19.5, y: -3.75}
-    value: 47.235058
+    value: 0
   - position: {x: 19, y: -3.5}
-    value: 46.273056
+    value: 0
   - position: {x: 18.5, y: -3.25}
-    value: 42.93562
+    value: 0
   - position: {x: 18, y: -3}
-    value: 38.172813
+    value: 0
   - position: {x: 17.5, y: -2.75}
-    value: 32.607204
+    value: 0
   - position: {x: 17, y: -2.5}
-    value: 26.498423
+    value: 0
   - position: {x: 16.5, y: -2.25}
-    value: 20.235245
+    value: 0
   - position: {x: 16, y: -2}
-    value: 17.505016
+    value: 0
   - position: {x: 15.5, y: -1.75}
-    value: 18.149115
+    value: 0
   - position: {x: 15, y: -1.5}
-    value: 28.875454
+    value: 0
   - position: {x: 14.5, y: -1.25}
-    value: 43.907173
+    value: 0
   - position: {x: 14, y: -1}
-    value: 62.23345
+    value: 0
   - position: {x: 13.5, y: -0.75}
-    value: 81.352425
+    value: 0
   - position: {x: 13, y: -0.5}
-    value: 99.96297
+    value: 0
   - position: {x: 12.5, y: -0.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 0}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 1}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 2}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 3}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 4}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: 5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 5.5}
-    value: 99.12573
+    value: 0
   - position: {x: 0.5, y: 5.75}
-    value: 91.63906
+    value: 0
   - position: {x: -1.5, y: 6.75}
     value: 76.06543
   - position: {x: -2, y: 7}
@@ -5183,99 +5183,99 @@ MonoBehaviour:
   - position: {x: -7.5, y: 9.75}
     value: 0
   - position: {x: 23.5, y: -5.25}
-    value: 13.813974
+    value: 0
   - position: {x: 23, y: -5}
-    value: 19.386189
+    value: 0
   - position: {x: 22.5, y: -4.75}
-    value: 25.951996
+    value: 0
   - position: {x: 22, y: -4.5}
-    value: 32.57859
+    value: 0
   - position: {x: 21.5, y: -4.25}
-    value: 38.588467
+    value: 0
   - position: {x: 21, y: -4}
-    value: 43.655262
+    value: 0
   - position: {x: 20.5, y: -3.75}
-    value: 47.609715
+    value: 0
   - position: {x: 20, y: -3.5}
-    value: 50.048462
+    value: 0
   - position: {x: 19.5, y: -3.25}
-    value: 50.806423
+    value: 0
   - position: {x: 19, y: -3}
-    value: 49.19297
+    value: 0
   - position: {x: 18.5, y: -2.75}
-    value: 45.434174
+    value: 0
   - position: {x: 18, y: -2.5}
-    value: 40.450623
+    value: 0
   - position: {x: 17.5, y: -2.25}
-    value: 34.504135
+    value: 0
   - position: {x: 17, y: -2}
-    value: 27.852076
+    value: 0
   - position: {x: 16.5, y: -1.75}
-    value: 20.945139
+    value: 0
   - position: {x: 16, y: -1.5}
-    value: 18.221525
+    value: 0
   - position: {x: 15.5, y: -1.25}
-    value: 20.235794
+    value: 0
   - position: {x: 15, y: -1}
-    value: 30.893404
+    value: 0
   - position: {x: 14.5, y: -0.75}
-    value: 46.57504
+    value: 0
   - position: {x: 14, y: -0.5}
-    value: 64.96978
+    value: 0
   - position: {x: 13.5, y: -0.25}
-    value: 84.7495
+    value: 0
   - position: {x: 13, y: 0}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 0.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 1}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 2}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 3}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 4}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 1, y: 6}
-    value: 98.079
+    value: 0
   - position: {x: 0.5, y: 6.25}
-    value: 87.6923
+    value: 0
   - position: {x: -1.5, y: 7.25}
     value: 23.552046
   - position: {x: -2, y: 7.5}
@@ -5299,99 +5299,99 @@ MonoBehaviour:
   - position: {x: -7, y: 10}
     value: 0
   - position: {x: 24, y: -5}
-    value: 11.575608
+    value: 0
   - position: {x: 23.5, y: -4.75}
-    value: 16.8253
+    value: 0
   - position: {x: 23, y: -4.5}
-    value: 23.397238
+    value: 0
   - position: {x: 22.5, y: -4.25}
-    value: 30.579262
+    value: 0
   - position: {x: 22, y: -4}
-    value: 37.275333
+    value: 0
   - position: {x: 21.5, y: -3.75}
-    value: 43.260204
+    value: 0
   - position: {x: 21, y: -3.5}
-    value: 48.189777
+    value: 0
   - position: {x: 20.5, y: -3.25}
-    value: 51.905956
+    value: 0
   - position: {x: 20, y: -3}
-    value: 54.020332
+    value: 0
   - position: {x: 19.5, y: -2.75}
-    value: 54.19459
+    value: 0
   - position: {x: 19, y: -2.5}
-    value: 52.1418
+    value: 0
   - position: {x: 18.5, y: -2.25}
-    value: 47.921036
+    value: 0
   - position: {x: 18, y: -2}
-    value: 42.384624
+    value: 0
   - position: {x: 17.5, y: -1.75}
-    value: 35.79833
+    value: 0
   - position: {x: 17, y: -1.5}
-    value: 28.635363
+    value: 0
   - position: {x: 16.5, y: -1.25}
-    value: 21.442892
+    value: 0
   - position: {x: 16, y: -1}
-    value: 19.156578
+    value: 0
   - position: {x: 15.5, y: -0.75}
-    value: 22.155504
+    value: 0
   - position: {x: 15, y: -0.5}
-    value: 33.44321
+    value: 0
   - position: {x: 14.5, y: -0.25}
-    value: 49.569576
+    value: 0
   - position: {x: 14, y: 0}
-    value: 68.37805
+    value: 0
   - position: {x: 13.5, y: 0.25}
-    value: 89.20631
+    value: 0
   - position: {x: 13, y: 0.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 0.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 1}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 2}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 3}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 4}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 2, y: 6}
-    value: 100
+    value: 0
   - position: {x: 1.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 1, y: 6.5}
-    value: 91.517715
+    value: 0
   - position: {x: -3, y: 8.5}
     value: 0
   - position: {x: -3.5, y: 8.75}
@@ -5407,101 +5407,101 @@ MonoBehaviour:
   - position: {x: -6, y: 10}
     value: 0
   - position: {x: 24.5, y: -4.75}
-    value: 10.019516
+    value: 0
   - position: {x: 24, y: -4.5}
-    value: 14.225625
+    value: 0
   - position: {x: 23.5, y: -4.25}
-    value: 20.502037
+    value: 0
   - position: {x: 23, y: -4}
-    value: 27.851461
+    value: 0
   - position: {x: 22.5, y: -3.75}
-    value: 35.094116
+    value: 0
   - position: {x: 22, y: -3.5}
-    value: 41.864716
+    value: 0
   - position: {x: 21.5, y: -3.25}
-    value: 47.782135
+    value: 0
   - position: {x: 21, y: -3}
-    value: 52.514423
+    value: 0
   - position: {x: 20.5, y: -2.75}
-    value: 55.802124
+    value: 0
   - position: {x: 20, y: -2.5}
-    value: 57.520992
+    value: 0
   - position: {x: 19.5, y: -2.25}
-    value: 57.233883
+    value: 0
   - position: {x: 19, y: -2}
-    value: 54.553856
+    value: 0
   - position: {x: 18.5, y: -1.75}
-    value: 49.802868
+    value: 0
   - position: {x: 18, y: -1.5}
-    value: 43.527466
+    value: 0
   - position: {x: 17.5, y: -1.25}
-    value: 36.420387
+    value: 0
   - position: {x: 17, y: -1}
-    value: 28.83177
+    value: 0
   - position: {x: 16.5, y: -0.75}
-    value: 21.862637
+    value: 0
   - position: {x: 16, y: -0.5}
-    value: 20.272926
+    value: 0
   - position: {x: 15.5, y: -0.25}
-    value: 24.576553
+    value: 0
   - position: {x: 15, y: 0}
-    value: 35.80684
+    value: 0
   - position: {x: 14.5, y: 0.25}
-    value: 52.897392
+    value: 0
   - position: {x: 14, y: 0.5}
-    value: 73.9023
+    value: 0
   - position: {x: 13.5, y: 0.75}
-    value: 96.23735
+    value: 0
   - position: {x: 13, y: 1}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 2}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 3}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 4}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 3, y: 6}
-    value: 100
+    value: 0
   - position: {x: 2.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 2, y: 6.5}
-    value: 99.69687
+    value: 0
   - position: {x: 1.5, y: 6.75}
-    value: 85.07137
+    value: 0
   - position: {x: 1, y: 7}
-    value: 60.752476
+    value: 0
   - position: {x: -3, y: 9}
     value: 0
   - position: {x: -3.5, y: 9.25}
@@ -5515,103 +5515,103 @@ MonoBehaviour:
   - position: {x: -5.5, y: 10.25}
     value: 0
   - position: {x: 25, y: -4.5}
-    value: 8.810035
+    value: 0
   - position: {x: 24.5, y: -4.25}
-    value: 12.373118
+    value: 0
   - position: {x: 24, y: -4}
-    value: 17.361418
+    value: 0
   - position: {x: 23.5, y: -3.75}
-    value: 24.391088
+    value: 0
   - position: {x: 23, y: -3.5}
-    value: 31.966415
+    value: 0
   - position: {x: 22.5, y: -3.25}
-    value: 39.359123
+    value: 0
   - position: {x: 22, y: -3}
-    value: 46.11816
+    value: 0
   - position: {x: 21.5, y: -2.75}
-    value: 52.003876
+    value: 0
   - position: {x: 21, y: -2.5}
-    value: 56.43438
+    value: 0
   - position: {x: 20.5, y: -2.25}
-    value: 59.43936
+    value: 0
   - position: {x: 20, y: -2}
-    value: 60.607643
+    value: 0
   - position: {x: 19.5, y: -1.75}
-    value: 59.60963
+    value: 0
   - position: {x: 19, y: -1.5}
-    value: 56.43978
+    value: 0
   - position: {x: 18.5, y: -1.25}
-    value: 50.90121
+    value: 0
   - position: {x: 18, y: -1}
-    value: 44.0306
+    value: 0
   - position: {x: 17.5, y: -0.75}
-    value: 36.501022
+    value: 0
   - position: {x: 17, y: -0.5}
-    value: 28.89232
+    value: 0
   - position: {x: 16.5, y: -0.25}
-    value: 22.119333
+    value: 0
   - position: {x: 16, y: 0}
-    value: 21.111652
+    value: 0
   - position: {x: 15.5, y: 0.25}
-    value: 27.040688
+    value: 0
   - position: {x: 15, y: 0.5}
-    value: 38.847
+    value: 0
   - position: {x: 14.5, y: 0.75}
-    value: 57.01658
+    value: 0
   - position: {x: 14, y: 1}
-    value: 79.86111
+    value: 0
   - position: {x: 13.5, y: 1.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 1.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 2}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 3}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 4}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 6}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 3, y: 6.5}
-    value: 92.68978
+    value: 0
   - position: {x: 2.5, y: 6.75}
-    value: 63.503086
+    value: 0
   - position: {x: 2, y: 7}
-    value: 38.47574
+    value: 0
   - position: {x: 1.5, y: 7.25}
-    value: 23.986366
+    value: 0
   - position: {x: 1, y: 7.5}
-    value: 11.655599
+    value: 0
   - position: {x: 0.5, y: 7.75}
     value: 0
   - position: {x: -3, y: 9.5}
@@ -5625,97 +5625,97 @@ MonoBehaviour:
   - position: {x: -5, y: 10.5}
     value: 0
   - position: {x: 25, y: -4}
-    value: 10.940723
+    value: 0
   - position: {x: 24.5, y: -3.75}
-    value: 15.02517
+    value: 0
   - position: {x: 24, y: -3.5}
-    value: 20.922789
+    value: 0
   - position: {x: 23.5, y: -3.25}
-    value: 28.483831
+    value: 0
   - position: {x: 23, y: -3}
-    value: 36.19628
+    value: 0
   - position: {x: 22.5, y: -2.75}
-    value: 43.517086
+    value: 0
   - position: {x: 22, y: -2.5}
-    value: 50.135914
+    value: 0
   - position: {x: 21.5, y: -2.25}
-    value: 55.610554
+    value: 0
   - position: {x: 21, y: -2}
-    value: 59.826157
+    value: 0
   - position: {x: 20.5, y: -1.75}
-    value: 62.414757
+    value: 0
   - position: {x: 20, y: -1.5}
-    value: 62.96329
+    value: 0
   - position: {x: 19.5, y: -1.25}
-    value: 61.29999
+    value: 0
   - position: {x: 19, y: -1}
-    value: 57.30913
+    value: 0
   - position: {x: 18.5, y: -0.75}
-    value: 51.508064
+    value: 0
   - position: {x: 18, y: -0.5}
-    value: 44.442886
+    value: 0
   - position: {x: 17.5, y: -0.25}
-    value: 36.899456
+    value: 0
   - position: {x: 17, y: 0}
-    value: 29.37525
+    value: 0
   - position: {x: 16.5, y: 0.25}
-    value: 22.69077
+    value: 0
   - position: {x: 16, y: 0.5}
-    value: 23.252224
+    value: 0
   - position: {x: 15.5, y: 0.75}
-    value: 29.747757
+    value: 0
   - position: {x: 15, y: 1}
-    value: 42.79675
+    value: 0
   - position: {x: 14.5, y: 1.25}
-    value: 62.574673
+    value: 0
   - position: {x: 14, y: 1.5}
-    value: 85.914566
+    value: 0
   - position: {x: 13.5, y: 1.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 2}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 3}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 4}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 6}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 4, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 3.5, y: 6.75}
-    value: 63.71181
+    value: 0
   - position: {x: 3, y: 7}
-    value: 40.417007
+    value: 0
   - position: {x: 2.5, y: 7.25}
-    value: 19.40631
+    value: 0
   - position: {x: 2, y: 7.5}
     value: 0
   - position: {x: -2.5, y: 9.75}
@@ -5731,97 +5731,97 @@ MonoBehaviour:
   - position: {x: -5, y: 11}
     value: 0
   - position: {x: 25.5, y: -3.75}
-    value: 9.615403
+    value: 0
   - position: {x: 25, y: -3.5}
-    value: 13.468546
+    value: 0
   - position: {x: 24.5, y: -3.25}
-    value: 18.25197
+    value: 0
   - position: {x: 24, y: -3}
-    value: 24.927975
+    value: 0
   - position: {x: 23.5, y: -2.75}
-    value: 32.72596
+    value: 0
   - position: {x: 23, y: -2.5}
-    value: 40.231937
+    value: 0
   - position: {x: 22.5, y: -2.25}
-    value: 47.289898
+    value: 0
   - position: {x: 22, y: -2}
-    value: 53.509804
+    value: 0
   - position: {x: 21.5, y: -1.75}
-    value: 58.701958
+    value: 0
   - position: {x: 21, y: -1.5}
-    value: 62.659676
+    value: 0
   - position: {x: 20.5, y: -1.25}
-    value: 64.837
+    value: 0
   - position: {x: 20, y: -1}
-    value: 64.4736
+    value: 0
   - position: {x: 19.5, y: -0.75}
-    value: 62.21148
+    value: 0
   - position: {x: 19, y: -0.5}
-    value: 58.108273
+    value: 0
   - position: {x: 18.5, y: -0.25}
-    value: 52.067883
+    value: 0
   - position: {x: 18, y: 0}
-    value: 44.81156
+    value: 0
   - position: {x: 17.5, y: 0.25}
-    value: 37.129032
+    value: 0
   - position: {x: 17, y: 0.5}
-    value: 29.602304
+    value: 0
   - position: {x: 16.5, y: 0.75}
-    value: 23.55024
+    value: 0
   - position: {x: 16, y: 1}
-    value: 26.040546
+    value: 0
   - position: {x: 15.5, y: 1.25}
-    value: 34.171223
+    value: 0
   - position: {x: 15, y: 1.5}
-    value: 48.924995
+    value: 0
   - position: {x: 14.5, y: 1.75}
-    value: 68.46551
+    value: 0
   - position: {x: 14, y: 2}
-    value: 94.90557
+    value: 0
   - position: {x: 13.5, y: 2.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 3}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 4}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 6}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 4, y: 7}
-    value: 77.484726
+    value: 0
   - position: {x: 3.5, y: 7.25}
-    value: 35.6634
+    value: 0
   - position: {x: 3, y: 7.5}
-    value: 5.899968
+    value: 0
   - position: {x: 2.5, y: 7.75}
     value: 0
   - position: {x: -2, y: 10}
@@ -5837,91 +5837,91 @@ MonoBehaviour:
   - position: {x: -4.5, y: 11.25}
     value: 0
   - position: {x: 25, y: -3}
-    value: 16.477896
+    value: 0
   - position: {x: 24.5, y: -2.75}
-    value: 22.207727
+    value: 0
   - position: {x: 24, y: -2.5}
-    value: 28.991556
+    value: 0
   - position: {x: 23.5, y: -2.25}
-    value: 36.456825
+    value: 0
   - position: {x: 23, y: -2}
-    value: 43.6528
+    value: 0
   - position: {x: 22.5, y: -1.75}
-    value: 50.33198
+    value: 0
   - position: {x: 22, y: -1.5}
-    value: 56.253334
+    value: 0
   - position: {x: 21.5, y: -1.25}
-    value: 61.190765
+    value: 0
   - position: {x: 21, y: -1}
-    value: 64.68191
+    value: 0
   - position: {x: 20.5, y: -0.75}
-    value: 66.56675
+    value: 0
   - position: {x: 20, y: -0.5}
-    value: 65.75319
+    value: 0
   - position: {x: 19.5, y: -0.25}
-    value: 62.68713
+    value: 0
   - position: {x: 19, y: 0}
-    value: 58.189728
+    value: 0
   - position: {x: 18.5, y: 0.25}
-    value: 52.169872
+    value: 0
   - position: {x: 18, y: 0.5}
-    value: 44.78583
+    value: 0
   - position: {x: 17.5, y: 0.75}
-    value: 37.0869
+    value: 0
   - position: {x: 17, y: 1}
-    value: 29.56964
+    value: 0
   - position: {x: 16.5, y: 1.25}
-    value: 24.559608
+    value: 0
   - position: {x: 16, y: 1.5}
-    value: 28.676052
+    value: 0
   - position: {x: 15.5, y: 1.75}
-    value: 39.764156
+    value: 0
   - position: {x: 15, y: 2}
-    value: 56.332165
+    value: 0
   - position: {x: 14.5, y: 2.25}
-    value: 78.6317
+    value: 0
   - position: {x: 14, y: 2.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 2.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 3}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 4}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 6}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 5, y: 7}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 7.25}
-    value: 96.67387
+    value: 0
   - position: {x: 4, y: 7.5}
-    value: 32.612366
+    value: 0
   - position: {x: 3.5, y: 7.75}
     value: 0
   - position: {x: 3, y: 8}
@@ -5941,91 +5941,91 @@ MonoBehaviour:
   - position: {x: -4, y: 11.5}
     value: 0
   - position: {x: 25.5, y: -2.75}
-    value: 14.938899
+    value: 0
   - position: {x: 25, y: -2.5}
-    value: 19.996641
+    value: 0
   - position: {x: 24.5, y: -2.25}
-    value: 26.054964
+    value: 0
   - position: {x: 24, y: -2}
-    value: 32.47277
+    value: 0
   - position: {x: 23.5, y: -1.75}
-    value: 39.306496
+    value: 0
   - position: {x: 23, y: -1.5}
-    value: 46.226128
+    value: 0
   - position: {x: 22.5, y: -1.25}
-    value: 52.600082
+    value: 0
   - position: {x: 22, y: -1}
-    value: 58.334003
+    value: 0
   - position: {x: 21.5, y: -0.75}
-    value: 62.815033
+    value: 0
   - position: {x: 21, y: -0.5}
-    value: 66.06685
+    value: 0
   - position: {x: 20.5, y: -0.25}
-    value: 67.24031
+    value: 0
   - position: {x: 20, y: 0}
-    value: 65.68485
+    value: 0
   - position: {x: 19.5, y: 0.25}
-    value: 62.44706
+    value: 0
   - position: {x: 19, y: 0.5}
-    value: 58.089325
+    value: 0
   - position: {x: 18.5, y: 0.75}
-    value: 51.897663
+    value: 0
   - position: {x: 18, y: 1}
-    value: 44.529373
+    value: 0
   - position: {x: 17.5, y: 1.25}
-    value: 36.705093
+    value: 0
   - position: {x: 17, y: 1.5}
-    value: 29.382723
+    value: 0
   - position: {x: 16.5, y: 1.75}
-    value: 25.176586
+    value: 0
   - position: {x: 16, y: 2}
-    value: 31.604736
+    value: 0
   - position: {x: 15.5, y: 2.25}
-    value: 45.306152
+    value: 0
   - position: {x: 15, y: 2.5}
-    value: 63.67027
+    value: 0
   - position: {x: 14.5, y: 2.75}
-    value: 93.46192
+    value: 0
   - position: {x: 14, y: 3}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 4}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 6}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 7}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 5, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 4.5, y: 7.75}
-    value: 30.552784
+    value: 0
   - position: {x: 4, y: 8}
     value: 0
   - position: {x: 3.5, y: 8.25}
@@ -6047,91 +6047,91 @@ MonoBehaviour:
   - position: {x: -3.5, y: 11.75}
     value: 0
   - position: {x: 26, y: -2.5}
-    value: 13.299643
+    value: 0
   - position: {x: 25.5, y: -2.25}
-    value: 18.078821
+    value: 0
   - position: {x: 25, y: -2}
-    value: 23.51195
+    value: 0
   - position: {x: 24.5, y: -1.75}
-    value: 29.30276
+    value: 0
   - position: {x: 24, y: -1.5}
-    value: 35.20526
+    value: 0
   - position: {x: 23.5, y: -1.25}
-    value: 41.49983
+    value: 0
   - position: {x: 23, y: -1}
-    value: 47.87019
+    value: 0
   - position: {x: 22.5, y: -0.75}
-    value: 54.097195
+    value: 0
   - position: {x: 22, y: -0.5}
-    value: 59.49394
+    value: 0
   - position: {x: 21.5, y: -0.25}
-    value: 63.74214
+    value: 0
   - position: {x: 21, y: 0}
-    value: 66.25754
+    value: 0
   - position: {x: 20.5, y: 0.25}
-    value: 66.6829
+    value: 0
   - position: {x: 20, y: 0.5}
-    value: 65.153496
+    value: 0
   - position: {x: 19.5, y: 0.75}
-    value: 62.099865
+    value: 0
   - position: {x: 19, y: 1}
-    value: 57.596237
+    value: 0
   - position: {x: 18.5, y: 1.25}
-    value: 51.322227
+    value: 0
   - position: {x: 18, y: 1.5}
-    value: 43.738678
+    value: 0
   - position: {x: 17.5, y: 1.75}
-    value: 36.017002
+    value: 0
   - position: {x: 17, y: 2}
-    value: 28.555445
+    value: 0
   - position: {x: 16.5, y: 2.25}
-    value: 25.2258
+    value: 0
   - position: {x: 16, y: 2.5}
-    value: 34.359173
+    value: 0
   - position: {x: 15.5, y: 2.75}
-    value: 49.988106
+    value: 0
   - position: {x: 15, y: 3}
-    value: 75.894264
+    value: 0
   - position: {x: 14.5, y: 3.25}
-    value: 100
+    value: 0
   - position: {x: 14, y: 3.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 4}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 6}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 7}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 5.5, y: 7.75}
-    value: 91.162895
+    value: 0
   - position: {x: 5, y: 8}
-    value: 21.730562
+    value: 0
   - position: {x: 4.5, y: 8.25}
     value: 0
   - position: {x: 4, y: 8.5}
@@ -6163,91 +6163,91 @@ MonoBehaviour:
   - position: {x: -3, y: 12}
     value: 0
   - position: {x: 26.5, y: -2.25}
-    value: 11.464758
+    value: 0
   - position: {x: 26, y: -2}
-    value: 15.969329
+    value: 0
   - position: {x: 25.5, y: -1.75}
-    value: 20.92591
+    value: 0
   - position: {x: 25, y: -1.5}
-    value: 26.420792
+    value: 0
   - position: {x: 24.5, y: -1.25}
-    value: 31.959154
+    value: 0
   - position: {x: 24, y: -1}
-    value: 37.21371
+    value: 0
   - position: {x: 23.5, y: -0.75}
-    value: 43.21527
+    value: 0
   - position: {x: 23, y: -0.5}
-    value: 49.355045
+    value: 0
   - position: {x: 22.5, y: -0.25}
-    value: 55.17127
+    value: 0
   - position: {x: 22, y: 0}
-    value: 60.236607
+    value: 0
   - position: {x: 21.5, y: 0.25}
-    value: 63.868313
+    value: 0
   - position: {x: 21, y: 0.5}
-    value: 65.81106
+    value: 0
   - position: {x: 20.5, y: 0.75}
-    value: 65.93371
+    value: 0
   - position: {x: 20, y: 1}
-    value: 64.38555
+    value: 0
   - position: {x: 19.5, y: 1.25}
-    value: 61.553436
+    value: 0
   - position: {x: 19, y: 1.5}
-    value: 56.70275
+    value: 0
   - position: {x: 18.5, y: 1.75}
-    value: 50.29043
+    value: 0
   - position: {x: 18, y: 2}
-    value: 42.507103
+    value: 0
   - position: {x: 17.5, y: 2.25}
-    value: 34.74697
+    value: 0
   - position: {x: 17, y: 2.5}
-    value: 27.22201
+    value: 0
   - position: {x: 16.5, y: 2.75}
-    value: 25.444778
+    value: 0
   - position: {x: 16, y: 3}
-    value: 36.906334
+    value: 0
   - position: {x: 15.5, y: 3.25}
-    value: 57.118923
+    value: 0
   - position: {x: 15, y: 3.5}
-    value: 84.84745
+    value: 0
   - position: {x: 14.5, y: 3.75}
-    value: 100
+    value: 0
   - position: {x: 14, y: 4}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 6}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 7}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 7.75}
-    value: 100
+    value: 0
   - position: {x: 6, y: 8}
-    value: 96.516174
+    value: 0
   - position: {x: 5.5, y: 8.25}
-    value: 9.414868
+    value: 0
   - position: {x: 5, y: 8.5}
     value: 0
   - position: {x: 4.5, y: 8.75}
@@ -6281,91 +6281,91 @@ MonoBehaviour:
   - position: {x: -2.5, y: 12.25}
     value: 0
   - position: {x: 27, y: -2}
-    value: 9.562217
+    value: 0
   - position: {x: 26.5, y: -1.75}
-    value: 13.579556
+    value: 0
   - position: {x: 26, y: -1.5}
-    value: 18.258507
+    value: 0
   - position: {x: 25.5, y: -1.25}
-    value: 23.188269
+    value: 0
   - position: {x: 25, y: -1}
-    value: 28.569084
+    value: 0
   - position: {x: 24.5, y: -0.75}
-    value: 33.691757
+    value: 0
   - position: {x: 24, y: -0.5}
-    value: 38.474133
+    value: 0
   - position: {x: 23.5, y: -0.25}
-    value: 44.415638
+    value: 0
   - position: {x: 23, y: 0}
-    value: 50.354675
+    value: 0
   - position: {x: 22.5, y: 0.25}
-    value: 56.23816
+    value: 0
   - position: {x: 22, y: 0.5}
-    value: 60.683403
+    value: 0
   - position: {x: 21.5, y: 0.75}
-    value: 63.61153
+    value: 0
   - position: {x: 21, y: 1}
-    value: 64.88671
+    value: 0
   - position: {x: 20.5, y: 1.25}
-    value: 64.612076
+    value: 0
   - position: {x: 20, y: 1.5}
-    value: 63.049957
+    value: 0
   - position: {x: 19.5, y: 1.75}
-    value: 60.243042
+    value: 0
   - position: {x: 19, y: 2}
-    value: 55.25278
+    value: 0
   - position: {x: 18.5, y: 2.25}
-    value: 48.607224
+    value: 0
   - position: {x: 18, y: 2.5}
-    value: 40.609905
+    value: 0
   - position: {x: 17.5, y: 2.75}
-    value: 32.908443
+    value: 0
   - position: {x: 17, y: 3}
-    value: 25.496096
+    value: 0
   - position: {x: 16.5, y: 3.25}
-    value: 25.827421
+    value: 0
   - position: {x: 16, y: 3.5}
-    value: 38.117783
+    value: 0
   - position: {x: 15.5, y: 3.75}
-    value: 63.848263
+    value: 0
   - position: {x: 15, y: 4}
-    value: 90.97612
+    value: 0
   - position: {x: 14.5, y: 4.25}
-    value: 100
+    value: 0
   - position: {x: 14, y: 4.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 6}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 7}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 7.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 8}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 8.25}
-    value: 100
+    value: 0
   - position: {x: 6, y: 8.5}
-    value: 13.413825
+    value: 0
   - position: {x: 5.5, y: 8.75}
     value: 0
   - position: {x: 5, y: 9}
@@ -6397,91 +6397,91 @@ MonoBehaviour:
   - position: {x: -1.5, y: 12.25}
     value: 0
   - position: {x: 27.5, y: -1.75}
-    value: 7.722617
+    value: 0
   - position: {x: 27, y: -1.5}
-    value: 11.194556
+    value: 0
   - position: {x: 26.5, y: -1.25}
-    value: 15.484839
+    value: 0
   - position: {x: 26, y: -1}
-    value: 20.064484
+    value: 0
   - position: {x: 25.5, y: -0.75}
-    value: 24.88385
+    value: 0
   - position: {x: 25, y: -0.5}
-    value: 29.957664
+    value: 0
   - position: {x: 24.5, y: -0.25}
-    value: 34.668457
+    value: 0
   - position: {x: 24, y: 0}
-    value: 39.360626
+    value: 0
   - position: {x: 23.5, y: 0.25}
-    value: 44.837673
+    value: 0
   - position: {x: 23, y: 0.5}
-    value: 50.685963
+    value: 0
   - position: {x: 22.5, y: 0.75}
-    value: 56.271996
+    value: 0
   - position: {x: 22, y: 1}
-    value: 60.03367
+    value: 0
   - position: {x: 21.5, y: 1.25}
-    value: 62.23792
+    value: 0
   - position: {x: 21, y: 1.5}
-    value: 62.89198
+    value: 0
   - position: {x: 20.5, y: 1.75}
-    value: 62.494244
+    value: 0
   - position: {x: 20, y: 2}
-    value: 61.0498
+    value: 0
   - position: {x: 19.5, y: 2.25}
-    value: 58.20195
+    value: 0
   - position: {x: 19, y: 2.5}
-    value: 52.95788
+    value: 0
   - position: {x: 18.5, y: 2.75}
-    value: 45.853874
+    value: 0
   - position: {x: 18, y: 3}
-    value: 38.03253
+    value: 0
   - position: {x: 17.5, y: 3.25}
-    value: 30.685476
+    value: 0
   - position: {x: 17, y: 3.5}
-    value: 24.169859
+    value: 0
   - position: {x: 16.5, y: 3.75}
-    value: 25.635418
+    value: 0
   - position: {x: 16, y: 4}
-    value: 42.10554
+    value: 0
   - position: {x: 15.5, y: 4.25}
-    value: 67.3785
+    value: 0
   - position: {x: 15, y: 4.5}
-    value: 93.41963
+    value: 0
   - position: {x: 14.5, y: 4.75}
-    value: 100
+    value: 0
   - position: {x: 14, y: 5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 6}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 11, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 7}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 7.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 8}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 8.25}
-    value: 100
+    value: 0
   - position: {x: 7, y: 8.5}
-    value: 100
+    value: 0
   - position: {x: 6.5, y: 8.75}
-    value: 28.671873
+    value: 0
   - position: {x: 6, y: 9}
     value: 0
   - position: {x: 5.5, y: 9.25}
@@ -6511,91 +6511,91 @@ MonoBehaviour:
   - position: {x: -0.5, y: 12.25}
     value: 9.842062
   - position: {x: 28, y: -1.5}
-    value: 5.715258
+    value: 0
   - position: {x: 27.5, y: -1.25}
-    value: 8.8939085
+    value: 0
   - position: {x: 27, y: -1}
-    value: 12.549107
+    value: 0
   - position: {x: 26.5, y: -0.75}
-    value: 16.936203
+    value: 0
   - position: {x: 26, y: -0.5}
-    value: 21.381454
+    value: 0
   - position: {x: 25.5, y: -0.25}
-    value: 25.869143
+    value: 0
   - position: {x: 25, y: 0}
-    value: 30.642122
+    value: 0
   - position: {x: 24.5, y: 0.25}
-    value: 35.008915
+    value: 0
   - position: {x: 24, y: 0.5}
-    value: 39.63894
+    value: 0
   - position: {x: 23.5, y: 0.75}
-    value: 44.618603
+    value: 0
   - position: {x: 23, y: 1}
-    value: 50.270245
+    value: 0
   - position: {x: 22.5, y: 1.25}
-    value: 55.070385
+    value: 0
   - position: {x: 22, y: 1.5}
-    value: 57.988686
+    value: 0
   - position: {x: 21.5, y: 1.75}
-    value: 59.512424
+    value: 0
   - position: {x: 21, y: 2}
-    value: 60.140297
+    value: 0
   - position: {x: 20.5, y: 2.25}
-    value: 59.75481
+    value: 0
   - position: {x: 20, y: 2.5}
-    value: 58.279987
+    value: 0
   - position: {x: 19.5, y: 2.75}
-    value: 55.32855
+    value: 0
   - position: {x: 19, y: 3}
-    value: 49.823826
+    value: 0
   - position: {x: 18.5, y: 3.25}
-    value: 42.42085
+    value: 0
   - position: {x: 18, y: 3.5}
-    value: 35.07138
+    value: 0
   - position: {x: 17.5, y: 3.75}
-    value: 28.631062
+    value: 0
   - position: {x: 17, y: 4}
-    value: 22.330711
+    value: 0
   - position: {x: 16.5, y: 4.25}
-    value: 24.796673
+    value: 0
   - position: {x: 16, y: 4.5}
-    value: 44.71641
+    value: 0
   - position: {x: 15.5, y: 4.75}
-    value: 68.190094
+    value: 0
   - position: {x: 15, y: 5}
-    value: 92.74677
+    value: 0
   - position: {x: 14.5, y: 5.25}
-    value: 100
+    value: 0
   - position: {x: 14, y: 5.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 6}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 11, y: 7}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 7.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 8}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 8.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 8.5}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 8.75}
-    value: 100
+    value: 0
   - position: {x: 7, y: 9}
-    value: 15.273684
+    value: 0
   - position: {x: 6.5, y: 9.25}
     value: 0
   - position: {x: 6, y: 9.5}
@@ -6623,87 +6623,87 @@ MonoBehaviour:
   - position: {x: 0.5, y: 12.25}
     value: 0
   - position: {x: 28, y: -1}
-    value: 6.534971
+    value: 0
   - position: {x: 27.5, y: -0.75}
-    value: 9.731034
+    value: 0
   - position: {x: 27, y: -0.5}
-    value: 13.580469
+    value: 0
   - position: {x: 26.5, y: -0.25}
-    value: 17.914936
+    value: 0
   - position: {x: 26, y: 0}
-    value: 22.186243
+    value: 0
   - position: {x: 25.5, y: 0.25}
-    value: 26.231123
+    value: 0
   - position: {x: 25, y: 0.5}
-    value: 30.540628
+    value: 0
   - position: {x: 24.5, y: 0.75}
-    value: 34.550465
+    value: 0
   - position: {x: 24, y: 1}
-    value: 38.880432
+    value: 0
   - position: {x: 23.5, y: 1.25}
-    value: 43.53963
+    value: 0
   - position: {x: 23, y: 1.5}
-    value: 48.763218
+    value: 0
   - position: {x: 22.5, y: 1.75}
-    value: 52.648716
+    value: 0
   - position: {x: 22, y: 2}
-    value: 54.92488
+    value: 0
   - position: {x: 21.5, y: 2.25}
-    value: 56.344505
+    value: 0
   - position: {x: 21, y: 2.5}
-    value: 56.815125
+    value: 0
   - position: {x: 20.5, y: 2.75}
-    value: 56.51607
+    value: 0
   - position: {x: 20, y: 3}
-    value: 54.887077
+    value: 0
   - position: {x: 19.5, y: 3.25}
-    value: 51.794296
+    value: 0
   - position: {x: 19, y: 3.5}
-    value: 45.972134
+    value: 0
   - position: {x: 18.5, y: 3.75}
-    value: 38.896114
+    value: 0
   - position: {x: 18, y: 4}
-    value: 32.266026
+    value: 0
   - position: {x: 17.5, y: 4.25}
-    value: 26.11826
+    value: 0
   - position: {x: 17, y: 4.5}
-    value: 20.043713
+    value: 0
   - position: {x: 16.5, y: 4.75}
-    value: 24.110107
+    value: 0
   - position: {x: 16, y: 5}
-    value: 45.000282
+    value: 0
   - position: {x: 15.5, y: 5.25}
-    value: 66.87021
+    value: 0
   - position: {x: 15, y: 5.5}
-    value: 89.36691
+    value: 0
   - position: {x: 14.5, y: 5.75}
-    value: 100
+    value: 0
   - position: {x: 14, y: 6}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 12, y: 7}
-    value: 100
+    value: 0
   - position: {x: 11.5, y: 7.25}
-    value: 99.974045
+    value: 0
   - position: {x: 11, y: 7.5}
-    value: 99.5844
+    value: 0
   - position: {x: 10.5, y: 7.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 8}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 8.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 8.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 8.75}
-    value: 100
+    value: 0
   - position: {x: 8, y: 9}
-    value: 100
+    value: 0
   - position: {x: 7.5, y: 9.25}
     value: 0
   - position: {x: 7, y: 9.5}
@@ -6733,87 +6733,87 @@ MonoBehaviour:
   - position: {x: 1, y: 12.5}
     value: 0
   - position: {x: 28.5, y: -0.75}
-    value: 4.0771437
+    value: 0
   - position: {x: 28, y: -0.5}
-    value: 7.095143
+    value: 0
   - position: {x: 27.5, y: -0.25}
-    value: 10.227858
+    value: 0
   - position: {x: 27, y: 0}
-    value: 14.116454
+    value: 0
   - position: {x: 26.5, y: 0.25}
-    value: 18.311369
+    value: 0
   - position: {x: 26, y: 0.5}
-    value: 22.38273
+    value: 0
   - position: {x: 25.5, y: 0.75}
-    value: 26.281103
+    value: 0
   - position: {x: 25, y: 1}
-    value: 29.927198
+    value: 0
   - position: {x: 24.5, y: 1.25}
-    value: 33.420918
+    value: 0
   - position: {x: 24, y: 1.5}
-    value: 37.136414
+    value: 0
   - position: {x: 23.5, y: 1.75}
-    value: 41.60201
+    value: 0
   - position: {x: 23, y: 2}
-    value: 46.04983
+    value: 0
   - position: {x: 22.5, y: 2.25}
-    value: 49.223843
+    value: 0
   - position: {x: 22, y: 2.5}
-    value: 51.318554
+    value: 0
   - position: {x: 21.5, y: 2.75}
-    value: 52.589893
+    value: 0
   - position: {x: 21, y: 3}
-    value: 52.986916
+    value: 0
   - position: {x: 20.5, y: 3.25}
-    value: 52.47825
+    value: 0
   - position: {x: 20, y: 3.5}
-    value: 50.682003
+    value: 0
   - position: {x: 19.5, y: 3.75}
-    value: 47.670055
+    value: 0
   - position: {x: 19, y: 4}
-    value: 41.897152
+    value: 0
   - position: {x: 18.5, y: 4.25}
-    value: 35.233456
+    value: 0
   - position: {x: 18, y: 4.5}
-    value: 29.100311
+    value: 0
   - position: {x: 17.5, y: 4.75}
-    value: 23.216496
+    value: 0
   - position: {x: 17, y: 5}
-    value: 17.32889
+    value: 0
   - position: {x: 16.5, y: 5.25}
-    value: 23.683832
+    value: 0
   - position: {x: 16, y: 5.5}
-    value: 42.794556
+    value: 0
   - position: {x: 15.5, y: 5.75}
-    value: 63.087856
+    value: 0
   - position: {x: 15, y: 6}
-    value: 83.89841
+    value: 0
   - position: {x: 14.5, y: 6.25}
-    value: 100
+    value: 0
   - position: {x: 14, y: 6.5}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 6.75}
-    value: 100
+    value: 0
   - position: {x: 13, y: 7}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 12, y: 7.5}
-    value: 99.78706
+    value: 0
   - position: {x: 11.5, y: 7.75}
-    value: 99.00016
+    value: 0
   - position: {x: 11, y: 8}
-    value: 98.88157
+    value: 0
   - position: {x: 10.5, y: 8.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 8.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 8.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 9}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 9.25}
-    value: 100
+    value: 0
   - position: {x: 8, y: 9.5}
     value: 0
   - position: {x: 7.5, y: 9.75}
@@ -6829,85 +6829,85 @@ MonoBehaviour:
   - position: {x: 5, y: 11}
     value: 0
   - position: {x: 28.5, y: -0.25}
-    value: 4.3661027
+    value: 0
   - position: {x: 28, y: 0}
-    value: 7.3036156
+    value: 0
   - position: {x: 27.5, y: 0.25}
-    value: 10.3742075
+    value: 0
   - position: {x: 27, y: 0.5}
-    value: 14.199783
+    value: 0
   - position: {x: 26.5, y: 0.75}
-    value: 18.125029
+    value: 0
   - position: {x: 26, y: 1}
-    value: 22.05047
+    value: 0
   - position: {x: 25.5, y: 1.25}
-    value: 25.652174
+    value: 0
   - position: {x: 25, y: 1.5}
-    value: 28.657164
+    value: 0
   - position: {x: 24.5, y: 1.75}
-    value: 31.237696
+    value: 0
   - position: {x: 24, y: 2}
-    value: 34.474434
+    value: 0
   - position: {x: 23.5, y: 2.25}
-    value: 38.788994
+    value: 0
   - position: {x: 23, y: 2.5}
-    value: 42.715008
+    value: 0
   - position: {x: 22.5, y: 2.75}
-    value: 45.555283
+    value: 0
   - position: {x: 22, y: 3}
-    value: 47.386097
+    value: 0
   - position: {x: 21.5, y: 3.25}
-    value: 48.35037
+    value: 0
   - position: {x: 21, y: 3.5}
-    value: 48.492157
+    value: 0
   - position: {x: 20.5, y: 3.75}
-    value: 47.752567
+    value: 0
   - position: {x: 20, y: 4}
-    value: 46.133713
+    value: 0
   - position: {x: 19.5, y: 4.25}
-    value: 42.755894
+    value: 0
   - position: {x: 19, y: 4.5}
-    value: 37.277756
+    value: 0
   - position: {x: 18.5, y: 4.75}
-    value: 31.308077
+    value: 0
   - position: {x: 18, y: 5}
-    value: 25.506733
+    value: 0
   - position: {x: 17.5, y: 5.25}
-    value: 19.891161
+    value: 0
   - position: {x: 17, y: 5.5}
-    value: 14.343786
+    value: 0
   - position: {x: 16.5, y: 5.75}
-    value: 21.080666
+    value: 0
   - position: {x: 16, y: 6}
-    value: 38.89625
+    value: 0
   - position: {x: 15.5, y: 6.25}
-    value: 57.065067
+    value: 0
   - position: {x: 15, y: 6.5}
-    value: 76.074814
+    value: 0
   - position: {x: 14.5, y: 6.75}
-    value: 94.32659
+    value: 0
   - position: {x: 14, y: 7}
-    value: 100
+    value: 0
   - position: {x: 13.5, y: 7.25}
-    value: 100
+    value: 0
   - position: {x: 13, y: 7.5}
-    value: 100
+    value: 0
   - position: {x: 12.5, y: 7.75}
-    value: 99.80597
+    value: 0
   - position: {x: 12, y: 8}
-    value: 98.86259
+    value: 0
   - position: {x: 11.5, y: 8.25}
-    value: 97.20268
+    value: 0
   - position: {x: 11, y: 8.5}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 8.75}
-    value: 100
+    value: 0
   - position: {x: 10, y: 9}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 9.25}
-    value: 100
+    value: 0
   - position: {x: 9, y: 9.5}
-    value: 100
+    value: 0
   - position: {x: 8.5, y: 9.75}
     value: 0
   - position: {x: 8, y: 10}
@@ -6921,55 +6921,55 @@ MonoBehaviour:
   - position: {x: 6, y: 11}
     value: 0
   - position: {x: 25, y: 2}
-    value: 26.455046
+    value: 0
   - position: {x: 24.5, y: 2.25}
-    value: 27.992054
+    value: 0
   - position: {x: 24, y: 2.5}
-    value: 31.216568
+    value: 0
   - position: {x: 23.5, y: 2.75}
-    value: 35.153805
+    value: 0
   - position: {x: 23, y: 3}
-    value: 38.75905
+    value: 0
   - position: {x: 22.5, y: 3.25}
-    value: 41.31627
+    value: 0
   - position: {x: 22, y: 3.5}
-    value: 42.916744
+    value: 0
   - position: {x: 21.5, y: 3.75}
-    value: 43.650097
+    value: 0
   - position: {x: 21, y: 4}
-    value: 43.562313
+    value: 0
   - position: {x: 20.5, y: 4.25}
-    value: 42.636036
+    value: 0
   - position: {x: 20, y: 4.5}
-    value: 40.828274
+    value: 0
   - position: {x: 19.5, y: 4.75}
-    value: 37.50536
+    value: 0
   - position: {x: 19, y: 5}
-    value: 32.510067
+    value: 0
   - position: {x: 18.5, y: 5.25}
-    value: 26.973373
+    value: 0
   - position: {x: 18, y: 5.5}
-    value: 21.59325
+    value: 0
   - position: {x: 17.5, y: 5.75}
-    value: 16.356773
+    value: 0
   - position: {x: 17, y: 6}
-    value: 11.353936
+    value: 0
   - position: {x: 16.5, y: 6.25}
-    value: 17.12841
+    value: 0
   - position: {x: 16, y: 6.5}
-    value: 33.081413
+    value: 0
   - position: {x: 11.5, y: 8.75}
-    value: 99.127304
+    value: 0
   - position: {x: 11, y: 9}
-    value: 100
+    value: 0
   - position: {x: 10.5, y: 9.25}
-    value: 100
+    value: 0
   - position: {x: 10, y: 9.5}
-    value: 100
+    value: 0
   - position: {x: 9.5, y: 9.75}
-    value: 100
+    value: 0
   - position: {x: 9, y: 10}
-    value: 16.267754
+    value: 0
   - position: {x: 8.5, y: 10.25}
     value: 0
   - position: {x: 8, y: 10.5}
@@ -6977,34 +6977,34 @@ MonoBehaviour:
   - position: {x: 7.5, y: 10.75}
     value: 0
   - position: {x: 21.5, y: 4.25}
-    value: 38.574203
+    value: 0
   - position: {x: 21, y: 4.5}
-    value: 38.396454
+    value: 0
   - position: {x: 20.5, y: 4.75}
-    value: 37.48666
+    value: 0
   - position: {x: 20, y: 5}
-    value: 35.693855
+    value: 0
   - position: {x: 19.5, y: 5.25}
-    value: 32.151134
+    value: 0
   - position: {x: 19, y: 5.5}
-    value: 27.512575
+    value: 0
   - position: {x: 18.5, y: 5.75}
-    value: 22.466452
+    value: 0
   - position: {x: 18, y: 6}
-    value: 17.570253
+    value: 0
   - position: {x: 17.5, y: 6.25}
-    value: 12.898016
+    value: 0
   - position: {x: 9.5, y: 10.25}
-    value: 43.688324
+    value: 0
   - position: {x: 9, y: 10.5}
     value: 0
   - position: {x: 21, y: 5}
-    value: 33.228146
+    value: 0
   - position: {x: 20.5, y: 5.25}
-    value: 32.36819
+    value: 0
   - position: {x: 20, y: 5.5}
-    value: 30.244003
+    value: 0
   - position: {x: 19.5, y: 5.75}
-    value: 26.774258
+    value: 0
   - position: {x: 19, y: 6}
-    value: 22.558392
+    value: 0
