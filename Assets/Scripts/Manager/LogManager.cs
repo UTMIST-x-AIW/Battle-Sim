@@ -15,13 +15,12 @@ public class LogManager : MonoBehaviour
     {
         get
         {
-            // Don't create a new instance during application quit
+
             if (isApplicationQuitting)
             {
-                Debug.Log("LogManager: Instance requested during application quit, returning null");
                 return null;
             }
-            
+
             if (instance == null)
             {
                 try
@@ -42,8 +41,6 @@ public class LogManager : MonoBehaviour
     
     private void Awake()
     {
-        try
-        {
             Debug.Log($"LogManager Awake called on {gameObject.name}");
             
             if (instance != null && instance != this)
@@ -57,11 +54,6 @@ public class LogManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
             
             InitializeLogging();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"LogManager: Error in Awake: {e.Message}\n{e.StackTrace}");
-        }
     }
     
     private void OnDestroy()

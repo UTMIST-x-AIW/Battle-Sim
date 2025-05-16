@@ -214,7 +214,6 @@ public class Creature : MonoBehaviour
             }
             
             float[] observations = observer.GetObservations(this);
-            Debug.Log("Get Observations was ran");
 
         double[] doubleObservations = ConvertToDouble(observations);
             
@@ -344,7 +343,6 @@ public class Creature : MonoBehaviour
                     
                     // Get network outputs (x, y velocities, chop desire, attack desire)
                     float[] actions = GetActions();
-            Debug.Log("GetActions was ran");
 
             // Process the network's action commands
             ProcessActionCommands(actions);
@@ -812,116 +810,7 @@ public class Creature : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Only draw if visualization is enabled and NEATTest reference exists
-        if (neatTest != null)
-        {
-            if (neatTest.showDetectionRadius)
-            {
-            // Set color to be semi-transparent and match creature type
-            Color gizmoColor = (creatureType == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
-            Gizmos.color = gizmoColor;
-            
-            // Draw filled circle for better visibility
-            Gizmos.DrawSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
-            
-            // Draw wire frame with more opacity for better edge definition
-            gizmoColor.a = 0.3f;
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(transform.position, CreatureObserver.DETECTION_RADIUS);
-            }
-            
-            // Draw chop range if enabled
-            if (neatTest.showChopRange)
-            {
-                Gizmos.color = neatTest.chopRangeColor;
-                Gizmos.DrawWireSphere(transform.position, chopRange);
-            }
-        }
-    }
-    
-    private FeedForwardNetwork CreateChildNetwork(FeedForwardNetwork parent1, FeedForwardNetwork parent2)
-    {
-        // Get parent network details via reflection
-        System.Reflection.FieldInfo nodesField = parent1.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        System.Reflection.FieldInfo connectionsField = parent1.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         
-        if (nodesField == null || connectionsField == null)
-        {
-            Debug.LogError("Failed to access network fields via reflection");
-            return null;
-        }
-        
-        var parent1Nodes = nodesField.GetValue(parent1) as Dictionary<int, NodeGene>;
-        var parent1Connections = connectionsField.GetValue(parent1) as Dictionary<int, NEAT.Genes.ConnectionGene>;
-        
-        var parent2Nodes = nodesField.GetValue(parent2) as Dictionary<int, NodeGene>;
-        var parent2Connections = connectionsField.GetValue(parent2) as Dictionary<int, NEAT.Genes.ConnectionGene>;
-        
-        if (parent1Nodes == null || parent1Connections == null || parent2Nodes == null || parent2Connections == null)
-        {
-            Debug.LogError("Failed to extract network components");
-            return null;
-        }
-        
-        // Create new dictionaries for the child
-        var childNodes = new Dictionary<int, NodeGene>();
-        var childConnections = new Dictionary<int, NEAT.Genes.ConnectionGene>();
-        
-        // Add all nodes (taking randomly from either parent for matching nodes)
-        var allNodeKeys = new HashSet<int>(parent1Nodes.Keys.Concat(parent2Nodes.Keys));
-        foreach (var key in allNodeKeys)
-        {
-            if (parent1Nodes.ContainsKey(key) && parent2Nodes.ContainsKey(key))
-            {
-                // Both parents have this node, randomly choose one
-                childNodes[key] = Random.value < 0.5f ? 
-                    (NodeGene)parent1Nodes[key].Clone() : 
-                    (NodeGene)parent2Nodes[key].Clone();
-            }
-            else if (parent1Nodes.ContainsKey(key))
-            {
-                // Only parent1 has this node
-                childNodes[key] = (NodeGene)parent1Nodes[key].Clone();
-            }
-            else
-            {
-                // Only parent2 has this node
-                childNodes[key] = (NodeGene)parent2Nodes[key].Clone();
-            }
-        }
-        
-        // Add connections (taking randomly from either parent for matching connections)
-        var allConnectionKeys = new HashSet<int>(parent1Connections.Keys.Concat(parent2Connections.Keys));
-        foreach (var key in allConnectionKeys)
-        {
-            if (parent1Connections.ContainsKey(key) && parent2Connections.ContainsKey(key))
-            {
-                // Both parents have this connection, randomly choose one
-                childConnections[key] = Random.value < 0.5f ? 
-                    (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone() : 
-                    (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
-            }
-            else if (parent1Connections.ContainsKey(key))
-            {
-                // Only parent1 has this connection
-                childConnections[key] = (NEAT.Genes.ConnectionGene)parent1Connections[key].Clone();
-            }
-            else
-            {
-                // Only parent2 has this connection
-                childConnections[key] = (NEAT.Genes.ConnectionGene)parent2Connections[key].Clone();
-            }
-            
-            // Apply mutation to weight (occasionally)
-            if (Random.value < 0.8f)
-            {
-                var conn = childConnections[key];
-                conn.Weight += Random.Range(-0.5f, 0.5f);
-                conn.Weight = Mathf.Clamp((float)conn.Weight, -1f, 1f);
-            }
-        }
-        
-        // Create a new network with the crossover results
-        return new FeedForwardNetwork(childNodes, childConnections);
     }
 }
+    

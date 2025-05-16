@@ -7,10 +7,12 @@ using UnityEngine;
 [Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-    public static List<PooledObjectInfo> ObjectPools = new List<PooledObjectInfo>();
+    public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
 
     [SerializeField]
     public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
+
+    public static event Action<List<GameObject>> OnListChanged;
 
     private void LateUpdate()
     {
@@ -43,7 +45,13 @@ public class ObjectPoolManager : MonoBehaviour
         {
             spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
             pool.ActiveObjects.Add(spawnableObj);
-            Debug.Log(spawnableObj.name + " was instantiated and added to the pool");
+
+            if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+            {
+                OnListChanged?.Invoke(pool.ActiveObjects);
+            }
+
+            //Debug.Log(spawnableObj.name + " was instantiated and added to the pool");
         }
         
         else
@@ -53,6 +61,10 @@ public class ObjectPoolManager : MonoBehaviour
             spawnableObj.transform.rotation = spawnRotation;
             pool.InactiveObjects.Remove(spawnableObj);
             pool.ActiveObjects.Add(spawnableObj);
+            if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+            {
+                OnListChanged?.Invoke(pool.ActiveObjects);
+            }
             spawnableObj.SetActive(true);
         }
 
@@ -61,7 +73,7 @@ public class ObjectPoolManager : MonoBehaviour
 
     public static void ReturnObjectToPool(GameObject obj)
     {
-        string goName = obj.name.Substring(0, obj.name.Length - 7);
+        string goName = obj.name.Replace("(Clone)", "");
 
         PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
 
@@ -74,12 +86,27 @@ public class ObjectPoolManager : MonoBehaviour
             obj.SetActive(false);
             pool.InactiveObjects.Add(obj);
             pool.ActiveObjects.Remove(obj);
-            Debug.Log(obj.name + " was killed and was added to the pool inactive list");
+            if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+            {
+                OnListChanged?.Invoke(pool.ActiveObjects);
+            }
+          //  Debug.Log(obj.name + " was killed and was added to the pool inactive list");
         }
-
-
     }
 
+    void ClearingPools()
+    {
+        foreach(PooledObjectInfo pool in ObjectPools)
+        {
+            pool.ActiveObjects.Clear();
+            pool.InactiveObjects.Clear();
+        }
+    }
+
+    private void OnDisable()
+    {
+        ClearingPools();
+    }
 }
 
 [Serializable]

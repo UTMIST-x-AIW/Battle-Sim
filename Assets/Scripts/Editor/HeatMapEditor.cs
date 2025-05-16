@@ -141,7 +141,7 @@ public class HeatMapEditor : Editor
         Handles.DrawWireDisc(worldPos, Vector3.forward, brushRadius * 0.95f);
         
         // Check if appropriate modifier keys are pressed
-        bool shiftPressed = e.shift;
+        bool shiftPressed = e.alt;
         bool controlPressed = e.control;
         
         // Determine if we should paint or erase based on key press and mode

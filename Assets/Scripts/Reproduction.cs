@@ -6,40 +6,33 @@ using System.Linq;
 using Unity.VisualScripting;
 using NEAT.NN;
 using NEAT.Genome;
-//using UnityEditor.Build.Content;
+using Unity.Assertions;
 
 public class Reproduction : MonoBehaviour
 {
-    public List<GameObject> gameObject_mated_with = new List<GameObject>();
-    public float pReproduction = 0.9f;
+    public List<GameObject> matedGameObjects = new List<GameObject>();
+    public float reproductionProbability = 0.9f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
     private Creature creatureComponent;
+    private int creatureLayerMask;
 
-    private void Start()
+    private void Awake()
     {
         // Get the Creature component
         creatureComponent = GetComponent<Creature>();
+        creatureLayerMask = LayerMask.GetMask("Creature"); 
+
     }
 
-    private void LateUpdate()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Skip if already in mating process
         if (isMating) return;
+        if (!creatureComponent.canStartReproducing) return;
 
-        // Skip if creature isn't ready to reproduce (meter not filled)
-        if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
-
-        // Use the creature's vision range instead of fixed radius
-        float detectionRadius = creatureComponent.visionRange;
-        Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
-        
-        foreach (var collider in nearbycollider)
+        if (((1 << collision.gameObject.layer) & creatureLayerMask) != 0 && collision.gameObject != gameObject)
         {
-            if (collider != null && collider.gameObject != gameObject)
-            {
-                EnableMating(collider);
-            }
+            EnableMating(collision);
         }
     }
 
@@ -50,23 +43,14 @@ public class Reproduction : MonoBehaviour
         
         GameObject other_character = col.gameObject;
 
-        if (other_character == gameObject)
-        {
-            return;
-        }
-
-        // Check if this is a creature of the same type
+        // Check if this is a creature of the same type and Check if other creature is ready to reproduce
         Creature otherCreature = other_character.GetComponent<Creature>();
-        if (otherCreature == null || otherCreature.creatureType != creatureComponent.creatureType)
+        if (otherCreature.creatureType != creatureComponent.creatureType) 
         {
             return;
         }
+        if (!otherCreature.canStartReproducing) return;
 
-        // Check if other creature is ready to reproduce
-        if (!otherCreature.canStartReproducing)
-        {
-            return;
-        }
 
         // New check for minimum age requirement (21 years)
         if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
@@ -87,17 +71,12 @@ public class Reproduction : MonoBehaviour
 
     void MateWith(GameObject other)
     {
-        // Validate input
-        if (other == null)
-        {
-            return;
-        }
 
         // Set mating flag
         isMating = true;
 
         // Still tracking past mates for reference, but not restricting repeat mating
-        gameObject_mated_with.Add(other);
+        matedGameObjects.Add(other);
 
         Reproduction otherScript = other.GetComponent<Reproduction>();
         if (otherScript == null)
@@ -107,7 +86,7 @@ public class Reproduction : MonoBehaviour
         }
 
         float matingChance = Random.value;
-        if (matingChance > pReproduction)
+        if (matingChance > reproductionProbability)
         {
             // Get reference to NEATTest
             var neatTest = FindObjectOfType<NEATTest>();
@@ -144,7 +123,7 @@ public class Reproduction : MonoBehaviour
                 }
 
                 // Still tracking past mates for reference, but not restricting repeat mating
-                otherScript.gameObject_mated_with.Add(this.gameObject);
+                otherScript.matedGameObjects.Add(this.gameObject);
             }
         }
 

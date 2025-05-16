@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class TreeHealth : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class TreeHealth : MonoBehaviour
         }
     }
     
-    private System.Collections.IEnumerator FlashOnDamage()
+    private IEnumerator FlashOnDamage()
     {
         SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         if (renderer != null)

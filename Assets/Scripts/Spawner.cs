@@ -44,7 +44,7 @@ public class Spawner : MonoBehaviour
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
         prefabParent = SavingParentTransforms.GetParentForPrefab(prefab).gameObject;
 
-        Debug.Log(prefabParent.name);
+        //Debug.Log(prefabParent.name);
         
         // Create a parent for extra objects
         extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");

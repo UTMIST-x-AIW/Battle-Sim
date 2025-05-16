@@ -8,7 +8,6 @@ using NEAT.Genome;
 
 public class NEATTest : MonoBehaviour
 {
-    private static NEATTest instance;
 
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
@@ -76,12 +75,25 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Loading Settings")]
     public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
+    public static NEATTest Instance { get; private set; }
+
+    private void Awake()
+    {
+        // Enforce singleton instance
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); // Prevent duplicates
+            Debug.Log("There was a duplicate");
+            return;
+        }
+
+        Instance = this;
+        Debug.Log("NEATTest gameobject " + Instance);
+    }
+
     void Start()
     {
-        // Only proceed if we're the main instance
-        if (instance != this) return;
 
-        // Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
 
         // Clear any existing creatures first
         var existingCreatures = GameObject.FindObjectsOfType<Creature>();
@@ -764,7 +776,7 @@ public class NEATTest : MonoBehaviour
             // Count only Alberts
             int count = creatures.Count(c => c.creatureType == Creature.CreatureType.Albert);
             
-            LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
+            Debug.Log($"Counted {count} Albert creatures in the scene");
             return count;
         }
         catch (System.Exception e)
@@ -776,68 +788,28 @@ public class NEATTest : MonoBehaviour
 
     private void OnDestroy()
     {
-        try
-        {
-            Debug.Log($"NEATTest OnDestroy called on {gameObject.name}");
+
+        Debug.Log($"NEATTest OnDestroy called on {gameObject.name}");
             
-            // Only clear the static instance if this is the instance being destroyed
-            if (instance == this)
-            {
-                Debug.Log("NEATTest: Main instance being destroyed");
-                
-                try
-                {
-                    // Clear static references in Creature class
-                    Creature.ClearStaticReferences();
-                    Debug.Log("NEATTest: Successfully cleared Creature static references");
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"NEATTest: Error clearing Creature static references: {e.Message}");
-                }
-                
-                // Clear the instance reference
-                instance = null;
-                
-                // Call LogManager cleanup to prevent the GameObject from lingering
-                // Use direct reference to LogManager methods without creating new instances
-                if (LogManager.Instance != null)
-                {
-                    try
-                    {
-                        LogManager.LogMessage("NEATTest instance has been destroyed and static references cleared.");
-                        Debug.Log("NEATTest: Successfully logged final message");
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError($"NEATTest: Error logging final message: {e.Message}");
-                    }
-                    
-                    try
-                    {
-                        // Call cleanup separately
-                        LogManager.Cleanup();
-                        Debug.Log("NEATTest: LogManager cleanup completed");
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogError($"NEATTest: Error during LogManager cleanup: {e.Message}");
-                    }
-                }
-                else
-                {
-                    Debug.Log("NEATTest: LogManager instance is null, skipping cleanup");
-                }
-            }
-            else
-            {
-                Debug.Log("NEATTest: Not the main instance, skipping cleanup");
-            }
-        }
-        catch (System.Exception e)
+        // Only clear the static instance if this is the instance being destroyed
+        if (Instance == this)
         {
-            Debug.LogError($"NEATTest: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
+            Debug.Log("NEATTest: Main instance being destroyed");
+                
+                // Clear static references in Creature class
+                Creature.ClearStaticReferences();
+                Debug.Log("NEATTest: Successfully cleared Creature static references");
+
+                
+            // Clear the instance reference
+            Instance = null;
+                
         }
+        else
+        {
+            Debug.Log("NEATTest: Not the main instance, skipping cleanup");
+        }
+
     }
 
     private void RunNeuralNetworkDiagnostics()

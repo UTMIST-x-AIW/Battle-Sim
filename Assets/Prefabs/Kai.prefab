@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 9205314743589739064}
   - component: {fileID: 3752400893969112301}
   - component: {fileID: 3866177930134900298}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Kai
   m_TagString: Kai
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ MonoBehaviour:
   maxEnergy: 1
   energyRechargeRate: 0.333
   reproductionRechargeRate: 0.333
-  agingStartTime: 10
+  TimeBeforeStartingAging: 20
   agingRate: 0.03
   generation: 0
   moveSpeed: 5
@@ -256,8 +256,8 @@ MonoBehaviour:
   chopRange: 1.5
   treeLayer:
     serializedVersion: 2
-    m_Bits: 128
-  type: 1
+    m_Bits: 384
+  creatureType: 0
   observer: {fileID: 0}
   canStartReproducing: 0
   reproductionMeter: 0
@@ -272,6 +272,10 @@ PrefabInstance:
     - target: {fileID: 1410330528408215769, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_Name
       value: HealthBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410330528408215769, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7101802247461871357, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_LocalPosition.x

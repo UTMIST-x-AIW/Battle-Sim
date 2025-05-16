@@ -15,15 +15,15 @@ public class NEATNetworkTester : MonoBehaviour
         Debug.Log("=== NEAT LIBRARY TEST: STARTING ===");
         
         // Create a simple genome with our new bias implementation
-        var genome = new NEAT.Genome.Genome(0);
+        var genome = new Genome(0);
         
         // Add a single input node
-        var inputNode = new NEAT.Genes.NodeGene(0, NEAT.Genes.NodeType.Input);
+        var inputNode = new NodeGene(0, NEAT.Genes.NodeType.Input);
         inputNode.Layer = 0;
         genome.AddNode(inputNode);
         
         // Add a single output node with a bias
-        var outputNode = new NEAT.Genes.NodeGene(1, NEAT.Genes.NodeType.Output);
+        var outputNode = new NodeGene(1, NEAT.Genes.NodeType.Output);
         outputNode.Layer = 1;
         outputNode.Bias = 0.5f; // Set a bias value
         genome.AddNode(outputNode);
