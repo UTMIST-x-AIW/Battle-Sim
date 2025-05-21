@@ -35,7 +35,7 @@ Transform:
   m_GameObject: {fileID: 7896111451434077960}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.16, y: -1.28, z: 0}
+  m_LocalPosition: {x: -0.26, y: -2.67, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -101,12 +101,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MoveSpeed: 35.61
   lastdirection: {x: 0, y: 0}
 --- !u!50 &2666509316153106925
 Rigidbody2D:
@@ -213,6 +212,7 @@ MonoBehaviour:
   attackDamage: 1
   visionRange: 20
   chopRange: 1.5
+  attackRange: 1.5
   type: 1
   observer: {fileID: -380665466361591250}
   canStartReproducing: 1

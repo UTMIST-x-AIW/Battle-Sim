@@ -30,7 +30,7 @@ public sealed class Movement : MonoBehaviour
         //this.transform.Translate(movement*Time.fixedDeltaTime);
         _anim.SetFloat("MoveX", _hInput);
         _anim.SetFloat("MoveY", _vInput);
-        _anim.SetBool("IsMoving", _rb.velocity.magnitude > 0);
+        _anim.SetBool("IsMoving", _rb.velocity.magnitude > 0.1);
     }
 
 }
