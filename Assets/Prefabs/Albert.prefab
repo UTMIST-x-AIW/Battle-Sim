@@ -156,7 +156,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.48779863, w: 0.87295616}
   m_LocalPosition: {x: -0.26537895, y: -0.03775549, z: 0}
-  m_LocalScale: {x: 0.38128, y: 0.38128, z: 0.38128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 97759648320744754}
@@ -452,7 +452,7 @@ MonoBehaviour:
   agingStartTime: 5.81
   agingRate: 0.25
   generation: 0
-  moveSpeed: 10
+  moveSpeed: 5
   pushForce: 20
   weightMutationRate: 0.8
   mutationRange: 0.5

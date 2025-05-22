@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Action Keys")]
-    [SerializeField] private KeyCode chopKey = KeyCode.Space;
-    [SerializeField] private KeyCode attackKey = KeyCode.LeftShift;
+    [SerializeField] private KeyCode chopKey = KeyCode.J;
+    [SerializeField] private KeyCode attackKey = KeyCode.K;
     
     private Rigidbody2D rb;
     private Creature creatureComponent;
