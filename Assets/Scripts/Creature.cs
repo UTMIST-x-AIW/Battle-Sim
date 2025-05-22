@@ -633,6 +633,13 @@ public class Creature : MonoBehaviour
                     if (didChop)
                     {
                         energyMeter -= actionEnergyCost;
+                        // Trigger sword swing animation
+                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+                        if (swordAnim != null)
+                        {
+                            // Add a small delay to avoid multiple calls in the same frame
+                            StartCoroutine(SwingSwordWithDelay(swordAnim));
+                        }
                     }
                 }
                 else if (attackDesire > 0.0f)
@@ -644,6 +651,13 @@ public class Creature : MonoBehaviour
                     if (didAttack)
                     {
                         energyMeter -= actionEnergyCost;
+                        // Trigger sword swing animation
+                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+                        if (swordAnim != null)
+                        {
+                            // Add a small delay to avoid multiple calls in the same frame
+                            StartCoroutine(SwingSwordWithDelay(swordAnim));
+                        }
                     }
                 }
             }
@@ -690,6 +704,16 @@ public class Creature : MonoBehaviour
         // If we found a tree, damage it
         if (nearestTree != null)
         {
+            // Debug log for monitoring the chop
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogMessage($"{gameObject.name} chopping tree at {Time.time:F3}");
+            }
+            else
+            {
+                Debug.Log($"{gameObject.name} chopping tree at {Time.time:F3}");
+            }
+            
             nearestTree.TakeDamage(chopDamage);
             
             // Restore the creature's health to maximum
@@ -741,6 +765,16 @@ public class Creature : MonoBehaviour
         // If we found an opposing creature, damage it
         if (nearestOpponent != null)
         {
+            // Debug log for monitoring the attack
+            if (LogManager.Instance != null)
+            {
+                LogManager.LogMessage($"{gameObject.name} attacking {nearestOpponent.gameObject.name} at {Time.time:F3}");
+            }
+            else
+            {
+                Debug.Log($"{gameObject.name} attacking {nearestOpponent.gameObject.name} at {Time.time:F3}");
+            }
+            
             nearestOpponent.TakeDamage(attackDamage);
             return true;
         }
@@ -1042,5 +1076,20 @@ public class Creature : MonoBehaviour
         
         // Create a new network with the crossover results
         return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
+    }
+
+    // Helper method for sword swing with more robust debugging
+    private IEnumerator SwingSwordWithDelay(SwordAnimation swordAnim)
+    {
+        // Log the start of the delay
+        Debug.Log($"{gameObject.name} preparing to swing sword at {Time.time:F3}");
+        
+        // Wait for at least the next frame to avoid multiple calls
+        yield return null;
+        
+        // Log right before calling SwingSword
+        Debug.Log($"{gameObject.name} calling SwingSword at {Time.time:F3}");
+        
+        swordAnim.SwingSword();
     }
 }

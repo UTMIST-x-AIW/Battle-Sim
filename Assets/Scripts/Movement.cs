@@ -22,6 +22,7 @@ public sealed class Movement : MonoBehaviour
     BottomLeft
     }
 
+
     private MovementState currentMovement;
 
     public Vector2 lastdirection;
@@ -45,28 +46,52 @@ public sealed class Movement : MonoBehaviour
         _anim.SetFloat("MoveY", _vInput);
         _anim.SetBool("IsMoving", _rb.velocity.magnitude > 0.1);
         if (swordAnimation == null) return;
-        switch (currentMovement){
-			case MovementState.BottomLeft:
-				 entry = swordAnimation.waypointEntries[0];
-				swordPos.position = entry.waypointTransform.position;
-				swordPos.rotation = Quaternion.Euler(0, 0, 60);
-				break;
-			case MovementState.BottomRight:
-				entry = swordAnimation.waypointEntries[1];
-				swordPos.position = entry.waypointTransform.position;
-				swordPos.rotation = Quaternion.Euler(0, 180, 60);
-				break;
-            case MovementState.TopLeft:
-                entry = swordAnimation.waypointEntries[2];
-                swordPos.position = entry.waypointTransform.position;
-                swordPos.rotation = Quaternion.Euler(0,0,60);
-                break;
-			case MovementState.TopRight:
-				 entry = swordAnimation.waypointEntries[3];
-				swordPos.position = entry.waypointTransform.position;
-				swordPos.rotation = Quaternion.Euler(0, 180, 60);
-				break;
-		}
+        
+        // Only update sword position/rotation if animation is not playing
+        if (!swordAnimation.IsAnimationPlaying())
+        {
+            switch (currentMovement){
+                case MovementState.BottomLeft:
+                    entry = swordAnimation.waypointEntries[0];
+                    swordPos.position = entry.waypointTransform.position;
+                    swordPos.rotation = Quaternion.Euler(0, 0, 60);
+                    break;
+                case MovementState.BottomRight:
+                    entry = swordAnimation.waypointEntries[1];
+                    swordPos.position = entry.waypointTransform.position;
+                    swordPos.rotation = Quaternion.Euler(0, 180, 60);
+                    break;
+                case MovementState.TopLeft:
+                    entry = swordAnimation.waypointEntries[2];
+                    swordPos.position = entry.waypointTransform.position;
+                    swordPos.rotation = Quaternion.Euler(0,0,60);
+                    break;
+                case MovementState.TopRight:
+                    entry = swordAnimation.waypointEntries[3];
+                    swordPos.position = entry.waypointTransform.position;
+                    swordPos.rotation = Quaternion.Euler(0, 180, 60);
+                    break;
+            }
+        }
+        else
+        {
+            // If animation is playing, we still need to update the position
+            // But leave the rotation to the animation
+            switch (currentMovement){
+                case MovementState.BottomLeft:
+                    swordPos.position = swordAnimation.waypointEntries[0].waypointTransform.position;
+                    break;
+                case MovementState.BottomRight:
+                    swordPos.position = swordAnimation.waypointEntries[1].waypointTransform.position;
+                    break;
+                case MovementState.TopLeft:
+                    swordPos.position = swordAnimation.waypointEntries[2].waypointTransform.position;
+                    break;
+                case MovementState.TopRight:
+                    swordPos.position = swordAnimation.waypointEntries[3].waypointTransform.position;
+                    break;
+            }
+        }
     }
 
     void SetEnumState(Vector2 velocity){

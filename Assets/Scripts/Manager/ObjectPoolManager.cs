@@ -33,7 +33,6 @@ public class ObjectPoolManager : MonoBehaviour
         if (spawnableObj == null)
         {
             spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
-            Debug.Log(spawnableObj.name + " was instantiated and added to the pool");
         }
         
         else
