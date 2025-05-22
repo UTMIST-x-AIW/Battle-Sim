@@ -371,6 +371,7 @@ public class NetworkVisualizer : MonoBehaviour
                     case "19": label = "19: Chop"; break;
                     case "20": label = "20: Attack"; break;
                     case "21": label = "21: Reproduce"; break;
+                    case "22": label = "22: Bow"; break;
                 }
                 
                 text.text = label;

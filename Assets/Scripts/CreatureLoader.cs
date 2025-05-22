@@ -39,6 +39,7 @@ public static class CreatureLoader
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
             creatureComponent.attackDamage = savedCreature.attackDamage;
+            creatureComponent.bowDamage = savedCreature.bowDamage;
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;
             creatureComponent.mutationRange = savedCreature.mutationRange;
             creatureComponent.addNodeRate = savedCreature.addNodeRate;

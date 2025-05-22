@@ -1,0 +1,113 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BowAnimation : MonoBehaviour
+{
+    // [SerializeField] public WaypointEntry[] waypointEntries = new WaypointEntry[4];
+    [SerializeField] private float swingSpeed = 5f; // Speed of animation
+    [SerializeField] private float swingAngle = 30f; // How far to rotate in degrees
+    
+    private Coroutine currentSwingCoroutine;
+    private bool isSwinging = false;
+    
+    // Rotation at the start of animation
+    private Quaternion startRotation;
+    
+    /// <summary>
+    /// Returns whether a bow shoot animation is currently playing
+    /// </summary>
+    public bool IsAnimationPlaying()
+    {
+        return isSwinging;
+    }
+    
+    /// <summary>
+    /// Triggers a simple bow shoot animation.
+    /// </summary>
+    public void ShootBow()
+    {
+        // If already swinging, don't start a new animation
+        if (isSwinging)
+            return;
+            
+        // Store the current rotation as our starting point
+        startRotation = transform.rotation;
+        
+        isSwinging = true;
+        currentSwingCoroutine = StartCoroutine(SwingBowCoroutine());
+    }
+    
+    private IEnumerator SwingBowCoroutine()
+    {
+        // Swing down phase - move from start to start+swing
+        float elapsed = 0;
+        float duration = 0.1f; // Duration of the down swing
+        Quaternion targetRotation = startRotation * Quaternion.Euler(0, 0, swingAngle);
+        
+        while (elapsed < duration && isSwinging)
+        {
+            // Use slerp for smooth rotation between start and target
+            transform.rotation = Quaternion.Slerp(
+                startRotation, 
+                targetRotation, 
+                elapsed / duration
+            );
+            
+            elapsed += Time.deltaTime * swingSpeed;
+            yield return null;
+        }
+        
+        // Ensure we reach the target
+        if (isSwinging)
+        {
+            transform.rotation = targetRotation;
+        }
+        
+        // Swing back phase - move from target back to start
+        elapsed = 0;
+        duration = 0.15f; // Slightly longer duration for return swing
+        
+        while (elapsed < duration && isSwinging)
+        {
+            // Use slerp for smooth rotation between target and start
+            transform.rotation = Quaternion.Slerp(
+                targetRotation,
+                startRotation,
+                elapsed / duration
+            );
+            
+            elapsed += Time.deltaTime * swingSpeed;
+            yield return null;
+        }
+        
+        // Ensure we end at the exact start rotation
+        transform.rotation = startRotation;
+        
+        CleanupAnimation();
+    }
+    
+    private void CleanupAnimation()
+    {
+        currentSwingCoroutine = null;
+        isSwinging = false;
+    }
+    
+    private void OnDisable()
+    {
+        // Make sure we clean up if disabled
+        if (currentSwingCoroutine != null)
+        {
+            StopCoroutine(currentSwingCoroutine);
+            currentSwingCoroutine = null;
+        }
+        isSwinging = false;
+    }
+}
+
+// [Serializable]
+// public struct WaypointEntry {
+//     [SerializeField] 
+//     public Transform waypointTransform;
+// }

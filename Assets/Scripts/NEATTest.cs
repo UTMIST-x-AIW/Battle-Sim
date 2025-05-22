@@ -52,14 +52,6 @@ public class NEATTest : MonoBehaviour
 
     [Header("Test Settings")]
     public bool runTests = true;
-    // public int currentTest = 1;
-
-    // // Test scenarios
-    // private const int TEST_NORMAL_GAME = 0;
-    // private const int TEST_MATING_MOVEMENT = 1;
-    // private const int TEST_ALBERTS_ONLY = 2;  // New test case
-    // private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
-    // private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
 
     public enum CurrentTest
     {
@@ -691,11 +683,12 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
         
-        // Add output nodes (4 outputs: x,y velocity, chop, attack)
+        // Add output nodes (5 outputs: x,y velocity, chop, attack, bow)
         var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
         var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Bow action
 
         outputNode1.Layer = 2;  // Output layer
         outputNode2.Layer = 2;  // Output layer
@@ -715,9 +708,9 @@ public class NEATTest : MonoBehaviour
 
         for(int i = 0; i < 14; i++)
         {
-            for (int j = 17; j < 21; j++)
+            for (int j = 17; j < 22; j++)
             {
-                genome.AddConnection(new NEAT.Genes.ConnectionGene((i*4 + j + 22),i, j, Random.Range(-1f, 1f)));
+                genome.AddConnection(new NEAT.Genes.ConnectionGene((i*5 + j + 23),i, j, Random.Range(-1f, 1f)));
             }
         }
         
@@ -745,11 +738,12 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
         
-        // Add output nodes (4 outputs: x,y velocity, chop, attack)
+        // Add output nodes (5 outputs: x,y velocity, chop, attack, bow)
         var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
         var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(21, NEAT.Genes.NodeType.Output); // Bow action
         
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
@@ -1106,10 +1100,10 @@ public class NEATTest : MonoBehaviour
                     double[] doubleOutputs = creature.brain.Activate(doubleObservations);
                     
                     // Analyze outputs
-                    if (doubleOutputs.Length != 4)
+                    if (doubleOutputs.Length != 5)
                     {
                         anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.type}): " +
-                                     $"Neural network returned {doubleOutputs.Length} outputs instead of 4");
+                                     $"Neural network returned {doubleOutputs.Length} outputs instead of 5");
                     }
                     else
                     {
@@ -1125,7 +1119,7 @@ public class NEATTest : MonoBehaviour
             // Log summary
             LogManager.LogMessage($"Neural Network Diagnostics Complete");
             LogManager.LogMessage($"Total creatures: {total}");
-            LogManager.LogMessage($"With valid networks (4 outputs): {withValidNetwork}");
+            LogManager.LogMessage($"With valid networks (5 outputs): {withValidNetwork}");
             LogManager.LogMessage($"With no network: {withNoNetwork}");
             
             // Log anomalies
@@ -1139,7 +1133,7 @@ public class NEATTest : MonoBehaviour
             }
             else
             {
-                LogManager.LogMessage("No anomalies found! All networks are outputting 4 values.");
+                LogManager.LogMessage("No anomalies found! All networks are outputting 5 values.");
             }
         }
         catch (System.Exception e)
@@ -1519,6 +1513,7 @@ public class NEATTest : MonoBehaviour
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
                 attackDamage = creature.attackDamage,
+                bowDamage = creature.bowDamage,
                 weightMutationRate = creature.weightMutationRate,
                 mutationRange = creature.mutationRange,
                 addNodeRate = creature.addNodeRate,
@@ -1848,6 +1843,7 @@ public class NEATTest : MonoBehaviour
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
             creatureComponent.attackDamage = savedCreature.attackDamage;
+            creatureComponent.bowDamage = savedCreature.bowDamage;
             
             // Copy neural network parameters
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;

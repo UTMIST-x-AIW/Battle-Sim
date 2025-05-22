@@ -59,6 +59,7 @@ public class Creature : MonoBehaviour
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
     public float attackDamage = 1.0f;
+    public float bowDamage = 1.0f;
     public float visionRange = 8f;  // Range at which creatures can see other entities
     public float chopRange = 1.5f;   // Range at which creatures can chop trees
     public float attackRange = 1.5f;  // Range at which creatures can attack other entities
@@ -209,7 +210,7 @@ public class Creature : MonoBehaviour
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
+                return new float[] { 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, attack
             }
             
             float[] observations = observer.GetObservations(this);
@@ -266,8 +267,8 @@ public class Creature : MonoBehaviour
             
             if (LogManager.Instance != null)
             {
-                // Only log if the output length is not 4 (to avoid too many log entries)
-                if (outputs.Length != 4)
+                // Only log if the output length is not 5 (to avoid too many log entries)
+                if (outputs.Length != 5)
                 {
                     LogManager.LogError(outputInfo);
                 }
@@ -284,9 +285,9 @@ public class Creature : MonoBehaviour
             }
             
             // Double-check that we're getting the expected number of outputs
-            if (outputs.Length != 4)
+            if (outputs.Length != 5)
             {
-                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of 4. Creating adjusted array.";
+                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of 5. Creating adjusted array.";
                 if (LogManager.Instance != null)
                 {
                     LogManager.LogError(errorMsg);
@@ -296,11 +297,11 @@ public class Creature : MonoBehaviour
                     Debug.LogError(errorMsg);
                 }
                 
-                // Create a new array of exactly 4 elements
-                float[] adjustedOutputs = new float[4];
+                // Create a new array of exactly 5 elements
+                float[] adjustedOutputs = new float[5];
                 
                 // Copy the values we have
-                for (int i = 0; i < Mathf.Min(outputs.Length, 4); i++)
+                for (int i = 0; i < Mathf.Min(outputs.Length, 5); i++)
                 {
                     adjustedOutputs[i] = outputs[i];
                 }
@@ -436,8 +437,8 @@ public class Creature : MonoBehaviour
     {
         try
         {
-            // Log if the array length wasn't 4
-            if (actions.Length != 4)
+            // Log if the array length wasn't 5
+            if (actions.Length != 5)
             {
                 string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}";
                 if (LogManager.Instance != null)
@@ -463,40 +464,54 @@ public class Creature : MonoBehaviour
             Vector2 desiredVelocity = moveDirection * pushForce;
             ApplyMovement(desiredVelocity);
             
-            // Process action commands for chop and attack (third and fourth values)
-            float chopDesire = actions[2];
-            float attackDesire = actions[3];
+            // Process desires
+            float[] desires = actions[2..5];
             
             // Energy-limited action: Allow action only if we have sufficient energy
             if (energyMeter >= actionEnergyCost)
             {
-                // Check for stronger desire between chop and attack
-                if (chopDesire > 0.0f && chopDesire >= attackDesire)
+                // Filter out desires that are not positive
+                desires = desires.Where(desire => desire > 0.0f).ToArray();
+
+                // If there are any positive desires, process the strongest one
+                if (desires.Length > 0)
                 {
-                    // Try to chop a tree if strongly desired
-                    bool didChop = TryChopTree();
+                    // Process the strongest desire
+                    int strongestDesireIndex = Array.IndexOf(desires, desires.Max());
                     
-                    // Consume energy if we successfully chopped
-                    if (didChop)
-                    {
-                        energyMeter -= actionEnergyCost;
-                        // Trigger sword swing animation
-                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
-                        swordAnim.SwingSword();
-                    }
-                }
-                else if (attackDesire > 0.0f)
-                {
-                    // Try to attack another creature if strongly desired
-                    bool didAttack = TryAttackCreature();
+                    // Get animation components once
+                    SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+                    BowAnimation bowAnim = GetComponentInChildren<BowAnimation>();
                     
-                    // Consume energy if we successfully attacked
-                    if (didAttack)
+                    switch (strongestDesireIndex)
                     {
-                        energyMeter -= actionEnergyCost;
-                        // Trigger sword swing animation
-                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
-                        swordAnim.SwingSword();   
+                        case 0:
+                            // Chop
+                            bool didChop = TryChopTree();
+                            energyMeter -= actionEnergyCost;
+
+                            // Trigger sword swing animation
+                            swordAnim.SwingSword();
+
+                            break;
+                        case 1:
+                            // Attack
+                            bool didAttack = TryAttackCreature();
+                            energyMeter -= actionEnergyCost;
+
+                            // Trigger sword swing animation
+                            swordAnim.SwingSword();
+
+                            break;
+                        case 2:
+                            // Bow
+                            bool didBow = TryBow();
+                            energyMeter -= actionEnergyCost;
+
+                            // Trigger bow animation
+                            bowAnim.ShootBow();
+
+                            break;
                     }
                 }
             }
@@ -571,7 +586,7 @@ public class Creature : MonoBehaviour
 
     public bool TryAttackCreature()
     {
-        // Find the nearest opposing creature within detection radius
+        // Find the nearest opposing creature within attack range
         Creature nearestOpponent = null;
         float nearestDistance = float.MaxValue;
         
@@ -595,6 +610,38 @@ public class Creature : MonoBehaviour
         if (nearestOpponent != null)
         {
             nearestOpponent.TakeDamage(attackDamage);
+            return true;
+        }
+        
+        return false;
+    }
+
+    public bool TryBow()
+    {
+        // Find the nearest opposing creature within bow range
+        Creature nearestOpponent = null;
+        float nearestDistance = float.MaxValue;
+
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, bowRange);
+
+        foreach (var collider in nearbyColliders)
+        {
+            Creature otherCreature = collider.GetComponent<Creature>();
+            if (otherCreature != null && otherCreature.type != this.type)
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestOpponent = otherCreature;
+                    nearestDistance = distance;
+                }
+            }
+        }
+
+        // If we found an opposing creature, damage it
+        if (nearestOpponent != null)
+        {
+            nearestOpponent.TakeDamage(bowDamage);
             return true;
         }
         
