@@ -12,9 +12,9 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
     [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
     [SerializeField, Range(0f, 1f)] private float extraObjectRespawnRate = 0f; // 0 = never respawn, 1 = respawn at full probability
-    [SerializeField] private float extraObjectSecondsToExtinction = 0f; // Time for respawn rate to go from 1 to 0 (0 = never change)
     [SerializeField, Range(0.01f, 2f)] private float checkInterval = 0.5f; // How often to check for replenishment (seconds)
     [SerializeField] private bool useDistinctHeatmaps = true; // Whether to use separate heatmaps for regular and extra objects
+    [SerializeField] private float extraObjectMinutesToExtinction = 0f; // Time for respawn rate to go from 1 to 0 (0 = never change)
     [SerializeField] private bool debugLogging = false; // Toggle for debug logging
 
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
@@ -52,10 +52,10 @@ public class Spawner : MonoBehaviour
         simulationStartTime = Time.time;
 
         // If we have a non-zero extinction time, start with respawn rate at 1
-        if (extraObjectSecondsToExtinction > 0)
+        if (extraObjectMinutesToExtinction > 0)
         {
             extraObjectRespawnRate = 1.0f;
-            if (debugLogging) Debug.Log($"[Spawner] Starting with extraObjectRespawnRate=1.0 (extinction time={extraObjectSecondsToExtinction}s)");
+            if (debugLogging) Debug.Log($"[Spawner] Starting with extraObjectRespawnRate=1.0 (extinction time={extraObjectMinutesToExtinction}m)");
         }
         
         // Create a parent object to organize spawned prefabs
@@ -76,20 +76,21 @@ public class Spawner : MonoBehaviour
     private void Update()
     {
         // Update extinction rate if configured
-        if (extraObjectSecondsToExtinction > 0)
+        if (extraObjectMinutesToExtinction > 0)
         {
             // Calculate how much time has passed since the start
             float elapsedTime = Time.time - simulationStartTime;
+            float extinctionTimeInSeconds = extraObjectMinutesToExtinction * 60f;
             
             // Calculate the new respawn rate (linear decrease from 1 to 0)
-            if (elapsedTime < extraObjectSecondsToExtinction)
+            if (elapsedTime < extinctionTimeInSeconds)
             {
                 // Linear interpolation: 1.0 at time 0, 0.0 at extinction time
-                extraObjectRespawnRate = 1.0f - (elapsedTime / extraObjectSecondsToExtinction);
+                extraObjectRespawnRate = 1.0f - (elapsedTime / extinctionTimeInSeconds);
                 
                 if (debugLogging && Time.frameCount % 300 == 0) // Log every 300 frames to avoid spam
                 {
-                    Debug.Log($"[Spawner] Current extraObjectRespawnRate={extraObjectRespawnRate:F3}, elapsed={elapsedTime:F1}s/{extraObjectSecondsToExtinction:F1}s");
+                    Debug.Log($"[Spawner] Current extraObjectRespawnRate={extraObjectRespawnRate:F3}, elapsed={elapsedTime:F1}s/{extinctionTimeInSeconds:F1}s");
                 }
             }
             else
@@ -139,7 +140,7 @@ public class Spawner : MonoBehaviour
                     Debug.Log($"[Spawner] Extra objects at max capacity ({currentExtraCount}/{numExtraObjects})");
                 }
             }
-            else if (debugLogging && Time.frameCount % 300 == 0 && extraObjectSecondsToExtinction > 0)
+            else if (debugLogging && Time.frameCount % 300 == 0 && extraObjectMinutesToExtinction > 0)
             {
                 Debug.Log($"[Spawner] Extra spawn check - respawnRate={extraObjectRespawnRate:F3}, isSpawningExtra={isSpawningExtra}, count={currentExtraCount}/{numExtraObjects}");
             }
@@ -193,7 +194,7 @@ public class Spawner : MonoBehaviour
             Debug.LogError("Error: No valid spawn positions available for regular objects", this);
             yield break;
         }
-        
+
         // Ensure tile positions are available for extra objects
         if (extraHighProbabilityPositions == null || extraHighProbabilityPositions.Count == 0)
         {
@@ -208,32 +209,32 @@ public class Spawner : MonoBehaviour
         int regularAttempts = 0;
         int extraAttempts = 0;
         const int maxAttempts = 100; // Safety limit
-        
+
         // Interleave spawning of regular and extra objects
         while ((prefabParent.transform.childCount < maxNumOfSpawns || extraPrefabParent.transform.childCount < numExtraObjects) && 
                regularAttempts < maxAttempts && extraAttempts < maxAttempts)
         {
             // First attempt to spawn a regular object (if needed)
             if (prefabParent.transform.childCount < maxNumOfSpawns)
-            {
-                // Get the next position
+        {
+            // Get the next position
                 var regularTile = highProbabilityPositions[regularPositionIndex];
                 regularPositionIndex = (regularPositionIndex + 1) % highProbabilityPositions.Count; // Wrap around
-                
+            
                 regularAttempts++;
-                
-                // Calculate spawn probability and compare with a random value
+            
+            // Calculate spawn probability and compare with a random value
                 float regularSpawnProbability = heatmapData.GetValue(regularTile.pos);
                 float regularRandomVal = Random.Range(0f, 100f);
 
                 if (regularSpawnProbability > regularRandomVal)
-                {
+            {
                     // Spawn the regular prefab at the tile's position
                     bool regularSuccess = SpawnPrefab(regularTile.pos, false);
-                    
+
                     if (regularSuccess)
                     {
-                        // Reset attempts counter on successful spawn
+                // Reset attempts counter on successful spawn
                         regularAttempts = 0;
                         
                         if (debugLogging)
@@ -275,8 +276,8 @@ public class Spawner : MonoBehaviour
                         {
                             Debug.Log($"[Spawner] Spawned extra object {extraPrefabParent.transform.childCount}/{numExtraObjects}");
                         }
-                        
-                        // Wait for the specified interval before the next spawn attempt
+                
+                // Wait for the specified interval before the next spawn attempt
                         yield return new WaitForSeconds(spawnInterval * 0.5f);
                     }
                 }
@@ -443,7 +444,7 @@ public class Spawner : MonoBehaviour
         }
         else
         {
-            spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+        spawnedPrefab.transform.SetParent(prefabParent.transform, false);
         }
         
         return true;
