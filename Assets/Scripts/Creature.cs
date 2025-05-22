@@ -363,9 +363,8 @@ public class Creature : MonoBehaviour
                 return;
             }
             
-            // Only get actions if we're not reproducing or moving to mate, 
-            // and brain control is not disabled by player control
-            if (!isReproducing && !isMovingToMate && !isWaitingForMate && !disableBrainControl)
+            // Only get actions if we're not reproducing or moving to mate
+            if (!isReproducing && !isMovingToMate && !isWaitingForMate)
             {
                 try
                 {
@@ -383,9 +382,12 @@ public class Creature : MonoBehaviour
                     
                     // Get network outputs (x, y velocities, chop desire, attack desire)
                     float[] actions = GetActions();
-                    
-                    // Process the network's action commands
-                    ProcessActionCommands(actions);
+
+                    if (!disableBrainControl)
+                    {
+                        // Process the network's action commands
+                        ProcessActionCommands(actions);
+                    }
                 }
                 catch (System.Exception e)
                 {

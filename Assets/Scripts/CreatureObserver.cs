@@ -7,7 +7,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[13];  // Now 13 observations (added ground x,y)
+        float[] obs = new float[14];  // Now 14 observations (added line of sight)
         
         // Basic stats - normalize health to 0-1 range
         obs[0] = self.health / self.maxHealth; // Normalized health
@@ -28,6 +28,8 @@ public class CreatureObserver : MonoBehaviour
         float cherryDistance = float.MaxValue;
         float treeDistance = float.MaxValue;
         float groundDistance = float.MaxValue;
+        
+        GameObject nearestOppositeCreature = null;
         
         // Only process up to numColliders to avoid processing null entries
         for (int i = 0; i < numColliders; i++)
@@ -87,6 +89,7 @@ public class CreatureObserver : MonoBehaviour
                     {
                         oppositeTypePos = relativePos;
                         oppositeTypeDistance = distance;
+                        nearestOppositeCreature = collider.gameObject;
                     }
                 }
             }
@@ -180,6 +183,20 @@ public class CreatureObserver : MonoBehaviour
             groundPos = Vector2.zero; // Outside detection radius
         }
         
+        // Line of sight to nearest opposite type creature
+        float lineOfSight = 0f;
+        if (nearestOppositeCreature != null && oppositeTypeDistance <= self.visionRange) //TODO: make this self.bowRange
+        {
+            Vector2 directionToOpposite = nearestOppositeCreature.transform.position - transform.position;
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToOpposite, oppositeTypeDistance, LayerMask.GetMask("Default"));
+            
+            // Check if ray hits anything and if that object is a tree or ground
+            if (hit.collider == null || !hit.collider.CompareTag("Tree") || !hit.collider.CompareTag("Ground"))
+            {
+                lineOfSight = 1f;
+            }
+        }
+        
         // Assign the transformed values to the observation array
         obs[3] = sameTypePos.x;
         obs[4] = sameTypePos.y;
@@ -195,6 +212,9 @@ public class CreatureObserver : MonoBehaviour
 
         obs[11] = groundPos.x;
         obs[12] = groundPos.y;
+        
+        // Line of sight observation
+        obs[13] = lineOfSight;
         
         return obs;
     }
