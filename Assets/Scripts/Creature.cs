@@ -24,8 +24,6 @@ public class Creature : MonoBehaviour
         Debug.Log("Creature static references cleared");
     }
     
-    // maxCreatures is now accessed from NEATTest
-
     [Header("Basic Stats")]
     public float health = 3f;
     public float energyMeter = 0f;  // Renamed from energy

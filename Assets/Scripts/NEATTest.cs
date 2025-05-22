@@ -14,6 +14,7 @@ public class NEATTest : MonoBehaviour
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
     public GameObject kaiCreaturePrefab;    // Assign in inspector
+
     
     [Header("Albert Population Settings")]
     public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
@@ -48,7 +49,9 @@ public class NEATTest : MonoBehaviour
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
-    public int maxCreatures = 20;     // Maximum number of creatures allowed in the simulation
+    public const int OBSERVATION_COUNT = 14;
+    public const int ACTION_COUNT = 4;
+
 
     [Header("Test Settings")]
     public bool runTests = true;
@@ -674,16 +677,8 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (14 inputs total): 
-        // 0: health
-        // 1: energyMeter
-        // 2: reproductionMeter
-        // 3,4: same type x,y
-        // 5,6: opposite type x,y
-        // 7,8: cherry x,y
-        // 9,10: tree x,y
-        // 11,12: ground x,y
-        for (int i = 0; i < 14; i++)
+        // Add input nodes
+        for (int i = 0; i < OBSERVATION_COUNT; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -691,33 +686,21 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
         
-        // Add output nodes (4 outputs: x,y velocity, chop, attack)
-        var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
-        var outputNode4 = new NEAT.Genes.NodeGene(20, NEAT.Genes.NodeType.Output); // Attack action
+       // Add output nodes
+       for (int i = OBSERVATION_COUNT; i < OBSERVATION_COUNT + ACTION_COUNT; i++)
+       {
+           var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
+           node.Layer = 2;
+           node.Bias = 0.0;
+           genome.AddNode(node);
+       }
 
-        outputNode1.Layer = 2;  // Output layer
-        outputNode2.Layer = 2;  // Output layer
-        outputNode3.Layer = 2;  // Output layer
-        outputNode4.Layer = 2;  // Output layer
 
-        // Explicitly set bias to 0 for output nodes to maintain previous behavior
-        outputNode1.Bias = 0.0;
-        outputNode2.Bias = 0.0;
-        outputNode3.Bias = 0.0;
-        outputNode4.Bias = 0.0;
-
-        genome.AddNode(outputNode1);
-        genome.AddNode(outputNode2);
-        genome.AddNode(outputNode3);
-        genome.AddNode(outputNode4);
-
-        for(int i = 0; i < 14; i++)
+        for(int i = 0; i < OBSERVATION_COUNT; i++)
         {
-            for (int j = 17; j < 21; j++)
+            for (int j = OBSERVATION_COUNT; j < OBSERVATION_COUNT + ACTION_COUNT; j++)
             {
-                genome.AddConnection(new NEAT.Genes.ConnectionGene((i*4 + j + 22),i, j, Random.Range(-1f, 1f)));
+                genome.AddConnection(new NEAT.Genes.ConnectionGene(genome.Connections.Count, i, j, Random.Range(-1f, 1f)));
             }
         }
         
@@ -728,16 +711,8 @@ public class NEATTest : MonoBehaviour
     {
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (14 inputs total): 
-        // 0: health
-        // 1: energyMeter
-        // 2: reproductionMeter
-        // 3,4: same type x,y
-        // 5,6: opposite type x,y
-        // 7,8: cherry x,y
-        // 9,10: tree x,y
-        // 11,12: ground x,y
-        for (int i = 0; i < 14; i++)
+        // Add input nodes
+        for (int i = 0; i < OBSERVATION_COUNT; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -814,23 +789,7 @@ public class NEATTest : MonoBehaviour
         creatureComponent.type = type;
         
         // Create a base genome
-        // var genome = type == Creature.CreatureType.Kai ? CreateInitialKaiGenome() : CreateInitialGenome();
         var genome = CreateInitialGenome();
-        
-        // Randomize the weights to create more diverse behaviors
-        foreach (var connection in genome.Connections.Values)
-        {
-            // Assign a completely random weight to each connection
-            connection.Weight = Random.Range(-1f, 1f);
-        }
-        
-        // Add some random additional connections to create more diverse topologies
-        int extraConnectionsCount = Random.Range(0, 5);
-        for (int i = 0; i < extraConnectionsCount; i++)
-        {
-            creatureComponent.addConnectionRate = 1.0f; // Ensure connections are added
-            ApplyRandomConnectionMutation(genome, creatureComponent.maxHiddenLayers);
-        }
         
         // Create the neural network from the randomized genome
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
@@ -887,15 +846,8 @@ public class NEATTest : MonoBehaviour
         // Create a custom genome with clear reproduction bias
         var genome = new NEAT.Genome.Genome(0);
         
-        // Add input nodes (14 inputs total)
-        // 0: health
-        // 1: energyMeter
-        // 2: reproductionMeter
-        // 3,4: same type x,y
-        // 5,6: opposite type x,y
-        // 7,8: cherry x,y
-        // 9,10: tree x,y
-        // 11,12: ground x,y
+        // Add input nodes
+   
         for (int i = 0; i < 14; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);

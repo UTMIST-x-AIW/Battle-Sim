@@ -263,66 +263,16 @@ public class Reproduction : MonoBehaviour
         // First, ensure we copy all input and output nodes
         // These are essential nodes that should never be missing
 
-        // Add all input nodes (0-12)
-        for (int i = 0; i <= 12; i++)
+        // Add all input nodes
+        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
         {
-            // Check if either parent has this input node
-            if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
-            {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
-            }
-            else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Input)
-            {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
-            }
-            else
-            {
-                // Create a new input node if neither parent has it
-                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
-                newNode.Layer = 0;
-                newNode.Bias = 0.0;
-                childGenome.AddNode(newNode);
-                
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Input node {i} missing from both parents, creating new one");
-                }
-                else
-                {
-                    Debug.LogWarning($"Input node {i} missing from both parents, creating new one");
-                }
-            }
+            childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone()); //TODO: select randomly from parent1 or parent2 if this all works well    
         }
         
-        // Add all output nodes (17-20)
-        for (int i = 17; i <= 20; i++)
+        // Add all output nodes
+        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
-            // Check if either parent has this output node
-            if (parent1Genome.Nodes.ContainsKey(i) && parent1Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
-            {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
-            }
-            else if (parent2Genome.Nodes.ContainsKey(i) && parent2Genome.Nodes[i].Type == NEAT.Genes.NodeType.Output)
-            {
-                childGenome.AddNode((NEAT.Genes.NodeGene)parent2Genome.Nodes[i].Clone());
-            }
-            else
-            {
-                // Create a new output node if neither parent has it
-                var newNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
-                newNode.Layer = 2;
-                newNode.Bias = 0.0;
-                childGenome.AddNode(newNode);
-                
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Output node {i} missing from both parents, creating new one");
-                }
-                else
-                {
-                    Debug.LogWarning($"Output node {i} missing from both parents, creating new one");
-                }
-            }
+           childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
         }
         
         // Add remaining hidden nodes (taking randomly from either parent for matching nodes)
@@ -330,7 +280,7 @@ public class Reproduction : MonoBehaviour
         foreach (var key in allNodeKeys)
         {
             // Skip input and output nodes which we've already handled
-            if (key <= 12 || (key >= 17 && key <= 20))
+            if (key <= NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT)
             {
                 continue;
             }
@@ -387,7 +337,8 @@ public class Reproduction : MonoBehaviour
         }
 
         // Ensure all output nodes have at least one connection
-        for (int i = 17; i <= 20; i++)
+        //TODO: check if this is really necessary
+        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
             bool hasConnection = childGenome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
@@ -395,15 +346,12 @@ public class Reproduction : MonoBehaviour
             if (!hasConnection)
             {
                 // Find an input node to connect to this output
-                for (int j = 0; j <= 12; j++)
+                for (int j = 0; j < NEATTest.OBSERVATION_COUNT; j++)
                 {
-                    if (childGenome.Nodes.ContainsKey(j))
-                    {
-                        int connKey = childGenome.Connections.Count;
-                        childGenome.AddConnection(new NEAT.Genes.ConnectionGene(
-                            connKey, j, i, Random.Range(-1f, 1f)));
-                        break;
-                    }
+                    int connKey = childGenome.Connections.Count;
+                    childGenome.AddConnection(new NEAT.Genes.ConnectionGene(
+                        connKey, j, i, Random.Range(-1f, 1f)));
+                    break;
                 }
             }
         }
@@ -809,8 +757,8 @@ public class Reproduction : MonoBehaviour
     // Updated method to ensure all required nodes exist in the genome
     private void EnsureRequiredNodes(NEAT.Genome.Genome genome)
     {
-        // Ensure all input nodes (0-12) exist
-        for (int i = 0; i <= 12; i++)
+        // Ensure all input nodes exist
+        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
         {
             // If the input node doesn't exist, recreate it
             if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Input)
@@ -839,7 +787,7 @@ public class Reproduction : MonoBehaviour
                 genome.AddNode(inputNode);
                 
                 // Connect this input to at least one output to ensure it's used
-                for (int j = 17; j <= 20; j++)
+                for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
                 {
                     if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
                     {
@@ -855,8 +803,8 @@ public class Reproduction : MonoBehaviour
             }
         }
         
-        // Check for output nodes 17-20 (existing code)
-        for (int i = 17; i <= 20; i++)
+        // Check for output nodes (existing code)
+        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
             // If the output node doesn't exist, recreate it
             if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Output)
@@ -900,7 +848,7 @@ public class Reproduction : MonoBehaviour
         }
         
         // Ensure all output nodes have at least one incoming connection
-        for (int i = 17; i <= 20; i++)
+        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
@@ -931,7 +879,7 @@ public class Reproduction : MonoBehaviour
         }
         
         // Ensure all input nodes have at least one outgoing connection
-        for (int i = 0; i <= 12; i++)
+        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.InputKey == i && c.Enabled);
@@ -948,7 +896,7 @@ public class Reproduction : MonoBehaviour
                 }
                 
                 // Connect to an output node
-                for (int j = 17; j <= 20; j++)
+                for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
                 {
                     if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
                     {

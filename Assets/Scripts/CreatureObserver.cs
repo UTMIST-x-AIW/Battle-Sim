@@ -7,7 +7,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[14];  // Now 14 observations (added line of sight)
+        float[] obs = new float[14]; 
         
         // Basic stats - normalize health to 0-1 range
         obs[0] = self.health / self.maxHealth; // Normalized health
