@@ -45,7 +45,7 @@ public class LogManager : MonoBehaviour
         try
         {
             Debug.Log($"LogManager Awake called on {gameObject.name}");
-            
+            isApplicationQuitting = false;
             if (instance != null && instance != this)
             {
                 Debug.LogWarning($"LogManager: Duplicate instance detected on {gameObject.name}, destroying");
