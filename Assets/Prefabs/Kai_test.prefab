@@ -310,9 +310,10 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
-  visionRange: 5
+  visionRange: 20
   chopRange: 1.5
   attackRange: 1.5
+  bowRange: 5
   type: 1
   observer: {fileID: -380665466361591250}
   canStartReproducing: 1

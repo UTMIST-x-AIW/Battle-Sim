@@ -463,7 +463,7 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
-  visionRange: 10
+  visionRange: 20
   chopRange: 1.5
   attackRange: 1.5
   bowRange: 5

@@ -10,6 +10,9 @@ TagManager:
   - Cherry
   - Tree
   - Ground
+  - AlbertSpawnPoint
+  - KaiSpawnPoint
+  - Creature
   layers:
   - Default
   - TransparentFX
