@@ -70,7 +70,7 @@ public class CreatureObserver : MonoBehaviour
                     groundDistance = groundPointDistance;
                 }
             }
-            else
+            else if (collider.CompareTag("Creature"))
             {
                 Creature other = collider.GetComponent<Creature>();
                 if (other == null) continue;
@@ -185,13 +185,44 @@ public class CreatureObserver : MonoBehaviour
         
         // Line of sight to nearest opposite type creature
         float lineOfSight = 0f;
-        if (nearestOppositeCreature != null && oppositeTypeDistance <= self.visionRange) //TODO: make this self.bowRange
+        if (nearestOppositeCreature != null && oppositeTypeDistance <= self.bowRange) //TODO: make this self.bowRange
         {
             Vector2 directionToOpposite = nearestOppositeCreature.transform.position - transform.position;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, directionToOpposite, oppositeTypeDistance, LayerMask.GetMask("Default"));
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionToOpposite, oppositeTypeDistance);
             
-            // Check if ray hits anything and if that object is a tree or ground
-            if (hit.collider == null || !hit.collider.CompareTag("Tree") || !hit.collider.CompareTag("Ground"))
+            // Debug.DrawRay(transform.position, directionToOpposite.normalized * self.visionRange, Color.red, 0.1f);
+            
+            bool hitOppositeTypeFirst = false;
+            bool blockedByObstacle = false;
+            
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider.gameObject == gameObject) continue; // Skip self
+                
+                // Check what we hit
+                if (hit.collider.CompareTag("Tree") || hit.collider.CompareTag("Ground"))
+                {
+                    // If we hit an obstacle before the opposite type creature
+                    blockedByObstacle = true;
+                    break;
+                }
+                else
+                {
+                    Creature hitCreature = hit.collider.GetComponent<Creature>();
+                    if (hitCreature != null)
+                    {
+                        if (hitCreature.type != self.type && hit.collider.gameObject == nearestOppositeCreature)
+                        {
+                            // We hit the opposite type creature before any obstacles
+                            hitOppositeTypeFirst = true;
+                            break;
+                        }
+                        // Creatures of same type are ignored and we continue checking
+                    }
+                }
+            }
+            
+            if (hitOppositeTypeFirst && !blockedByObstacle)
             {
                 lineOfSight = 1f;
             }

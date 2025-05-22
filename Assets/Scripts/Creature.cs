@@ -62,6 +62,7 @@ public class Creature : MonoBehaviour
     public float visionRange = 8f;  // Range at which creatures can see other entities
     public float chopRange = 1.5f;   // Range at which creatures can chop trees
     public float attackRange = 1.5f;  // Range at which creatures can attack other entities
+    public float bowRange = 2.5f;  // Range at which creatures can shoot other entities
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -806,6 +807,13 @@ public class Creature : MonoBehaviour
             {
                 Gizmos.color = neatTest.chopRangeColor;
                 Gizmos.DrawWireSphere(transform.position, chopRange);
+            }
+
+            // Draw bow range if enabled
+            if (neatTest.showBowRange)
+            {
+                Gizmos.color = neatTest.bowRangeColor;
+                Gizmos.DrawWireSphere(transform.position, bowRange);
             }
         }
     }

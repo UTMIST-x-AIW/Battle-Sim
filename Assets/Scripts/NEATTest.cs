@@ -76,8 +76,10 @@ public class NEATTest : MonoBehaviour
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
     public bool showChopRange = false;  // Toggle for chop range visualization
+    public bool showBowRange = false;  // Toggle for bow range visualization
     public bool showGizmos = false;     // Master toggle for all gizmos
     public Color chopRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
+    public Color bowRangeColor = new Color(0, 0.5f, 0.5f, 0.2f);  // Semi-transparent blue
     public bool showCreatureLabels = true;  // Toggle for creature labels
     public bool showSpawnArea = false;  // Toggle for spawn area visualization
     public Color spawnAreaColor = new Color(0.2f, 0.8f, 0.2f, 0.2f);  // Semi-transparent green
@@ -1513,6 +1515,7 @@ public class NEATTest : MonoBehaviour
                 pushForce = creature.pushForce,
                 visionRange = creature.visionRange,
                 chopRange = creature.chopRange,
+                bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
                 attackDamage = creature.attackDamage,
@@ -1841,6 +1844,7 @@ public class NEATTest : MonoBehaviour
             creatureComponent.pushForce = savedCreature.pushForce;
             creatureComponent.visionRange = savedCreature.visionRange;
             creatureComponent.chopRange = savedCreature.chopRange;
+            creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
             creatureComponent.attackDamage = savedCreature.attackDamage;

@@ -35,6 +35,7 @@ public static class CreatureLoader
             creatureComponent.pushForce = savedCreature.pushForce;
             creatureComponent.visionRange = savedCreature.visionRange;
             creatureComponent.chopRange = savedCreature.chopRange;
+            creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
             creatureComponent.attackDamage = savedCreature.attackDamage;

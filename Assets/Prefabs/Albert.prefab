@@ -284,7 +284,7 @@ GameObject:
   - component: {fileID: 2731702346108235746}
   m_Layer: 0
   m_Name: Albert
-  m_TagString: Untagged
+  m_TagString: Creature
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -452,7 +452,7 @@ MonoBehaviour:
   agingStartTime: 5.81
   agingRate: 0.25
   generation: 0
-  moveSpeed: 5
+  moveSpeed: 10
   pushForce: 20
   weightMutationRate: 0.8
   mutationRange: 0.5
@@ -463,9 +463,10 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   attackDamage: 1
-  visionRange: 5
+  visionRange: 10
   chopRange: 1.5
   attackRange: 1.5
+  bowRange: 5
   type: 0
   observer: {fileID: -380665466361591250}
   canStartReproducing: 1

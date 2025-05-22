@@ -45,6 +45,7 @@ public class SavedCreature
     public float pushForce;
     public float visionRange;
     public float chopRange;
+    public float bowRange;
     public float actionEnergyCost;
     public float chopDamage;
     public float attackDamage;
@@ -133,6 +134,7 @@ public static class CreatureSaver
                 pushForce = creature.pushForce,
                 visionRange = creature.visionRange,
                 chopRange = creature.chopRange,
+                bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
                 attackDamage = creature.attackDamage,
