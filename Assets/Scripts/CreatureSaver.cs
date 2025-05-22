@@ -49,7 +49,6 @@ public class SavedCreature
     public float actionEnergyCost;
     public float chopDamage;
     public float attackDamage;
-    public float bowDamage;
     public float weightMutationRate;
     public float mutationRange;
     public float addNodeRate;
@@ -139,7 +138,6 @@ public static class CreatureSaver
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
                 attackDamage = creature.attackDamage,
-                bowDamage = creature.bowDamage,
                 weightMutationRate = creature.weightMutationRate,
                 mutationRange = creature.mutationRange,
                 addNodeRate = creature.addNodeRate,
