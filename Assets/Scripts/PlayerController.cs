@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Creature creatureComponent;
     
-    void Start()
+    void OnEnable()
     {
         rb = GetComponent<Rigidbody2D>();
         creatureComponent = GetComponent<Creature>();
@@ -23,16 +23,24 @@ public class PlayerController : MonoBehaviour
             enabled = false;
             return;
         }
+        
+        // Disable the brain control when player control is enabled
+        creatureComponent.disableBrainControl = true;
+    }
+    
+    void OnDisable()
+    {
+        // Re-enable brain control when player control is disabled
+        if (creatureComponent != null)
+        {
+            creatureComponent.disableBrainControl = false;
+        }
     }
     
     void FixedUpdate()
     {
         if (creatureComponent == null) return;
-        
-        // Keep energy meter and health full
-        creatureComponent.energyMeter = creatureComponent.maxEnergy;
-        creatureComponent.health = creatureComponent.maxHealth;
-        
+
         // Get keyboard input
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");

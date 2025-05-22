@@ -94,6 +94,9 @@ public class Creature : MonoBehaviour
 
     private bool hasCheckedNeatTest = false;
 
+    // Flag to disable AI brain control
+    public bool disableBrainControl = false;
+
     private void Awake()
     {
         try
@@ -336,15 +339,9 @@ public class Creature : MonoBehaviour
             // Start aging process after a threshold time
             if (lifetime > agingStartTime)
             {
-                // Debug.Log(string.Format("{0}: Aging process started at time {1}", gameObject.name, lifetime));
                 health -= agingRate * Time.fixedDeltaTime;
             }
 
-            // if (Lifetime > 150)
-            // {
-            //     health = 0;
-            // }
-            
             // Recharge energy gradually
             energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
             
@@ -366,8 +363,9 @@ public class Creature : MonoBehaviour
                 return;
             }
             
-            // Only get actions if we're not reproducing or moving to mate
-            if (!isReproducing && !isMovingToMate && !isWaitingForMate)
+            // Only get actions if we're not reproducing or moving to mate, 
+            // and brain control is not disabled by player control
+            if (!isReproducing && !isMovingToMate && !isWaitingForMate && !disableBrainControl)
             {
                 try
                 {
@@ -380,7 +378,6 @@ public class Creature : MonoBehaviour
                         if (reproductionMeter >= 1f)
                         {
                             canStartReproducing = true;
-                            // Don't call DelayedReproductionStart here anymore
                         }
                     }
                     
@@ -388,8 +385,8 @@ public class Creature : MonoBehaviour
                     float[] actions = GetActions();
                     
                     // Process the network's action commands
-            ProcessActionCommands(actions);
-        }
+                    ProcessActionCommands(actions);
+                }
                 catch (System.Exception e)
                 {
                     // Log detailed error information

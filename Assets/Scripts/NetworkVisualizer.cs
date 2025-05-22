@@ -29,7 +29,7 @@ public class NetworkVisualizer : MonoBehaviour
     private Dictionary<int, Image> nodeImages = new Dictionary<int, Image>();
     private Dictionary<int, Outline> nodeOutlines = new Dictionary<int, Outline>();
     private List<RectTransform> connectionObjects = new List<RectTransform>();
-    private Creature selectedCreature;
+    public Creature selectedCreature;
     private CameraController cameraController;
     private Dictionary<int, double> lastNodeValues = new Dictionary<int, double>();
     private GameObject activeTooltip;    // Reference to the currently displayed tooltip
