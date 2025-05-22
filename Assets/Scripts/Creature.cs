@@ -420,9 +420,8 @@ public class Creature : MonoBehaviour
         }
     }
     
-    private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
+    public void ApplyMovement(Vector2 desiredVelocity)
     {
-        
         // All checks passed, apply the original movement force
         rb.AddForce(desiredVelocity, ForceMode2D.Force);
         
@@ -433,37 +432,14 @@ public class Creature : MonoBehaviour
         }
     }
     
-    private void ProcessActionCommands(float[] actions)
+    public void ProcessActionCommands(float[] actions)
     {
         try
         {
-            // Validate actions array
-            if (actions == null)
-            {
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogError($"ProcessActionCommands for {gameObject.name}: actions array is null");
-                }
-                else
-                {
-                    Debug.LogError($"ProcessActionCommands for {gameObject.name}: actions array is null");
-                }
-                return;
-            }
-            
-            // Create a safe array that guarantees 4 elements
-            float[] safeActions = new float[4];
-            
-            // Copy values from original array, up to 4 elements
-            for (int i = 0; i < Mathf.Min(actions.Length, 4); i++)
-            {
-                safeActions[i] = actions[i];
-            }
-            
             // Log if the array length wasn't 4
             if (actions.Length != 4)
             {
-                string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}, created safe array with values [{safeActions[0]}, {safeActions[1]}, {safeActions[2]}, {safeActions[3]}]";
+                string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}";
                 if (LogManager.Instance != null)
                 {
                     LogManager.LogError(errorMsg);
@@ -475,7 +451,7 @@ public class Creature : MonoBehaviour
             }
             
             // Apply movement based on neural network output (first two values)
-            Vector2 moveDirection = new Vector2(safeActions[0], safeActions[1]);
+            Vector2 moveDirection = new Vector2(actions[0], actions[1]);
             
             // Normalize to ensure diagonal movement isn't faster
             if (moveDirection.magnitude > 1f)
@@ -485,11 +461,11 @@ public class Creature : MonoBehaviour
             
             // Apply move speed with physics force (using pushForce value)
             Vector2 desiredVelocity = moveDirection * pushForce;
-            ApplyMovementWithBoundsCheck(desiredVelocity);
+            ApplyMovement(desiredVelocity);
             
             // Process action commands for chop and attack (third and fourth values)
-            float chopDesire = safeActions[2];
-            float attackDesire = safeActions[3];
+            float chopDesire = actions[2];
+            float attackDesire = actions[3];
             
             // Energy-limited action: Allow action only if we have sufficient energy
             if (energyMeter >= actionEnergyCost)
