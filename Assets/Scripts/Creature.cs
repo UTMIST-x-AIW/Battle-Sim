@@ -422,135 +422,6 @@ public class Creature : MonoBehaviour
     
     private void ApplyMovementWithBoundsCheck(Vector2 desiredVelocity)
     {
-        // Find and cache floor collider if not already cached
-        if (cachedFloorCollider == null)
-        {
-            GameObject floorObj = GameObject.FindGameObjectWithTag("Floor");
-            if (floorObj != null)
-            {
-                cachedFloorCollider = floorObj.GetComponent<PolygonCollider2D>();
-                if (cachedFloorCollider != null)
-                {
-                    floorBounds = cachedFloorCollider.bounds;
-                }
-            }
-        }
-        
-        if (cachedFloorCollider == null)
-        {
-            // No floor found, just apply the movement using force
-            // Use ForceMode2D.Force for continuous, physics-based movement
-            rb.AddForce(desiredVelocity, ForceMode2D.Force);
-            return;
-        }
-        
-        // Current position
-        Vector2 currentPos = rb.position;
-        
-        // Quick bounds check first (much faster than OverlapPoint)
-        bool inBounds = floorBounds.Contains(new Vector3(currentPos.x, currentPos.y, 0));
-        
-        // If definitely outside bounds, redirect toward center
-        if (!inBounds)
-        {
-            // Redirect toward the center of the floor
-            Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-            Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
-            
-            // Apply a stronger force to return to bounds
-            rb.AddForce(directionToCenter * moveSpeed * 3f, ForceMode2D.Force);
-            return;
-        }
-        
-        // For positions near the edge, do a more precise check
-        // Only do this check if we're moving significantly
-        if (desiredVelocity.sqrMagnitude > 0.1f)
-        {
-            // Cast a ray in the movement direction to check for boundary
-            Vector2 rayDirection = desiredVelocity.normalized;
-            float rayDistance = desiredVelocity.magnitude * Time.fixedDeltaTime * 2; // Look a bit ahead
-            
-            // Get collider radius for edge detection
-            // Default inset distance if no proper collider is found
-            float insetDistance = 0.5f;
-            
-            // Look for a non-trigger CircleCollider2D for physical interactions
-            CircleCollider2D[] circleColliders = GetComponents<CircleCollider2D>();
-            CircleCollider2D physicsCollider = null;
-            
-            // Find the first non-trigger CircleCollider2D
-            foreach (var collider in circleColliders)
-            {
-                if (!collider.isTrigger)
-                {
-                    physicsCollider = collider;
-                    break;
-                }
-            }
-            
-            // If we found a non-trigger circle collider, use its radius
-            if (physicsCollider != null)
-            {
-                insetDistance = physicsCollider.radius * 0.8f;
-            }
-            // Otherwise try to find a BoxCollider2D and use its size
-            else
-            {
-                BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
-                if (boxCollider != null && !boxCollider.isTrigger)
-                {
-                    // Use half of the smaller dimension of the box
-                    insetDistance = Mathf.Min(boxCollider.size.x, boxCollider.size.y) * 0.4f;
-                }
-            }
-            
-            // Multiple raycasts from different points on the creature
-            bool anyRayHitsEdge = false;
-            
-            // Center raycast
-            RaycastHit2D centerHit = Physics2D.Raycast(currentPos, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (centerHit.collider != null && centerHit.collider != cachedFloorCollider)
-            {
-                anyRayHitsEdge = true;
-            }
-            
-            // Bottom raycast (for ground detection)
-            Vector2 bottomPoint = currentPos - new Vector2(0, insetDistance);
-            RaycastHit2D bottomHit = Physics2D.Raycast(bottomPoint, rayDirection, rayDistance, LayerMask.GetMask("Default"));
-            if (bottomHit.collider != null && bottomHit.collider != cachedFloorCollider)
-            {
-                anyRayHitsEdge = true;
-            }
-            
-            if (anyRayHitsEdge)
-            {
-                // We're about to hit an edge - redirect toward the center
-                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
-                
-                // Blend between current direction and center direction
-                Vector2 blendedDirection = Vector2.Lerp(rayDirection, directionToCenter, 0.7f).normalized;
-                rb.AddForce(blendedDirection * moveSpeed * 2f, ForceMode2D.Force);
-                return;
-            }
-            
-            // Final precise check - use OverlapPoint for the exact boundary
-            bool pointInFloor = cachedFloorCollider.OverlapPoint(currentPos + rayDirection * insetDistance);
-            if (!pointInFloor)
-            {
-                // Deflect along the boundary instead of stopping
-                Vector2 centerOfFloor = new Vector2(floorBounds.center.x, floorBounds.center.y);
-                Vector2 directionToCenter = (centerOfFloor - currentPos).normalized;
-                
-                // Project desired velocity onto the direction to center to allow sliding along edges
-                Vector2 projectedVelocity = Vector2.Dot(desiredVelocity, directionToCenter) * directionToCenter;
-                Vector2 tangentialVelocity = desiredVelocity - projectedVelocity;
-                
-                // Use mostly tangential movement with a bit of inward movement
-                rb.AddForce((tangentialVelocity * 0.8f + directionToCenter * moveSpeed * 0.5f), ForceMode2D.Force);
-                return;
-            }
-        }
         
         // All checks passed, apply the original movement force
         rb.AddForce(desiredVelocity, ForceMode2D.Force);
@@ -668,7 +539,7 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private bool TryChopTree()
+    public bool TryChopTree()
     {
         // Find the nearest tree within detection radius
         TreeHealth nearestTree = null;
@@ -722,7 +593,7 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private bool TryAttackCreature()
+    public bool TryAttackCreature()
     {
         // Find the nearest opposing creature within detection radius
         Creature nearestOpponent = null;

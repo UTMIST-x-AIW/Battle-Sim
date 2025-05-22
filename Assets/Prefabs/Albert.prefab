@@ -232,7 +232,6 @@ MonoBehaviour:
   - waypointTransform: {fileID: 7273054770291033483}
   swingSpeed: 5
   swingAngle: 45
-  debugMode: 0
 --- !u!1 &7802725997459185231
 GameObject:
   m_ObjectHideFlags: 0
