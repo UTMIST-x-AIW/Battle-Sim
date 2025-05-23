@@ -362,14 +362,12 @@ MonoBehaviour:
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
-  mediumVisionRange: 5
-  treeVisionRanges:
+  dynamicVisionRanges:
   - 2.5
   - 5
   - 10
   - 15
   - 20
-  - 40
   preAllocCollidersCount: 20
   type: 0
   canStartReproducing: 1
