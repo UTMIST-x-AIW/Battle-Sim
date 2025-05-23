@@ -468,11 +468,10 @@ public class Creature : MonoBehaviour
             // Energy-limited action: Allow action only if we have sufficient energy
             if (energyMeter >= actionEnergyCost)
             {
-                // Filter out desires that are not positive
-                desires = desires.Where(desire => desire > 0.0f).ToArray();
+                
 
                 // If there are any positive desires, process the strongest one
-                if (desires.Length > 0)
+                if (desires.Where(desire => desire > 0.0f).ToArray().Length > 0)
                 {
                     // Process the strongest desire
                     int strongestDesireIndex = Array.IndexOf(desires, desires.Max());
@@ -486,7 +485,7 @@ public class Creature : MonoBehaviour
                             bool didChop = TryChopTree();
                             if (didChop) {
                                 energyMeter -= actionEnergyCost;
-                                toolAnim.SwingTool();
+                                toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
                             }
                             break;
                         case 1:
@@ -494,7 +493,7 @@ public class Creature : MonoBehaviour
                             bool didAttack = TryAttackCreature();
                             if (didAttack) {
                                 energyMeter -= actionEnergyCost;
-                                toolAnim.SwingTool();
+                                toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                             }
                             break;
                     }

@@ -46,8 +46,8 @@ public class PlayerController : MonoBehaviour
         float vertical = Input.GetAxis("Vertical");
         
         // Determine action desires (0 = no desire, 1 = full desire)
-        float chopDesire = Input.GetKey(chopKey) ? 1.0f : 0.0f;
-        float attackDesire = Input.GetKey(attackKey) ? 1.0f : 0.0f;
+        float chopDesire = Input.GetKey(chopKey) ? 1.0f : -1.0f;
+        float attackDesire = Input.GetKey(attackKey) ? 1.0f : -1.0f;
         
         // Create the actions array exactly as the neural network would:
         // [0] = horizontal movement (-1 to 1)

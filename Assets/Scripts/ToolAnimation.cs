@@ -6,14 +6,21 @@ using UnityEngine;
 public class ToolAnimation : MonoBehaviour
 {
     [SerializeField] public WaypointEntry[] waypointEntries = new WaypointEntry[4];
-    [SerializeField] private float swingSpeed = 5f; // Speed of animation
-    [SerializeField] private float swingAngle = 45f; // How far to rotate in degrees
+    [SerializeField] private float axeSwingSpeed = 10f;
+    [SerializeField] private float axeSwingAngle = 45f;
+    [SerializeField] private float swordSwingSpeed = 5f;
+    [SerializeField] private float swordSwingAngle = 45f;
     
     private Coroutine currentSwingCoroutine;
     private bool isSwinging = false;
     
     // Rotation at the start of animation
     private Quaternion startRotation;
+
+    public enum ToolType {
+        Axe,
+        Sword
+    }
     
     /// <summary>
     /// Returns whether a tool swing animation is currently playing
@@ -26,7 +33,7 @@ public class ToolAnimation : MonoBehaviour
     /// <summary>
     /// Triggers a simple tool swing animation.
     /// </summary>
-    public void SwingTool()
+    public void SwingTool(ToolType toolType)
     {
         // If already swinging, don't start a new animation
         if (isSwinging)
@@ -36,10 +43,18 @@ public class ToolAnimation : MonoBehaviour
         startRotation = transform.rotation;
         
         isSwinging = true;
-        currentSwingCoroutine = StartCoroutine(SwingToolCoroutine());
+
+        switch (toolType) {
+            case ToolType.Axe:
+                currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(axeSwingSpeed, axeSwingAngle));
+                break;
+            case ToolType.Sword:
+                currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(swordSwingSpeed, swordSwingAngle));
+                break;
+        }
     }
     
-    private IEnumerator SwingToolCoroutine()
+    private IEnumerator SwingToolCoroutine(float swingSpeed, float swingAngle)
     {
         // Swing down phase - move from start to start+swing
         float elapsed = 0;
