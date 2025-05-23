@@ -56,11 +56,12 @@ public class Creature : MonoBehaviour
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
-    public float attackDamage = 1.0f;
+    public float attackDamage = 2.3f;
     public float visionRange = 8f;  // Range at which creatures can see other entities
     public float chopRange = 1.5f;   // Range at which creatures can chop trees
     public float attackRange = 1.5f;  // Range at which creatures can attack other entities
     public float bowRange = 2.5f;  // Range at which creatures can shoot other entities
+    public float bowDamage = 1.0f;  // Damage dealt by bow
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -200,14 +201,15 @@ public class Creature : MonoBehaviour
         return floatArray;
     }
     
-    public float[] GetActions()
+    public float[] GetActions() //TODO: rename "attack" to "sword" or smth across the codebase sometime
+    //TODO: remove all this debug scaffolding
     {
         try
         {
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, chop, attack
+                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, attack, bow
             }
             
             float[] observations = observer.GetObservations(this);
@@ -264,8 +266,8 @@ public class Creature : MonoBehaviour
             
             if (LogManager.Instance != null)
             {
-                // Only log if the output length is not 4 (to avoid too many log entries)
-                if (outputs.Length != 4)
+                // Only log if the output length is not what we expect (to avoid too many log entries)
+                if (outputs.Length != NEATTest.ACTION_COUNT)
                 {
                     LogManager.LogError(outputInfo);
                 }
@@ -282,9 +284,9 @@ public class Creature : MonoBehaviour
             }
             
             // Double-check that we're getting the expected number of outputs
-            if (outputs.Length != 4)
+            if (outputs.Length != NEATTest.ACTION_COUNT)
             {
-                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of 4. Creating adjusted array.";
+                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of {NEATTest.ACTION_COUNT}. Creating adjusted array.";
                 if (LogManager.Instance != null)
                 {
                     LogManager.LogError(errorMsg);
@@ -294,11 +296,11 @@ public class Creature : MonoBehaviour
                     Debug.LogError(errorMsg);
                 }
                 
-                // Create a new array of exactly 4 elements
-                float[] adjustedOutputs = new float[4];
+                // Create a new array of exactly NEATTest.ACTION_COUNT elements
+                float[] adjustedOutputs = new float[NEATTest.ACTION_COUNT];
                 
                 // Copy the values we have
-                for (int i = 0; i < Mathf.Min(outputs.Length, 4); i++)
+                for (int i = 0; i < Mathf.Min(outputs.Length, NEATTest.ACTION_COUNT); i++)
                 {
                     adjustedOutputs[i] = outputs[i];
                 }
@@ -434,8 +436,8 @@ public class Creature : MonoBehaviour
     {
         try
         {
-            // Log if the array length wasn't 4
-            if (actions.Length != 4)
+            // Log if the array length wasn't NEATTest.ACTION_COUNT
+            if (actions.Length != NEATTest.ACTION_COUNT)
             {
                 string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}";
                 if (LogManager.Instance != null)
@@ -462,7 +464,7 @@ public class Creature : MonoBehaviour
             ApplyMovement(desiredVelocity);
             
             // Process action commands
-            float[] desires = {actions[2], actions[3]};
+            float[] desires = {actions[2], actions[3], actions[4]};
 
             
             // Energy-limited action: Allow action only if we have sufficient energy
@@ -485,8 +487,7 @@ public class Creature : MonoBehaviour
                             bool didChop = TryChopTree();
                             if (didChop) {
                                 energyMeter -= actionEnergyCost;
-                                // toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
-                                toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
+                                toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
                             }
                             break;
                         case 1:
@@ -495,6 +496,14 @@ public class Creature : MonoBehaviour
                             if (didAttack) {
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
+                            }
+                            break;
+                        case 2:
+                            // Bow
+                            bool didBow = TryBow();
+                            if (didBow) {
+                                energyMeter -= actionEnergyCost;
+                                toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
                             }
                             break;
                     }
@@ -595,6 +604,38 @@ public class Creature : MonoBehaviour
         if (nearestOpponent != null)
         {
             nearestOpponent.TakeDamage(attackDamage);
+            return true;
+        }
+        
+        return false;
+    }
+
+    public bool TryBow()
+    {
+        // Find the nearest opposing creature within detection radius
+        Creature nearestOpponent = null;
+        float nearestDistance = float.MaxValue;
+        
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, bowRange);
+        
+        foreach (var collider in nearbyColliders)
+        {
+            Creature otherCreature = collider.GetComponent<Creature>();
+            if (otherCreature != null && otherCreature.type != this.type)
+            {
+                float distance = Vector2.Distance(transform.position, collider.transform.position);
+                if (distance < nearestDistance)
+                {
+                    nearestOpponent = otherCreature;
+                    nearestDistance = distance;
+                }
+            }
+        }
+        
+        // If we found an opposing creature, damage it
+        if (nearestOpponent != null)
+        {
+            nearestOpponent.TakeDamage(bowDamage);
             return true;
         }
         

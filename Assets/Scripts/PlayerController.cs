@@ -6,9 +6,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("Action Keys")]
-    [SerializeField] private KeyCode chopKey = KeyCode.J;
-    [SerializeField] private KeyCode attackKey = KeyCode.K;
-    
+    [SerializeField] private KeyCode chopKey = KeyCode.H;
+    [SerializeField] private KeyCode attackKey = KeyCode.J;
+    [SerializeField] private KeyCode bowKey = KeyCode.K;
+
     private Rigidbody2D rb;
     private Creature creatureComponent;
     
@@ -48,18 +49,20 @@ public class PlayerController : MonoBehaviour
         // Determine action desires (0 = no desire, 1 = full desire)
         float chopDesire = Input.GetKey(chopKey) ? 1.0f : -1.0f;
         float attackDesire = Input.GetKey(attackKey) ? 1.0f : -1.0f;
-        
+        float bowDesire = Input.GetKey(bowKey) ? 1.0f : -1.0f;
+
         // Create the actions array exactly as the neural network would:
         // [0] = horizontal movement (-1 to 1)
         // [1] = vertical movement (-1 to 1)
         // [2] = chop desire (0 to 1)
         // [3] = attack desire (0 to 1)
-        float[] actions = new float[4];
+        // [4] = bow desire (0 to 1)
+        float[] actions = new float[NEATTest.ACTION_COUNT];
         actions[0] = horizontal;
         actions[1] = vertical;
         actions[2] = chopDesire;
         actions[3] = attackDesire;
-        
+        actions[4] = bowDesire;
         // Pass the actions to the creature's processing method
         creatureComponent.ProcessActionCommands(actions);
     }

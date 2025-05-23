@@ -50,19 +50,11 @@ public class NEATTest : MonoBehaviour
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
     public const int OBSERVATION_COUNT = 14;
-    public const int ACTION_COUNT = 4;
+    public const int ACTION_COUNT = 5;
 
 
     [Header("Test Settings")]
     public bool runTests = true;
-    // public int currentTest = 1;
-
-    // // Test scenarios
-    // private const int TEST_NORMAL_GAME = 0;
-    // private const int TEST_MATING_MOVEMENT = 1;
-    // private const int TEST_ALBERTS_ONLY = 2;  // New test case
-    // private const int TEST_REPRODUCTION = 3;  // Test for reproduction action
-    // private const int TEST_LOAD_CREATURE = 4; // Test for loading saved creatures
 
     public enum CurrentTest
     {
@@ -707,7 +699,7 @@ public class NEATTest : MonoBehaviour
         return genome;
     }
     
-    NEAT.Genome.Genome CreateInitialKaiGenome()
+    NEAT.Genome.Genome CreateInitialKaiGenome() // TODO: remove this
     {
         var genome = new NEAT.Genome.Genome(0);
         
@@ -1025,7 +1017,7 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    private void RunNeuralNetworkDiagnostics()
+    private void RunNeuralNetworkDiagnostics() // TODO: remove this if unnecessary
     {
         try
         {
@@ -1058,10 +1050,10 @@ public class NEATTest : MonoBehaviour
                     double[] doubleOutputs = creature.brain.Activate(doubleObservations);
                     
                     // Analyze outputs
-                    if (doubleOutputs.Length != 4)
+                    if (doubleOutputs.Length != ACTION_COUNT)
                     {
                         anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.type}): " +
-                                     $"Neural network returned {doubleOutputs.Length} outputs instead of 4");
+                                     $"Neural network returned {doubleOutputs.Length} outputs instead of {ACTION_COUNT}");
                     }
                     else
                     {
@@ -1077,7 +1069,7 @@ public class NEATTest : MonoBehaviour
             // Log summary
             LogManager.LogMessage($"Neural Network Diagnostics Complete");
             LogManager.LogMessage($"Total creatures: {total}");
-            LogManager.LogMessage($"With valid networks (4 outputs): {withValidNetwork}");
+            LogManager.LogMessage($"With valid networks ({ACTION_COUNT} outputs): {withValidNetwork}");
             LogManager.LogMessage($"With no network: {withNoNetwork}");
             
             // Log anomalies
@@ -1091,7 +1083,7 @@ public class NEATTest : MonoBehaviour
             }
             else
             {
-                LogManager.LogMessage("No anomalies found! All networks are outputting 4 values.");
+                LogManager.LogMessage($"No anomalies found! All networks are outputting {ACTION_COUNT} values.");
             }
         }
         catch (System.Exception e)
