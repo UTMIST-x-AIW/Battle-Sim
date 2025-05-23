@@ -1133,10 +1133,10 @@ public class Creature : MonoBehaviour
         {
             if (neatTest.showTreeVisionRange)
             {
-                // Draw tree vision range (green/magenta)
+                // Draw tree vision range (green)
                 if (dynamicVisionRanges.Length > 0)
                 {
-                    Color treeRangeColor = (type == CreatureType.Albert) ? new Color(0f, 1f, 0f, 0.05f) : new Color(1f, 0f, 1f, 0.05f);
+                    Color treeRangeColor = new Color(0f, 1f, 0f, 0.05f);
                     Gizmos.color = treeRangeColor;
                     Gizmos.DrawSphere(transform.position, currentTreeVisionRange);
                     
@@ -1149,34 +1149,34 @@ public class Creature : MonoBehaviour
                 
             if (neatTest.showTeammateVisionRange)
             {
-                // Draw creature vision range (orange/blue)
-                Color creatureRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.05f) : new Color(0f, 0.5f, 1f, 0.05f);
-                Gizmos.color = creatureRangeColor;
+                // Draw teammate vision range (orange)
+                Color teammateRangeColor = new Color(1f, 0.5f, 0f, 0.05f);
+                Gizmos.color = teammateRangeColor;
                 Gizmos.DrawSphere(transform.position, currentTeammateVisionRange);
                 
-                // Draw wire frame for creature range
-                creatureRangeColor.a = 0.15f;
-                Gizmos.color = creatureRangeColor;
+                // Draw wire frame for teammate range
+                teammateRangeColor.a = 0.15f;
+                Gizmos.color = teammateRangeColor;
                 Gizmos.DrawWireSphere(transform.position, currentTeammateVisionRange);
             }
-
+            
             if (neatTest.showOpponentVisionRange)
             {
-                // Draw opposite type creature range (red/purple)
-                Color oppositeRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0f, 0f, 0.05f) : new Color(0.5f, 0f, 1f, 0.05f);
-                Gizmos.color = oppositeRangeColor;
+                // Draw opponent vision range (red)
+                Color opponentRangeColor = new Color(1f, 0f, 0f, 0.05f);
+                Gizmos.color = opponentRangeColor;
                 Gizmos.DrawSphere(transform.position, currentOpponentVisionRange);
                 
                 // Draw wire frame for opponent range
-                oppositeRangeColor.a = 0.15f;
-                Gizmos.color = oppositeRangeColor;
+                opponentRangeColor.a = 0.15f;
+                Gizmos.color = opponentRangeColor;
                 Gizmos.DrawWireSphere(transform.position, currentOpponentVisionRange);
             }
 
             if (neatTest.showGroundVisionRange)
             {
-                // Draw ground vision range (yellow/cyan)
-                Color groundRangeColor = (type == CreatureType.Albert) ? new Color(1f, 1f, 0f, 0.03f) : new Color(0f, 1f, 1f, 0.03f);
+                // Draw ground vision range (yellow)
+                Color groundRangeColor = new Color(1f, 1f, 0f, 0.03f);
                 Gizmos.color = groundRangeColor;
                 Gizmos.DrawSphere(transform.position, currentGroundVisionRange);
                 
