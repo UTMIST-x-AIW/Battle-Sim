@@ -96,7 +96,7 @@ public class Creature : MonoBehaviour
     public bool disableBrainControl = false;
 
     // Cached object detection - reused for both observations and actions
-    private Collider2D[] nearbyColliders = new Collider2D[20];  // Pre-allocated array for better performance
+    private Collider2D[] nearbyColliders = new Collider2D[200];  // Pre-allocated array for better performance
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Vector2 nearestCherryPos = Vector2.zero;
