@@ -8,10 +8,13 @@ public class ToolAnimation : MonoBehaviour
     [SerializeField] public WaypointEntry[] waypointEntries = new WaypointEntry[4];
     [SerializeField] private GameObject axe;
     [SerializeField] private GameObject sword;
+    [SerializeField] private GameObject bow;
     [SerializeField] private float axeSwingSpeed = 10f;
     [SerializeField] private float axeSwingAngle = 45f;
     [SerializeField] private float swordSwingSpeed = 10f;
     [SerializeField] private float swordSwingAngle = 45f;
+    [SerializeField] private float bowSwingSpeed = 10f;
+    [SerializeField] private float bowSwingAngle = 45f;
     
     private Coroutine currentSwingCoroutine;
     private bool isSwinging = false;
@@ -21,7 +24,8 @@ public class ToolAnimation : MonoBehaviour
 
     public enum ToolType {
         Axe,
-        Sword
+        Sword,
+        Bow
     }
     
     /// <summary>
@@ -61,6 +65,10 @@ public class ToolAnimation : MonoBehaviour
             case ToolType.Sword:
                 sword.SetActive(true);
                 currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(swordSwingSpeed, swordSwingAngle));
+                break;
+            case ToolType.Bow:
+                bow.SetActive(true);
+                currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(bowSwingSpeed, bowSwingAngle));
                 break;
         }
     }

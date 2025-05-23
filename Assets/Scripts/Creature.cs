@@ -485,7 +485,8 @@ public class Creature : MonoBehaviour
                             bool didChop = TryChopTree();
                             if (didChop) {
                                 energyMeter -= actionEnergyCost;
-                                toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
+                                // toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
+                                toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
                             }
                             break;
                         case 1:
