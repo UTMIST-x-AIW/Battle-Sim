@@ -901,10 +901,9 @@ public class Creature : MonoBehaviour
                             // Bow attack
                             if (InBowRange)
                             {
-                                nearestOpponent.TakeDamage(bowDamage);
-                                energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
-                                
+                                energyMeter -= actionEnergyCost;
+
                                 // Fire arrow animation
                                 if (ArrowsManager.Instance != null)
                                 {
@@ -914,6 +913,8 @@ public class Creature : MonoBehaviour
                                         bowRange
                                     );
                                 }
+
+                                nearestOpponent.TakeDamage(bowDamage);
                             }
                             break;
                     }

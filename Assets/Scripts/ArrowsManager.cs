@@ -9,7 +9,6 @@ public class ArrowsManager : MonoBehaviour
     [SerializeField] private int poolSize = 500;
     [SerializeField] private float arrowSpeed = 15f;
     [SerializeField] private string arrowSortingLayer = "Arrows";
-    [SerializeField] private int arrowSortingOrder = 5;
     
     private Queue<GameObject> arrowPool = new Queue<GameObject>();
     private List<GameObject> activeArrows = new List<GameObject>();
@@ -71,7 +70,7 @@ public class ArrowsManager : MonoBehaviour
         Vector3 direction = (targetPos - shooterPos).normalized;
         
         // Rotate arrow to point in the direction of travel
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f;
         arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         
         arrow.SetActive(true);

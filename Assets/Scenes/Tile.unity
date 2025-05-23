@@ -86269,11 +86269,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60210082e75d04c9aa2c3b9ac5fa7e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrowPrefab: {fileID: 0}
+  arrowPrefab: {fileID: 7384258518370218500, guid: 4690bddc8a13e4bcb91ceb27f15a3e25, type: 3}
   poolSize: 500
-  arrowSpeed: 15
+  arrowSpeed: 150
   arrowSortingLayer: Arrows
-  arrowSortingOrder: 5
 --- !u!4 &1880141608
 Transform:
   m_ObjectHideFlags: 0
