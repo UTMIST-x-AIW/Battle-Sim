@@ -49,7 +49,7 @@ public class NEATTest : MonoBehaviour
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
-    public const int OBSERVATION_COUNT = 17;
+    public const int OBSERVATION_COUNT = 15;
     public const int ACTION_COUNT = 5;
 
 

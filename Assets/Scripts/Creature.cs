@@ -99,14 +99,14 @@ public class Creature : MonoBehaviour
     private Collider2D[] nearbyColliders = new Collider2D[200];  // Pre-allocated array for better performance
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
-    private Vector2 nearestCherryPos = Vector2.zero;
+    // private Vector2 nearestCherryPos = Vector2.zero;
     private Vector2 nearestTreePos = Vector2.zero;
     private Vector2 nearestGroundPos = Vector2.zero;
     private Vector2 nearestSameTypePos = Vector2.zero;
     private Vector2 nearestOpponentPos = Vector2.zero;
     private float nearestTreeDistance = float.MaxValue;
     private float nearestOpponentDistance = float.MaxValue;
-    private float nearestCherryDistance = float.MaxValue;
+    // private float nearestCherryDistance = float.MaxValue;
     private float nearestGroundDistance = float.MaxValue;
     private float nearestSameTypeDistance = float.MaxValue;
     private float nearestOpponentHealthNormalized = 0f;
@@ -194,14 +194,14 @@ public class Creature : MonoBehaviour
         // Reset all cached values
         nearestTree = null;
         nearestOpponent = null;
-        nearestCherryPos = Vector2.zero;
+        // nearestCherryPos = Vector2.zero;
         nearestTreePos = Vector2.zero;
         nearestGroundPos = Vector2.zero;
         nearestSameTypePos = Vector2.zero;
         nearestOpponentPos = Vector2.zero;
         nearestTreeDistance = float.MaxValue;
         nearestOpponentDistance = float.MaxValue;
-        nearestCherryDistance = float.MaxValue;
+        // nearestCherryDistance = float.MaxValue;
         nearestGroundDistance = float.MaxValue;
         nearestSameTypeDistance = float.MaxValue;
         nearestOpponentHealthNormalized = 0f;
@@ -224,15 +224,16 @@ public class Creature : MonoBehaviour
             Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
             float distance = relativePos.magnitude;
 
-            if (collider.CompareTag("Cherry"))
-            {
-                if (distance < nearestCherryDistance)
-                {
-                    nearestCherryPos = relativePos;
-                    nearestCherryDistance = distance;
-                }
-            }
-            else if (collider.CompareTag("Tree"))
+            // if (collider.CompareTag("Cherry"))
+            // {
+            //     if (distance < nearestCherryDistance)
+            //     {
+            //         nearestCherryPos = relativePos;
+            //         nearestCherryDistance = distance;
+            //     }
+            // }
+            // else if (collider.CompareTag("Tree"))
+            if (collider.CompareTag("Tree"))
             {
                 if (distance < nearestTreeDistance)
                 {
@@ -365,13 +366,13 @@ public class Creature : MonoBehaviour
         }
         
         // Cherry observations (x,y components)
-        Vector2 cherryObs = Vector2.zero;
-        if (nearestCherryDistance <= visionRange && nearestCherryDistance > 0)
-        {
-            // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestCherryDistance / visionRange;
-            cherryObs = nearestCherryPos * intensityFactor;
-        }
+        // Vector2 cherryObs = Vector2.zero;
+        // if (nearestCherryDistance <= visionRange && nearestCherryDistance > 0)
+        // {
+        //     // Calculate intensity (0 at border, visionRange when hugging)
+        //     float intensityFactor = 1.0f - nearestCherryDistance / visionRange;
+        //     cherryObs = nearestCherryPos * intensityFactor;
+        // }
         
         // Tree observations (x,y components)
         Vector2 treeObs = Vector2.zero;
@@ -399,20 +400,20 @@ public class Creature : MonoBehaviour
         obs[5] = oppositeTypeObs.x;
         obs[6] = oppositeTypeObs.y;
         
-        obs[7] = cherryObs.x;
-        obs[8] = cherryObs.y;
+        // obs[7] = cherryObs.x;
+        // obs[8] = cherryObs.y;
         
-        obs[9] = treeObs.x;
-        obs[10] = treeObs.y;
+        obs[7] = treeObs.x;
+        obs[8] = treeObs.y;
 
-        obs[11] = groundObs.x;
-        obs[12] = groundObs.y;
+        obs[9] = groundObs.x;
+        obs[10] = groundObs.y;
         
-        obs[13] = this.inChopRange;
-        obs[14] = this.inSwordRange;
-        obs[15] = this.inBowRange;
+        obs[11] = this.inChopRange;
+        obs[12] = this.inSwordRange;
+        obs[13] = this.inBowRange;
 
-        obs[16] = nearestOpponentHealthNormalized;
+        obs[14] = nearestOpponentHealthNormalized;
         
         return obs;
     }
