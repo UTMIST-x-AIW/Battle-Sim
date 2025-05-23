@@ -9,8 +9,8 @@ public sealed class Movement : MonoBehaviour
     private Animator _anim;
     private Rigidbody2D _rb;
 
-    private SwordAnimation swordAnimation;
-    private Transform swordPos;
+    private ToolAnimation toolAnimation;
+    private Transform toolPos;
 
     private float _hInput;
     private float _vInput;
@@ -30,8 +30,8 @@ public sealed class Movement : MonoBehaviour
     {
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
-        swordAnimation = gameObject?.GetComponentInChildren<SwordAnimation>();
-        if (swordAnimation != null) swordPos = swordAnimation.transform;
+        toolAnimation = gameObject?.GetComponentInChildren<ToolAnimation>();
+        if (toolAnimation != null) toolPos = toolAnimation.transform;
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -45,31 +45,31 @@ public sealed class Movement : MonoBehaviour
         _anim.SetFloat("MoveX", _hInput);
         _anim.SetFloat("MoveY", _vInput);
         _anim.SetBool("IsMoving", _rb.velocity.magnitude > 0.1);
-        if (swordAnimation == null) return;
+        if (toolAnimation == null) return;
         
-        // Only update sword position/rotation if animation is not playing
-        if (!swordAnimation.IsAnimationPlaying())
+        // Only update tool position/rotation if animation is not playing
+        if (!toolAnimation.IsAnimationPlaying())
         {
             switch (currentMovement){
                 case MovementState.BottomLeft:
-                    entry = swordAnimation.waypointEntries[0];
-                    swordPos.position = entry.waypointTransform.position;
-                    swordPos.rotation = Quaternion.Euler(0, 0, 60);
+                    entry = toolAnimation.waypointEntries[0];
+                    toolPos.position = entry.waypointTransform.position;
+                    toolPos.rotation = Quaternion.Euler(0, 0, 60);
                     break;
                 case MovementState.BottomRight:
-                    entry = swordAnimation.waypointEntries[1];
-                    swordPos.position = entry.waypointTransform.position;
-                    swordPos.rotation = Quaternion.Euler(0, 180, 60);
+                    entry = toolAnimation.waypointEntries[1];
+                    toolPos.position = entry.waypointTransform.position;
+                    toolPos.rotation = Quaternion.Euler(0, 180, 60);
                     break;
                 case MovementState.TopLeft:
-                    entry = swordAnimation.waypointEntries[2];
-                    swordPos.position = entry.waypointTransform.position;
-                    swordPos.rotation = Quaternion.Euler(0,0,60);
+                    entry = toolAnimation.waypointEntries[2];
+                    toolPos.position = entry.waypointTransform.position;
+                    toolPos.rotation = Quaternion.Euler(0,0,60);
                     break;
                 case MovementState.TopRight:
-                    entry = swordAnimation.waypointEntries[3];
-                    swordPos.position = entry.waypointTransform.position;
-                    swordPos.rotation = Quaternion.Euler(0, 180, 60);
+                    entry = toolAnimation.waypointEntries[3];
+                    toolPos.position = entry.waypointTransform.position;
+                    toolPos.rotation = Quaternion.Euler(0, 180, 60);
                     break;
             }
         }
@@ -79,16 +79,16 @@ public sealed class Movement : MonoBehaviour
             // But leave the rotation to the animation
             switch (currentMovement){
                 case MovementState.BottomLeft:
-                    swordPos.position = swordAnimation.waypointEntries[0].waypointTransform.position;
+                    toolPos.position = toolAnimation.waypointEntries[0].waypointTransform.position;
                     break;
                 case MovementState.BottomRight:
-                    swordPos.position = swordAnimation.waypointEntries[1].waypointTransform.position;
+                    toolPos.position = toolAnimation.waypointEntries[1].waypointTransform.position;
                     break;
                 case MovementState.TopLeft:
-                    swordPos.position = swordAnimation.waypointEntries[2].waypointTransform.position;
+                    toolPos.position = toolAnimation.waypointEntries[2].waypointTransform.position;
                     break;
                 case MovementState.TopRight:
-                    swordPos.position = swordAnimation.waypointEntries[3].waypointTransform.position;
+                    toolPos.position = toolAnimation.waypointEntries[3].waypointTransform.position;
                     break;
             }
         }

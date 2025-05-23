@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwordAnimation : MonoBehaviour
+public class ToolAnimation : MonoBehaviour
 {
     [SerializeField] public WaypointEntry[] waypointEntries = new WaypointEntry[4];
     [SerializeField] private float swingSpeed = 5f; // Speed of animation
-    [SerializeField] private float swingAngle = 30f; // How far to rotate in degrees
+    [SerializeField] private float swingAngle = 45f; // How far to rotate in degrees
     
     private Coroutine currentSwingCoroutine;
     private bool isSwinging = false;
@@ -16,7 +16,7 @@ public class SwordAnimation : MonoBehaviour
     private Quaternion startRotation;
     
     /// <summary>
-    /// Returns whether a sword swing animation is currently playing
+    /// Returns whether a tool swing animation is currently playing
     /// </summary>
     public bool IsAnimationPlaying()
     {
@@ -24,9 +24,9 @@ public class SwordAnimation : MonoBehaviour
     }
     
     /// <summary>
-    /// Triggers a simple sword swing animation.
+    /// Triggers a simple tool swing animation.
     /// </summary>
-    public void SwingSword()
+    public void SwingTool()
     {
         // If already swinging, don't start a new animation
         if (isSwinging)
@@ -36,10 +36,10 @@ public class SwordAnimation : MonoBehaviour
         startRotation = transform.rotation;
         
         isSwinging = true;
-        currentSwingCoroutine = StartCoroutine(SwingSwordCoroutine());
+        currentSwingCoroutine = StartCoroutine(SwingToolCoroutine());
     }
     
-    private IEnumerator SwingSwordCoroutine()
+    private IEnumerator SwingToolCoroutine()
     {
         // Swing down phase - move from start to start+swing
         float elapsed = 0;
