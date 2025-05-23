@@ -102,18 +102,24 @@ public class Creature : MonoBehaviour
 
     // Cached object detection - reused for both observations and actions
     private Collider2D[] nearbyColliders;  // Pre-allocated array for better performance, size set in Awake()
+    private Collider2D[] nearbyTreeColliders;      // For tree detection
+    private Collider2D[] nearbyTeammateColliders;  // For teammate detection
+    private Collider2D[] nearbyOpponentColliders;  // For opponent detection
+    private Collider2D[] nearbyGroundColliders;    // For ground detection
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
+    private Creature nearestTeammate = null;  // Reference to nearest teammate
+    private Collider2D nearestGround = null;          // Reference to nearest ground collider
     // private Vector2 nearestCherryPos = Vector2.zero;
     private Vector2 nearestTreePos = Vector2.zero;
     private Vector2 nearestGroundPos = Vector2.zero;
-    private Vector2 nearestSameTypePos = Vector2.zero;
+    private Vector2 nearestTeammatePos = Vector2.zero;
     private Vector2 nearestOpponentPos = Vector2.zero;
     private float nearestTreeDistance = float.MaxValue;
     private float nearestOpponentDistance = float.MaxValue;
     // private float nearestCherryDistance = float.MaxValue;
     private float nearestGroundDistance = float.MaxValue;
-    private float nearestSameTypeDistance = float.MaxValue;
+    private float nearestTeammateDistance = float.MaxValue;
     private float nearestOpponentHealthNormalized = 0f;
     
     // Cached range indicators - accessible as properties
@@ -128,8 +134,8 @@ public class Creature : MonoBehaviour
     
     // Track the actual tree vision range currently being used
     private float currentTreeVisionRange;
-    private float currentAlbertsVisionRange;
-    private float currentKaisVisionRange;
+    private float currentTeammateVisionRange;
+    private float currentOpponentVisionRange;
     private float currentGroundVisionRange;
 
     private void Awake()
@@ -138,9 +144,10 @@ public class Creature : MonoBehaviour
     {
         // Initialize collider array with inspector-configured size
         nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
-        nearbyAlbertsColliders = new Collider2D[preAllocCollidersCount];
-        nearbyKaisColliders = new Collider2D[preAllocCollidersCount];
+        nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
+        nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
         nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
+        nearbyColliders = new Collider2D[preAllocCollidersCount]; // Keep this for compatibility
         
         // Cache NEATTest reference if not already cached
         if (neatTest == null)
@@ -205,22 +212,24 @@ public class Creature : MonoBehaviour
         brain = network;
     }
     
-    // Detect and cache nearby objects - replaces CreatureObserver logic
+    // Detect and cache nearby objects - now uses progressive detection for all types
     private void DetectNearbyObjects()
     {
         // Reset all cached values
         nearestTree = null;
         nearestOpponent = null;
+        nearestTeammate = null;
+        nearestGround = null;
         // nearestCherryPos = Vector2.zero;
         nearestTreePos = Vector2.zero;
         nearestGroundPos = Vector2.zero;
-        nearestSameTypePos = Vector2.zero;
+        nearestTeammatePos = Vector2.zero;
         nearestOpponentPos = Vector2.zero;
         nearestTreeDistance = float.MaxValue;
         nearestOpponentDistance = float.MaxValue;
         // nearestCherryDistance = float.MaxValue;
         nearestGroundDistance = float.MaxValue;
-        nearestSameTypeDistance = float.MaxValue;
+        nearestTeammateDistance = float.MaxValue;
         nearestOpponentHealthNormalized = 0f;
 
         // Reset range indicators
@@ -228,14 +237,22 @@ public class Creature : MonoBehaviour
         inSwordRange = 0f;
         inBowRange = 0f;
 
-        // Step 1: Medium-range detection for creatures, ground, and cherries
-        DetectMediumRangeObjects();
-        
-        // Step 2: Close-range tree detection
-        DetectTreesInRange(closeRange);
+        // Progressive detection for all types
+        DetectTreesProgressively();
+        DetectTeammatesProgressively();
+        DetectOpponentsProgressively();
+        DetectGroundProgressively();
+
+        // Calculate range indicators
+        CalculateRangeIndicators();
+    }
+    
+    private void DetectTreesProgressively()
+    {
         currentTreeVisionRange = closeRange; // Start with close range
+        DetectTreesInRange(closeRange);
         
-        // Step 3: Progressive tree search if no trees found in close range
+        // Progressive search if no trees found in close range
         if (nearestTree == null)
         {
             for (int i = 0; i < dynamicVisionRanges.Length; i++)
@@ -245,77 +262,57 @@ public class Creature : MonoBehaviour
                 if (nearestTree != null) break; // Found trees, stop expanding
             }
         }
-
-        // Calculate range indicators
-        CalculateRangeIndicators();
     }
     
-    private void DetectMediumRangeObjects()
+    private void DetectTeammatesProgressively()
     {
-        // Use layer masks for non-tree objects (assumes layers are set up)
-        // This will detect creatures, ground, and cherries in medium range
-        int numColliders = Physics2D.OverlapCircleNonAlloc(
-            transform.position, 
-            mediumVisionRange, 
-            nearbyColliders, 
-            LayerMask.GetMask("Creatures", "Ground", "Cherries")
-        );
-
-        for (int i = 0; i < numColliders; i++)
+        // Start with close range for teammate detection
+        currentTeammateVisionRange = closeRange;
+        DetectTeammatesInRange(closeRange);
+        
+        // Progressive search for teammates if none found in close range
+        if (nearestTeammate == null)
         {
-            var collider = nearbyColliders[i];
-            if (collider.gameObject == gameObject) continue;
-            
-            // Calculate relative position from the object to the creature (reversed direction)
-            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
-            float distance = relativePos.magnitude;
-
-            // if (collider.CompareTag("Cherry"))
-            // {
-            //     if (distance < nearestCherryDistance)
-            //     {
-            //         nearestCherryPos = relativePos;
-            //         nearestCherryDistance = distance;
-            //     }
-            // }
-            // else if (collider.CompareTag("Ground"))
-            if (collider.CompareTag("Ground"))
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
             {
-                // For ground tiles, we want the closest point on the collider
-                Vector2 closestPoint = collider.ClosestPoint(transform.position);
-                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
-                float groundPointDistance = groundRelativePos.magnitude;
-                
-                if (groundPointDistance < nearestGroundDistance)
-                {
-                    nearestGroundPos = groundRelativePos;
-                    nearestGroundDistance = groundPointDistance;
-                }
+                DetectTeammatesInRange(dynamicVisionRanges[i]);
+                currentTeammateVisionRange = dynamicVisionRanges[i];
+                if (nearestTeammate != null) break; // Found teammate, stop expanding
             }
-            else if (collider.CompareTag("Creature"))
+        }
+    }
+    
+    private void DetectOpponentsProgressively()
+    {
+        // Start with close range for opponent detection
+        currentOpponentVisionRange = closeRange;
+        DetectOpponentsInRange(closeRange);
+        
+        // Progressive search for opponents if none found in close range  
+        if (nearestOpponent == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
             {
-                Creature other = collider.GetComponent<Creature>();
-                if (other == null) continue;
-                
-                if (other.type == type)
-                {
-                    if (distance < nearestSameTypeDistance)
-                    {
-                        nearestSameTypePos = relativePos;
-                        nearestSameTypeDistance = distance;
-                    }
-                }
-                else
-                {
-                    if (distance < nearestOpponentDistance)
-                    {
-                        nearestOpponentPos = relativePos;
-                        nearestOpponentDistance = distance;
-                        // Cache the opponent creature reference
-                        nearestOpponent = other;
-                        nearestOpponentHealthNormalized = other.health / other.maxHealth;
-                    }
-                }
+                DetectOpponentsInRange(dynamicVisionRanges[i]);
+                currentOpponentVisionRange = dynamicVisionRanges[i];
+                if (nearestOpponent != null) break; // Found opponent, stop expanding
+            }
+        }
+    }
+    
+    private void DetectGroundProgressively()
+    {
+        currentGroundVisionRange = closeRange; // Start with close range
+        DetectGroundInRange(closeRange);
+        
+        // Progressive search if no ground found in close range
+        if (nearestGround == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
+            {
+                DetectGroundInRange(dynamicVisionRanges[i]);
+                currentGroundVisionRange = dynamicVisionRanges[i];
+                if (nearestGround != null) break; // Found ground, stop expanding
             }
         }
     }
@@ -326,13 +323,13 @@ public class Creature : MonoBehaviour
         int numColliders = Physics2D.OverlapCircleNonAlloc(
             transform.position, 
             range, 
-            nearbyColliders, 
+            nearbyTreeColliders, 
             LayerMask.GetMask("Trees")
         );
 
         for (int i = 0; i < numColliders; i++)
         {
-            var collider = nearbyColliders[i];
+            var collider = nearbyTreeColliders[i];
             if (collider.gameObject == gameObject) continue;
             
             if (collider.CompareTag("Tree"))
@@ -345,6 +342,102 @@ public class Creature : MonoBehaviour
                     nearestTreePos = relativePos;
                     nearestTreeDistance = distance;
                     nearestTree = collider.GetComponent<TreeHealth>();
+                }
+            }
+        }
+    }
+    
+    private void DetectTeammatesInRange(float range)
+    {
+        // Detect teammates (Albert or Kai)
+        string sameTypeLayer = (type == CreatureType.Albert) ? "Alberts" : "Kais";
+        int numSameType = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyTeammateColliders, 
+            LayerMask.GetMask(sameTypeLayer)
+        );
+        
+        // Process teammates
+        for (int i = 0; i < numSameType; i++)
+        {
+            var collider = nearbyTeammateColliders[i];
+            if (collider.gameObject == gameObject) continue; // Skip self
+            
+            Creature other = collider.GetComponent<Creature>();
+            if (other == null) continue;
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            if (distance < nearestTeammateDistance)
+            {
+                nearestTeammatePos = relativePos;
+                nearestTeammateDistance = distance;
+                nearestTeammate = other; // Cache the creature reference
+            }
+        }
+    }
+    
+    private void DetectOpponentsInRange(float range)
+    {
+        // Detect opponents (Albert or Kai)
+        string oppositeTypeLayer = (type == CreatureType.Albert) ? "Kais" : "Alberts";
+        int numOppositeType = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyOpponentColliders, 
+            LayerMask.GetMask(oppositeTypeLayer)
+        );
+        
+        // Process opponents
+        for (int i = 0; i < numOppositeType; i++)
+        {
+            var collider = nearbyOpponentColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            Creature other = collider.GetComponent<Creature>();
+            if (other == null) continue;
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            if (distance < nearestOpponentDistance)
+            {
+                nearestOpponentPos = relativePos;
+                nearestOpponentDistance = distance;
+                nearestOpponent = other;
+                nearestOpponentHealthNormalized = other.health / other.maxHealth;
+            }
+        }
+    }
+    
+    private void DetectGroundInRange(float range)
+    {
+        // Only detect ground in this range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyGroundColliders, 
+            LayerMask.GetMask("Ground")
+        );
+
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyGroundColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            if (collider.CompareTag("Ground"))
+            {
+                Vector2 closestPoint = collider.ClosestPoint(transform.position);
+                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                float groundPointDistance = groundRelativePos.magnitude;
+                
+                if (groundPointDistance < nearestGroundDistance)
+                {
+                    nearestGroundPos = groundRelativePos;
+                    nearestGroundDistance = groundPointDistance;
+                    nearestGround = collider; // Cache the ground collider reference
                 }
             }
         }
@@ -416,25 +509,25 @@ public class Creature : MonoBehaviour
         // Transform the observations according to the formula:
         // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
         
-        // Same type observations (x,y components) - use medium vision range
+        // Teammate observations (x,y components) - use current teammate vision range
         Vector2 sameTypeObs = Vector2.zero;
-        if (nearestSameTypeDistance <= mediumVisionRange && nearestSameTypeDistance > 0)
+        if (nearestTeammateDistance <= currentTeammateVisionRange && nearestTeammateDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestSameTypeDistance / mediumVisionRange;
-            sameTypeObs = nearestSameTypePos * intensityFactor;
+            float intensityFactor = 1.0f - nearestTeammateDistance / currentTeammateVisionRange;
+            sameTypeObs = nearestTeammatePos * intensityFactor;
         }
         
-        // Opposite type observations (x,y components) - use medium vision range
+        // Opponent observations (x,y components) - use current opponent vision range
         Vector2 oppositeTypeObs = Vector2.zero;
-        if (nearestOpponentDistance <= mediumVisionRange && nearestOpponentDistance > 0)
+        if (nearestOpponentDistance <= currentOpponentVisionRange && nearestOpponentDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / mediumVisionRange;
+            float intensityFactor = 1.0f - nearestOpponentDistance / currentOpponentVisionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
         
-        // Cherry observations (x,y components) - use medium vision range
+        // // Cherry observations (x,y components) - use medium vision range
         // Vector2 cherryObs = Vector2.zero;
         // if (nearestCherryDistance <= mediumVisionRange && nearestCherryDistance > 0)
         // {
@@ -443,22 +536,21 @@ public class Creature : MonoBehaviour
         //     cherryObs = nearestCherryPos * intensityFactor;
         // }
         
-        // Tree observations (x,y components) - use maximum tree vision range
-        float maxTreeVisionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : mediumVisionRange;
+        // Tree observations (x,y components) - use current tree vision range
         Vector2 treeObs = Vector2.zero;
-        if (nearestTreeDistance <= maxTreeVisionRange && nearestTreeDistance > 0)
+        if (nearestTreeDistance <= currentTreeVisionRange && nearestTreeDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / maxTreeVisionRange;
+            float intensityFactor = 1.0f - nearestTreeDistance / currentTreeVisionRange;
             treeObs = nearestTreePos * intensityFactor;
         }
 
-        // Ground observations (x,y components) - use medium vision range
+        // Ground observations (x,y components) - use current ground vision range
         Vector2 groundObs = Vector2.zero;
-        if (nearestGroundDistance <= mediumVisionRange && nearestGroundDistance > 0)
+        if (nearestGroundDistance <= currentGroundVisionRange && nearestGroundDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / mediumVisionRange;
+            float intensityFactor = 1.0f - nearestGroundDistance / currentGroundVisionRange;
             groundObs = nearestGroundPos * intensityFactor;
         }
         
@@ -1041,17 +1133,7 @@ public class Creature : MonoBehaviour
         {
             if (neatTest.showTreeVisionRange)
             {
-                // Draw medium vision range (for creatures, ground, cherries)
-                Color mediumRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);
-                Gizmos.color = mediumRangeColor;
-                Gizmos.DrawSphere(transform.position, mediumVisionRange);
-                
-                // Draw wire frame with more opacity for better edge definition
-                mediumRangeColor.a = 0.3f;
-                Gizmos.color = mediumRangeColor;
-                Gizmos.DrawWireSphere(transform.position, mediumVisionRange);
-                
-                // Draw maximum tree vision range with a different color
+                // Draw tree vision range (green/magenta)
                 if (dynamicVisionRanges.Length > 0)
                 {
                     Color treeRangeColor = (type == CreatureType.Albert) ? new Color(0f, 1f, 0f, 0.05f) : new Color(1f, 0f, 1f, 0.05f);
@@ -1063,6 +1145,36 @@ public class Creature : MonoBehaviour
                     Gizmos.color = treeRangeColor;
                     Gizmos.DrawWireSphere(transform.position, currentTreeVisionRange);
                 }
+                
+                // Draw creature vision range (orange/blue)
+                Color creatureRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.05f) : new Color(0f, 0.5f, 1f, 0.05f);
+                Gizmos.color = creatureRangeColor;
+                Gizmos.DrawSphere(transform.position, currentTeammateVisionRange);
+                
+                // Draw wire frame for creature range
+                creatureRangeColor.a = 0.15f;
+                Gizmos.color = creatureRangeColor;
+                Gizmos.DrawWireSphere(transform.position, currentTeammateVisionRange);
+                
+                // Draw opposite type creature range (red/purple)
+                Color oppositeRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0f, 0f, 0.05f) : new Color(0.5f, 0f, 1f, 0.05f);
+                Gizmos.color = oppositeRangeColor;
+                Gizmos.DrawSphere(transform.position, currentOpponentVisionRange);
+                
+                // Draw wire frame for opponent range
+                oppositeRangeColor.a = 0.15f;
+                Gizmos.color = oppositeRangeColor;
+                Gizmos.DrawWireSphere(transform.position, currentOpponentVisionRange);
+                
+                // Draw ground vision range (yellow/cyan)
+                Color groundRangeColor = (type == CreatureType.Albert) ? new Color(1f, 1f, 0f, 0.03f) : new Color(0f, 1f, 1f, 0.03f);
+                Gizmos.color = groundRangeColor;
+                Gizmos.DrawSphere(transform.position, currentGroundVisionRange);
+                
+                // Draw wire frame for ground range
+                groundRangeColor.a = 0.1f;
+                Gizmos.color = groundRangeColor;
+                Gizmos.DrawWireSphere(transform.position, currentGroundVisionRange);
             }
             
             // Draw chop range if enabled
