@@ -19149,9 +19149,9 @@ MonoBehaviour:
   showCreatureLabels: 0
   showSpawnArea: 0
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
-  spawnCenter: {x: -13.4, y: -6.64}
+  spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
-  rightSpawnCenter: {x: -3.05, y: -4.36}
+  rightSpawnCenter: {x: 21, y: 0}
   rightSpawnSpreadRadius: 1.23
   savedCreaturePath: 
   albertsFolderPath: /Users/anooprehman/Library/Application Support/com.DefaultCompany.2DProject/SavedCreatures/20250510__am_10_42_22/gen4
@@ -84871,7 +84871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1508262997
 Transform:
   m_ObjectHideFlags: 0
@@ -86271,7 +86271,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowPrefab: {fileID: 7384258518370218500, guid: 4690bddc8a13e4bcb91ceb27f15a3e25, type: 3}
   poolSize: 500
-  arrowSpeed: 150
+  arrowSpeed: 50
   arrowSortingLayer: Arrows
 --- !u!4 &1880141608
 Transform:
@@ -87497,11 +87497,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 20
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 20
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
@@ -87513,7 +87513,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectMinutesToExtinction
-      value: 720
+      value: 360
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectSecondsToExtinction
