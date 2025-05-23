@@ -55,21 +55,26 @@ public sealed class Movement : MonoBehaviour
                     entry = toolAnimation.waypointEntries[0];
                     toolPos.position = entry.waypointTransform.position;
                     toolPos.rotation = Quaternion.Euler(0, 0, 60);
+                    // set the order in sorting layer - get from active child
+                    SetActiveToolSortingOrder(-1);
                     break;
                 case MovementState.BottomRight:
                     entry = toolAnimation.waypointEntries[1];
                     toolPos.position = entry.waypointTransform.position;
                     toolPos.rotation = Quaternion.Euler(0, 180, 60);
+                    SetActiveToolSortingOrder(1);
                     break;
                 case MovementState.TopLeft:
                     entry = toolAnimation.waypointEntries[2];
                     toolPos.position = entry.waypointTransform.position;
                     toolPos.rotation = Quaternion.Euler(0,0,60);
+                    SetActiveToolSortingOrder(-1);
                     break;
                 case MovementState.TopRight:
                     entry = toolAnimation.waypointEntries[3];
                     toolPos.position = entry.waypointTransform.position;
                     toolPos.rotation = Quaternion.Euler(0, 180, 60);
+                    SetActiveToolSortingOrder(1);
                     break;
             }
         }
@@ -99,6 +104,33 @@ public sealed class Movement : MonoBehaviour
         else if (velocity.x > 0.1f && velocity.y < 0.1) currentMovement = MovementState.BottomRight;
         else if (velocity.x < 0.1f && velocity.y > 0.1) currentMovement = MovementState.TopLeft;
         else if (velocity.x < 0.1f && velocity.y < 0.1) currentMovement = MovementState.BottomLeft;
+    }
+
+    private void SetActiveToolSortingOrder(int sortingOrder)
+    {
+        if (toolPos == null) return;
+        
+        // Find the active child tool and set its sprite renderer sorting order
+        foreach (Transform child in toolPos)
+        {
+            if (child.gameObject.activeInHierarchy)
+            {
+                SpriteRenderer childRenderer = child.GetComponent<SpriteRenderer>();
+                if (childRenderer != null)
+                {
+                    childRenderer.sortingOrder = sortingOrder;
+                }
+
+                if (child.gameObject.name == "bow") // then set the order of its child arrow as well
+                {
+                    foreach (Transform arrow in child)
+                    {
+                        arrow.GetComponent<SpriteRenderer>().sortingOrder = sortingOrder;
+                    }
+                }
+            }
+
+        }
     }
 
     void SwitchMovementState(){

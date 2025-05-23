@@ -143,6 +143,13 @@ public class NEATTest : MonoBehaviour
         // Only proceed if we're the main instance
         if (instance != this) return;
 
+        // Initialize the ArrowsManager if it doesn't exist
+        if (ArrowsManager.Instance == null)
+        {
+            GameObject arrowsManagerObj = new GameObject("ArrowsManager");
+            arrowsManagerObj.AddComponent<ArrowsManager>();
+        }
+
         // Create save folder for this run if auto-saving is enabled
         if (saveCreatures)
         {

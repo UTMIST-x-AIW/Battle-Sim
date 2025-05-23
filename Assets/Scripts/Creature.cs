@@ -904,6 +904,16 @@ public class Creature : MonoBehaviour
                                 nearestOpponent.TakeDamage(bowDamage);
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
+                                
+                                // Fire arrow animation
+                                if (ArrowsManager.Instance != null)
+                                {
+                                    ArrowsManager.Instance.FireArrow(
+                                        transform.position, 
+                                        nearestOpponent.transform.position, 
+                                        bowRange
+                                    );
+                                }
                             }
                             break;
                     }

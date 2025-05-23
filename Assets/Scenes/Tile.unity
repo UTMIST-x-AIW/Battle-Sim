@@ -19122,14 +19122,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 2
-  MAX_ALBERTS: 2
-  INITIAL_ALBERTS: 2
+  MIN_ALBERTS: 5
+  MAX_ALBERTS: 5
+  INITIAL_ALBERTS: 5
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 2
-  MAX_KAIS: 2
-  INITIAL_KAIS: 2
+  MIN_KAIS: 5
+  MAX_KAIS: 5
+  INITIAL_KAIS: 5
   MIN_STARTING_AGE_KAI: 0
   MAX_STARTING_AGE_KAI: 5
   _current_alberts: 0
@@ -86240,6 +86240,55 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161969673379056834, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   m_PrefabInstance: {fileID: 1877693478}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1880141606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1880141608}
+  - component: {fileID: 1880141607}
+  m_Layer: 0
+  m_Name: ArrowsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1880141607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1880141606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60210082e75d04c9aa2c3b9ac5fa7e38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 0}
+  poolSize: 500
+  arrowSpeed: 15
+  arrowSortingLayer: Arrows
+  arrowSortingOrder: 5
+--- !u!4 &1880141608
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1880141606}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1895519334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87532,3 +87581,4 @@ SceneRoots:
   - {fileID: 7016299647965348102}
   - {fileID: 260676806}
   - {fileID: 508018528}
+  - {fileID: 1880141608}

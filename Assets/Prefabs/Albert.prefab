@@ -61,7 +61,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.48779863, w: 0.87295616}
   m_LocalPosition: {x: 0.10862064, y: 0.14924479, z: 0}
-  m_LocalScale: {x: 0.38128, y: 0.38128, z: 0.38128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3748427500416200716}
@@ -92,7 +92,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.48779863, y: 0.87295616, z: -0, w: 0}
   m_LocalPosition: {x: -0.022378922, y: -0.17375565, z: 0}
-  m_LocalScale: {x: 0.38128, y: 0.38128, z: 0.38128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3748427500416200716}
@@ -123,7 +123,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.48779863, w: 0.87295616}
   m_LocalPosition: {x: -0.26537895, y: -0.03775549, z: 0}
-  m_LocalScale: {x: 0.38128, y: 0.38128, z: 0.38128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3748427500416200716}
@@ -154,7 +154,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.48779863, y: 0.87295616, z: -0, w: 0}
   m_LocalPosition: {x: 0.25862122, y: -0.040755272, z: 0}
-  m_LocalScale: {x: 0.38128, y: 0.38128, z: 0.38128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3748427500416200716}
@@ -358,7 +358,6 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   swordDamage: 2.3
-  visionRange: 20
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
@@ -373,6 +372,10 @@ MonoBehaviour:
   canStartReproducing: 1
   reproductionMeter: 0
   disableBrainControl: 0
+  currentTreeVisionRange: 0
+  currentTeammateVisionRange: 0
+  currentOpponentVisionRange: 0
+  currentGroundVisionRange: 0
 --- !u!58 &4779885740701808359
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -615,26 +618,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 97759648320744754}
     m_Modifications:
-    - target: {fileID: 3110480267804462297, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3110480267804462297, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3314682547966656474, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3537468642350391049, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_Layer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3537468642350391049, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4042554566252618382, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: waypointEntries.Array.data[0].waypointTransform
       value: 
@@ -694,10 +677,6 @@ PrefabInstance:
     - target: {fileID: 6638226479774273572, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_Name
       value: tool
-      objectReference: {fileID: 0}
-    - target: {fileID: 6638226479774273572, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
-      propertyPath: m_Layer
-      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

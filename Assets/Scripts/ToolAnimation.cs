@@ -73,6 +73,8 @@ public class ToolAnimation : MonoBehaviour
         }
     }
     
+
+
     private IEnumerator SwingToolCoroutine(float swingSpeed, float swingAngle)
     {
         // Swing down phase - move from start to start+swing
