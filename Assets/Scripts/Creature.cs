@@ -471,7 +471,7 @@ public class Creature : MonoBehaviour
                 
 
                 // If there are any positive desires, process the strongest one
-                if (desires.Where(desire => desire > 0.0f).ToArray().Length > 0)
+                if (desires.Any(desire => desire > 0.0f))
                 {
                     // Process the strongest desire
                     int strongestDesireIndex = Array.IndexOf(desires, desires.Max());

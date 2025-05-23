@@ -6,9 +6,11 @@ using UnityEngine;
 public class ToolAnimation : MonoBehaviour
 {
     [SerializeField] public WaypointEntry[] waypointEntries = new WaypointEntry[4];
+    [SerializeField] private GameObject axe;
+    [SerializeField] private GameObject sword;
     [SerializeField] private float axeSwingSpeed = 10f;
     [SerializeField] private float axeSwingAngle = 45f;
-    [SerializeField] private float swordSwingSpeed = 5f;
+    [SerializeField] private float swordSwingSpeed = 10f;
     [SerializeField] private float swordSwingAngle = 45f;
     
     private Coroutine currentSwingCoroutine;
@@ -44,11 +46,20 @@ public class ToolAnimation : MonoBehaviour
         
         isSwinging = true;
 
+        // Disable all tool gameobjects
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+
+        // Enable the tool gameobject
         switch (toolType) {
             case ToolType.Axe:
+                axe.SetActive(true);
                 currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(axeSwingSpeed, axeSwingAngle));
                 break;
             case ToolType.Sword:
+                sword.SetActive(true);
                 currentSwingCoroutine = StartCoroutine(SwingToolCoroutine(swordSwingSpeed, swordSwingAngle));
                 break;
         }
