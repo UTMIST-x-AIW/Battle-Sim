@@ -19137,11 +19137,11 @@ MonoBehaviour:
   maxHiddenLayers: 10
   runTests: 1
   currentTest: 5
-  showDetectionRadius: 0
-  showChopRange: 1
-  showBowRange: 1
+  showDetectionRadius: 1
+  showCloseRange: 1
+  showBowRange: 0
   showGizmos: 1
-  chopRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
+  closeRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   bowRangeColor: {r: 0, g: 0.5, b: 0.5, a: 0.2}
   showCreatureLabels: 0
   showSpawnArea: 1
@@ -45770,7 +45770,7 @@ GameObject:
   - component: {fileID: 1152543405}
   - component: {fileID: 1152543404}
   - component: {fileID: 1152543403}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground_layer_0
   m_TagString: Ground
   m_Icon: {fileID: 0}

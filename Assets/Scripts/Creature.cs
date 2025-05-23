@@ -61,6 +61,12 @@ public class Creature : MonoBehaviour
     public float closeRange = 1.5f;   // Range at which creatures can chop trees
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
     public float bowDamage = 1.0f;  // Damage dealt by bow
+    
+    [Header("Detection Settings")]
+    public float mediumVisionRange = 2.5f;  // Range for creatures, ground, cherries, and initial tree search
+    public float[] treeVisionRanges = {5f, 10f, 20f};  // Progressive ranges for tree detection
+    public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
+    
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -96,7 +102,7 @@ public class Creature : MonoBehaviour
     public bool disableBrainControl = false;
 
     // Cached object detection - reused for both observations and actions
-    private Collider2D[] nearbyColliders = new Collider2D[200];  // Pre-allocated array for better performance
+    private Collider2D[] nearbyColliders;  // Pre-allocated array for better performance, size set in Awake()
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     // private Vector2 nearestCherryPos = Vector2.zero;
@@ -125,6 +131,9 @@ public class Creature : MonoBehaviour
     {
         try
     {
+        // Initialize collider array with inspector-configured size
+        nearbyColliders = new Collider2D[preAllocCollidersCount];
+        
         // Cache NEATTest reference if not already cached
         if (neatTest == null)
         {
@@ -211,10 +220,37 @@ public class Creature : MonoBehaviour
         inSwordRange = 0f;
         inBowRange = 0f;
 
-        // Get nearby objects using the creature's vision range
-        int numColliders = Physics2D.OverlapCircleNonAlloc(transform.position, visionRange, nearbyColliders);
+        // Step 1: Medium-range detection for creatures, ground, and cherries
+        DetectMediumRangeObjects();
+        
+        // Step 2: Medium-range tree detection (same range as other objects)
+        DetectTreesInRange(mediumVisionRange);
+        
+        // Step 3: Progressive tree search if no trees found in medium range
+        if (nearestTree == null)
+        {
+            for (int i = 0; i < treeVisionRanges.Length; i++)
+            {
+                DetectTreesInRange(treeVisionRanges[i]);
+                if (nearestTree != null) break; // Found trees, stop expanding
+            }
+        }
 
-        // Only process up to numColliders to avoid processing null entries
+        // Calculate range indicators
+        CalculateRangeIndicators();
+    }
+    
+    private void DetectMediumRangeObjects()
+    {
+        // Use layer masks for non-tree objects (assumes layers are set up)
+        // This will detect creatures, ground, and cherries in medium range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            mediumVisionRange, 
+            nearbyColliders, 
+            LayerMask.GetMask("Creatures", "Ground", "Cherries")
+        );
+
         for (int i = 0; i < numColliders; i++)
         {
             var collider = nearbyColliders[i];
@@ -232,18 +268,8 @@ public class Creature : MonoBehaviour
             //         nearestCherryDistance = distance;
             //     }
             // }
-            // else if (collider.CompareTag("Tree"))
-            if (collider.CompareTag("Tree"))
-            {
-                if (distance < nearestTreeDistance)
-                {
-                    nearestTreePos = relativePos;
-                    nearestTreeDistance = distance;
-                    // Cache the TreeHealth component
-                    nearestTree = collider.GetComponent<TreeHealth>();
-                }
-            }
-            else if (collider.CompareTag("Ground"))
+            // else if (collider.CompareTag("Ground"))
+            if (collider.CompareTag("Ground"))
             {
                 // For ground tiles, we want the closest point on the collider
                 Vector2 closestPoint = collider.ClosestPoint(transform.position);
@@ -282,7 +308,40 @@ public class Creature : MonoBehaviour
                 }
             }
         }
+    }
+    
+    private void DetectTreesInRange(float range)
+    {
+        // Only detect trees in this range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyColliders, 
+            LayerMask.GetMask("Trees")
+        );
 
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            if (collider.CompareTag("Tree"))
+            {
+                Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+                float distance = relativePos.magnitude;
+                
+                if (distance < nearestTreeDistance)
+                {
+                    nearestTreePos = relativePos;
+                    nearestTreeDistance = distance;
+                    nearestTree = collider.GetComponent<TreeHealth>();
+                }
+            }
+        }
+    }
+    
+    private void CalculateRangeIndicators()
+    {
         // Calculate range indicators
         if (nearestTreeDistance <= closeRange)
         {
@@ -347,48 +406,49 @@ public class Creature : MonoBehaviour
         // Transform the observations according to the formula:
         // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
         
-        // Same type observations (x,y components)
+        // Same type observations (x,y components) - use medium vision range
         Vector2 sameTypeObs = Vector2.zero;
-        if (nearestSameTypeDistance <= visionRange && nearestSameTypeDistance > 0)
+        if (nearestSameTypeDistance <= mediumVisionRange && nearestSameTypeDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestSameTypeDistance / visionRange;
+            float intensityFactor = 1.0f - nearestSameTypeDistance / mediumVisionRange;
             sameTypeObs = nearestSameTypePos * intensityFactor;
         }
         
-        // Opposite type observations (x,y components)
+        // Opposite type observations (x,y components) - use medium vision range
         Vector2 oppositeTypeObs = Vector2.zero;
-        if (nearestOpponentDistance <= visionRange && nearestOpponentDistance > 0)
+        if (nearestOpponentDistance <= mediumVisionRange && nearestOpponentDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / visionRange;
+            float intensityFactor = 1.0f - nearestOpponentDistance / mediumVisionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
         
-        // Cherry observations (x,y components)
+        // Cherry observations (x,y components) - use medium vision range
         // Vector2 cherryObs = Vector2.zero;
-        // if (nearestCherryDistance <= visionRange && nearestCherryDistance > 0)
+        // if (nearestCherryDistance <= mediumVisionRange && nearestCherryDistance > 0)
         // {
         //     // Calculate intensity (0 at border, visionRange when hugging)
-        //     float intensityFactor = 1.0f - nearestCherryDistance / visionRange;
+        //     float intensityFactor = 1.0f - nearestCherryDistance / mediumVisionRange;
         //     cherryObs = nearestCherryPos * intensityFactor;
         // }
         
-        // Tree observations (x,y components)
+        // Tree observations (x,y components) - use maximum tree vision range
+        float maxTreeVisionRange = treeVisionRanges.Length > 0 ? treeVisionRanges[treeVisionRanges.Length - 1] : mediumVisionRange;
         Vector2 treeObs = Vector2.zero;
-        if (nearestTreeDistance <= visionRange && nearestTreeDistance > 0)
+        if (nearestTreeDistance <= maxTreeVisionRange && nearestTreeDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / visionRange;
+            float intensityFactor = 1.0f - nearestTreeDistance / maxTreeVisionRange;
             treeObs = nearestTreePos * intensityFactor;
         }
 
-        // Ground observations (x,y components)
+        // Ground observations (x,y components) - use medium vision range
         Vector2 groundObs = Vector2.zero;
-        if (nearestGroundDistance <= visionRange && nearestGroundDistance > 0)
+        if (nearestGroundDistance <= mediumVisionRange && nearestGroundDistance > 0)
         {
             // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / visionRange;
+            float intensityFactor = 1.0f - nearestGroundDistance / mediumVisionRange;
             groundObs = nearestGroundPos * intensityFactor;
         }
         
@@ -971,17 +1031,29 @@ public class Creature : MonoBehaviour
         {
             if (neatTest.showDetectionRadius)
             {
-            // Set color to be semi-transparent and match creature type
-            Color gizmoColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);  // Orange for Albert, Blue for Kai
-            Gizmos.color = gizmoColor;
-            
-            // Draw filled circle for better visibility
-            Gizmos.DrawSphere(transform.position, visionRange);
-            
-            // Draw wire frame with more opacity for better edge definition
-            gizmoColor.a = 0.3f;
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawWireSphere(transform.position, visionRange);
+                // Draw medium vision range (for creatures, ground, cherries)
+                Color mediumRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);
+                Gizmos.color = mediumRangeColor;
+                Gizmos.DrawSphere(transform.position, mediumVisionRange);
+                
+                // Draw wire frame with more opacity for better edge definition
+                mediumRangeColor.a = 0.3f;
+                Gizmos.color = mediumRangeColor;
+                Gizmos.DrawWireSphere(transform.position, mediumVisionRange);
+                
+                // Draw maximum tree vision range with a different color
+                if (treeVisionRanges.Length > 0)
+                {
+                    float maxTreeRange = treeVisionRanges[treeVisionRanges.Length - 1];
+                    Color treeRangeColor = (type == CreatureType.Albert) ? new Color(0f, 1f, 0f, 0.05f) : new Color(1f, 0f, 1f, 0.05f);
+                    Gizmos.color = treeRangeColor;
+                    Gizmos.DrawSphere(transform.position, maxTreeRange);
+                    
+                    // Draw wire frame for tree range
+                    treeRangeColor.a = 0.15f;
+                    Gizmos.color = treeRangeColor;
+                    Gizmos.DrawWireSphere(transform.position, maxTreeRange);
+                }
             }
             
             // Draw chop range if enabled
