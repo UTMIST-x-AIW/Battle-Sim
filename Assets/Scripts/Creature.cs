@@ -461,42 +461,76 @@ public class Creature : MonoBehaviour
             Vector2 desiredVelocity = moveDirection * pushForce;
             ApplyMovement(desiredVelocity);
             
-            // Process action commands for chop and attack (third and fourth values)
-            float chopDesire = actions[2];
-            float attackDesire = actions[3];
+            // Process action commands
+            float[] desires = {actions[2], actions[3]};
+
             
             // Energy-limited action: Allow action only if we have sufficient energy
             if (energyMeter >= actionEnergyCost)
             {
-                // Check for stronger desire between chop and attack
-                if (chopDesire > 0.0f && chopDesire >= attackDesire)
+                // Filter out desires that are not positive
+                desires = desires.Where(desire => desire > 0.0f).ToArray();
+
+                // If there are any positive desires, process the strongest one
+                if (desires.Length > 0)
                 {
-                    // Try to chop a tree if strongly desired
-                    bool didChop = TryChopTree();
-                    
-                    // Consume energy if we successfully chopped
-                    if (didChop)
-                    {
-                        energyMeter -= actionEnergyCost;
-                        // Trigger sword swing animation
-                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
-                        swordAnim.SwingSword();
+                    // Process the strongest desire
+                    int strongestDesireIndex = Array.IndexOf(desires, desires.Max());
+
+                    // Get animation for the strongest desire
+                    SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+
+                    switch (strongestDesireIndex) {
+                        case 0:
+                            // Chop tree
+                            bool didChop = TryChopTree();
+                            if (didChop) {
+                                energyMeter -= actionEnergyCost;
+                                swordAnim.SwingSword();
+                            }
+                            break;
+                        case 1:
+                            // Attack
+                            bool didAttack = TryAttackCreature();
+                            if (didAttack) {
+                                energyMeter -= actionEnergyCost;
+                                swordAnim.SwingSword();
+                            }
+                            break;
                     }
                 }
-                else if (attackDesire > 0.0f)
-                {
-                    // Try to attack another creature if strongly desired
-                    bool didAttack = TryAttackCreature();
+
+
+
+                // // Check for stronger desire between chop and attack
+                // if (chopDesire > 0.0f && chopDesire >= attackDesire)
+                // {
+                //     // Try to chop a tree if strongly desired
+                //     bool didChop = TryChopTree();
                     
-                    // Consume energy if we successfully attacked
-                    if (didAttack)
-                    {
-                        energyMeter -= actionEnergyCost;
-                        // Trigger sword swing animation
-                        SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
-                        swordAnim.SwingSword();   
-                    }
-                }
+                //     // Consume energy if we successfully chopped
+                //     if (didChop)
+                //     {
+                //         energyMeter -= actionEnergyCost;
+                //         // Trigger sword swing animation
+                //         SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+                //         swordAnim.SwingSword();
+                //     }
+                // }
+                // else if (attackDesire > 0.0f)
+                // {
+                //     // Try to attack another creature if strongly desired
+                //     bool didAttack = TryAttackCreature();
+                    
+                //     // Consume energy if we successfully attacked
+                //     if (didAttack)
+                //     {
+                //         energyMeter -= actionEnergyCost;
+                //         // Trigger sword swing animation
+                //         SwordAnimation swordAnim = GetComponentInChildren<SwordAnimation>();
+                //         swordAnim.SwingSword();   
+                //     }
+                // }
             }
         }
         catch (System.Exception e)
