@@ -56,11 +56,10 @@ public class Creature : MonoBehaviour
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
-    public float attackDamage = 2.3f;
+    public float swordDamage = 2.3f;
     public float visionRange = 8f;  // Range at which creatures can see other entities
-    public float chopRange = 1.5f;   // Range at which creatures can chop trees
-    public float attackRange = 1.5f;  // Range at which creatures can attack other entities
-    public float bowRange = 2.5f;  // Range at which creatures can shoot other entities
+    public float closeRange = 1.5f;   // Range at which creatures can chop trees
+    public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
     public float bowDamage = 1.0f;  // Damage dealt by bow
     // Type
     public enum CreatureType { Albert, Kai }
@@ -201,7 +200,7 @@ public class Creature : MonoBehaviour
         return floatArray;
     }
     
-    public float[] GetActions() //TODO: rename "attack" to "sword" or smth across the codebase sometime
+    public float[] GetActions() 
     //TODO: remove all this debug scaffolding
     {
         try
@@ -209,7 +208,7 @@ public class Creature : MonoBehaviour
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, attack, bow
+                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, sword, bow
             }
             
             float[] observations = observer.GetObservations(this);
@@ -381,7 +380,7 @@ public class Creature : MonoBehaviour
                         }
                     }
                     
-                    // Get network outputs (x, y velocities, chop desire, attack desire)
+                    // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
                     float[] actions = GetActions();
 
                     if (!disableBrainControl)
@@ -491,15 +490,15 @@ public class Creature : MonoBehaviour
                             }
                             break;
                         case 1:
-                            // Attack
-                            bool didAttack = TryAttackCreature();
-                            if (didAttack) {
+                            // Sword attack
+                            bool didSword = TrySword();
+                            if (didSword) {
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                             }
                             break;
                         case 2:
-                            // Bow
+                            // Bow attack
                             bool didBow = TryBow();
                             if (didBow) {
                                 energyMeter -= actionEnergyCost;
@@ -530,7 +529,7 @@ public class Creature : MonoBehaviour
         TreeHealth nearestTree = null;
         float nearestDistance = float.MaxValue;
 
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, chopRange);
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, closeRange);
         
         foreach (var collider in nearbyColliders)
         {
@@ -578,13 +577,13 @@ public class Creature : MonoBehaviour
         }
     }
 
-    public bool TryAttackCreature()
+    public bool TrySword()
     {
         // Find the nearest opposing creature within detection radius
         Creature nearestOpponent = null;
         float nearestDistance = float.MaxValue;
         
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, closeRange);
         
         foreach (var collider in nearbyColliders)
         {
@@ -603,7 +602,7 @@ public class Creature : MonoBehaviour
         // If we found an opposing creature, damage it
         if (nearestOpponent != null)
         {
-            nearestOpponent.TakeDamage(attackDamage);
+            nearestOpponent.TakeDamage(swordDamage);
             return true;
         }
         
@@ -632,7 +631,7 @@ public class Creature : MonoBehaviour
             }
         }
         
-        // If we found an opposing creature, damage it
+        // If we found an opposing creature and we have line of sight, damage it
         if (nearestOpponent != null)
         {
             nearestOpponent.TakeDamage(bowDamage);
@@ -844,10 +843,10 @@ public class Creature : MonoBehaviour
             }
             
             // Draw chop range if enabled
-            if (neatTest.showChopRange)
+            if (neatTest.showCloseRange)
             {
-                Gizmos.color = neatTest.chopRangeColor;
-                Gizmos.DrawWireSphere(transform.position, chopRange);
+                Gizmos.color = neatTest.closeRangeColor;
+                Gizmos.DrawWireSphere(transform.position, closeRange);
             }
 
             // Draw bow range if enabled

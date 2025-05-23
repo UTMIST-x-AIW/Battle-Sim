@@ -364,14 +364,14 @@ public class NetworkVisualizer : MonoBehaviour
                 
                 // Assuming the output nodes are numbered 17, 18, 19, 20, 21 based on the Creature.cs code
                 // Adjust these numbers if your network uses different output node IDs
-                switch (label) //TODO: this seems like remnant code, examine and if so remove it
-                {
-                    case "17": label = "17: X Move"; break;
-                    case "18": label = "18: Y Move"; break;
-                    case "19": label = "19: Chop"; break;
-                    case "20": label = "20: Attack"; break;
-                    case "21": label = "21: Reproduce"; break;
-                }
+                // switch (label) //TODO: this seems like remnant code, examine and if so remove it
+                // {
+                //     case "17": label = "17: X Move"; break;
+                //     case "18": label = "18: Y Move"; break;
+                //     case "19": label = "19: Chop"; break;
+                //     case "20": label = "20: Attack"; break;
+                //     case "21": label = "21: Reproduce"; break;
+                // }
                 
                 text.text = label;
                 text.fontSize = Mathf.RoundToInt(nodeSize * 0.3f); // Smaller font for longer text

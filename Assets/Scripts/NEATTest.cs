@@ -49,7 +49,7 @@ public class NEATTest : MonoBehaviour
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
-    public const int OBSERVATION_COUNT = 14;
+    public const int OBSERVATION_COUNT = 17;
     public const int ACTION_COUNT = 5;
 
 
@@ -70,10 +70,10 @@ public class NEATTest : MonoBehaviour
 
     [Header("Visualization Settings")]
     public bool showDetectionRadius = false;  // Toggle for detection radius visualization
-    public bool showChopRange = false;  // Toggle for chop range visualization
+    public bool showCloseRange = false;  // Toggle for close range visualization
     public bool showBowRange = false;  // Toggle for bow range visualization
     public bool showGizmos = false;     // Master toggle for all gizmos
-    public Color chopRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
+    public Color closeRangeColor = new Color(0.5f, 0, 0.5f, 0.2f);  // Semi-transparent purple
     public Color bowRangeColor = new Color(0, 0.5f, 0.5f, 0.2f);  // Semi-transparent blue
     public bool showCreatureLabels = true;  // Toggle for creature labels
     public bool showSpawnArea = false;  // Toggle for spawn area visualization
@@ -712,7 +712,7 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
         
-        // Add output nodes (4 outputs: x,y velocity, chop, attack)
+        // Add output nodes (4 outputs: x,y velocity, chop, sword)
         var outputNode1 = new NEAT.Genes.NodeGene(17, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(18, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(19, NEAT.Genes.NodeType.Output); // Chop action
@@ -1458,11 +1458,11 @@ public class NEATTest : MonoBehaviour
                 moveSpeed = creature.moveSpeed,
                 pushForce = creature.pushForce,
                 visionRange = creature.visionRange,
-                chopRange = creature.chopRange,
+                closeRange = creature.closeRange,
                 bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
-                attackDamage = creature.attackDamage,
+                swordDamage = creature.swordDamage,
                 weightMutationRate = creature.weightMutationRate,
                 mutationRange = creature.mutationRange,
                 addNodeRate = creature.addNodeRate,
@@ -1787,11 +1787,11 @@ public class NEATTest : MonoBehaviour
             creatureComponent.moveSpeed = savedCreature.moveSpeed;
             creatureComponent.pushForce = savedCreature.pushForce;
             creatureComponent.visionRange = savedCreature.visionRange;
-            creatureComponent.chopRange = savedCreature.chopRange;
+            creatureComponent.closeRange = savedCreature.closeRange;
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
-            creatureComponent.attackDamage = savedCreature.attackDamage;
+            creatureComponent.swordDamage = savedCreature.swordDamage;
             
             // Copy neural network parameters
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;

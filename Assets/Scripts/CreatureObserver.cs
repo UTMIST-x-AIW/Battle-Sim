@@ -7,7 +7,7 @@ public class CreatureObserver : MonoBehaviour
     
     public float[] GetObservations(Creature self)
     {
-        float[] obs = new float[14]; 
+        float[] obs = new float[NEATTest.OBSERVATION_COUNT]; 
         
         // Basic stats - normalize health to 0-1 range
         obs[0] = self.health / self.maxHealth; // Normalized health
@@ -30,6 +30,7 @@ public class CreatureObserver : MonoBehaviour
         float groundDistance = float.MaxValue;
         
         GameObject nearestOppositeCreature = null;
+        float nearestOppositeCreatureHealthNormalized = 0f;
         
         // Only process up to numColliders to avoid processing null entries
         for (int i = 0; i < numColliders; i++)
@@ -90,6 +91,7 @@ public class CreatureObserver : MonoBehaviour
                         oppositeTypePos = relativePos;
                         oppositeTypeDistance = distance;
                         nearestOppositeCreature = collider.gameObject;
+                        nearestOppositeCreatureHealthNormalized = other.health / other.maxHealth;
                     }
                 }
             }
@@ -184,7 +186,7 @@ public class CreatureObserver : MonoBehaviour
         }
         
         // Line of sight to nearest opposite type creature
-        float lineOfSight = 0f;
+        float inBowRange = 0f;
         if (nearestOppositeCreature != null && oppositeTypeDistance <= self.bowRange) //TODO: make this self.bowRange
         {
             Vector2 directionToOpposite = nearestOppositeCreature.transform.position - transform.position;
@@ -224,9 +226,22 @@ public class CreatureObserver : MonoBehaviour
             
             if (hitOppositeTypeFirst && !blockedByObstacle)
             {
-                lineOfSight = 1f;
+                inBowRange = 1f;
             }
         }
+
+        float inChopRange = 0f;
+        if (treeDistance <= self.closeRange)
+        {
+            inChopRange = 1f;
+        }
+
+        float inSwordRange = 0f;
+        if (oppositeTypeDistance <= self.closeRange)
+        {
+            inSwordRange = 1f;
+        }
+
         
         // Assign the transformed values to the observation array
         obs[3] = sameTypePos.x;
@@ -244,8 +259,11 @@ public class CreatureObserver : MonoBehaviour
         obs[11] = groundPos.x;
         obs[12] = groundPos.y;
         
-        // Line of sight observation
-        obs[13] = lineOfSight;
+        obs[13] = inChopRange;
+        obs[14] = inSwordRange;
+        obs[15] = inBowRange;
+
+        obs[16] = nearestOppositeCreatureHealthNormalized;
         
         return obs;
     }
