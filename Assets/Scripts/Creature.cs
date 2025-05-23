@@ -509,21 +509,24 @@ public class Creature : MonoBehaviour
         // Transform the observations according to the formula:
         // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
         
-        // Teammate observations (x,y components) - use current teammate vision range
+        // Get maximum detection range for consistent normalization
+        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
+        
+        // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
-        if (nearestTeammateDistance <= currentTeammateVisionRange && nearestTeammateDistance > 0)
+        if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
         {
-            // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / currentTeammateVisionRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestTeammateDistance / maxDetectionRange;
             sameTypeObs = nearestTeammatePos * intensityFactor;
         }
         
-        // Opponent observations (x,y components) - use current opponent vision range
+        // Opponent observations (x,y components) - normalize by max range
         Vector2 oppositeTypeObs = Vector2.zero;
-        if (nearestOpponentDistance <= currentOpponentVisionRange && nearestOpponentDistance > 0)
+        if (nearestOpponentDistance <= maxDetectionRange && nearestOpponentDistance > 0)
         {
-            // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / currentOpponentVisionRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
         
@@ -536,21 +539,21 @@ public class Creature : MonoBehaviour
         //     cherryObs = nearestCherryPos * intensityFactor;
         // }
         
-        // Tree observations (x,y components) - use current tree vision range
+        // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;
-        if (nearestTreeDistance <= currentTreeVisionRange && nearestTreeDistance > 0)
+        if (nearestTreeDistance <= maxDetectionRange && nearestTreeDistance > 0)
         {
-            // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / currentTreeVisionRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestTreeDistance / maxDetectionRange;
             treeObs = nearestTreePos * intensityFactor;
         }
 
-        // Ground observations (x,y components) - use current ground vision range
+        // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
-        if (nearestGroundDistance <= currentGroundVisionRange && nearestGroundDistance > 0)
+        if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
         {
-            // Calculate intensity (0 at border, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / currentGroundVisionRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestGroundDistance / maxDetectionRange;
             groundObs = nearestGroundPos * intensityFactor;
         }
         
