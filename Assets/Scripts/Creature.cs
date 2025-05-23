@@ -126,6 +126,9 @@ public class Creature : MonoBehaviour
     public bool InChopRange => inChopRange > 0.5f;
     public bool InSwordRange => inSwordRange > 0.5f;
     public bool InBowRange => inBowRange > 0.5f;
+    
+    // Track the actual tree vision range currently being used
+    private float currentTreeVisionRange;
 
     private void Awake()
     {
@@ -225,6 +228,7 @@ public class Creature : MonoBehaviour
         
         // Step 2: Medium-range tree detection (same range as other objects)
         DetectTreesInRange(mediumVisionRange);
+        currentTreeVisionRange = mediumVisionRange; // Start with medium range
         
         // Step 3: Progressive tree search if no trees found in medium range
         if (nearestTree == null)
@@ -232,6 +236,7 @@ public class Creature : MonoBehaviour
             for (int i = 0; i < treeVisionRanges.Length; i++)
             {
                 DetectTreesInRange(treeVisionRanges[i]);
+                currentTreeVisionRange = treeVisionRanges[i]; // Update to current search range
                 if (nearestTree != null) break; // Found trees, stop expanding
             }
         }
@@ -1044,15 +1049,14 @@ public class Creature : MonoBehaviour
                 // Draw maximum tree vision range with a different color
                 if (treeVisionRanges.Length > 0)
                 {
-                    float maxTreeRange = treeVisionRanges[treeVisionRanges.Length - 1];
                     Color treeRangeColor = (type == CreatureType.Albert) ? new Color(0f, 1f, 0f, 0.05f) : new Color(1f, 0f, 1f, 0.05f);
                     Gizmos.color = treeRangeColor;
-                    Gizmos.DrawSphere(transform.position, maxTreeRange);
+                    Gizmos.DrawSphere(transform.position, currentTreeVisionRange);
                     
                     // Draw wire frame for tree range
                     treeRangeColor.a = 0.15f;
                     Gizmos.color = treeRangeColor;
-                    Gizmos.DrawWireSphere(transform.position, maxTreeRange);
+                    Gizmos.DrawWireSphere(transform.position, currentTreeVisionRange);
                 }
             }
             
