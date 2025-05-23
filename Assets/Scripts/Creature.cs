@@ -57,7 +57,6 @@ public class Creature : MonoBehaviour
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
     public float swordDamage = 2.3f;
-    public float visionRange = 8f;  // Range at which creatures can see other entities
     public float closeRange = 1.5f;   // Range at which creatures can chop trees
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
     public float bowDamage = 1.0f;  // Damage dealt by bow
@@ -133,10 +132,10 @@ public class Creature : MonoBehaviour
     public bool InBowRange => inBowRange > 0.5f;
     
     // Track the actual tree vision range currently being used
-    private float currentTreeVisionRange;
-    private float currentTeammateVisionRange;
-    private float currentOpponentVisionRange;
-    private float currentGroundVisionRange;
+    public float currentTreeVisionRange;
+    public float currentTeammateVisionRange;
+    public float currentOpponentVisionRange;
+    public float currentGroundVisionRange;
 
     private void Awake()
     {
@@ -507,7 +506,7 @@ public class Creature : MonoBehaviour
         obs[2] = reproductionMeter; // Reproduction meter (already 0-1)
         
         // Transform the observations according to the formula:
-        // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
+        // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
         
         // Get maximum detection range for consistent normalization
         float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
@@ -529,15 +528,6 @@ public class Creature : MonoBehaviour
             float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
-        
-        // // Cherry observations (x,y components) - use medium vision range
-        // Vector2 cherryObs = Vector2.zero;
-        // if (nearestCherryDistance <= mediumVisionRange && nearestCherryDistance > 0)
-        // {
-        //     // Calculate intensity (0 at border, visionRange when hugging)
-        //     float intensityFactor = 1.0f - nearestCherryDistance / mediumVisionRange;
-        //     cherryObs = nearestCherryPos * intensityFactor;
-        // }
         
         // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;

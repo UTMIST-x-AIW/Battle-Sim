@@ -33,7 +33,6 @@ public static class CreatureLoader
             creatureComponent.generation = savedCreature.generation;
             creatureComponent.moveSpeed = savedCreature.moveSpeed;
             creatureComponent.pushForce = savedCreature.pushForce;
-            creatureComponent.visionRange = savedCreature.visionRange;
             creatureComponent.closeRange = savedCreature.closeRange;
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;

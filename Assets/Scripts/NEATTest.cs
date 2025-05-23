@@ -1462,7 +1462,6 @@ public class NEATTest : MonoBehaviour
                 generation = creature.generation,
                 moveSpeed = creature.moveSpeed,
                 pushForce = creature.pushForce,
-                visionRange = creature.visionRange,
                 closeRange = creature.closeRange,
                 bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
@@ -1791,7 +1790,6 @@ public class NEATTest : MonoBehaviour
             creatureComponent.generation = savedCreature.generation;
             creatureComponent.moveSpeed = savedCreature.moveSpeed;
             creatureComponent.pushForce = savedCreature.pushForce;
-            creatureComponent.visionRange = savedCreature.visionRange;
             creatureComponent.closeRange = savedCreature.closeRange;
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;

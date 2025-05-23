@@ -43,7 +43,6 @@ public class SavedCreature
     public int generation;
     public float moveSpeed;
     public float pushForce;
-    public float visionRange;
     public float closeRange;
     public float bowRange;
     public float actionEnergyCost;
@@ -132,7 +131,6 @@ public static class CreatureSaver
                 generation = creature.generation,
                 moveSpeed = creature.moveSpeed,
                 pushForce = creature.pushForce,
-                visionRange = creature.visionRange,
                 closeRange = creature.closeRange,
                 bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
