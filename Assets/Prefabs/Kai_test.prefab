@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6144994543974455719}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: TopLeftWaypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6831478306792678692}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: SwordWayPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 486959583988598192}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: BottomRightWaypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 4779885740701808359}
   - component: {fileID: 8582702518482994380}
   - component: {fileID: 1276911961630543896}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Kai_test
   m_TagString: Creature
   m_Icon: {fileID: 0}
@@ -309,7 +309,6 @@ MonoBehaviour:
   actionEnergyCost: 1
   chopDamage: 1
   swordDamage: 2.3
-  visionRange: 20
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
@@ -324,6 +323,10 @@ MonoBehaviour:
   canStartReproducing: 1
   reproductionMeter: 0
   disableBrainControl: 0
+  currentTreeVisionRange: 0
+  currentTeammateVisionRange: 0
+  currentOpponentVisionRange: 0
+  currentGroundVisionRange: 0
 --- !u!58 &4779885740701808359
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -418,7 +421,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 857113178821566879}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: TopRightWaypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -449,7 +452,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1170621039167399300}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: BottomLeftWaypoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -481,7 +484,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3110480267804462297, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3110480267804462297, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_IsActive
@@ -489,11 +492,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3314682547966656474, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3537468642350391049, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3537468642350391049, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_IsActive
@@ -561,7 +564,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6638226479774273572, guid: 0c40689b46ccf423d806c65c0b3c9688, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -587,7 +590,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1410330528408215769, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7101802247461871357, guid: 46df90e2e83c6be40b4bb670bf0d3279, type: 3}
       propertyPath: m_LocalPosition.x
@@ -653,7 +656,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 791135962788005522, guid: cc85b2ccaf04045f885668e7d800f059, type: 3}
       propertyPath: m_Layer
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 791135962788005522, guid: cc85b2ccaf04045f885668e7d800f059, type: 3}
       propertyPath: m_IsActive
