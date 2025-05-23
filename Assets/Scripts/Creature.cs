@@ -1145,7 +1145,10 @@ public class Creature : MonoBehaviour
                     Gizmos.color = treeRangeColor;
                     Gizmos.DrawWireSphere(transform.position, currentTreeVisionRange);
                 }
+            }
                 
+            if (neatTest.showTeammateVisionRange)
+            {
                 // Draw creature vision range (orange/blue)
                 Color creatureRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.05f) : new Color(0f, 0.5f, 1f, 0.05f);
                 Gizmos.color = creatureRangeColor;
@@ -1155,7 +1158,10 @@ public class Creature : MonoBehaviour
                 creatureRangeColor.a = 0.15f;
                 Gizmos.color = creatureRangeColor;
                 Gizmos.DrawWireSphere(transform.position, currentTeammateVisionRange);
-                
+            }
+
+            if (neatTest.showOpponentVisionRange)
+            {
                 // Draw opposite type creature range (red/purple)
                 Color oppositeRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0f, 0f, 0.05f) : new Color(0.5f, 0f, 1f, 0.05f);
                 Gizmos.color = oppositeRangeColor;
@@ -1165,7 +1171,10 @@ public class Creature : MonoBehaviour
                 oppositeRangeColor.a = 0.15f;
                 Gizmos.color = oppositeRangeColor;
                 Gizmos.DrawWireSphere(transform.position, currentOpponentVisionRange);
-                
+            }
+
+            if (neatTest.showGroundVisionRange)
+            {
                 // Draw ground vision range (yellow/cyan)
                 Color groundRangeColor = (type == CreatureType.Albert) ? new Color(1f, 1f, 0f, 0.03f) : new Color(0f, 1f, 1f, 0.03f);
                 Gizmos.color = groundRangeColor;
@@ -1176,8 +1185,8 @@ public class Creature : MonoBehaviour
                 Gizmos.color = groundRangeColor;
                 Gizmos.DrawWireSphere(transform.position, currentGroundVisionRange);
             }
-            
-            // Draw chop range if enabled
+                
+            // Draw close range if enabled
             if (neatTest.showCloseRange)
             {
                 Gizmos.color = neatTest.closeRangeColor;

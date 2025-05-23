@@ -70,8 +70,8 @@ public class NEATTest : MonoBehaviour
 
     [Header("Visualization Settings")]
     public bool showTreeVisionRange = false;  // Toggle for tree vision range visualization
-    public bool showAlbertsVisionRange = false;  // Toggle for alberts vision range visualization
-    public bool showKaisVisionRange = false;  // Toggle for kais vision range visualization
+    public bool showTeammateVisionRange = false;  // Toggle for alberts vision range visualization
+    public bool showOpponentVisionRange = false;  // Toggle for kais vision range visualization
     public bool showGroundVisionRange = false;  // Toggle for ground vision range visualization
     // public bool showCherryVisionRange = false;  // Toggle for detection radius visualization
     public bool showCloseRange = false;  // Toggle for close range visualization
