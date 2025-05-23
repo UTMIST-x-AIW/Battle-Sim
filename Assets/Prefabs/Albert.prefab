@@ -170,7 +170,6 @@ GameObject:
   - component: {fileID: 97759648320744754}
   - component: {fileID: 2172908628139528993}
   - component: {fileID: 2666509316153106925}
-  - component: {fileID: 5084968862088147877}
   - component: {fileID: 7341221049699844455}
   - component: {fileID: 8456227767087271932}
   - component: {fileID: 4779885740701808359}
@@ -282,29 +281,6 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &5084968862088147877
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rayCount: 0
-  SpreadAngle: 30
-  _rayDistance: 10
-  _raywidth: 0.06
-  linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
-  fadeOn: 1
-  fadeDuration: 111
-  lineColor: {r: 0.98742133, g: 0.027945718, b: 0.027945718, a: 1}
-  layer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!95 &7341221049699844455
 Animator:
   serializedVersion: 5
