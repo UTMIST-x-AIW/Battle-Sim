@@ -19137,8 +19137,11 @@ MonoBehaviour:
   maxHiddenLayers: 10
   runTests: 1
   currentTest: 5
-  showDetectionRadius: 1
-  showCloseRange: 1
+  showTreeVisionRange: 0
+  showSameTypeCreatureVisionRange: 0
+  showOppositeTypeCreatureVisionRange: 0
+  showGroundVisionRange: 0
+  showCloseRange: 0
   showBowRange: 0
   showGizmos: 1
   closeRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}

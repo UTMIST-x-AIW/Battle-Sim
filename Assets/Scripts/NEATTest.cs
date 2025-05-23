@@ -69,7 +69,11 @@ public class NEATTest : MonoBehaviour
     public CurrentTest currentTest;
 
     [Header("Visualization Settings")]
-    public bool showDetectionRadius = false;  // Toggle for detection radius visualization
+    public bool showTreeVisionRange = false;  // Toggle for tree vision range visualization
+    public bool showAlbertsVisionRange = false;  // Toggle for alberts vision range visualization
+    public bool showKaisVisionRange = false;  // Toggle for kais vision range visualization
+    public bool showGroundVisionRange = false;  // Toggle for ground vision range visualization
+    // public bool showCherryVisionRange = false;  // Toggle for detection radius visualization
     public bool showCloseRange = false;  // Toggle for close range visualization
     public bool showBowRange = false;  // Toggle for bow range visualization
     public bool showGizmos = false;     // Master toggle for all gizmos

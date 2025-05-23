@@ -63,8 +63,7 @@ public class Creature : MonoBehaviour
     public float bowDamage = 1.0f;  // Damage dealt by bow
     
     [Header("Detection Settings")]
-    public float mediumVisionRange = 2.5f;  // Range for creatures, ground, cherries, and initial tree search
-    public float[] treeVisionRanges = {5f, 10f, 20f};  // Progressive ranges for tree detection
+    public float[] dynamicVisionRanges = {2.5f, 5f, 10f, 15f, 20f};  // Progressive ranges for dynamic vision
     public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
     
     // Type
@@ -129,13 +128,19 @@ public class Creature : MonoBehaviour
     
     // Track the actual tree vision range currently being used
     private float currentTreeVisionRange;
+    private float currentAlbertsVisionRange;
+    private float currentKaisVisionRange;
+    private float currentGroundVisionRange;
 
     private void Awake()
     {
         try
     {
         // Initialize collider array with inspector-configured size
-        nearbyColliders = new Collider2D[preAllocCollidersCount];
+        nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
+        nearbyAlbertsColliders = new Collider2D[preAllocCollidersCount];
+        nearbyKaisColliders = new Collider2D[preAllocCollidersCount];
+        nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
         
         // Cache NEATTest reference if not already cached
         if (neatTest == null)
@@ -226,17 +231,17 @@ public class Creature : MonoBehaviour
         // Step 1: Medium-range detection for creatures, ground, and cherries
         DetectMediumRangeObjects();
         
-        // Step 2: Medium-range tree detection (same range as other objects)
-        DetectTreesInRange(mediumVisionRange);
-        currentTreeVisionRange = mediumVisionRange; // Start with medium range
+        // Step 2: Close-range tree detection
+        DetectTreesInRange(closeRange);
+        currentTreeVisionRange = closeRange; // Start with close range
         
-        // Step 3: Progressive tree search if no trees found in medium range
+        // Step 3: Progressive tree search if no trees found in close range
         if (nearestTree == null)
         {
-            for (int i = 0; i < treeVisionRanges.Length; i++)
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
             {
-                DetectTreesInRange(treeVisionRanges[i]);
-                currentTreeVisionRange = treeVisionRanges[i]; // Update to current search range
+                DetectTreesInRange(dynamicVisionRanges[i]);
+                currentTreeVisionRange = dynamicVisionRanges[i]; // Update to current search range
                 if (nearestTree != null) break; // Found trees, stop expanding
             }
         }
@@ -439,7 +444,7 @@ public class Creature : MonoBehaviour
         // }
         
         // Tree observations (x,y components) - use maximum tree vision range
-        float maxTreeVisionRange = treeVisionRanges.Length > 0 ? treeVisionRanges[treeVisionRanges.Length - 1] : mediumVisionRange;
+        float maxTreeVisionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : mediumVisionRange;
         Vector2 treeObs = Vector2.zero;
         if (nearestTreeDistance <= maxTreeVisionRange && nearestTreeDistance > 0)
         {
@@ -1034,7 +1039,7 @@ public class Creature : MonoBehaviour
         // Only draw if visualization is enabled and NEATTest reference exists
         if (neatTest != null)
         {
-            if (neatTest.showDetectionRadius)
+            if (neatTest.showTreeVisionRange)
             {
                 // Draw medium vision range (for creatures, ground, cherries)
                 Color mediumRangeColor = (type == CreatureType.Albert) ? new Color(1f, 0.5f, 0f, 0.1f) : new Color(0f, 0.5f, 1f, 0.1f);
@@ -1047,7 +1052,7 @@ public class Creature : MonoBehaviour
                 Gizmos.DrawWireSphere(transform.position, mediumVisionRange);
                 
                 // Draw maximum tree vision range with a different color
-                if (treeVisionRanges.Length > 0)
+                if (dynamicVisionRanges.Length > 0)
                 {
                     Color treeRangeColor = (type == CreatureType.Albert) ? new Color(0f, 1f, 0f, 0.05f) : new Color(1f, 0f, 1f, 0.05f);
                     Gizmos.color = treeRangeColor;
