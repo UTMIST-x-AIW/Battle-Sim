@@ -67,7 +67,6 @@ public class Creature : MonoBehaviour
     
     // Neural Network
     public NEAT.NN.FeedForwardNetwork brain;
-    public CreatureObserver observer;
     private Rigidbody2D rb;
     
     // Add method to get brain
@@ -95,6 +94,32 @@ public class Creature : MonoBehaviour
 
     // Flag to disable AI brain control
     public bool disableBrainControl = false;
+
+    // Cached object detection - reused for both observations and actions
+    private Collider2D[] nearbyColliders = new Collider2D[20];  // Pre-allocated array for better performance
+    private TreeHealth nearestTree = null;
+    private Creature nearestOpponent = null;
+    private Vector2 nearestCherryPos = Vector2.zero;
+    private Vector2 nearestTreePos = Vector2.zero;
+    private Vector2 nearestGroundPos = Vector2.zero;
+    private Vector2 nearestSameTypePos = Vector2.zero;
+    private Vector2 nearestOpponentPos = Vector2.zero;
+    private float nearestTreeDistance = float.MaxValue;
+    private float nearestOpponentDistance = float.MaxValue;
+    private float nearestCherryDistance = float.MaxValue;
+    private float nearestGroundDistance = float.MaxValue;
+    private float nearestSameTypeDistance = float.MaxValue;
+    private float nearestOpponentHealthNormalized = 0f;
+    
+    // Cached range indicators - accessible as properties
+    private float inChopRange = 0f;
+    private float inSwordRange = 0f;
+    private float inBowRange = 0f;
+    
+    // Public properties to access range indicators
+    public bool InChopRange => inChopRange > 0.5f;
+    public bool InSwordRange => inSwordRange > 0.5f;
+    public bool InBowRange => inBowRange > 0.5f;
 
     private void Awake()
     {
@@ -148,25 +173,8 @@ public class Creature : MonoBehaviour
     
     private void Start()
     {
-        observer = gameObject.GetComponent<CreatureObserver>();
-        
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-        //if (rb == null)
-        //{
-        //    rb = gameObject.AddComponent<Rigidbody2D>();
-        //}
-        
-        // Configure Rigidbody2D for physics interactions
-        //rb.gravityScale = 0f;
-        //rb.drag = 1f;
-        //rb.angularDrag = 1f;
-        //rb.mass = 1f;
-        //rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        //rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-        //rb.sleepMode = RigidbodySleepMode2D.NeverSleep;
-        
-        // NOTE: CircleCollider2D should be manually added to the prefab instead of via code
         
         // Update the animator with the creature type
         if (creatureAnimator != null)
@@ -178,6 +186,235 @@ public class Creature : MonoBehaviour
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
     {
         brain = network;
+    }
+    
+    // Detect and cache nearby objects - replaces CreatureObserver logic
+    private void DetectNearbyObjects()
+    {
+        // Reset all cached values
+        nearestTree = null;
+        nearestOpponent = null;
+        nearestCherryPos = Vector2.zero;
+        nearestTreePos = Vector2.zero;
+        nearestGroundPos = Vector2.zero;
+        nearestSameTypePos = Vector2.zero;
+        nearestOpponentPos = Vector2.zero;
+        nearestTreeDistance = float.MaxValue;
+        nearestOpponentDistance = float.MaxValue;
+        nearestCherryDistance = float.MaxValue;
+        nearestGroundDistance = float.MaxValue;
+        nearestSameTypeDistance = float.MaxValue;
+        nearestOpponentHealthNormalized = 0f;
+
+        // Reset range indicators
+        inChopRange = 0f;
+        inSwordRange = 0f;
+        inBowRange = 0f;
+
+        // Get nearby objects using the creature's vision range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(transform.position, visionRange, nearbyColliders);
+
+        // Only process up to numColliders to avoid processing null entries
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            // Calculate relative position from the object to the creature (reversed direction)
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+
+            if (collider.CompareTag("Cherry"))
+            {
+                if (distance < nearestCherryDistance)
+                {
+                    nearestCherryPos = relativePos;
+                    nearestCherryDistance = distance;
+                }
+            }
+            else if (collider.CompareTag("Tree"))
+            {
+                if (distance < nearestTreeDistance)
+                {
+                    nearestTreePos = relativePos;
+                    nearestTreeDistance = distance;
+                    // Cache the TreeHealth component
+                    nearestTree = collider.GetComponent<TreeHealth>();
+                }
+            }
+            else if (collider.CompareTag("Ground"))
+            {
+                // For ground tiles, we want the closest point on the collider
+                Vector2 closestPoint = collider.ClosestPoint(transform.position);
+                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                float groundPointDistance = groundRelativePos.magnitude;
+                
+                if (groundPointDistance < nearestGroundDistance)
+                {
+                    nearestGroundPos = groundRelativePos;
+                    nearestGroundDistance = groundPointDistance;
+                }
+            }
+            else if (collider.CompareTag("Creature"))
+            {
+                Creature other = collider.GetComponent<Creature>();
+                if (other == null) continue;
+                
+                if (other.type == type)
+                {
+                    if (distance < nearestSameTypeDistance)
+                    {
+                        nearestSameTypePos = relativePos;
+                        nearestSameTypeDistance = distance;
+                    }
+                }
+                else
+                {
+                    if (distance < nearestOpponentDistance)
+                    {
+                        nearestOpponentPos = relativePos;
+                        nearestOpponentDistance = distance;
+                        // Cache the opponent creature reference
+                        nearestOpponent = other;
+                        nearestOpponentHealthNormalized = other.health / other.maxHealth;
+                    }
+                }
+            }
+        }
+
+        // Calculate range indicators
+        if (nearestTreeDistance <= closeRange)
+        {
+            inChopRange = 1f;
+        }
+        if (nearestOpponentDistance <= closeRange)
+        {
+            inSwordRange = 1f;
+        }
+        if (nearestOpponent != null && nearestOpponentDistance <= bowRange)
+        {
+            Vector2 directionToOpposite = nearestOpponent.transform.position - transform.position;
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionToOpposite, nearestOpponentDistance);
+            
+            bool hitOppositeTypeFirst = false;
+            bool blockedByObstacle = false;
+            
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.collider.gameObject == gameObject) continue; // Skip self
+                
+                // Check what we hit
+                if (hit.collider.CompareTag("Tree") || hit.collider.CompareTag("Ground"))
+                {
+                    // If we hit an obstacle before the opposite type creature
+                    blockedByObstacle = true;
+                    break;
+                }
+                else
+                {
+                    Creature hitCreature = hit.collider.GetComponent<Creature>();
+                    if (hitCreature != null)
+                    {
+                        if (hitCreature.type != type && hit.collider.gameObject == nearestOpponent.gameObject)
+                        {
+                            // We hit the opposite type creature before any obstacles
+                            hitOppositeTypeFirst = true;
+                            break;
+                        }
+                        // Creatures of same type are ignored and we continue checking
+                    }
+                }
+            }
+            
+            if (hitOppositeTypeFirst && !blockedByObstacle)
+            {
+                inBowRange = 1f;
+            }
+        }
+    }
+
+    // Generate observations for neural network using cached detection data
+    public float[] GetObservations()
+    {
+        float[] obs = new float[NEATTest.OBSERVATION_COUNT]; 
+        
+        // Basic stats - normalize health to 0-1 range
+        obs[0] = health / maxHealth; // Normalized health
+        obs[1] = energyMeter; // Energy meter (already 0-1)
+        obs[2] = reproductionMeter; // Reproduction meter (already 0-1)
+        
+        // Transform the observations according to the formula:
+        // 0 when outside FOV, 0 at FOV border, increases linearly to visionRange when hugging creature
+        
+        // Same type observations (x,y components)
+        Vector2 sameTypeObs = Vector2.zero;
+        if (nearestSameTypeDistance <= visionRange && nearestSameTypeDistance > 0)
+        {
+            // Calculate intensity (0 at border, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestSameTypeDistance / visionRange;
+            sameTypeObs = nearestSameTypePos * intensityFactor;
+        }
+        
+        // Opposite type observations (x,y components)
+        Vector2 oppositeTypeObs = Vector2.zero;
+        if (nearestOpponentDistance <= visionRange && nearestOpponentDistance > 0)
+        {
+            // Calculate intensity (0 at border, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestOpponentDistance / visionRange;
+            oppositeTypeObs = nearestOpponentPos * intensityFactor;
+        }
+        
+        // Cherry observations (x,y components)
+        Vector2 cherryObs = Vector2.zero;
+        if (nearestCherryDistance <= visionRange && nearestCherryDistance > 0)
+        {
+            // Calculate intensity (0 at border, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestCherryDistance / visionRange;
+            cherryObs = nearestCherryPos * intensityFactor;
+        }
+        
+        // Tree observations (x,y components)
+        Vector2 treeObs = Vector2.zero;
+        if (nearestTreeDistance <= visionRange && nearestTreeDistance > 0)
+        {
+            // Calculate intensity (0 at border, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestTreeDistance / visionRange;
+            treeObs = nearestTreePos * intensityFactor;
+        }
+
+        // Ground observations (x,y components)
+        Vector2 groundObs = Vector2.zero;
+        if (nearestGroundDistance <= visionRange && nearestGroundDistance > 0)
+        {
+            // Calculate intensity (0 at border, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestGroundDistance / visionRange;
+            groundObs = nearestGroundPos * intensityFactor;
+        }
+        
+        // Use cached range indicators instead of calculating them again
+        // Assign the transformed values to the observation array
+        obs[3] = sameTypeObs.x;
+        obs[4] = sameTypeObs.y;
+        
+        obs[5] = oppositeTypeObs.x;
+        obs[6] = oppositeTypeObs.y;
+        
+        obs[7] = cherryObs.x;
+        obs[8] = cherryObs.y;
+        
+        obs[9] = treeObs.x;
+        obs[10] = treeObs.y;
+
+        obs[11] = groundObs.x;
+        obs[12] = groundObs.y;
+        
+        obs[13] = this.inChopRange;
+        obs[14] = this.inSwordRange;
+        obs[15] = this.inBowRange;
+
+        obs[16] = nearestOpponentHealthNormalized;
+        
+        return obs;
     }
     
     private double[] ConvertToDouble(float[] floatArray)
@@ -200,7 +437,7 @@ public class Creature : MonoBehaviour
         return floatArray;
     }
     
-    public float[] GetActions() 
+    public float[] GetActions(float[] observations) 
     //TODO: remove all this debug scaffolding
     {
         try
@@ -211,8 +448,7 @@ public class Creature : MonoBehaviour
                 return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, sword, bow
             }
             
-            float[] observations = observer.GetObservations(this);
-            double[] doubleObservations = ConvertToDouble(observations);
+            double[] doubleObservations = ConvertToDouble(observations); //TODO: remove this debugging code if it works without
             
             // Use a separate try-catch for the activation to detect stack overflow specifically
             double[] doubleOutputs;
@@ -380,8 +616,12 @@ public class Creature : MonoBehaviour
                         }
                     }
                     
+                    // Detect nearby objects once per frame and cache results
+                    DetectNearbyObjects();
+                    
                     // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
-                    float[] actions = GetActions();
+                    float[] observations = GetObservations();
+                    float[] actions = GetActions(observations);
 
                     if (!disableBrainControl)
                     {
@@ -418,7 +658,7 @@ public class Creature : MonoBehaviour
             }
         }
     }
-    
+
     public void ApplyMovement(Vector2 desiredVelocity)
     {
         // All checks passed, apply the original movement force
@@ -483,24 +723,29 @@ public class Creature : MonoBehaviour
                     switch (strongestDesireIndex) {
                         case 0:
                             // Chop tree
-                            bool didChop = TryChopTree();
-                            if (didChop) {
+                            if (InChopRange)
+                            {
+                                nearestTree.TakeDamage(chopDamage);
                                 energyMeter -= actionEnergyCost;
+                                health = maxHealth;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
+                                StartCoroutine(FlashHealthRestoration());
                             }
                             break;
                         case 1:
                             // Sword attack
-                            bool didSword = TrySword();
-                            if (didSword) {
+                            if (InSwordRange)
+                            {
+                                nearestOpponent.TakeDamage(swordDamage);
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                             }
                             break;
                         case 2:
                             // Bow attack
-                            bool didBow = TryBow();
-                            if (didBow) {
+                            if (InBowRange)
+                            {
+                                nearestOpponent.TakeDamage(bowDamage);
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
                             }
@@ -523,47 +768,7 @@ public class Creature : MonoBehaviour
         }
     }
 
-    public bool TryChopTree()
-    {
-        // Find the nearest tree within detection radius
-        TreeHealth nearestTree = null;
-        float nearestDistance = float.MaxValue;
-
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, closeRange);
-        
-        foreach (var collider in nearbyColliders)
-        {
-            if (collider.CompareTag("Tree"))
-            {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < nearestDistance)
-                {
-                    TreeHealth treeHealth = collider.GetComponent<TreeHealth>();
-                    if (treeHealth != null)
-                    {
-                        nearestTree = treeHealth;
-                        nearestDistance = distance;
-                    }
-                }
-            }
-        }
-        
-        // If we found a tree, damage it
-        if (nearestTree != null)
-        {
-            nearestTree.TakeDamage(chopDamage);
-            
-            // Restore the creature's health to maximum
-            health = maxHealth;
-            
-            // Visual feedback for health restoration
-            StartCoroutine(FlashHealthRestoration());
-            
-            return true;
-        }
-        
-        return false;
-    }
+ 
 
     private IEnumerator FlashHealthRestoration()
     {
@@ -575,70 +780,6 @@ public class Creature : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             renderer.color = originalColor;
         }
-    }
-
-    public bool TrySword()
-    {
-        // Find the nearest opposing creature within detection radius
-        Creature nearestOpponent = null;
-        float nearestDistance = float.MaxValue;
-        
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, closeRange);
-        
-        foreach (var collider in nearbyColliders)
-        {
-            Creature otherCreature = collider.GetComponent<Creature>();
-            if (otherCreature != null && otherCreature.type != this.type)
-            {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < nearestDistance)
-                {
-                    nearestOpponent = otherCreature;
-                    nearestDistance = distance;
-                }
-            }
-        }
-        
-        // If we found an opposing creature, damage it
-        if (nearestOpponent != null)
-        {
-            nearestOpponent.TakeDamage(swordDamage);
-            return true;
-        }
-        
-        return false;
-    }
-
-    public bool TryBow()
-    {
-        // Find the nearest opposing creature within detection radius
-        Creature nearestOpponent = null;
-        float nearestDistance = float.MaxValue;
-        
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, bowRange);
-        
-        foreach (var collider in nearbyColliders)
-        {
-            Creature otherCreature = collider.GetComponent<Creature>();
-            if (otherCreature != null && otherCreature.type != this.type)
-            {
-                float distance = Vector2.Distance(transform.position, collider.transform.position);
-                if (distance < nearestDistance)
-                {
-                    nearestOpponent = otherCreature;
-                    nearestDistance = distance;
-                }
-            }
-        }
-        
-        // If we found an opposing creature and we have line of sight, damage it
-        if (nearestOpponent != null)
-        {
-            nearestOpponent.TakeDamage(bowDamage);
-            return true;
-        }
-        
-        return false;
     }
 
     public void TakeDamage(float damage)

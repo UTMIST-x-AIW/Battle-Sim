@@ -269,12 +269,12 @@ public class NEATTest : MonoBehaviour
                 showGizmos = !showGizmos;
             }
 
-            // Add this to the Update method, after the other key checks
-            if (Input.GetKeyDown(KeyCode.D))
-            {
-                LogManager.LogMessage("Running neural network diagnostics...");
-                RunNeuralNetworkDiagnostics();
-            }
+            // // Add this to the Update method, after the other key checks
+            // if (Input.GetKeyDown(KeyCode.D))
+            // {
+            //     LogManager.LogMessage("Running neural network diagnostics...");
+            //     RunNeuralNetworkDiagnostics();
+            // }
         }
         catch (System.Exception e)
         {
@@ -1040,7 +1040,8 @@ public class NEATTest : MonoBehaviour
                 // Get and analyze neural network output
                 try
                 {
-                    float[] observations = creature.observer.GetObservations(creature);
+                    float[] observations = creature.GetObservations();
+                    
                     double[] doubleObservations = new double[observations.Length];
                     for (int i = 0; i < observations.Length; i++)
                     {
