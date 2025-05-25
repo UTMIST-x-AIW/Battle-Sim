@@ -22,7 +22,10 @@ public sealed class Movement : MonoBehaviour
     BottomLeft
     }
 
-
+    private int hashedMoveX;
+    private int hashedMoveY;
+    private int hashedIsMoving;
+    
     private MovementState currentMovement;
 
     public Vector2 lastdirection;
@@ -31,7 +34,13 @@ public sealed class Movement : MonoBehaviour
         _anim = GetComponent<Animator>();
         _rb = GetComponent<Rigidbody2D>();
         toolAnimation = gameObject?.GetComponentInChildren<ToolAnimation>();
-        if (toolAnimation != null) toolPos = toolAnimation.transform;
+        if (toolAnimation != null)
+        {
+            toolPos = toolAnimation.transform;
+        };
+        hashedMoveX = "MoveX".GetHashCode();
+        hashedMoveY = "MoveY".GetHashCode();
+        hashedIsMoving = "IsMoving".GetHashCode();
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -42,9 +51,9 @@ public sealed class Movement : MonoBehaviour
 
         SetEnumState(_rb.velocity);
         
-        _anim.SetFloat("MoveX", _hInput);
-        _anim.SetFloat("MoveY", _vInput);
-        _anim.SetBool("IsMoving", _rb.velocity.magnitude > 0.1);
+        _anim.SetFloat(hashedMoveX, _hInput);
+        _anim.SetFloat(hashedMoveY, _vInput);
+        _anim.SetBool(hashedIsMoving, _rb.velocity.magnitude > 0.1);
         if (toolAnimation == null) return;
         
         // Only update tool position/rotation if animation is not playing
