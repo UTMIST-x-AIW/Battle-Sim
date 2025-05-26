@@ -22,9 +22,9 @@ public sealed class Movement : MonoBehaviour
     BottomLeft
     }
 
-    private int hashedMoveX;
-    private int hashedMoveY;
-    private int hashedIsMoving;
+    private static readonly int hashedMoveX  = Animator.StringToHash("MoveX");
+    private static readonly int hashedMoveY= Animator.StringToHash("MoveY");
+    private static readonly int hashedIsMoving = Animator.StringToHash("IsMoving");
     
     private MovementState currentMovement;
 
@@ -38,9 +38,6 @@ public sealed class Movement : MonoBehaviour
         {
             toolPos = toolAnimation.transform;
         };
-        hashedMoveX = "MoveX".GetHashCode();
-        hashedMoveY = "MoveY".GetHashCode();
-        hashedIsMoving = "IsMoving".GetHashCode();
     }
     // Update is called once per frame
     void FixedUpdate()
