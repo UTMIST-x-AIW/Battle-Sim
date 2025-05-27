@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using ExperimentalCode;
 using UnityEngine;
 
 [Serializable]
@@ -23,14 +22,14 @@ public class ObjectPoolManager : MonoBehaviour
         GameObject spawnableObj = null;
         foreach (GameObject obj in pool.InactiveObject)
         {
-            if (obj != null)
+            if (obj)
             {
                 spawnableObj = obj;
                 break; 
             }
         }
 
-        if (spawnableObj == null)
+        if (!spawnableObj)
         {
             spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
         }
@@ -43,7 +42,7 @@ public class ObjectPoolManager : MonoBehaviour
             pool.InactiveObject.Remove(spawnableObj);
             spawnableObj.SetActive(true);
         }
-
+        ParenthoodManager.AssignParent(spawnableObj);
         return spawnableObj;
     }
 
@@ -75,5 +74,5 @@ public class ObjectPoolManager : MonoBehaviour
 public class PooledObjectInfo
 {
     public string LookupString;
-    public List<GameObject> InactiveObject = new List<GameObject>();
+    public readonly List<GameObject> InactiveObject = new List<GameObject>();
 }

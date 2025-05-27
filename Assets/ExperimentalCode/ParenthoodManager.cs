@@ -16,7 +16,7 @@ namespace ExperimentalCode
         /// already had a parent with go's name then return the parent</returns>
         static GameObject MakeParent(GameObject go)
         {
-            string goName = go.name.Replace("(Clone)", "");
+            string goName = go.name.Replace("(Clone)", "") + "---Parent";
             
             if (ParentsTransformNameDict.TryGetValue(goName, out var existingParent))
                 return existingParent.gameObject;
@@ -36,8 +36,7 @@ namespace ExperimentalCode
         public static void AssignParent(GameObject go)
         {
             
-            string goName = go.name.Replace("(Clone)", "");
-            
+            string goName = go.name.Replace("(Clone)", "") + "---Parent";
             if (ParentsTransformNameDict.TryGetValue(goName, out var value))
             {
                 go.transform.SetParent(value, false);
