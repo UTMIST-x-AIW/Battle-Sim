@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/TestingGrounds.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TestingGrounds.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Manager/ObjectPoolManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Manager/ObjectPoolManager.cs" afterDir="false" />
-    </list>
+    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -161,7 +158,7 @@
       <workItem from="1748356942300" duration="1807000" />
       <workItem from="1748358880862" duration="817000" />
       <workItem from="1748365038440" duration="803000" />
-      <workItem from="1748375428534" duration="7622000" />
+      <workItem from="1748375428534" duration="8101000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
@@ -187,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1748384851531</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Some minor changes">
+      <option name="closed" value="true" />
+      <created>1748385574842</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748385574842</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,7 +234,8 @@
     <MESSAGE value="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks." />
     <MESSAGE value="Added the spawn and death animations" />
     <MESSAGE value="Added ParenthoodManager.cs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added ParenthoodManager.cs" />
+    <MESSAGE value="Some minor changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some minor changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
