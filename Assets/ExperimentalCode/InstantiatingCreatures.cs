@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ExperimentalCode
 {
@@ -9,11 +11,26 @@ namespace ExperimentalCode
     {
         [SerializeField] private GameObject prefab; 
         [SerializeField] private int numOfInstances;
-        [SerializeField] private float spawnArea = 5f;
+        [SerializeField, Range(0.5f,10f)] private float spawnArea = 5f;
         [SerializeField] private Ease easeType = Ease.Linear;
         
-        private List<GameObject> instantiatedPrefabArray = new List<GameObject>();
+        private readonly List<GameObject> _instantiatedPrefabArray = new List<GameObject>();
 
+
+        public void MakeNormalCreatures()
+        {
+            for (int i = 0; i < numOfInstances; i++)
+            {
+                Vector3 randomPos = new Vector3(
+                    Random.Range(-spawnArea, spawnArea),
+                    Random.Range(-spawnArea, spawnArea),
+                    0);
+                GameObject instance = Instantiate(prefab, randomPos, Quaternion.identity);
+                ParenthoodManager.AssignParent(instance);
+                _instantiatedPrefabArray.Add(instance);
+                
+            }
+        }
 
         public void GrowCreatures()
         {
@@ -25,31 +42,23 @@ namespace ExperimentalCode
                     0);
 
                 GameObject instance = Instantiate(prefab, randomPos, Quaternion.identity);
-                instantiatedPrefabArray.Add(instance);
-                AnimatingCreatureDOTween.Grow(instance, easeType);
+                ParenthoodManager.AssignParent(instance);
+                _instantiatedPrefabArray.Add(instance);
+                AnimatingCreatureDoTween.Grow(instance, easeType);
             }
         }
         
         public void DieCreatures()
         {
-            foreach (var go in instantiatedPrefabArray)
+            foreach (var go in _instantiatedPrefabArray)
             {
-                AnimatingCreatureDOTween.PlayDeathAnimation(go);
+                AnimatingCreatureDoTween.PlayDeathAnimation(go);
             }
         }
 
-        public void MakeNormalCreatures()
+        private void OnDisable()
         {
-            for (int i = 0; i < numOfInstances; i++)
-            {
-                Vector3 randomPos = new Vector3(
-                    Random.Range(-spawnArea, spawnArea),
-                    Random.Range(-spawnArea, spawnArea),
-                    0);
-                GameObject instance = Instantiate(prefab, randomPos, Quaternion.identity);
-                instantiatedPrefabArray.Add(instance);
-                
-            }
+            ParenthoodManager.ClearParentDict();
         }
     }
 }
