@@ -38,6 +38,13 @@ public sealed class Movement : MonoBehaviour
     {
         _hInput = _rb.velocity.x;
         _vInput = _rb.velocity.y;
+        
+        // Update lastdirection for the RayVisualizer
+        if (_rb.velocity.magnitude > 0.1f)
+        {
+            lastdirection = _rb.velocity.normalized;
+        }
+        
         WaypointEntry entry;
 
         SetEnumState(_rb.velocity);
