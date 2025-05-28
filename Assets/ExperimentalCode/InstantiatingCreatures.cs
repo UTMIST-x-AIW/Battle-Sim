@@ -44,7 +44,7 @@ namespace ExperimentalCode
                 GameObject instance = Instantiate(prefab, randomPos, Quaternion.identity);
                 ParenthoodManager.AssignParent(instance);
                 _instantiatedPrefabArray.Add(instance);
-                AnimatingCreatureDoTween.Grow(instance, easeType);
+                AnimatingDoTweenUtilities.PlayGrow(instance, easeType);
             }
         }
         
@@ -52,7 +52,7 @@ namespace ExperimentalCode
         {
             foreach (var go in _instantiatedPrefabArray)
             {
-                AnimatingCreatureDoTween.PlayDeathAnimation(go);
+                AnimatingDoTweenUtilities.PlayDeathAnimation(go);
             }
         }
 
