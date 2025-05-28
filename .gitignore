@@ -78,3 +78,4 @@ crashlytics-build.properties
 Assets/.DS_Store
 Packages/manifest.json
 Packages/packages-lock.json
+/.vscode
