@@ -130,7 +130,7 @@ public class NEATTest : MonoBehaviour
     private void Awake()
     {
         // Check if there's already an instance
-        if (instance != null && instance != this) //REMOVAL: we don't need to check if it's null //IMPROVEMENT: i think we have a lot of null checks in the codebase that might be unnecessary, can look into removing them if it doesn't cause issues
+        if (instance != null && instance != this) //IMPROVEMENT: i think we have a lot of null checks in the codebase that might be unnecessary like this one, can look into removing them if it doesn't cause issues
         {
             Debug.LogError($"Found duplicate NEATTest on {gameObject.name}. There should only be one NEATTest component in the scene!");
             Destroy(this);

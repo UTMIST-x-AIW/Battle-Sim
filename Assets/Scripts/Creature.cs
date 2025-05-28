@@ -10,7 +10,7 @@ using NEAT.Genes;
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
-    private static int totalCreatures = 0; //REMOVAL: move this to our game manager (neattest)
+    private static int totalCreatures = 0; //IMPROVEMENT: move this to our game manager (neattest)
     [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
     
     // Make TotalCreatures accessible through a property
@@ -90,17 +90,12 @@ public class Creature : MonoBehaviour
     // Animator reference
     private CreatureAnimator creatureAnimator;
 
-    // Cache floor collider to avoid FindGameObjectWithTag every frame
-    private static PolygonCollider2D cachedFloorCollider; //REMOVAL: unused, mark for removal
-    private static Bounds floorBounds; //REMOVAL: unused, mark for removal
-
     private bool hasCheckedNeatTest = false;
 
     // Flag to disable AI brain control
     public bool disableBrainControl = false;
 
     // Cached object detection - reused for both observations and actions
-    private Collider2D[] nearbyColliders;  //REMOVAL: unused, mark for removal
     private Collider2D[] nearbyTreeColliders;      // For tree detection //IMPROVEMENT: all of these - this overlapcircle2d is the biggest bottleneck rn, so try raycasting instead (or if doesnt work, then maybe ontrigger, then quadtrees and other ideas)
     private Collider2D[] nearbyTeammateColliders;  // For teammate detection
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
@@ -146,21 +141,14 @@ public class Creature : MonoBehaviour
         nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
         nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
         nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
-        nearbyColliders = new Collider2D[preAllocCollidersCount]; // Keep this for compatibility
         
         // Cache NEATTest reference if not already cached
-        if (neatTest == null) //REMOVAL: we don't need to check if it's null since its static
-        {
-            neatTest = FindObjectOfType<NEATTest>();
-                if (neatTest == null)
-                {
-                    Debug.LogError("NEATTest component not found in the scene!");
-                }
-        }
+        neatTest = FindObjectOfType<NEATTest>();
+        
 
         // Initialize stats
         health = maxHealth;
-            reproductionMeter = 0f; // Initialize reproduction meter to 0
+        reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
         
