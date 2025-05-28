@@ -87,9 +87,6 @@ public class Creature : MonoBehaviour
     private Creature targetMate = null;
     public float reproductionMeter = 0f; // Renamed from reproductionCooldown, now public
 
-    // Animator reference
-    private CreatureAnimator creatureAnimator;
-
     private bool hasCheckedNeatTest = false;
 
     // Flag to disable AI brain control
@@ -152,13 +149,6 @@ public class Creature : MonoBehaviour
         lifetime = 0f;
         canStartReproducing = false;
         
-        // Get CreatureAnimator reference
-        creatureAnimator = GetComponent<CreatureAnimator>();
-        if (creatureAnimator == null)
-        {
-            creatureAnimator = gameObject.AddComponent<CreatureAnimator>();
-        }
-        
         // Increment counter when creature is created
         totalCreatures++;
         // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
@@ -186,12 +176,7 @@ public class Creature : MonoBehaviour
     {
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-        
-        // Update the animator with the creature type
-        if (creatureAnimator != null)
-        {
-            creatureAnimator.SetCreatureType(type);
-        }
+
     }
 
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
