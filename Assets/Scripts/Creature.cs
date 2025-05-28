@@ -10,7 +10,7 @@ using NEAT.Genes;
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
-    private static int totalCreatures = 0;
+    private static int totalCreatures = 0; //REMOVAL: move this to our game manager (neattest)
     [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
     
     // Make TotalCreatures accessible through a property
@@ -91,8 +91,8 @@ public class Creature : MonoBehaviour
     private CreatureAnimator creatureAnimator;
 
     // Cache floor collider to avoid FindGameObjectWithTag every frame
-    private static PolygonCollider2D cachedFloorCollider;
-    private static Bounds floorBounds;
+    private static PolygonCollider2D cachedFloorCollider; //REMOVAL: unused, mark for removal
+    private static Bounds floorBounds; //REMOVAL: unused, mark for removal
 
     private bool hasCheckedNeatTest = false;
 
@@ -100,8 +100,8 @@ public class Creature : MonoBehaviour
     public bool disableBrainControl = false;
 
     // Cached object detection - reused for both observations and actions
-    private Collider2D[] nearbyColliders;  // Pre-allocated array for better performance, size set in Awake()
-    private Collider2D[] nearbyTreeColliders;      // For tree detection
+    private Collider2D[] nearbyColliders;  //REMOVAL: unused, mark for removal
+    private Collider2D[] nearbyTreeColliders;      // For tree detection //IMPROVEMENT: all of these - this overlapcircle2d is the biggest bottleneck rn, so try raycasting instead (or if doesnt work, then maybe ontrigger, then quadtrees and other ideas)
     private Collider2D[] nearbyTeammateColliders;  // For teammate detection
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
     private Collider2D[] nearbyGroundColliders;    // For ground detection
@@ -139,7 +139,7 @@ public class Creature : MonoBehaviour
 
     private void Awake()
     {
-        try
+        try //IMPROVEMENT: in general i think we can remove most if not all try catches
     {
         // Initialize collider array with inspector-configured size
         nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
@@ -149,7 +149,7 @@ public class Creature : MonoBehaviour
         nearbyColliders = new Collider2D[preAllocCollidersCount]; // Keep this for compatibility
         
         // Cache NEATTest reference if not already cached
-        if (neatTest == null)
+        if (neatTest == null) //REMOVAL: we don't need to check if it's null since its static
         {
             neatTest = FindObjectOfType<NEATTest>();
                 if (neatTest == null)
@@ -236,7 +236,7 @@ public class Creature : MonoBehaviour
         inSwordRange = 0f;
         inBowRange = 0f;
 
-        // Progressive detection for all types
+        // Progressive detection for all types // IMPROVEMENT: instead of having a separate method for each object type, look into Interfaces (note: check in mohamed's branch)
         DetectTreesProgressively();
         DetectTeammatesProgressively();
         DetectOpponentsProgressively();
@@ -611,7 +611,7 @@ public class Creature : MonoBehaviour
             try
             {
                 // Add a timeout or stack overflow protection here
-                doubleOutputs = brain.Activate(doubleObservations);
+                doubleOutputs = brain.Activate(doubleObservations); //IMPROVEMENT: try using multithreading here, with jobs
             }
             catch (System.StackOverflowException e)
             {
@@ -782,7 +782,7 @@ public class Creature : MonoBehaviour
                     if (!disableBrainControl)
                     {
                         // Process the network's action commands
-                        ProcessActionCommands(actions);
+                        ProcessActionCommands(actions); //IMPROVEMENT: try using multithreading here, with jobs
                     }
                 }
                 catch (System.Exception e)
@@ -939,7 +939,7 @@ public class Creature : MonoBehaviour
 
     private IEnumerator FlashHealthRestoration()
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>(); //IMPROVEMENT: minor improvement, instead of getting the component every time, just call it in start or something. also just check the rest of the codebase for this same thing happening elsewhere
         if (renderer != null)
         {
             Color originalColor = renderer.color;
@@ -959,7 +959,7 @@ public class Creature : MonoBehaviour
 
     private IEnumerator FlashOnDamage()
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>(); //IMPROVEMENT: minor improvement, instead of getting the component every time, just call it in start or something.
         if (renderer != null)
         {
             Color originalColor = renderer.color;

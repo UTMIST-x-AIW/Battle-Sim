@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections; //REMOVAL: unused, mark for removal
 using System.Collections.Generic;
 using UnityEngine;
 

@@ -1,3 +1,4 @@
+//TODO: bring back the object pool manager, i didnt even realize it was gone
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using Random = UnityEngine.Random;
 
 public class NEATTest : MonoBehaviour
 {
-    private static NEATTest instance;
+    private static NEATTest instance; //IMPROVEMENT: make this public instead, better for performance and readability
 
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
@@ -129,7 +130,7 @@ public class NEATTest : MonoBehaviour
     private void Awake()
     {
         // Check if there's already an instance
-        if (instance != null && instance != this)
+        if (instance != null && instance != this) //REMOVAL: we don't need to check if it's null //IMPROVEMENT: i think we have a lot of null checks in the codebase that might be unnecessary, can look into removing them if it doesn't cause issues
         {
             Debug.LogError($"Found duplicate NEATTest on {gameObject.name}. There should only be one NEATTest component in the scene!");
             Destroy(this);
