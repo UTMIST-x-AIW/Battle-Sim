@@ -19122,14 +19122,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 51
-  MAX_ALBERTS: 201
-  INITIAL_ALBERTS: 132
+  MIN_ALBERTS: 5
+  MAX_ALBERTS: 5
+  INITIAL_ALBERTS: 5
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 51
-  MAX_KAIS: 201
-  INITIAL_KAIS: 132
+  MIN_KAIS: 5
+  MAX_KAIS: 5
+  INITIAL_KAIS: 5
   MIN_STARTING_AGE_KAI: 0
   MAX_STARTING_AGE_KAI: 5
   _current_alberts: 0
@@ -19147,11 +19147,11 @@ MonoBehaviour:
   closeRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   bowRangeColor: {r: 0, g: 0.5, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 1
+  showSpawnArea: 0
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
-  rightSpawnCenter: {x: -11.7, y: -4.71}
+  rightSpawnCenter: {x: 21, y: 0}
   rightSpawnSpreadRadius: 1.23
   savedCreaturePath: 
   albertsFolderPath: /Users/anooprehman/Library/Application Support/com.DefaultCompany.2DProject/SavedCreatures/20250510__am_10_42_22/gen4
@@ -32348,52 +32348,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161969673379056834, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   m_PrefabInstance: {fileID: 880285912}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &901051737
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 901051739}
-  - component: {fileID: 901051738}
-  m_Layer: 0
-  m_Name: PerformanceTest
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &901051738
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901051737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 367f13a24c63a49c38dc10e518b03f51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showPerformanceUI: 1
-  toggleDetectionKey: 116
---- !u!4 &901051739
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 901051737}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &906789339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -74907,4 +74861,3 @@ SceneRoots:
   - {fileID: 7016299647965348102}
   - {fileID: 508018528}
   - {fileID: 1880141608}
-  - {fileID: 901051739}

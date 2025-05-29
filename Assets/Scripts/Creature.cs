@@ -183,30 +183,8 @@ public class Creature : MonoBehaviour
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
         
-        // Set correct tag based on creature type for ray detection
-        SetCreatureTag();
-        
-        // Setup ray-based detection system using MultiRayShooter
-        if (useRayDetection)
-        {
-            rayShooter = gameObject.GetComponent<MultiRayShooter>();
-            if (rayShooter == null)
-            {
-                rayShooter = gameObject.AddComponent<MultiRayShooter>();
-            }
-            
-            // Configure for 360-degree detection
-            LayerMask detectionLayers = LayerMask.GetMask("Trees", "Alberts", "Kais", "Ground");
-            rayShooter.ConfigureFor360Detection(12, 20f, detectionLayers);
-        }
     }
 
-    private void SetCreatureTag()
-    {
-        // Set the creature's tag based on its type for simplified ray detection
-        string newTag = type == CreatureType.Albert ? "Albert" : "Kai";
-        gameObject.tag = newTag;
-    }
 
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
     {

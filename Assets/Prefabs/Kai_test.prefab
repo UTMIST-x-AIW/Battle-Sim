@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 4779885740701808359}
   - component: {fileID: 8582702518482994380}
   - component: {fileID: 1276911961630543896}
+  - component: {fileID: -2190525722626331420}
   m_Layer: 9
   m_Name: Kai_test
   m_TagString: Kai
@@ -388,6 +389,29 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.28
+--- !u!114 &-2190525722626331420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7896111451434077960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rayCount: 12
+  SpreadAngle: 360
+  _rayDistance: 20
+  _raywidth: 0.06
+  linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
+  fadeOn: 0
+  fadeDuration: 100
+  lineColor: {r: 0, g: 0.46073508, b: 1, a: 1}
+  layer:
+    serializedVersion: 2
+    m_Bits: 960
 --- !u!1 &8111889471499386902
 GameObject:
   m_ObjectHideFlags: 0
