@@ -688,24 +688,6 @@ public class Creature : MonoBehaviour
 
         obs[14] = nearestOpponentHealthNormalized;
         
-        // Debug: Log when observations are 0 but we should have detected something
-        if (useRayDetection && (obs[3] == 0 && obs[4] == 0) && rayShooter.AllHits.Count > 0)
-        {
-            Debug.Log($"{gameObject.name} BUG DEBUG: obs[3,4] = (0,0) but we have {rayShooter.AllHits.Count} total hits");
-            Debug.Log($"  nearestTeammateDistance: {nearestTeammateDistance}, nearestTeammatePos: {nearestTeammatePos}");
-            Debug.Log($"  intensityFactor would be: {1.0f - nearestTeammateDistance / maxDetectionRange}");
-            
-            // Check what hits we actually have
-            var teammateTag = type == CreatureType.Albert ? "Albert" : "Kai";
-            var teammateHit = rayShooter.GetNearestHitByTag(teammateTag);
-            Debug.Log($"  GetNearestHitByTag('{teammateTag}'): hit={teammateHit.collider != null}, distance={teammateHit.distance}");
-            
-            if (teammateHit.collider != null)
-            {
-                Debug.Log($"  Hit object: {teammateHit.collider.gameObject.name}, is self: {teammateHit.collider.gameObject == gameObject}");
-            }
-        }
-        
         return obs;
     }
     
