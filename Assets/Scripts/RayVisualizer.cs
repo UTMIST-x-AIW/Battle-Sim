@@ -14,6 +14,8 @@ public class MultiRayShooter : MonoBehaviour
     [SerializeField, Min(0)] private int fadeDuration = 100;
     [SerializeField] Color lineColor = Color.red;
     [SerializeField] LayerMask layer;
+
+    [SerializeField] private bool showLines = false;
     
     private Movement characterMovement;
     private List<GameObject> lines = new List<GameObject>();
@@ -108,19 +110,23 @@ public class MultiRayShooter : MonoBehaviour
                     }
                 }
             }
-            
-            if (closestHit.collider != null)
+
+            if (showLines)
             {
-                // Update visual line to closest hit point
-                SetLineProperties(line, transform.position, closestHit.point, lineColor);
+                if (closestHit.collider != null)
+                {
+                    // Update visual line to closest hit point
+                    SetLineProperties(line, transform.position, closestHit.point, lineColor);
+                }
+                else
+                {
+                    // No hit, draw full ray
+                    SetLineProperties(line, transform.position, endPos, lineColor);
+                }
+
+                if (fadeOn) Fade(line, fadeDuration);
             }
-            else
-            {
-                // No hit, draw full ray
-                SetLineProperties(line, transform.position, endPos, lineColor);
-            }
-            
-            if (fadeOn) Fade(line, fadeDuration);
+           
         }
     }
 
