@@ -7,7 +7,7 @@ public class MultiRayShooter : MonoBehaviour
 {
     [SerializeField] int _rayCount = 12;
     [SerializeField] float SpreadAngle = 360f;
-    [SerializeField] public float rayDistance = 20f;
+    [SerializeField] float _rayDistance = 20f;
     [SerializeField, Range(0.05f, 0.1f)] float _raywidth = 0.06f;
     [SerializeField] GameObject linePrefab;
     [SerializeField] private bool fadeOn = false;
@@ -79,9 +79,9 @@ public class MultiRayShooter : MonoBehaviour
                 direction.x * Mathf.Sin(angleRad) + direction.y * Mathf.Cos(angleRad)
             );
             Vector2 endPos =  new Vector2(transform.position.x,transform.position.y) +
-                             rayDir * rayDistance;
+                             rayDir * _rayDistance;
             Ray ray = new Ray(transform.position, rayDir);
-            RaycastHit2D[] allRayHits = Physics2D.RaycastAll(this.transform.position, rayDir, rayDistance, layer.value);
+            RaycastHit2D[] allRayHits = Physics2D.RaycastAll(this.transform.position, rayDir, _rayDistance, layer.value);
             
             // Process all non-self hits from this ray
             RaycastHit2D closestHit = new RaycastHit2D();

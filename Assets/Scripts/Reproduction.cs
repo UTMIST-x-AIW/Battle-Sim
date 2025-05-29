@@ -29,7 +29,7 @@ public class Reproduction : MonoBehaviour
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
         // Use the creature's vision range instead of fixed radius
-        float detectionRadius = creatureComponent.visionRange;
+        float detectionRadius = creatureComponent.currentTeammateVisionRange;
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
         
         foreach (var collider in nearbycollider)
@@ -75,7 +75,7 @@ public class Reproduction : MonoBehaviour
 
         // Check if we're in each other's vision range (bidirectional check)
         float distanceBetween = Vector2.Distance(transform.position, other_character.transform.position);
-        if (distanceBetween > creatureComponent.visionRange)
+        if (distanceBetween > creatureComponent.currentTeammateVisionRange)
         {
             return; // Not in each other's vision range
         }
