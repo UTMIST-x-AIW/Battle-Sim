@@ -363,8 +363,8 @@ public class Creature : MonoBehaviour
         if (nearestTeammateDistance <= visionRange && nearestTeammateDistance > 0)
         {
             // Calculate intensity (0 at max range, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / visionRange;
-            sameTypeObs = nearestTeammatePos * intensityFactor;
+            float intensity = visionRange * (1.0f - nearestTeammateDistance / visionRange);
+            sameTypeObs = nearestTeammatePos.normalized * intensity;
         }
         
         // Opponent observations (x,y components) - normalize by max range
@@ -372,8 +372,8 @@ public class Creature : MonoBehaviour
         if (nearestOpponentDistance <= visionRange && nearestOpponentDistance > 0)
         {
             // Calculate intensity (0 at max range, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / visionRange;
-            oppositeTypeObs = nearestOpponentPos * intensityFactor;
+            float intensity = visionRange * (1.0f - nearestOpponentDistance / visionRange);
+            oppositeTypeObs = nearestOpponentPos.normalized * intensity;
         }
         
         // Tree observations (x,y components) - normalize by max range
@@ -381,8 +381,8 @@ public class Creature : MonoBehaviour
         if (nearestTreeDistance <= visionRange && nearestTreeDistance > 0)
         {
             // Calculate intensity (0 at max range, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / visionRange;
-            treeObs = nearestTreePos * intensityFactor;
+            float intensity = visionRange * (1.0f - nearestTreeDistance / visionRange);
+            treeObs = nearestTreePos.normalized * intensity;
         }
 
         // Ground observations (x,y components) - normalize by max range
@@ -390,8 +390,8 @@ public class Creature : MonoBehaviour
         if (nearestGroundDistance <= visionRange && nearestGroundDistance > 0)
         {
             // Calculate intensity (0 at max range, visionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / visionRange;
-            groundObs = nearestGroundPos * intensityFactor;
+            float intensity = visionRange * (1.0f - nearestGroundDistance / visionRange);
+            groundObs = nearestGroundPos.normalized * intensity;
         }
         
         // Use cached range indicators instead of calculating them again

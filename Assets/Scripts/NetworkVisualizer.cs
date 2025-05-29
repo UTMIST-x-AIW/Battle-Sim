@@ -69,6 +69,12 @@ public class NetworkVisualizer : MonoBehaviour
             if (hit.collider != null)
             {
                 Creature creature = hit.collider.GetComponent<Creature>();
+                // If no Creature on the hit object, try the parent (for child colliders)
+                if (creature == null)
+                {
+                    creature = hit.collider.GetComponentInParent<Creature>();
+                }
+                
                 if (creature != null)
                 {
                     SelectCreature(creature);

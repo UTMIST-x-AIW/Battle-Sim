@@ -13,7 +13,7 @@ public class MultiRayShooter : MonoBehaviour
     [SerializeField] private bool fadeOn = false;
     [SerializeField, Min(0)] private int fadeDuration = 100;
     [SerializeField] Color lineColor = Color.red;
-    [SerializeField] LayerMask layer;
+    [SerializeField] LayerMask layer; // Exclude Selection layer to bypass big colliders
 
     [SerializeField] private bool showLines = false;
     
