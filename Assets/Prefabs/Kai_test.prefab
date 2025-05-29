@@ -362,7 +362,7 @@ MonoBehaviour:
   - 10
   - 15
   - 20
-  preAllocCollidersCount: 200
+  preAllocCollidersCount: 20
   useRayDetection: 0
   rayShooter: {fileID: -2190525722626331420}
   type: 1
