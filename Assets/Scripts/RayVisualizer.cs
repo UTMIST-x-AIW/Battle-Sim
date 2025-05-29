@@ -81,32 +81,38 @@ public class MultiRayShooter : MonoBehaviour
             Ray ray = new Ray(transform.position, rayDir);
             RaycastHit2D[] allRayHits = Physics2D.RaycastAll(this.transform.position, rayDir, _rayDistance, layer.value);
             
-            // Find the first hit that isn't from our own GameObject
-            RaycastHit2D hit = new RaycastHit2D();
+            // Process all non-self hits from this ray
+            RaycastHit2D closestHit = new RaycastHit2D();
+            float closestDistance = float.MaxValue;
+            
             foreach (RaycastHit2D rayHit in allRayHits)
             {
                 if (rayHit.collider != null && rayHit.collider.gameObject != gameObject)
                 {
-                    hit = rayHit;
-                    break; // Take the first (closest) non-self hit
+                    // Store all valid hits
+                    allHits.Add(rayHit);
+                    
+                    // Update nearest hit by tag
+                    string tag = rayHit.collider.tag;
+                    if (!nearestHitsByTag.ContainsKey(tag) || 
+                        rayHit.distance < nearestHitsByTag[tag].distance)
+                    {
+                        nearestHitsByTag[tag] = rayHit;
+                    }
+                    
+                    // Track closest hit for visual line
+                    if (rayHit.distance < closestDistance)
+                    {
+                        closestHit = rayHit;
+                        closestDistance = rayHit.distance;
+                    }
                 }
             }
             
-            if (hit.collider != null)
+            if (closestHit.collider != null)
             {
-                // Store all hits
-                allHits.Add(hit);
-                
-                // Store nearest hit by tag
-                string tag = hit.collider.tag;
-                if (!nearestHitsByTag.ContainsKey(tag) || 
-                    hit.distance < nearestHitsByTag[tag].distance)
-                {
-                    nearestHitsByTag[tag] = hit;
-                }
-                
-                // Update visual line to hit point
-                SetLineProperties(line, transform.position, hit.point, lineColor);
+                // Update visual line to closest hit point
+                SetLineProperties(line, transform.position, closestHit.point, lineColor);
             }
             else
             {
