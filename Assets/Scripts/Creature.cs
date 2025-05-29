@@ -10,17 +10,12 @@ using NEAT.Genes;
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
-    private static int totalCreatures = 0; //IMPROVEMENT: move this to our game manager (neattest)
     [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
-    
-    // Make TotalCreatures accessible through a property
-    public static int TotalCreatures { get { return totalCreatures; } }
     
     // Method to reset the static reference when scene changes
     public static void ClearStaticReferences()
     {
         neatTest = null;
-        totalCreatures = 0;
         Debug.Log("Creature static references cleared");
     }
     
@@ -165,9 +160,6 @@ public class Creature : MonoBehaviour
             reproductionMeter = 0f; // Initialize reproduction meter to 0
             lifetime = 0f;
             canStartReproducing = false;
-
-            // Increment counter when creature is created
-            totalCreatures++;
         }
         catch (System.Exception e)
         {
@@ -1148,22 +1140,7 @@ public class Creature : MonoBehaviour
                     Debug.LogError($"Error handling target mate in OnDestroy: {e.Message}");
             }
         }
-
-        // Decrement counter when creature is destroyed
-        totalCreatures--;
             
-            try
-            {
-                // Try to log, but catch any exceptions if LogManager is gone
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
-                }
-            }
-            catch (System.Exception)
-            {
-                // If LogManager is already cleaned up, just silently continue
-            }
         }
         catch (System.Exception e)
         {
