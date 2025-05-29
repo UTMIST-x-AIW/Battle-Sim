@@ -62,11 +62,10 @@ public class Creature : MonoBehaviour
     public float bowDamage = 1.0f;  // Damage dealt by bow
     
     [Header("Detection Settings")]
-    public float[] dynamicVisionRanges = {2.5f, 5f, 10f, 15f, 20f};  // Progressive ranges for dynamic vision
-    public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
+    public float visionRange;
     
     // Ray-based detection system
-    private MultiRayShooter rayShooter; // Reference to MultiRayShooter component
+    public MultiRayShooter rayShooter; // Reference to MultiRayShooter component
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -95,11 +94,6 @@ public class Creature : MonoBehaviour
     // Flag to disable AI brain control
     public bool disableBrainControl = false;
 
-    // Cached object detection - reused for both observations and actions
-    private Collider2D[] nearbyTreeColliders;      // For tree detection //IMPROVEMENT: all of these - this overlapcircle2d is the biggest bottleneck rn, so try raycasting instead (or if doesnt work, then maybe ontrigger, then quadtrees and other ideas)
-    private Collider2D[] nearbyTeammateColliders;  // For teammate detection
-    private Collider2D[] nearbyOpponentColliders;  // For opponent detection
-    private Collider2D[] nearbyGroundColliders;    // For ground detection
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
@@ -126,37 +120,25 @@ public class Creature : MonoBehaviour
     public bool InSwordRange => inSwordRange > 0.5f;
     public bool InBowRange => inBowRange > 0.5f;
     
-    // Track the actual tree vision range currently being used
-    public float currentTreeVisionRange;
-    public float currentTeammateVisionRange;
-    public float currentOpponentVisionRange;
-    public float currentGroundVisionRange;
-
     private float lastDetectionTime = 0f;
 
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
-    {
-        // Initialize collider array with inspector-configured size
-        nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
-        nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
-        nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
-        nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
-        
+    {        
         // Cache NEATTest reference if not already cached
         neatTest = FindObjectOfType<NEATTest>();
         
-
-        // Initialize stats
+         // Initialize stats
         health = maxHealth;
         reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
         
+        visionRange = rayShooter.rayDistance;
+        
         // Increment counter when creature is created
         totalCreatures++;
-        // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
         }
         catch (System.Exception e)
         {
@@ -238,8 +220,6 @@ public class Creature : MonoBehaviour
             return;
         }
         
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
-        
         // Get nearest hits by tag from MultiRayShooter (much simpler approach)
         RaycastHit2D treeHit = rayShooter.GetNearestHitByTag("Tree");
         RaycastHit2D teammateHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Albert" : "Kai");
@@ -308,11 +288,7 @@ public class Creature : MonoBehaviour
             }
         }
         
-        // Set current vision ranges to max since we're using 360-degree detection
-        currentTreeVisionRange = maxDetectionRange;
-        currentTeammateVisionRange = maxDetectionRange;
-        currentOpponentVisionRange = maxDetectionRange;
-        currentGroundVisionRange = maxDetectionRange;
+
     }
 
     private void CalculateRangeIndicators()
@@ -381,42 +357,40 @@ public class Creature : MonoBehaviour
         // Transform the observations according to the formula:
         // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
         
-        // Get maximum detection range for consistent normalization
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
         
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
-        if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
+        if (nearestTeammateDistance <= visionRange && nearestTeammateDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / maxDetectionRange;
+            // Calculate intensity (0 at max range, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestTeammateDistance / visionRange;
             sameTypeObs = nearestTeammatePos * intensityFactor;
         }
         
         // Opponent observations (x,y components) - normalize by max range
         Vector2 oppositeTypeObs = Vector2.zero;
-        if (nearestOpponentDistance <= maxDetectionRange && nearestOpponentDistance > 0)
+        if (nearestOpponentDistance <= visionRange && nearestOpponentDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
+            // Calculate intensity (0 at max range, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestOpponentDistance / visionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
         
         // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;
-        if (nearestTreeDistance <= maxDetectionRange && nearestTreeDistance > 0)
+        if (nearestTreeDistance <= visionRange && nearestTreeDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / maxDetectionRange;
+            // Calculate intensity (0 at max range, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestTreeDistance / visionRange;
             treeObs = nearestTreePos * intensityFactor;
         }
 
         // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
-        if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
+        if (nearestGroundDistance <= visionRange && nearestGroundDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / maxDetectionRange;
+            // Calculate intensity (0 at max range, visionRange when hugging)
+            float intensityFactor = 1.0f - nearestGroundDistance / visionRange;
             groundObs = nearestGroundPos * intensityFactor;
         }
         
@@ -1006,79 +980,75 @@ public class Creature : MonoBehaviour
     private void OnDrawGizmos()
     {
         // Only draw if visualization is enabled and NEATTest reference exists
-        if (neatTest != null)
+        if (neatTest == null) return;  // Early return to prevent null reference errors in prefab editor
+        
+        if (neatTest.showTreeVisionRange)
         {
-            if (neatTest.showTreeVisionRange)
-            {
-                // Draw tree vision range (green)
-                if (dynamicVisionRanges.Length > 0)
-                {
-                    Color treeRangeColor = new Color(0f, 1f, 0f, 0.05f);
-                    Gizmos.color = treeRangeColor;
-                    Gizmos.DrawSphere(transform.position, currentTreeVisionRange);
-                    
-                    // Draw wire frame for tree range
-                    treeRangeColor.a = 0.15f;
-                    Gizmos.color = treeRangeColor;
-                    Gizmos.DrawWireSphere(transform.position, currentTreeVisionRange);
-                }
+            // Draw tree vision range (green)
+                Color treeRangeColor = new Color(0f, 1f, 0f, 0.05f);
+                Gizmos.color = treeRangeColor;
+                Gizmos.DrawSphere(transform.position, visionRange);
+                
+                // Draw wire frame for tree range
+                treeRangeColor.a = 0.15f;
+                Gizmos.color = treeRangeColor;
+                Gizmos.DrawWireSphere(transform.position, visionRange);
             }
                 
-            if (neatTest.showTeammateVisionRange)
-            {
-                // Draw teammate vision range (orange)
-                Color teammateRangeColor = new Color(1f, 0.5f, 0f, 0.05f);
-                Gizmos.color = teammateRangeColor;
-                Gizmos.DrawSphere(transform.position, currentTeammateVisionRange);
-                
-                // Draw wire frame for teammate range
-                teammateRangeColor.a = 0.15f;
-                Gizmos.color = teammateRangeColor;
-                Gizmos.DrawWireSphere(transform.position, currentTeammateVisionRange);
-            }
+        if (neatTest.showTeammateVisionRange)
+        {
+            // Draw teammate vision range (orange)
+            Color teammateRangeColor = new Color(1f, 0.5f, 0f, 0.05f);
+            Gizmos.color = teammateRangeColor;
+            Gizmos.DrawSphere(transform.position, visionRange);
             
-            if (neatTest.showOpponentVisionRange)
-            {
-                // Draw opponent vision range (red)
-                Color opponentRangeColor = new Color(1f, 0f, 0f, 0.05f);
-                Gizmos.color = opponentRangeColor;
-                Gizmos.DrawSphere(transform.position, currentOpponentVisionRange);
-                
-                // Draw wire frame for opponent range
-                opponentRangeColor.a = 0.15f;
-                Gizmos.color = opponentRangeColor;
-                Gizmos.DrawWireSphere(transform.position, currentOpponentVisionRange);
-            }
+            // Draw wire frame for teammate range
+            teammateRangeColor.a = 0.15f;
+            Gizmos.color = teammateRangeColor;
+            Gizmos.DrawWireSphere(transform.position, visionRange);
+        }
+        
+        if (neatTest.showOpponentVisionRange)
+        {
+            // Draw opponent vision range (red)
+            Color opponentRangeColor = new Color(1f, 0f, 0f, 0.05f);
+            Gizmos.color = opponentRangeColor;
+            Gizmos.DrawSphere(transform.position, visionRange);
+            
+            // Draw wire frame for opponent range
+            opponentRangeColor.a = 0.15f;
+            Gizmos.color = opponentRangeColor;
+            Gizmos.DrawWireSphere(transform.position, visionRange);
+        }
 
-            if (neatTest.showGroundVisionRange)
-            {
-                // Draw ground vision range (yellow)
-                Color groundRangeColor = new Color(1f, 1f, 0f, 0.03f);
-                Gizmos.color = groundRangeColor;
-                Gizmos.DrawSphere(transform.position, currentGroundVisionRange);
-                
-                // Draw wire frame for ground range
-                groundRangeColor.a = 0.1f;
-                Gizmos.color = groundRangeColor;
-                Gizmos.DrawWireSphere(transform.position, currentGroundVisionRange);
-            }
-                
-            // Draw close range if enabled
-            if (neatTest.showCloseRange)
-            {
-                Gizmos.color = neatTest.closeRangeColor;
-                Gizmos.DrawWireSphere(transform.position, closeRange);
-            }
+        if (neatTest.showGroundVisionRange)
+        {
+            // Draw ground vision range (yellow)
+            Color groundRangeColor = new Color(1f, 1f, 0f, 0.03f);
+            Gizmos.color = groundRangeColor;
+            Gizmos.DrawSphere(transform.position, visionRange);
+            
+            // Draw wire frame for ground range
+            groundRangeColor.a = 0.1f;
+            Gizmos.color = groundRangeColor;
+            Gizmos.DrawWireSphere(transform.position, visionRange);
+        }
+            
+        // Draw close range if enabled
+        if (neatTest.showCloseRange)
+        {
+            Gizmos.color = neatTest.closeRangeColor;
+            Gizmos.DrawWireSphere(transform.position, closeRange);
+        }
 
-            // Draw bow range if enabled
-            if (neatTest.showBowRange)
-            {
-                Gizmos.color = neatTest.bowRangeColor;
-                Gizmos.DrawWireSphere(transform.position, bowRange);
-            }
+        // Draw bow range if enabled
+        if (neatTest.showBowRange)
+        {
+            Gizmos.color = neatTest.bowRangeColor;
+            Gizmos.DrawWireSphere(transform.position, bowRange);
         }
     }
-    
+
     private NEAT.NN.FeedForwardNetwork CreateChildNetwork(NEAT.NN.FeedForwardNetwork parent1, NEAT.NN.FeedForwardNetwork parent2)
     {
         // Get parent network details via reflection
@@ -1165,11 +1135,4 @@ public class Creature : MonoBehaviour
         return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
     }
 
-    // // Helper method for sword swing animation
-    // private IEnumerator SwingSwordWithDelay(SwordAnimation swordAnim)
-    // {
-    //     // Wait for at least the next frame to avoid multiple calls
-    //     yield return null;
-    //     swordAnim.SwingSword();
-    // }
 }

@@ -296,6 +296,7 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 20
+  rayShooter: {fileID: -2190525722626331420}
   type: 1
   canStartReproducing: 1
   reproductionMeter: 0
@@ -412,6 +413,7 @@ MonoBehaviour:
   layer:
     serializedVersion: 2
     m_Bits: 960
+  showLines: 0
 --- !u!1 &8111889471499386902
 GameObject:
   m_ObjectHideFlags: 0
