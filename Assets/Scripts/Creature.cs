@@ -133,6 +133,8 @@ public class Creature : MonoBehaviour
     public float currentOpponentVisionRange;
     public float currentGroundVisionRange;
 
+    private float lastDetectionTime = 0f;
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
@@ -214,27 +216,33 @@ public class Creature : MonoBehaviour
     // Detect and cache nearby objects - now uses ray-based detection instead of OverlapCircle
     private void DetectNearbyObjects()
     {
-        // Reset all cached values
-        nearestTree = null;
-        nearestOpponent = null;
-        nearestTeammate = null;
-        nearestGround = null;
-        // nearestCherryPos = Vector2.zero;
-        nearestTreePos = Vector2.zero;
-        nearestGroundPos = Vector2.zero;
-        nearestTeammatePos = Vector2.zero;
-        nearestOpponentPos = Vector2.zero;
-        nearestTreeDistance = float.MaxValue;
-        nearestOpponentDistance = float.MaxValue;
-        // nearestCherryDistance = float.MaxValue;
-        nearestGroundDistance = float.MaxValue;
-        nearestTeammateDistance = float.MaxValue;
-        nearestOpponentHealthNormalized = 0f;
+        // Only reset if this is a new physics frame (not just a repeat call for observations)
+        if (Time.fixedTime != lastDetectionTime)
+        {
+            // Reset all cached values
+            nearestTree = null;
+            nearestOpponent = null;
+            nearestTeammate = null;
+            nearestGround = null;
+            // nearestCherryPos = Vector2.zero;
+            nearestTreePos = Vector2.zero;
+            nearestGroundPos = Vector2.zero;
+            nearestTeammatePos = Vector2.zero;
+            nearestOpponentPos = Vector2.zero;
+            nearestTreeDistance = float.MaxValue;
+            nearestOpponentDistance = float.MaxValue;
+            // nearestCherryDistance = float.MaxValue;
+            nearestGroundDistance = float.MaxValue;
+            nearestTeammateDistance = float.MaxValue;
+            nearestOpponentHealthNormalized = 0f;
 
-        // Reset range indicators
-        inChopRange = 0f;
-        inSwordRange = 0f;
-        inBowRange = 0f;
+            // Reset range indicators
+            inChopRange = 0f;
+            inSwordRange = 0f;
+            inBowRange = 0f;
+            
+            lastDetectionTime = Time.fixedTime; // Mark this frame as processed
+        }
 
         if (useRayDetection)
         {
@@ -453,9 +461,25 @@ public class Creature : MonoBehaviour
     // Ray-based detection system using MultiRayShooter data
     private void DetectObjectsWithRays()
     {
-        if (rayShooter == null) return;
+        if (rayShooter == null) 
+        {
+            Debug.LogWarning($"{gameObject.name}: rayShooter is null!");
+            return;
+        }
         
-        float maxDetectionRange = 20f; // Same as configured in Start()
+        float maxDetectionRange;
+        if (useRayDetection)
+        {
+            maxDetectionRange = 20f; // Match the ray detection range
+        }
+        else
+        {
+            maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
+        }
+        
+        // Debug: Check if we're getting any hits at all
+        var allHits = rayShooter.AllHits;
+        Debug.Log($"{gameObject.name} FRAME {Time.frameCount}: Total hits from rayShooter: {allHits.Count} at FixedTime: {Time.fixedTime:F3}, Time: {Time.time:F3}");
         
         // Get nearest hits by tag from MultiRayShooter (much simpler approach)
         RaycastHit2D treeHit = rayShooter.GetNearestHitByTag("Tree");
@@ -463,14 +487,26 @@ public class Creature : MonoBehaviour
         RaycastHit2D opponentHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Kai" : "Albert");
         RaycastHit2D groundHit = rayShooter.GetNearestHitByTag("Ground");
         
+        // Debug: Check what GetNearestHitByTag is returning
+        if (teammateHit.collider != null)
+        {
+            Debug.Log($"{gameObject.name}: GetNearestHitByTag returned teammate hit at distance {teammateHit.distance}");
+        }
+        
+        Debug.Log($"{gameObject.name}: Hit results - Tree: {treeHit.collider != null}, Teammate: {teammateHit.collider != null}, Opponent: {opponentHit.collider != null}, Ground: {groundHit.collider != null}");
+        
         // Process tree hit
         if (treeHit.collider != null)
         {
             Vector2 relativePos = (Vector2)(transform.position - treeHit.collider.transform.position);
             float distance = relativePos.magnitude;
-            nearestTreePos = relativePos;
-            nearestTreeDistance = distance;
-            nearestTree = treeHit.collider.GetComponent<TreeHealth>();
+            if (distance < nearestTreeDistance) // Only update if closer
+            {
+                nearestTreePos = relativePos;
+                nearestTreeDistance = distance;
+                nearestTree = treeHit.collider.GetComponent<TreeHealth>();
+                Debug.Log($"{gameObject.name}: Found tree at distance {distance}");
+            }
         }
         
         // Process teammate hit
@@ -481,9 +517,13 @@ public class Creature : MonoBehaviour
             {
                 Vector2 relativePos = (Vector2)(transform.position - teammateHit.collider.transform.position);
                 float distance = relativePos.magnitude;
-                nearestTeammatePos = relativePos;
-                nearestTeammateDistance = distance;
-                nearestTeammate = teammate;
+                if (distance < nearestTeammateDistance) // Only update if closer
+                {
+                    nearestTeammatePos = relativePos;
+                    nearestTeammateDistance = distance;
+                    nearestTeammate = teammate;
+                    Debug.Log($"{gameObject.name}: Found teammate at distance {distance}");
+                }
             }
         }
         
@@ -495,10 +535,14 @@ public class Creature : MonoBehaviour
             {
                 Vector2 relativePos = (Vector2)(transform.position - opponentHit.collider.transform.position);
                 float distance = relativePos.magnitude;
-                nearestOpponentPos = relativePos;
-                nearestOpponentDistance = distance;
-                nearestOpponent = opponent;
-                nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
+                if (distance < nearestOpponentDistance) // Only update if closer
+                {
+                    nearestOpponentPos = relativePos;
+                    nearestOpponentDistance = distance;
+                    nearestOpponent = opponent;
+                    nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
+                    Debug.Log($"{gameObject.name}: Found opponent at distance {distance}");
+                }
             }
         }
         
@@ -509,9 +553,13 @@ public class Creature : MonoBehaviour
             Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
             float groundPointDistance = groundRelativePos.magnitude;
             
-            nearestGroundPos = groundRelativePos;
-            nearestGroundDistance = groundPointDistance;
-            nearestGround = groundHit.collider;
+            if (groundPointDistance < nearestGroundDistance) // Only update if closer
+            {
+                nearestGroundPos = groundRelativePos;
+                nearestGroundDistance = groundPointDistance;
+                nearestGround = groundHit.collider;
+                Debug.Log($"{gameObject.name}: Found ground at distance {groundPointDistance}");
+            }
         }
         
         // Set current vision ranges to max since we're using 360-degree detection
@@ -588,7 +636,28 @@ public class Creature : MonoBehaviour
         // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
         
         // Get maximum detection range for consistent normalization
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
+        float maxDetectionRange;
+        if (useRayDetection)
+        {
+            maxDetectionRange = 20f; // Match the ray detection range
+        }
+        else
+        {
+            maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
+        }
+        
+        // Debug: Log the raw detection data
+        if (useRayDetection && Time.frameCount % 120 == 0) // Every 2 seconds
+        {
+            Debug.Log($"{gameObject.name} RAW DETECTION DATA:");
+            Debug.Log($"  nearestTeammateDistance: {nearestTeammateDistance}, nearestTeammatePos: {nearestTeammatePos}");
+            Debug.Log($"  nearestOpponentDistance: {nearestOpponentDistance}, nearestOpponentPos: {nearestOpponentPos}");
+            Debug.Log($"  nearestTreeDistance: {nearestTreeDistance}, nearestTreePos: {nearestTreePos}");
+            Debug.Log($"  nearestGroundDistance: {nearestGroundDistance}, nearestGroundPos: {nearestGroundPos}");
+            Debug.Log($"  maxDetectionRange: {maxDetectionRange}");
+            Debug.Log($"  dynamicVisionRanges: [{string.Join(", ", dynamicVisionRanges)}]");
+            Debug.Log($"  Ray detection uses fixed 20f, observation uses: {maxDetectionRange}");
+        }
         
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
@@ -648,6 +717,16 @@ public class Creature : MonoBehaviour
         obs[13] = this.inBowRange;
 
         obs[14] = nearestOpponentHealthNormalized;
+        
+        // Debug: Log the final observation values
+        if (useRayDetection && Time.frameCount % 120 == 0) // Every 2 seconds
+        {
+            Debug.Log($"{gameObject.name} FINAL OBSERVATIONS:");
+            Debug.Log($"  sameTypeObs (3,4): ({obs[3]}, {obs[4]})");
+            Debug.Log($"  oppositeTypeObs (5,6): ({obs[5]}, {obs[6]})");
+            Debug.Log($"  treeObs (7,8): ({obs[7]}, {obs[8]})");
+            Debug.Log($"  groundObs (9,10): ({obs[9]}, {obs[10]})");
+        }
         
         return obs;
     }

@@ -37,7 +37,7 @@ public class MultiRayShooter : MonoBehaviour
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // For 360-degree detection, direction doesn't matter, use fixed direction
         if (SpreadAngle >= 360f)
@@ -53,14 +53,25 @@ public class MultiRayShooter : MonoBehaviour
                 UpdateTargetRotations(characterMovement.lastdirection);
             }
         }
+        
+        // Debug log once per frame
+        if (Time.frameCount % 60 == 0) // Every 60 frames
+        {
+            Debug.Log($"{gameObject.name} FRAME {Time.frameCount}: MultiRayShooter.FixedUpdate() - Cast {_rayCount} rays, got {allHits.Count} hits. FixedTime: {Time.fixedTime:F3}");
+        }
     }
-
 
     void UpdateTargetRotations(Vector2 direction)
     {
         // Clear previous frame's data
         allHits.Clear();
         nearestHitsByTag.Clear();
+        
+        // Debug: Log configuration once per second
+        if (Time.frameCount % 60 == 0)
+        {
+            Debug.Log($"{gameObject.name} MultiRayShooter config: rayCount={_rayCount}, distance={_rayDistance}, layerMask={layer.value}");
+        }
         
         /*
         foreach (GameObject line in lines)
@@ -70,8 +81,13 @@ public class MultiRayShooter : MonoBehaviour
         
         direction.Normalize();
         float halfSpread = SpreadAngle / 2f;
+        
+        int hitCount = 0; // Debug counter
+        int totalRaysCast = 0; // Debug counter
+        
         for (int i = 0; i < _rayCount; i++)
         {
+            totalRaysCast++;
             float t = _rayCount > 1 ? i / (float)(_rayCount - 1) : 0.5f;
             float rotation_angle = Mathf.Lerp(-halfSpread, halfSpread, t);
             Quaternion resultantRotation =  Quaternion.Euler(0,0,rotation_angle);
@@ -85,11 +101,29 @@ public class MultiRayShooter : MonoBehaviour
             Vector2 endPos =  new Vector2(transform.position.x,transform.position.y) +
                              rayDir * _rayDistance;
             Ray ray = new Ray(transform.position, rayDir);
-            RaycastHit2D hit = Physics2D.Raycast(this.transform.position, rayDir, _rayDistance, layer.value);
+            RaycastHit2D[] allRayHits = Physics2D.RaycastAll(this.transform.position, rayDir, _rayDistance, layer.value);
+            
+            // Find the first hit that isn't from our own GameObject
+            RaycastHit2D hit = new RaycastHit2D();
+            foreach (RaycastHit2D rayHit in allRayHits)
+            {
+                if (rayHit.collider != null && rayHit.collider.gameObject != gameObject)
+                {
+                    hit = rayHit;
+                    break; // Take the first (closest) non-self hit
+                }
+            }
+            
+            // Debug: Log every 10th ray
+            if (i % 10 == 0 && Time.frameCount % 60 == 0)
+            {
+                Debug.Log($"{gameObject.name} Ray {i}: from {transform.position} dir {rayDir} dist {_rayDistance} layerMask {layer.value} -> totalHits: {allRayHits.Length}, validHit: {hit.collider != null}");
+            }
             
             if (hit.collider != null)
             {
-                Debug.Log(hit.collider.gameObject.name + " was hit.");
+                hitCount++;
+                Debug.Log(hit.collider.gameObject.name + " was hit. Tag: " + hit.collider.tag + ", Layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
                 
                 // Store all hits
                 allHits.Add(hit);
@@ -112,6 +146,12 @@ public class MultiRayShooter : MonoBehaviour
             }
             
             if (fadeOn) Fade(line, fadeDuration);
+        }
+        
+        // Debug: Log summary once per second  
+        if (Time.frameCount % 60 == 0)
+        {
+            Debug.Log($"{gameObject.name} MultiRayShooter summary: cast {totalRaysCast} rays, got {hitCount} valid hits (after filtering self-hits)");
         }
     }
 
