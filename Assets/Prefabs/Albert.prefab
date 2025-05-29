@@ -344,8 +344,22 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 20
-  rayCount: 16
-  raycastStep: 1
+  detectionRayCount: 16
+  maxDetectionRange: 20
+  enableDetectionVisualization: 0
+  enableDetectionDebugLogs: 0
+  treeLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
+  albertLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  kaiLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
   type: 0
   canStartReproducing: 1
   reproductionMeter: 0
