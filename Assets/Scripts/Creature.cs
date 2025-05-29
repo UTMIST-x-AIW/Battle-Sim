@@ -92,6 +92,7 @@ public class Creature : MonoBehaviour
     private Collider2D[] nearbyTeammateColliders;  // For teammate detection
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
     private Collider2D[] nearbyGroundColliders;    // For ground detection
+    private Collider2D[] nearbyColliders;
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
@@ -126,7 +127,7 @@ public class Creature : MonoBehaviour
 
     private float lastDetectionTime = 0f;
 
-    private float maxDetectionRange;
+    public float maxDetectionRange = 20f;
 
     private void Awake()
     {
@@ -139,13 +140,18 @@ public class Creature : MonoBehaviour
             }
             else
             {
-                maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
-
+                if (dynamicVisionRanges.Length > 0)
+                {
+                    maxDetectionRange = dynamicVisionRanges[dynamicVisionRanges.Length - 1]; //TODO: write this properly.. ykwim
+                }
+               
                 // Initialize collider array with inspector-configured size
                 nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
                 nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
                 nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
                 nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
+                nearbyColliders = new Collider2D[preAllocCollidersCount * 4];
+
             }
             
             // Cache NEATTest reference if not already cached
@@ -228,10 +234,19 @@ public class Creature : MonoBehaviour
         else
         {
             // Fall back to original overlap detection
-            DetectTreesProgressively();
-            DetectTeammatesProgressively();
-            DetectOpponentsProgressively();
-            DetectGroundProgressively();
+            if (dynamicVisionRanges.Length == 0)
+            {
+                DetectAllInRange(maxDetectionRange);
+
+            }
+            else
+            {
+                DetectTreesProgressively();
+                DetectTeammatesProgressively();
+                DetectOpponentsProgressively();
+                DetectGroundProgressively();
+            }  
+    
         }
 
         // Calculate range indicators
@@ -307,14 +322,83 @@ public class Creature : MonoBehaviour
             }
         }
     }
+
+    private void DetectAllInRange(float range)
+    {
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            range,
+            nearbyColliders,
+            LayerMask.GetMask("Trees", "Kais", "Alberts", "Ground")
+        );
+
+        // Process all detected colliders
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyColliders[i];
+            if (collider.gameObject == gameObject) continue; // Skip self
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            // Process trees
+            if (collider.CompareTag("Tree"))
+            {
+                if (distance < nearestTreeDistance)
+                {
+                    nearestTreePos = relativePos;
+                    nearestTreeDistance = distance;
+                    nearestTree = collider.GetComponent<TreeHealth>();
+                }
+            }
+            // Process teammates (same type)
+            else if ((type == CreatureType.Albert && collider.CompareTag("Albert")) ||
+                     (type == CreatureType.Kai && collider.CompareTag("Kai")))
+            {
+                Creature teammate = collider.GetComponent<Creature>();
+                if (teammate != null && distance < nearestTeammateDistance)
+                {
+                    nearestTeammatePos = relativePos;
+                    nearestTeammateDistance = distance;
+                    nearestTeammate = teammate;
+                }
+            }
+            // Process opponents (opposite type)
+            else if ((type == CreatureType.Albert && collider.CompareTag("Kai")) ||
+                     (type == CreatureType.Kai && collider.CompareTag("Albert")))
+            {
+                Creature opponent = collider.GetComponent<Creature>();
+                if (opponent != null && distance < nearestOpponentDistance)
+                {
+                    nearestOpponentPos = relativePos;
+                    nearestOpponentDistance = distance;
+                    nearestOpponent = opponent;
+                    nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
+                }
+            }
+            // Process ground
+            else if (collider.CompareTag("Ground"))
+            {
+                Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)collider.ClosestPoint(transform.position);
+                float groundPointDistance = groundRelativePos.magnitude;
+                
+                if (groundPointDistance < nearestGroundDistance)
+                {
+                    nearestGroundPos = groundRelativePos;
+                    nearestGroundDistance = groundPointDistance;
+                    nearestGround = collider;
+                }
+            }
+        }
+    }
     
     private void DetectTreesInRange(float range)
     {
         // Only detect trees in this range
         int numColliders = Physics2D.OverlapCircleNonAlloc(
-            transform.position, 
-            range, 
-            nearbyTreeColliders, 
+            transform.position,
+            range,
+            nearbyTreeColliders,
             LayerMask.GetMask("Trees")
         );
 
@@ -322,12 +406,12 @@ public class Creature : MonoBehaviour
         {
             var collider = nearbyTreeColliders[i];
             if (collider.gameObject == gameObject) continue;
-            
+
             if (collider.CompareTag("Tree"))
             {
                 Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
                 float distance = relativePos.magnitude;
-                
+
                 if (distance < nearestTreeDistance)
                 {
                     nearestTreePos = relativePos;

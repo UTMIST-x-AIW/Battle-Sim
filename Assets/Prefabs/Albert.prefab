@@ -351,13 +351,8 @@ MonoBehaviour:
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
-  dynamicVisionRanges:
-  - 2.5
-  - 5
-  - 10
-  - 15
-  - 20
-  preAllocCollidersCount: 20
+  dynamicVisionRanges: []
+  preAllocCollidersCount: 200
   useRayDetection: 0
   rayShooter: {fileID: 8915838758581191604}
   type: 0
@@ -368,6 +363,7 @@ MonoBehaviour:
   currentTeammateVisionRange: 0
   currentOpponentVisionRange: 0
   currentGroundVisionRange: 0
+  maxDetectionRange: 20
 --- !u!114 &8582702518482994380
 MonoBehaviour:
   m_ObjectHideFlags: 0
