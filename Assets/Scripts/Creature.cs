@@ -444,8 +444,7 @@ public class Creature : MonoBehaviour
             
             if (collider.CompareTag("Ground"))
             {
-                Vector2 closestPoint = collider.ClosestPoint(transform.position);
-                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)collider.ClosestPoint(transform.position);
                 float groundPointDistance = groundRelativePos.magnitude;
                 
                 if (groundPointDistance < nearestGroundDistance)
@@ -533,8 +532,7 @@ public class Creature : MonoBehaviour
         // Process ground hit
         if (groundHit.collider != null)
         {
-            Vector2 closestPoint = groundHit.collider.ClosestPoint(transform.position);
-            Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+            Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)groundHit.point;
             float groundPointDistance = groundRelativePos.magnitude;
             
             if (groundPointDistance < nearestGroundDistance) // Only update if closer
