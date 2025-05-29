@@ -176,7 +176,6 @@ GameObject:
   - component: {fileID: 8582702518482994380}
   - component: {fileID: 1276911961630543896}
   - component: {fileID: 2731702346108235746}
-  - component: {fileID: -5482480677957535289}
   m_Layer: 8
   m_Name: Albert
   m_TagString: Creature
@@ -345,6 +344,8 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 20
+  rayCount: 16
+  raycastStep: 1
   type: 0
   canStartReproducing: 1
   reproductionMeter: 0
@@ -451,29 +452,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastdirection: {x: 0, y: 0}
---- !u!114 &-5482480677957535289
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rayCount: 8
-  SpreadAngle: 30
-  _rayDistance: 10
-  _raywidth: 0.06
-  linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
-  fadeOn: 1
-  fadeDuration: 100
-  lineColor: {r: 1, g: 0, b: 0, a: 1}
-  layer:
-    serializedVersion: 2
-    m_Bits: 32
 --- !u!1001 &61868326606297411
 PrefabInstance:
   m_ObjectHideFlags: 0
