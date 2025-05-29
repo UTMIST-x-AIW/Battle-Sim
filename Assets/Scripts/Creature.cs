@@ -66,7 +66,7 @@ public class Creature : MonoBehaviour
     public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
     
     // Ray-based detection system
-    private bool useRayDetection = true; // Toggle between ray and overlap detection
+    public bool useRayDetection = true; // Toggle between ray and overlap detection
     public MultiRayShooter rayShooter; // Reference to MultiRayShooter component
     
     // Type

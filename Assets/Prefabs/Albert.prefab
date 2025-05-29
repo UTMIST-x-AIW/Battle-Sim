@@ -169,12 +169,12 @@ GameObject:
   m_Component:
   - component: {fileID: 97759648320744754}
   - component: {fileID: 2172908628139528993}
+  - component: {fileID: 2731702346108235746}
   - component: {fileID: 2666509316153106925}
   - component: {fileID: 7341221049699844455}
   - component: {fileID: 8456227767087271932}
   - component: {fileID: 8582702518482994380}
   - component: {fileID: 1276911961630543896}
-  - component: {fileID: 2731702346108235746}
   - component: {fileID: 8915838758581191604}
   m_Layer: 8
   m_Name: Albert
@@ -255,6 +255,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &2731702346108235746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7896111451434077960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lastdirection: {x: 0, y: 0}
 --- !u!50 &2666509316153106925
 Rigidbody2D:
   serializedVersion: 4
@@ -345,6 +358,7 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 200
+  useRayDetection: 0
   rayShooter: {fileID: 8915838758581191604}
   type: 0
   canStartReproducing: 1
@@ -404,19 +418,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.28
---- !u!114 &2731702346108235746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f36f06a619381534f83ce22b406b31f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lastdirection: {x: 0, y: 0}
 --- !u!114 &8915838758581191604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,14 +425,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _rayCount: 12
   SpreadAngle: 360
-  _rayDistance: 20
+  rayDistance: 20
   _raywidth: 0.06
   linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
   fadeOn: 0
@@ -440,7 +441,7 @@ MonoBehaviour:
   layer:
     serializedVersion: 2
     m_Bits: 960
-  showLines: 0
+  showLines: 1
 --- !u!1 &7905271695142026426
 GameObject:
   m_ObjectHideFlags: 0

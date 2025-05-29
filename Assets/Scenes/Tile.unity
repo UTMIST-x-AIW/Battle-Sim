@@ -19138,7 +19138,7 @@ MonoBehaviour:
   runTests: 1
   currentTest: 5
   showTreeVisionRange: 0
-  showTeammateVisionRange: 0
+  showTeammateVisionRange: 1
   showOpponentVisionRange: 0
   showGroundVisionRange: 0
   showCloseRange: 0

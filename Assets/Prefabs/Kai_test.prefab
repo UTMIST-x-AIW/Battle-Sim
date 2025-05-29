@@ -363,6 +363,7 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 200
+  useRayDetection: 0
   rayShooter: {fileID: -2190525722626331420}
   type: 1
   canStartReproducing: 1
@@ -429,14 +430,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc57989cde6e438479e7400f05aa589f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _rayCount: 12
   SpreadAngle: 360
-  _rayDistance: 20
+  rayDistance: 20
   _raywidth: 0.06
   linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
   fadeOn: 0
@@ -445,7 +446,7 @@ MonoBehaviour:
   layer:
     serializedVersion: 2
     m_Bits: 960
-  showLines: 0
+  showLines: 1
 --- !u!1 &8111889471499386902
 GameObject:
   m_ObjectHideFlags: 0
