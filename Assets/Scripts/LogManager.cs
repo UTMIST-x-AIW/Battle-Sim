@@ -18,6 +18,12 @@ public class LogManager : MonoBehaviour
     {
         get
         {
+            // Don't create a new instance if logging is disabled
+            if (!enableLogging)
+            {
+                return null;
+            }
+            
             // Don't create a new instance during application quit
             if (isApplicationQuitting)
             {
