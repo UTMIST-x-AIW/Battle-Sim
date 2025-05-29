@@ -37,7 +37,7 @@ public class MultiRayShooter : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
         // For 360-degree detection, direction doesn't matter, use fixed direction
         if (SpreadAngle >= 360f)
