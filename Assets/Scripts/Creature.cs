@@ -79,11 +79,7 @@ public class Creature : MonoBehaviour
     }
     
     // Add at the top with other private fields
-    private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
-    private bool isMovingToMate = false;
-    private bool isWaitingForMate = false;
     public bool canStartReproducing = false;  // New flag to control reproduction start, now public
-    private Creature targetMate = null;
     public float reproductionMeter = 0f; // Renamed from reproductionCooldown, now public
 
     private bool hasCheckedNeatTest = false;
@@ -830,48 +826,44 @@ public class Creature : MonoBehaviour
                 return;
             }
             
-            // Only get actions if we're not reproducing or moving to mate
-            if (!isReproducing && !isMovingToMate && !isWaitingForMate)
+            try
             {
-                try
+                // FIXED: Only fill reproduction meter if it's not full yet
+                if (reproductionMeter < 1.0f)
                 {
-                    // FIXED: Only fill reproduction meter if it's not full yet
-                    if (reproductionMeter < 1.0f)
-                    {
-                        reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
-                        
-                        // When meter is full, set canStartReproducing to true but don't reset the meter
-                        if (reproductionMeter >= 1f)
-                        {
-                            canStartReproducing = true;
-                        }
-                    }
+                    reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
                     
-                    // Detect nearby objects once per frame and cache results
-                    DetectNearbyObjects();
-                    
-                    // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
-                    float[] observations = GetObservations();
-                    float[] actions = GetActions(observations);
-
-                    if (!disableBrainControl)
+                    // When meter is full, set canStartReproducing to true but don't reset the meter
+                    if (reproductionMeter >= 1f)
                     {
-                        // Process the network's action commands
-                        ProcessActionCommands(actions); //IMPROVEMENT: try using multithreading here, with jobs
+                        canStartReproducing = true;
                     }
                 }
-                catch (System.Exception e)
+                
+                // Detect nearby objects once per frame and cache results
+                DetectNearbyObjects();
+                
+                // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
+                float[] observations = GetObservations();
+                float[] actions = GetActions(observations);
+
+                if (!disableBrainControl)
                 {
-                    // Log detailed error information
-                    string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
-                    if (LogManager.Instance != null)
-                    {
-                        LogManager.LogError(errorMessage);
-                    }
-                    else
-                    {
-                        Debug.LogError(errorMessage);
-                    }
+                    // Process the network's action commands
+                    ProcessActionCommands(actions); //IMPROVEMENT: try using multithreading here, with jobs
+                }
+            }
+            catch (System.Exception e)
+            {
+                // Log detailed error information
+                string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError(errorMessage);
+                }
+                else
+                {
+                    Debug.LogError(errorMessage);
                 }
             }
         }
@@ -1106,40 +1098,7 @@ public class Creature : MonoBehaviour
                 // If LogManager is already cleaned up, just silently continue
             }
             
-        // If we were someone's target mate, free them but handle exceptions
-        if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
-            {
-                try
-        {
-            // Break the circular reference first
-            var tempMate = targetMate;
-            targetMate = null;
-            
-            // Reset their flags directly instead of using FreeMate which may start coroutines
-            tempMate.isMovingToMate = false;
-            tempMate.isWaitingForMate = false;
-            tempMate.isReproducing = false;
-            tempMate.canStartReproducing = false;
-            tempMate.targetMate = null;
-            
-            // If they're still alive and active, they can start their own timer
-            if (tempMate.gameObject.activeInHierarchy)
-            {
-                try 
-                {
-                    tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
-                }
-                        catch (System.Exception e)
-                {
-                            Debug.LogError($"Error starting reproduction timer for mate: {e.Message}");
-                }
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"Error handling target mate in OnDestroy: {e.Message}");
-            }
-        }
+
             
         }
         catch (System.Exception e)
