@@ -135,11 +135,21 @@ public class Creature : MonoBehaviour
 
     private float lastDetectionTime = 0f;
 
+    private float maxDetectionRange;
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
         {
-            if (!useRayDetection) {
+
+            if (useRayDetection)
+            {
+                maxDetectionRange = rayShooter.rayDistance;
+            }
+            else
+            {
+                maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
+
                 // Initialize collider array with inspector-configured size
                 nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
                 nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
@@ -148,14 +158,14 @@ public class Creature : MonoBehaviour
             }
             
             // Cache NEATTest reference if not already cached
-            neatTest = FindObjectOfType<NEATTest>();
-            
+            neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
+
             // Initialize stats
             health = maxHealth;
             reproductionMeter = 0f; // Initialize reproduction meter to 0
             lifetime = 0f;
             canStartReproducing = false;
-            
+
             // Increment counter when creature is created
             totalCreatures++;
         }
@@ -443,7 +453,6 @@ public class Creature : MonoBehaviour
             return;
         }
         
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
         // Get nearest hits by tag from MultiRayShooter (much simpler approach)
         RaycastHit2D treeHit = rayShooter.GetNearestHitByTag("Tree");
         RaycastHit2D teammateHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Albert" : "Kai");
@@ -584,10 +593,7 @@ public class Creature : MonoBehaviour
         
         // Transform the observations according to the formula:
         // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
-        
-        // Get maximum detection range for consistent normalization
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
-        
+                
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
         if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
