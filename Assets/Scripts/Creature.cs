@@ -484,7 +484,7 @@ public class Creature : MonoBehaviour
         // Process tree hit
         if (treeHit.collider != null)
         {
-            Vector2 relativePos = (Vector2)(transform.position - treeHit.collider.transform.position);
+            Vector2 relativePos = (Vector2)transform.position - (Vector2)treeHit.point;
             float distance = relativePos.magnitude;
             if (distance < nearestTreeDistance) // Only update if closer
             {
@@ -500,7 +500,7 @@ public class Creature : MonoBehaviour
             Creature teammate = teammateHit.collider.GetComponent<Creature>();
             if (teammate != null && teammate.gameObject != gameObject)
             {
-                Vector2 relativePos = (Vector2)(transform.position - teammateHit.collider.transform.position);
+                Vector2 relativePos = (Vector2)transform.position - (Vector2)teammateHit.point;
                 float distance = relativePos.magnitude;
                 if (distance < nearestTeammateDistance) // Only update if closer
                 {
@@ -517,7 +517,7 @@ public class Creature : MonoBehaviour
             Creature opponent = opponentHit.collider.GetComponent<Creature>();
             if (opponent != null && opponent.gameObject != gameObject)
             {
-                Vector2 relativePos = (Vector2)(transform.position - opponentHit.collider.transform.position);
+                Vector2 relativePos = (Vector2)transform.position - (Vector2)opponentHit.point;
                 float distance = relativePos.magnitude;
                 if (distance < nearestOpponentDistance) // Only update if closer
                 {
