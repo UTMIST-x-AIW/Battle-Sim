@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 8582702518482994380}
   - component: {fileID: 1276911961630543896}
   - component: {fileID: 2731702346108235746}
-  - component: {fileID: -2834920537305685822}
+  - component: {fileID: 8915838758581191604}
   m_Layer: 8
   m_Name: Albert
   m_TagString: Albert
@@ -338,12 +338,22 @@ MonoBehaviour:
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
-  visionRange: 0
-  rayShooter: {fileID: -2834920537305685822}
+  dynamicVisionRanges:
+  - 2.5
+  - 5
+  - 10
+  - 15
+  - 20
+  preAllocCollidersCount: 200
+  rayShooter: {fileID: 8915838758581191604}
   type: 0
   canStartReproducing: 1
   reproductionMeter: 0
   disableBrainControl: 0
+  currentTreeVisionRange: 0
+  currentTeammateVisionRange: 0
+  currentOpponentVisionRange: 0
+  currentGroundVisionRange: 0
 --- !u!114 &8582702518482994380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,7 +417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastdirection: {x: 0, y: 0}
---- !u!114 &-2834920537305685822
+--- !u!114 &8915838758581191604
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -420,13 +430,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rayCount: 12
-  SpreadAngle: 60
-  rayDistance: 20
+  SpreadAngle: 360
+  _rayDistance: 20
   _raywidth: 0.06
   linePrefab: {fileID: 2236510940459588073, guid: ae1f28af26458e644a0d9f3428cded0f, type: 3}
   fadeOn: 0
   fadeDuration: 100
-  lineColor: {r: 1, g: 0, b: 0, a: 1}
+  lineColor: {r: 1, g: 0.5402053, b: 0, a: 1}
   layer:
     serializedVersion: 2
     m_Bits: 960
