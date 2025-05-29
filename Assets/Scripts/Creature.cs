@@ -592,42 +592,42 @@ public class Creature : MonoBehaviour
         obs[2] = reproductionMeter; // Reproduction meter (already 0-1)
         
         // Transform the observations according to the formula:
-        // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
+        // 0 when outside FOV, 0 at FOV border, decreases linearly to -1 when hugging creature (analogous to a spring force pushing away from target)
                 
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
         if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / maxDetectionRange;
-            sameTypeObs = nearestTeammatePos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestTeammateDistance / maxDetectionRange;
+            sameTypeObs = nearestTeammatePos.normalized * intensity;
         }
         
         // Opponent observations (x,y components) - normalize by max range
         Vector2 oppositeTypeObs = Vector2.zero;
         if (nearestOpponentDistance <= maxDetectionRange && nearestOpponentDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
-            oppositeTypeObs = nearestOpponentPos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestOpponentDistance / maxDetectionRange;
+            oppositeTypeObs = nearestOpponentPos.normalized * intensity;
         }
         
         // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;
         if (nearestTreeDistance <= maxDetectionRange && nearestTreeDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / maxDetectionRange;
-            treeObs = nearestTreePos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestTreeDistance / maxDetectionRange;
+            treeObs = nearestTreePos.normalized * intensity;
         }
 
         // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
         if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / maxDetectionRange;
-            groundObs = nearestGroundPos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestGroundDistance / maxDetectionRange;
+            groundObs = nearestGroundPos.normalized * intensity;
         }
         
         // Use cached range indicators instead of calculating them again
