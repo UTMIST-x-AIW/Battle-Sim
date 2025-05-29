@@ -197,7 +197,7 @@ public class Creature : MonoBehaviour
             
             // Configure for 360-degree detection
             LayerMask detectionLayers = LayerMask.GetMask("Trees", "Alberts", "Kais", "Ground");
-            rayShooter.ConfigureFor360Detection(36, 20f, detectionLayers);
+            rayShooter.ConfigureFor360Detection(12, 20f, detectionLayers);
         }
     }
 

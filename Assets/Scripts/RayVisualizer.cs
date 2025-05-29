@@ -12,7 +12,7 @@ public class MultiRayShooter : MonoBehaviour
     [SerializeField] GameObject linePrefab;
     [SerializeField] private bool fadeOn;
     [SerializeField, Min(0)] private int fadeDuration = 100;
-    [SerializeField] Color lineColor = Color.white;
+    [SerializeField] Color lineColor = Color.red;
     [SerializeField] LayerMask layer;
     
     private Movement characterMovement;
@@ -176,7 +176,7 @@ public class MultiRayShooter : MonoBehaviour
     }
     
     // Configure for 360-degree detection (for Creature system)
-    public void ConfigureFor360Detection(int rayCount = 36, float maxRange = 20f, LayerMask detectionLayers = default)
+    public void ConfigureFor360Detection(int rayCount = 12, float maxRange = 20f, LayerMask detectionLayers = default)
     {
         _rayCount = rayCount;
         SpreadAngle = 360f;
@@ -190,7 +190,7 @@ public class MultiRayShooter : MonoBehaviour
             linePrefab = new GameObject("RayLine");
             LineRenderer lr = linePrefab.AddComponent<LineRenderer>();
             lr.material = new Material(Shader.Find("Sprites/Default"));
-            lr.material.color = Color.white;
+            lr.material.color = Color.red;
             lr.startWidth = 0.1f;
             lr.endWidth = 0.1f;
             lr.positionCount = 2;
