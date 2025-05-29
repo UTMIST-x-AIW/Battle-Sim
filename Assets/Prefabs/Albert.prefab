@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 2731702346108235746}
   m_Layer: 8
   m_Name: Albert
-  m_TagString: Creature
+  m_TagString: Albert
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -344,22 +344,6 @@ MonoBehaviour:
   - 15
   - 20
   preAllocCollidersCount: 20
-  detectionRayCount: 16
-  maxDetectionRange: 20
-  enableDetectionVisualization: 0
-  enableDetectionDebugLogs: 0
-  treeLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
-  albertLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  kaiLayerMask:
-    serializedVersion: 2
-    m_Bits: 512
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
   type: 0
   canStartReproducing: 1
   reproductionMeter: 0

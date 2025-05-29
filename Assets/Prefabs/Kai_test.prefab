@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 1276911961630543896}
   m_Layer: 9
   m_Name: Kai_test
-  m_TagString: Creature
+  m_TagString: Kai
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

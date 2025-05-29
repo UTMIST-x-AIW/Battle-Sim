@@ -1,74 +1,88 @@
 using UnityEngine;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 public class PerformanceTest : MonoBehaviour
 {
     [Header("Performance Testing")]
-    public int testIterations = 1000;
-    public float testRadius = 20f;
-    public LayerMask testLayerMask = -1;
+    public bool showPerformanceUI = true;
+    public KeyCode toggleDetectionKey = KeyCode.T;
     
-    [Header("Results")]
-    public float overlapCircleTime;
-    public float raycastTime;
-    public float speedupRatio;
-
+    private float deltaTime = 0.0f;
+    private List<Creature> allCreatures = new List<Creature>();
+    private bool rayDetectionActive = true;
+    
     void Start()
     {
-        // Run performance comparison
-        CompareDetectionMethods();
+        // Find all creatures in the scene
+        RefreshCreatureList();
+        
+        // Set initial detection method
+        SetDetectionMethod(rayDetectionActive);
     }
-
-    void CompareDetectionMethods()
+    
+    void Update()
     {
-        // Test OverlapCircle method
-        Stopwatch sw = new Stopwatch();
+        // Calculate FPS
+        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
         
-        // Warm up
-        for (int i = 0; i < 100; i++)
+        // Toggle detection method
+        if (Input.GetKeyDown(toggleDetectionKey))
         {
-            Physics2D.OverlapCircleAll(transform.position, testRadius, testLayerMask);
+            ToggleDetectionMethod();
         }
         
-        // Test OverlapCircleAll (old method)
-        sw.Start();
-        for (int i = 0; i < testIterations; i++)
+        // Refresh creature list periodically (in case new ones spawn)
+        if (Time.frameCount % 60 == 0) // Every 60 frames
         {
-            Physics2D.OverlapCircleAll(transform.position, testRadius, testLayerMask);
+            RefreshCreatureList();
         }
-        sw.Stop();
-        overlapCircleTime = sw.ElapsedMilliseconds;
-        
-        sw.Reset();
-        
-        // Warm up raycast
-        for (int i = 0; i < 100; i++)
+    }
+    
+    void RefreshCreatureList()
+    {
+        allCreatures.Clear();
+        allCreatures.AddRange(FindObjectsOfType<Creature>());
+    }
+    
+    void ToggleDetectionMethod()
+    {
+        rayDetectionActive = !rayDetectionActive;
+        SetDetectionMethod(rayDetectionActive);
+        Debug.Log($"Switched to {(rayDetectionActive ? "Ray-based" : "OverlapCircle")} detection");
+    }
+    
+    void SetDetectionMethod(bool useRayDetection)
+    {
+        foreach (Creature creature in allCreatures)
         {
-            Physics2D.Raycast(transform.position, Vector2.up, testRadius, testLayerMask);
-        }
-        
-        // Test Raycast method (new method) - simulate 16 rays like our creature detection
-        sw.Start();
-        for (int i = 0; i < testIterations; i++)
-        {
-            for (int rayIndex = 0; rayIndex < 16; rayIndex++)
+            if (creature != null)
             {
-                float angle = (360f / 16) * rayIndex * Mathf.Deg2Rad;
-                Vector2 rayDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-                Physics2D.Raycast(transform.position, rayDirection, testRadius, testLayerMask);
+                // Use reflection to set the private useRayDetection field
+                var field = typeof(Creature).GetField("useRayDetection", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                field?.SetValue(creature, useRayDetection);
             }
         }
-        sw.Stop();
-        raycastTime = sw.ElapsedMilliseconds;
+    }
+    
+    void OnGUI()
+    {
+        if (!showPerformanceUI) return;
         
-        // Calculate speedup
-        speedupRatio = overlapCircleTime / raycastTime;
+        int w = Screen.width, h = Screen.height;
+        GUIStyle style = new GUIStyle();
+        Rect rect = new Rect(0, 0, w, h * 2 / 100);
+        style.alignment = TextAnchor.UpperLeft;
+        style.fontSize = h * 2 / 100;
+        style.normal.textColor = Color.white;
         
-        UnityEngine.Debug.Log($"Performance Test Results:");
-        UnityEngine.Debug.Log($"OverlapCircleAll: {overlapCircleTime}ms for {testIterations} iterations");
-        UnityEngine.Debug.Log($"Raycast (16 rays): {raycastTime}ms for {testIterations} iterations");
-        UnityEngine.Debug.Log($"Speedup: {speedupRatio:F2}x faster");
-        UnityEngine.Debug.Log($"Per creature per frame old: {overlapCircleTime / (float)testIterations:F4}ms");
-        UnityEngine.Debug.Log($"Per creature per frame new: {raycastTime / (float)testIterations:F4}ms");
+        float msec = deltaTime * 1000.0f;
+        float fps = 1.0f / deltaTime;
+        string text = string.Format("{0:0.0} ms ({1:0.} fps)", msec, fps);
+        text += $"\nCreatures: {allCreatures.Count}";
+        text += $"\nDetection: {(rayDetectionActive ? "Ray-based (360°)" : "OverlapCircle (Progressive)")}";
+        text += $"\nPress {toggleDetectionKey} to toggle detection method";
+        
+        GUI.Label(rect, text, style);
     }
 } 

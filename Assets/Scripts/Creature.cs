@@ -65,16 +65,9 @@ public class Creature : MonoBehaviour
     public float[] dynamicVisionRanges = {2.5f, 5f, 10f, 15f, 20f};  // Progressive ranges for dynamic vision
     public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
     
-    // NEW: Raycast-based detection settings (inspired by RayVisualizer)
-    [Header("Raycast Detection Settings")]
-    [SerializeField] private int detectionRayCount = 16;  // Number of rays for 360° detection
-    [SerializeField] private float maxDetectionRange = 20f;  // Maximum detection distance
-    [SerializeField] private bool enableDetectionVisualization = false;  // For debugging
-    [SerializeField] private bool enableDetectionDebugLogs = false;  // For debugging detection issues
-    [SerializeField] private LayerMask treeLayerMask = -1;  // Trees layer (default: all layers)
-    [SerializeField] private LayerMask albertLayerMask = -1;  // Alberts layer  
-    [SerializeField] private LayerMask kaiLayerMask = -1;  // Kais layer
-    [SerializeField] private LayerMask groundLayerMask = -1;  // Ground layer
+    // Ray-based detection system
+    private bool useRayDetection = true; // Toggle between ray and overlap detection
+    private MultiRayShooter rayShooter; // Reference to MultiRayShooter component
     
     // Type
     public enum CreatureType { Albert, Kai }
@@ -103,12 +96,11 @@ public class Creature : MonoBehaviour
     // Flag to disable AI brain control
     public bool disableBrainControl = false;
 
-    // OLD: These are no longer needed with raycast detection
-    // private Collider2D[] nearbyTreeColliders;      
-    // private Collider2D[] nearbyTeammateColliders;  
-    // private Collider2D[] nearbyOpponentColliders;  
-    // private Collider2D[] nearbyGroundColliders;    
-    
+    // Cached object detection - reused for both observations and actions
+    private Collider2D[] nearbyTreeColliders;      // For tree detection //IMPROVEMENT: all of these - this overlapcircle2d is the biggest bottleneck rn, so try raycasting instead (or if doesnt work, then maybe ontrigger, then quadtrees and other ideas)
+    private Collider2D[] nearbyTeammateColliders;  // For teammate detection
+    private Collider2D[] nearbyOpponentColliders;  // For opponent detection
+    private Collider2D[] nearbyGroundColliders;    // For ground detection
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
@@ -146,10 +138,10 @@ public class Creature : MonoBehaviour
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
     {
         // Initialize collider array with inspector-configured size
-        // nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
-        // nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
-        // nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
-        // nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
+        nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
+        nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
+        nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
+        nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
         
         // Cache NEATTest reference if not already cached
         neatTest = FindObjectOfType<NEATTest>();
@@ -189,79 +181,29 @@ public class Creature : MonoBehaviour
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
         
-        // Auto-detect layer masks if they're set to default (-1)
-        if (enableDetectionDebugLogs)
+        // Set correct tag based on creature type for ray detection
+        SetCreatureTag();
+        
+        // Setup ray-based detection system using MultiRayShooter
+        if (useRayDetection)
         {
-            AutoDetectLayerMasks();
+            rayShooter = gameObject.GetComponent<MultiRayShooter>();
+            if (rayShooter == null)
+            {
+                rayShooter = gameObject.AddComponent<MultiRayShooter>();
+            }
+            
+            // Configure for 360-degree detection
+            LayerMask detectionLayers = LayerMask.GetMask("Trees", "Alberts", "Kais", "Ground");
+            rayShooter.ConfigureFor360Detection(36, 20f, detectionLayers);
         }
     }
 
-    private void AutoDetectLayerMasks()
+    private void SetCreatureTag()
     {
-        Debug.Log($"=== AUTO-DETECTING LAYERS FOR {gameObject.name} ===");
-        
-        // Find a tree and detect its layer
-        GameObject[] trees = GameObject.FindGameObjectsWithTag("Tree");
-        Debug.Log($"Found {trees.Length} objects with 'Tree' tag");
-        if (trees.Length > 0)
-        {
-            int treeLayer = trees[0].layer;
-            Debug.Log($"Auto-detected Tree layer: {treeLayer} (LayerMask value: {1 << treeLayer})");
-            Debug.Log($"First tree: {trees[0].name} at position {trees[0].transform.position}");
-            
-            // Check distance to first tree
-            float distToTree = Vector3.Distance(transform.position, trees[0].transform.position);
-            Debug.Log($"Distance to first tree: {distToTree:F2} (detection range: {maxDetectionRange})");
-        }
-        
-        // Find creatures and detect their layers
-        Creature[] allCreatures = FindObjectsOfType<Creature>();
-        Debug.Log($"Found {allCreatures.Length} total creatures in scene");
-        int albertCount = 0, kaiCount = 0;
-        
-        foreach (var creature in allCreatures)
-        {
-            if (creature == this) continue; // Skip self
-            
-            float distToCreature = Vector3.Distance(transform.position, creature.transform.position);
-            
-            if (creature.type == CreatureType.Albert)
-            {
-                albertCount++;
-                if (albertCount == 1) // Log first Albert
-                {
-                    Debug.Log($"Auto-detected Albert layer: {creature.gameObject.layer} (LayerMask value: {1 << creature.gameObject.layer})");
-                    Debug.Log($"First other Albert: {creature.name} at distance {distToCreature:F2}");
-                }
-            }
-            else if (creature.type == CreatureType.Kai)
-            {
-                kaiCount++;
-                if (kaiCount == 1) // Log first Kai
-                {
-                    Debug.Log($"Auto-detected Kai layer: {creature.gameObject.layer} (LayerMask value: {1 << creature.gameObject.layer})");
-                    Debug.Log($"First Kai: {creature.name} at distance {distToCreature:F2}");
-                }
-            }
-        }
-        
-        Debug.Log($"Other creatures: {albertCount} Alberts, {kaiCount} Kais");
-        
-        // Find ground objects
-        GameObject[] grounds = GameObject.FindGameObjectsWithTag("Ground");
-        Debug.Log($"Found {grounds.Length} objects with 'Ground' tag");
-        if (grounds.Length > 0)
-        {
-            int groundLayer = grounds[0].layer;
-            Debug.Log($"Auto-detected Ground layer: {groundLayer} (LayerMask value: {1 << groundLayer})");
-            
-            float distToGround = Vector3.Distance(transform.position, grounds[0].transform.position);
-            Debug.Log($"Distance to first ground: {distToGround:F2}");
-        }
-        
-        // Check current layer mask settings
-        Debug.Log($"Current LayerMask settings - Tree: {treeLayerMask.value}, Albert: {albertLayerMask.value}, Kai: {kaiLayerMask.value}, Ground: {groundLayerMask.value}");
-        Debug.Log($"=== END AUTO-DETECTION ===");
+        // Set the creature's tag based on its type for simplified ray detection
+        string newTag = type == CreatureType.Albert ? "Albert" : "Kai";
+        gameObject.tag = newTag;
     }
 
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
@@ -269,7 +211,7 @@ public class Creature : MonoBehaviour
         brain = network;
     }
     
-    // OPTIMIZED: Single raycast-based detection system (replaces all OverlapCircle calls)
+    // Detect and cache nearby objects - now uses ray-based detection instead of OverlapCircle
     private void DetectNearbyObjects()
     {
         // Reset all cached values
@@ -277,12 +219,14 @@ public class Creature : MonoBehaviour
         nearestOpponent = null;
         nearestTeammate = null;
         nearestGround = null;
+        // nearestCherryPos = Vector2.zero;
         nearestTreePos = Vector2.zero;
         nearestGroundPos = Vector2.zero;
         nearestTeammatePos = Vector2.zero;
         nearestOpponentPos = Vector2.zero;
         nearestTreeDistance = float.MaxValue;
         nearestOpponentDistance = float.MaxValue;
+        // nearestCherryDistance = float.MaxValue;
         nearestGroundDistance = float.MaxValue;
         nearestTeammateDistance = float.MaxValue;
         nearestOpponentHealthNormalized = 0f;
@@ -292,197 +236,291 @@ public class Creature : MonoBehaviour
         inSwordRange = 0f;
         inBowRange = 0f;
 
-        // OPTIMIZED: Single 360° raycast sweep (inspired by RayVisualizer)
-        DetectObjectsWithRaycast();
+        if (useRayDetection)
+        {
+            // Use ray-based detection for 360-degree coverage
+            DetectObjectsWithRays();
+        }
+        else
+        {
+            // Fall back to original overlap detection
+            DetectTreesProgressively();
+            DetectTeammatesProgressively();
+            DetectOpponentsProgressively();
+            DetectGroundProgressively();
+        }
 
         // Calculate range indicators
         CalculateRangeIndicators();
     }
-
-    private void DetectObjectsWithRaycast()
+    
+    private void DetectTreesProgressively()
     {
-        // Debug: Log layer mask setup on first frame
-        if (enableDetectionDebugLogs && Time.fixedTime < 1f)
-        {
-            Debug.Log($"{gameObject.name} Layer Masks - Tree: {treeLayerMask.value}, Albert: {albertLayerMask.value}, Kai: {kaiLayerMask.value}, Ground: {groundLayerMask.value}");
-            Debug.Log($"{gameObject.name} is type: {type}, using teammate mask: {GetTeammateLayerMask().value}, opponent mask: {GetOpponentLayerMask().value}");
-        }
+        currentTreeVisionRange = closeRange; // Start with close range
+        DetectTreesInRange(closeRange);
         
-        // Cast rays in all directions (360°) - much more efficient than multiple OverlapCircle calls
-        LayerMask combinedMask = treeLayerMask | GetTeammateLayerMask() | GetOpponentLayerMask() | groundLayerMask;
-        int hitCount = 0;
-        int selfHitCount = 0;
-        
-        for (int i = 0; i < detectionRayCount; i++)
+        // Progressive search if no trees found in close range
+        if (nearestTree == null)
         {
-            // Calculate ray direction (evenly distributed around 360°)
-            float angle = (360f / detectionRayCount) * i * Mathf.Deg2Rad;
-            Vector2 rayDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-            
-            // Cast ray and get ALL hits (not just first)
-            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, rayDirection, maxDetectionRange, combinedMask);
-            
-            // Process each hit, skipping self
-            foreach (RaycastHit2D hit in hits)
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
             {
-                if (hit.collider != null)
-                {
-                    // IMPROVED: Skip self-detection more reliably
-                    if (hit.collider.gameObject == gameObject || hit.distance < 0.1f)
-                    {
-                        selfHitCount++;
-                        continue; // Skip self
-                    }
-                    
-                    hitCount++;
-                    
-                    // Debug: Log what we hit (limit to avoid spam)
-                    if (enableDetectionDebugLogs && hitCount <= 5)
-                    {
-                        Debug.Log($"{gameObject.name} Ray {i} hit: {hit.collider.name} on layer {hit.collider.gameObject.layer} with tag '{hit.collider.tag}' at distance {hit.distance:F2}");
-                    }
-                    
-                    ProcessRaycastHit(hit);
-                }
-            }
-            
-            // Debug visualization (optional) - use first non-self hit
-            if (enableDetectionVisualization)
-            {
-                RaycastHit2D firstHit = new RaycastHit2D();
-                foreach (var hit in hits)
-                {
-                    if (hit.collider != null && hit.collider.gameObject != gameObject && hit.distance >= 0.1f)
-                    {
-                        firstHit = hit;
-                        break;
-                    }
-                }
-                
-                Color rayColor = firstHit.collider != null ? Color.red : Color.green;
-                Vector2 rayEnd = firstHit.collider != null ? firstHit.point : (Vector2)transform.position + rayDirection * maxDetectionRange;
-                Debug.DrawRay(transform.position, (Vector3)rayEnd - transform.position, rayColor, 0.1f);
-            }
-        }
-        
-        // Debug: Log detection results
-        if (enableDetectionDebugLogs)
-        {
-            Debug.Log($"{gameObject.name} Detection Results - Valid Hits: {hitCount}, Self Hits: {selfHitCount}, Tree: {nearestTreeDistance:F2}, Teammate: {nearestTeammateDistance:F2}, Opponent: {nearestOpponentDistance:F2}, Ground: {nearestGroundDistance:F2}");
-            
-            // If no valid hits, suggest fixes
-            if (hitCount == 0)
-            {
-                Debug.LogWarning($"{gameObject.name} No valid hits detected! Check: 1) Layer masks are correct, 2) Objects have right tags, 3) Objects are within {maxDetectionRange} range, 4) Objects exist in scene");
+                DetectTreesInRange(dynamicVisionRanges[i]);
+                currentTreeVisionRange = dynamicVisionRanges[i]; // Update to current search range
+                if (nearestTree != null) break; // Found trees, stop expanding
             }
         }
     }
-
-    private void ProcessRaycastHit(RaycastHit2D hit)
+    
+    private void DetectTeammatesProgressively()
     {
-        // Extra safety check: don't process very close hits (likely self-hits)
-        if (hit.distance < 0.1f || hit.collider.gameObject == gameObject)
+        // Start with close range for teammate detection
+        currentTeammateVisionRange = closeRange;
+        DetectTeammatesInRange(closeRange);
+        
+        // Progressive search for teammates if none found in close range
+        if (nearestTeammate == null)
         {
-            return;
-        }
-        
-        float distance = hit.distance;
-        Vector2 relativePos = hit.point - (Vector2)transform.position;
-        
-        bool wasClassified = false;
-        
-        // Process based on what we hit
-        if (IsTreeLayer(hit.collider.gameObject.layer) && hit.collider.CompareTag("Tree"))
-        {
-            wasClassified = true;
-            if (distance < nearestTreeDistance)
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
             {
-                nearestTreeDistance = distance;
-                nearestTreePos = relativePos;
-                nearestTree = hit.collider.GetComponent<TreeHealth>();
+                DetectTeammatesInRange(dynamicVisionRanges[i]);
+                currentTeammateVisionRange = dynamicVisionRanges[i];
+                if (nearestTeammate != null) break; // Found teammate, stop expanding
+            }
+        }
+    }
+    
+    private void DetectOpponentsProgressively()
+    {
+        // Start with close range for opponent detection
+        currentOpponentVisionRange = closeRange;
+        DetectOpponentsInRange(closeRange);
+        
+        // Progressive search for opponents if none found in close range  
+        if (nearestOpponent == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
+            {
+                DetectOpponentsInRange(dynamicVisionRanges[i]);
+                currentOpponentVisionRange = dynamicVisionRanges[i];
+                if (nearestOpponent != null) break; // Found opponent, stop expanding
+            }
+        }
+    }
+    
+    private void DetectGroundProgressively()
+    {
+        currentGroundVisionRange = closeRange; // Start with close range
+        DetectGroundInRange(closeRange);
+        
+        // Progressive search if no ground found in close range
+        if (nearestGround == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
+            {
+                DetectGroundInRange(dynamicVisionRanges[i]);
+                currentGroundVisionRange = dynamicVisionRanges[i];
+                if (nearestGround != null) break; // Found ground, stop expanding
+            }
+        }
+    }
+    
+    private void DetectTreesInRange(float range)
+    {
+        // Only detect trees in this range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyTreeColliders, 
+            LayerMask.GetMask("Trees")
+        );
+
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyTreeColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            if (collider.CompareTag("Tree"))
+            {
+                Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+                float distance = relativePos.magnitude;
                 
-                if (enableDetectionDebugLogs)
+                if (distance < nearestTreeDistance)
                 {
-                    Debug.Log($"{gameObject.name} Found closer tree: {hit.collider.name} at distance {distance:F2}");
+                    nearestTreePos = relativePos;
+                    nearestTreeDistance = distance;
+                    nearestTree = collider.GetComponent<TreeHealth>();
                 }
             }
         }
-        else if (IsTeammateLayer(hit.collider.gameObject.layer))
+    }
+    
+    private void DetectTeammatesInRange(float range)
+    {
+        // Detect teammates (Albert or Kai)
+        string sameTypeLayer = (type == CreatureType.Albert) ? "Alberts" : "Kais";
+        int numSameType = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyTeammateColliders, 
+            LayerMask.GetMask(sameTypeLayer)
+        );
+        
+        // Process teammates
+        for (int i = 0; i < numSameType; i++)
         {
-            wasClassified = true;
-            Creature teammate = hit.collider.GetComponent<Creature>();
-            if (teammate != null && teammate != this && distance < nearestTeammateDistance) // Extra check: teammate != this
+            var collider = nearbyTeammateColliders[i];
+            if (collider.gameObject == gameObject) continue; // Skip self
+            
+            Creature other = collider.GetComponent<Creature>();
+            if (other == null) continue;
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            if (distance < nearestTeammateDistance)
             {
-                nearestTeammateDistance = distance;
                 nearestTeammatePos = relativePos;
-                nearestTeammate = teammate;
+                nearestTeammateDistance = distance;
+                nearestTeammate = other; // Cache the creature reference
+            }
+        }
+    }
+    
+    private void DetectOpponentsInRange(float range)
+    {
+        // Detect opponents (Albert or Kai)
+        string oppositeTypeLayer = (type == CreatureType.Albert) ? "Kais" : "Alberts";
+        int numOppositeType = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyOpponentColliders, 
+            LayerMask.GetMask(oppositeTypeLayer)
+        );
+        
+        // Process opponents
+        for (int i = 0; i < numOppositeType; i++)
+        {
+            var collider = nearbyOpponentColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            Creature other = collider.GetComponent<Creature>();
+            if (other == null) continue;
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            if (distance < nearestOpponentDistance)
+            {
+                nearestOpponentPos = relativePos;
+                nearestOpponentDistance = distance;
+                nearestOpponent = other;
+                nearestOpponentHealthNormalized = other.health / other.maxHealth;
+            }
+        }
+    }
+    
+    private void DetectGroundInRange(float range)
+    {
+        // Only detect ground in this range
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position, 
+            range, 
+            nearbyGroundColliders, 
+            LayerMask.GetMask("Ground")
+        );
+
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyGroundColliders[i];
+            if (collider.gameObject == gameObject) continue;
+            
+            if (collider.CompareTag("Ground"))
+            {
+                Vector2 closestPoint = collider.ClosestPoint(transform.position);
+                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                float groundPointDistance = groundRelativePos.magnitude;
                 
-                if (enableDetectionDebugLogs)
+                if (groundPointDistance < nearestGroundDistance)
                 {
-                    Debug.Log($"{gameObject.name} Found closer teammate: {hit.collider.name} at distance {distance:F2}");
+                    nearestGroundPos = groundRelativePos;
+                    nearestGroundDistance = groundPointDistance;
+                    nearestGround = collider; // Cache the ground collider reference
                 }
             }
         }
-        else if (IsOpponentLayer(hit.collider.gameObject.layer))
+    }
+    
+    // Ray-based detection system using MultiRayShooter data
+    private void DetectObjectsWithRays()
+    {
+        if (rayShooter == null) return;
+        
+        float maxDetectionRange = 20f; // Same as configured in Start()
+        
+        // Get nearest hits by tag from MultiRayShooter (much simpler approach)
+        RaycastHit2D treeHit = rayShooter.GetNearestHitByTag("Tree");
+        RaycastHit2D teammateHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Albert" : "Kai");
+        RaycastHit2D opponentHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Kai" : "Albert");
+        RaycastHit2D groundHit = rayShooter.GetNearestHitByTag("Ground");
+        
+        // Process tree hit
+        if (treeHit.collider != null)
         {
-            wasClassified = true;
-            Creature opponent = hit.collider.GetComponent<Creature>();
-            if (opponent != null && opponent != this && distance < nearestOpponentDistance) // Extra check: opponent != this
+            Vector2 relativePos = (Vector2)(transform.position - treeHit.collider.transform.position);
+            float distance = relativePos.magnitude;
+            nearestTreePos = relativePos;
+            nearestTreeDistance = distance;
+            nearestTree = treeHit.collider.GetComponent<TreeHealth>();
+        }
+        
+        // Process teammate hit
+        if (teammateHit.collider != null)
+        {
+            Creature teammate = teammateHit.collider.GetComponent<Creature>();
+            if (teammate != null && teammate.gameObject != gameObject)
             {
-                nearestOpponentDistance = distance;
+                Vector2 relativePos = (Vector2)(transform.position - teammateHit.collider.transform.position);
+                float distance = relativePos.magnitude;
+                nearestTeammatePos = relativePos;
+                nearestTeammateDistance = distance;
+                nearestTeammate = teammate;
+            }
+        }
+        
+        // Process opponent hit
+        if (opponentHit.collider != null)
+        {
+            Creature opponent = opponentHit.collider.GetComponent<Creature>();
+            if (opponent != null && opponent.gameObject != gameObject)
+            {
+                Vector2 relativePos = (Vector2)(transform.position - opponentHit.collider.transform.position);
+                float distance = relativePos.magnitude;
                 nearestOpponentPos = relativePos;
+                nearestOpponentDistance = distance;
                 nearestOpponent = opponent;
                 nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
-                
-                if (enableDetectionDebugLogs)
-                {
-                    Debug.Log($"{gameObject.name} Found closer opponent: {hit.collider.name} at distance {distance:F2}");
-                }
-            }
-        }
-        else if (IsGroundLayer(hit.collider.gameObject.layer) && hit.collider.CompareTag("Ground"))
-        {
-            wasClassified = true;
-            if (distance < nearestGroundDistance)
-            {
-                nearestGroundDistance = distance;
-                nearestGroundPos = relativePos;
-                nearestGround = hit.collider;
-                
-                if (enableDetectionDebugLogs)
-                {
-                    Debug.Log($"{gameObject.name} Found closer ground: {hit.collider.name} at distance {distance:F2}");
-                }
             }
         }
         
-        // Debug: Log unclassified hits
-        if (!wasClassified && enableDetectionDebugLogs)
+        // Process ground hit
+        if (groundHit.collider != null)
         {
-            Debug.LogWarning($"{gameObject.name} Hit unclassified object: {hit.collider.name} on layer {hit.collider.gameObject.layer} with tag '{hit.collider.tag}' " +
-                           $"- TreeLayer: {IsTreeLayer(hit.collider.gameObject.layer)}, " +
-                           $"TeammateLayer: {IsTeammateLayer(hit.collider.gameObject.layer)}, " +
-                           $"OpponentLayer: {IsOpponentLayer(hit.collider.gameObject.layer)}, " +
-                           $"GroundLayer: {IsGroundLayer(hit.collider.gameObject.layer)}");
+            Vector2 closestPoint = groundHit.collider.ClosestPoint(transform.position);
+            Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+            float groundPointDistance = groundRelativePos.magnitude;
+            
+            nearestGroundPos = groundRelativePos;
+            nearestGroundDistance = groundPointDistance;
+            nearestGround = groundHit.collider;
         }
+        
+        // Set current vision ranges to max since we're using 360-degree detection
+        currentTreeVisionRange = maxDetectionRange;
+        currentTeammateVisionRange = maxDetectionRange;
+        currentOpponentVisionRange = maxDetectionRange;
+        currentGroundVisionRange = maxDetectionRange;
     }
 
-    // Helper methods for layer checking
-    private LayerMask GetTeammateLayerMask()
-    {
-        return (type == CreatureType.Albert) ? albertLayerMask : kaiLayerMask;
-    }
-
-    private LayerMask GetOpponentLayerMask()
-    {
-        return (type == CreatureType.Albert) ? kaiLayerMask : albertLayerMask;
-    }
-
-    private bool IsTreeLayer(int layer) => (treeLayerMask.value & (1 << layer)) != 0;
-    private bool IsTeammateLayer(int layer) => (GetTeammateLayerMask().value & (1 << layer)) != 0;
-    private bool IsOpponentLayer(int layer) => (GetOpponentLayerMask().value & (1 << layer)) != 0;
-    private bool IsGroundLayer(int layer) => (groundLayerMask.value & (1 << layer)) != 0;
-    
     private void CalculateRangeIndicators()
     {
         // Calculate range indicators
@@ -550,41 +588,41 @@ public class Creature : MonoBehaviour
         // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
         
         // Get maximum detection range for consistent normalization
-        float maxRange = maxDetectionRange;
+        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
         
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
-        if (nearestTeammateDistance <= maxRange && nearestTeammateDistance > 0)
+        if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / maxRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestTeammateDistance / maxDetectionRange;
             sameTypeObs = nearestTeammatePos * intensityFactor;
         }
         
         // Opponent observations (x,y components) - normalize by max range
         Vector2 oppositeTypeObs = Vector2.zero;
-        if (nearestOpponentDistance <= maxRange && nearestOpponentDistance > 0)
+        if (nearestOpponentDistance <= maxDetectionRange && nearestOpponentDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / maxRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
             oppositeTypeObs = nearestOpponentPos * intensityFactor;
         }
         
         // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;
-        if (nearestTreeDistance <= maxRange && nearestTreeDistance > 0)
+        if (nearestTreeDistance <= maxDetectionRange && nearestTreeDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / maxRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestTreeDistance / maxDetectionRange;
             treeObs = nearestTreePos * intensityFactor;
         }
 
         // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
-        if (nearestGroundDistance <= maxRange && nearestGroundDistance > 0)
+        if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / maxRange;
+            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
+            float intensityFactor = 1.0f - nearestGroundDistance / maxDetectionRange;
             groundObs = nearestGroundPos * intensityFactor;
         }
         
@@ -610,15 +648,6 @@ public class Creature : MonoBehaviour
         obs[13] = this.inBowRange;
 
         obs[14] = nearestOpponentHealthNormalized;
-        
-        // Debug: Log observation values occasionally
-        if (enableDetectionDebugLogs && Random.value < 0.01f) // Log 1% of the time to avoid spam
-        {
-            Debug.Log($"{gameObject.name} Observations: Health={obs[0]:F3}, Energy={obs[1]:F3}, Repro={obs[2]:F3}, " +
-                     $"Teammate=({obs[3]:F3},{obs[4]:F3}), Opponent=({obs[5]:F3},{obs[6]:F3}), " +
-                     $"Tree=({obs[7]:F3},{obs[8]:F3}), Ground=({obs[9]:F3},{obs[10]:F3}), " +
-                     $"Ranges=(C:{obs[11]},S:{obs[12]},B:{obs[13]}), OppHealth={obs[14]:F3}");
-        }
         
         return obs;
     }
@@ -1341,4 +1370,12 @@ public class Creature : MonoBehaviour
         // Create a new network with the crossover results
         return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
     }
+
+    // // Helper method for sword swing animation
+    // private IEnumerator SwingSwordWithDelay(SwordAnimation swordAnim)
+    // {
+    //     // Wait for at least the next frame to avoid multiple calls
+    //     yield return null;
+    //     swordAnim.SwingSword();
+    // }
 }
