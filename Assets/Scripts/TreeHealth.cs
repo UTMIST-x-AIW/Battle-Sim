@@ -4,7 +4,6 @@ using System;
 public class TreeHealth : MonoBehaviour
 {
     // Static event that gets fired when any tree is destroyed
-    public static event Action OnTreeDestroyed;
     
     public float maxHealth = 5f;
     public float health;
@@ -30,12 +29,15 @@ public class TreeHealth : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
-        
+
         // Visual feedback - could be replaced with more sophisticated effects
-        StartCoroutine(FlashOnDamage());
+        // StartCoroutine(FlashOnDamage());
+        
+        AnimatingDoTweenUtilities.PlayFlashRedAnimation(gameObject);
         
         if (health <= 0)
         {
+            AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
             Die();
         }
     }
@@ -57,10 +59,7 @@ public class TreeHealth : MonoBehaviour
     }
     
     private void Die()
-    {
-        // Invoke the event before destroying the tree
-        OnTreeDestroyed?.Invoke();
-        
+    {        
         // Spawn some resources or particle effects
         // For now, just destroy the tree
         Destroy(gameObject);

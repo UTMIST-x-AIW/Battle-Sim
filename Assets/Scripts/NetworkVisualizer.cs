@@ -77,26 +77,60 @@ public class NetworkVisualizer : MonoBehaviour
 
     void Update()
     {
-        HandleInput();
-        if (selectedCreature != null && networkPanel.gameObject.activeSelf)
-            RefreshNodeValues();
-    }
-
-    void HandleInput()
-    {
+        // Check for mouse clicks to select creatures
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 wp = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            wp.z = 0;
-            var hit = Physics2D.Raycast(wp, Vector2.zero);
-            if (hit.collider != null && hit.collider.TryGetComponent<Creature>(out var c))
-                SelectCreature(c);
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
+            
+            // Cast a ray and check for creatures
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+            if (hit.collider != null)
+            {
+                Creature creature = hit.collider.GetComponent<Creature>();
+                // If no Creature on the hit object, try the parent (for child colliders)
+                if (creature == null)
+                {
+                    creature = hit.collider.GetComponentInParent<Creature>();
+                }
+                
+                if (creature != null)
+                {
+                    SelectCreature(creature);
+                }
+                else
+                {
+                    // Clicked on something else - reset camera
+                    HideNetwork();
+                    if (cameraController != null)
+                    {
+                        cameraController.ResetCamera();
+                    }
+                }
+            }
             else
+            {
+                // Clicked on empty space - reset camera
                 HideNetwork();
+                if (cameraController != null)
+                {
+                    cameraController.ResetCamera();
+                }
+            }
         }
+        
+        // Check for escape key to hide network
         if (Input.GetKeyDown(KeyCode.Escape))
             HideNetwork();
-        if (Input.GetKeyDown(KeyCode.S) && selectedCreature != null)
+            if (cameraController != null)
+            {
+                cameraController.ResetCamera();
+            }
+        }
+        
+        // Check for 'S' key to save selected creature
+        if (Input.GetKeyDown(KeyCode.X) && selectedCreature != null)
+        {
             CreatureSaver.SaveCreature(selectedCreature);
     }
 

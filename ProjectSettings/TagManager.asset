@@ -13,6 +13,8 @@ TagManager:
   - AlbertSpawnPoint
   - KaiSpawnPoint
   - Creature
+  - Albert
+  - Kai
   layers:
   - Default
   - TransparentFX
@@ -24,7 +26,7 @@ TagManager:
   - Trees
   - Alberts
   - Kais
-  - 
+  - Selection
   - 
   - 
   - 

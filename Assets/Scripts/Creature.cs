@@ -10,17 +10,12 @@ using NEAT.Genes;
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
-    private static int totalCreatures = 0; //IMPROVEMENT: move this to our game manager (neattest)
     [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
-    
-    // Make TotalCreatures accessible through a property
-    public static int TotalCreatures { get { return totalCreatures; } }
     
     // Method to reset the static reference when scene changes
     public static void ClearStaticReferences()
     {
         neatTest = null;
-        totalCreatures = 0;
         Debug.Log("Creature static references cleared");
     }
     
@@ -65,6 +60,10 @@ public class Creature : MonoBehaviour
     public float[] dynamicVisionRanges = {2.5f, 5f, 10f, 15f, 20f};  // Progressive ranges for dynamic vision
     public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
     
+    // Ray-based detection system
+    public bool useRayDetection = true; // Toggle between ray and overlap detection
+    public MultiRayShooter rayShooter; // Reference to MultiRayShooter component
+    
     // Type
     public enum CreatureType { Albert, Kai }
     public CreatureType type;
@@ -80,11 +79,7 @@ public class Creature : MonoBehaviour
     }
     
     // Add at the top with other private fields
-    private bool isReproducing = false;  // Flag to prevent multiple reproduction attempts
-    private bool isMovingToMate = false;
-    private bool isWaitingForMate = false;
     public bool canStartReproducing = false;  // New flag to control reproduction start, now public
-    private Creature targetMate = null;
     public float reproductionMeter = 0f; // Renamed from reproductionCooldown, now public
 
     private bool hasCheckedNeatTest = false;
@@ -97,6 +92,7 @@ public class Creature : MonoBehaviour
     private Collider2D[] nearbyTeammateColliders;  // For teammate detection
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
     private Collider2D[] nearbyGroundColliders;    // For ground detection
+    private Collider2D[] nearbyColliders;
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
@@ -129,29 +125,43 @@ public class Creature : MonoBehaviour
     public float currentOpponentVisionRange;
     public float currentGroundVisionRange;
 
+    private float lastDetectionTime = 0f;
+
+    public float maxDetectionRange = 20f;
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
-    {
-        // Initialize collider array with inspector-configured size
-        nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
-        nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
-        nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
-        nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
-        
-        // Cache NEATTest reference if not already cached
-        neatTest = FindObjectOfType<NEATTest>();
-        
+        {
 
-        // Initialize stats
-        health = maxHealth;
-        reproductionMeter = 0f; // Initialize reproduction meter to 0
-        lifetime = 0f;
-        canStartReproducing = false;
-        
-        // Increment counter when creature is created
-        totalCreatures++;
-        // Debug.Log(string.Format("Creature created. Total creatures: {0}", totalCreatures));
+            if (useRayDetection)
+            {
+                maxDetectionRange = rayShooter.rayDistance;
+            }
+            else
+            {
+                if (dynamicVisionRanges.Length > 0)
+                {
+                    maxDetectionRange = dynamicVisionRanges[dynamicVisionRanges.Length - 1]; //TODO: write this properly.. ykwim
+                }
+               
+                // Initialize collider array with inspector-configured size
+                nearbyTreeColliders = new Collider2D[preAllocCollidersCount];
+                nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
+                nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
+                nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
+                nearbyColliders = new Collider2D[preAllocCollidersCount * 4];
+
+            }
+            
+            // Cache NEATTest reference if not already cached
+            neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
+
+            // Initialize stats
+            health = maxHealth;
+            reproductionMeter = 0f; // Initialize reproduction meter to 0
+            lifetime = 0f;
+            canStartReproducing = false;
         }
         catch (System.Exception e)
         {
@@ -176,44 +186,68 @@ public class Creature : MonoBehaviour
     {
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-
+        
     }
+
 
     public void InitializeNetwork(NEAT.NN.FeedForwardNetwork network)
     {
         brain = network;
     }
     
-    // Detect and cache nearby objects - now uses progressive detection for all types
+    // Detect and cache nearby objects - now uses ray-based detection instead of OverlapCircle
     private void DetectNearbyObjects()
     {
-        // Reset all cached values
-        nearestTree = null;
-        nearestOpponent = null;
-        nearestTeammate = null;
-        nearestGround = null;
-        // nearestCherryPos = Vector2.zero;
-        nearestTreePos = Vector2.zero;
-        nearestGroundPos = Vector2.zero;
-        nearestTeammatePos = Vector2.zero;
-        nearestOpponentPos = Vector2.zero;
-        nearestTreeDistance = float.MaxValue;
-        nearestOpponentDistance = float.MaxValue;
-        // nearestCherryDistance = float.MaxValue;
-        nearestGroundDistance = float.MaxValue;
-        nearestTeammateDistance = float.MaxValue;
-        nearestOpponentHealthNormalized = 0f;
+        // Only reset if this is a new physics frame (not just a repeat call for observations)
+        if (Time.fixedTime != lastDetectionTime)
+        {
+            // Reset all cached values
+            nearestTree = null;
+            nearestOpponent = null;
+            nearestTeammate = null;
+            nearestGround = null;
+            // nearestCherryPos = Vector2.zero;
+            nearestTreePos = Vector2.zero;
+            nearestGroundPos = Vector2.zero;
+            nearestTeammatePos = Vector2.zero;
+            nearestOpponentPos = Vector2.zero;
+            nearestTreeDistance = float.MaxValue;
+            nearestOpponentDistance = float.MaxValue;
+            // nearestCherryDistance = float.MaxValue;
+            nearestGroundDistance = float.MaxValue;
+            nearestTeammateDistance = float.MaxValue;
+            nearestOpponentHealthNormalized = 0f;
 
-        // Reset range indicators
-        inChopRange = 0f;
-        inSwordRange = 0f;
-        inBowRange = 0f;
+            // Reset range indicators
+            inChopRange = 0f;
+            inSwordRange = 0f;
+            inBowRange = 0f;
+            
+            lastDetectionTime = Time.fixedTime; // Mark this frame as processed
+        }
 
-        // Progressive detection for all types // IMPROVEMENT: instead of having a separate method for each object type, look into Interfaces (note: check in mohamed's branch)
-        DetectTreesProgressively();
-        DetectTeammatesProgressively();
-        DetectOpponentsProgressively();
-        DetectGroundProgressively();
+        if (useRayDetection)
+        {
+            // Use ray-based detection for 360-degree coverage
+            DetectObjectsWithRays();
+        }
+        else
+        {
+            // Fall back to original overlap detection
+            if (dynamicVisionRanges.Length == 0)
+            {
+                DetectAllInRange(maxDetectionRange);
+
+            }
+            else
+            {
+                DetectTreesProgressively();
+                DetectTeammatesProgressively();
+                DetectOpponentsProgressively();
+                DetectGroundProgressively();
+            }  
+    
+        }
 
         // Calculate range indicators
         CalculateRangeIndicators();
@@ -288,14 +322,83 @@ public class Creature : MonoBehaviour
             }
         }
     }
+
+    private void DetectAllInRange(float range)
+    {
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            range,
+            nearbyColliders,
+            LayerMask.GetMask("Trees", "Kais", "Alberts", "Ground")
+        );
+
+        // Process all detected colliders
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyColliders[i];
+            if (collider.gameObject == gameObject) continue; // Skip self
+            
+            Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+            float distance = relativePos.magnitude;
+            
+            // Process trees
+            if (collider.CompareTag("Tree"))
+            {
+                if (distance < nearestTreeDistance)
+                {
+                    nearestTreePos = relativePos;
+                    nearestTreeDistance = distance;
+                    nearestTree = collider.GetComponent<TreeHealth>();
+                }
+            }
+            // Process teammates (same type)
+            else if ((type == CreatureType.Albert && collider.CompareTag("Albert")) ||
+                     (type == CreatureType.Kai && collider.CompareTag("Kai")))
+            {
+                Creature teammate = collider.GetComponent<Creature>();
+                if (teammate != null && distance < nearestTeammateDistance)
+                {
+                    nearestTeammatePos = relativePos;
+                    nearestTeammateDistance = distance;
+                    nearestTeammate = teammate;
+                }
+            }
+            // Process opponents (opposite type)
+            else if ((type == CreatureType.Albert && collider.CompareTag("Kai")) ||
+                     (type == CreatureType.Kai && collider.CompareTag("Albert")))
+            {
+                Creature opponent = collider.GetComponent<Creature>();
+                if (opponent != null && distance < nearestOpponentDistance)
+                {
+                    nearestOpponentPos = relativePos;
+                    nearestOpponentDistance = distance;
+                    nearestOpponent = opponent;
+                    nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
+                }
+            }
+            // Process ground
+            else if (collider.CompareTag("Ground"))
+            {
+                Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)collider.ClosestPoint(transform.position);
+                float groundPointDistance = groundRelativePos.magnitude;
+                
+                if (groundPointDistance < nearestGroundDistance)
+                {
+                    nearestGroundPos = groundRelativePos;
+                    nearestGroundDistance = groundPointDistance;
+                    nearestGround = collider;
+                }
+            }
+        }
+    }
     
     private void DetectTreesInRange(float range)
     {
         // Only detect trees in this range
         int numColliders = Physics2D.OverlapCircleNonAlloc(
-            transform.position, 
-            range, 
-            nearbyTreeColliders, 
+            transform.position,
+            range,
+            nearbyTreeColliders,
             LayerMask.GetMask("Trees")
         );
 
@@ -303,12 +406,12 @@ public class Creature : MonoBehaviour
         {
             var collider = nearbyTreeColliders[i];
             if (collider.gameObject == gameObject) continue;
-            
+
             if (collider.CompareTag("Tree"))
             {
                 Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
                 float distance = relativePos.magnitude;
-                
+
                 if (distance < nearestTreeDistance)
                 {
                     nearestTreePos = relativePos;
@@ -401,8 +504,7 @@ public class Creature : MonoBehaviour
             
             if (collider.CompareTag("Ground"))
             {
-                Vector2 closestPoint = collider.ClosestPoint(transform.position);
-                Vector2 groundRelativePos = (Vector2)transform.position - closestPoint;
+                Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)collider.ClosestPoint(transform.position);
                 float groundPointDistance = groundRelativePos.magnitude;
                 
                 if (groundPointDistance < nearestGroundDistance)
@@ -415,6 +517,89 @@ public class Creature : MonoBehaviour
         }
     }
     
+    // Ray-based detection system using MultiRayShooter data
+    private void DetectObjectsWithRays()
+    {
+        if (rayShooter == null) 
+        {
+            return;
+        }
+        
+        // Get nearest hits by tag from MultiRayShooter (much simpler approach)
+        RaycastHit2D treeHit = rayShooter.GetNearestHitByTag("Tree");
+        RaycastHit2D teammateHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Albert" : "Kai");
+        RaycastHit2D opponentHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Kai" : "Albert");
+        RaycastHit2D groundHit = rayShooter.GetNearestHitByTag("Ground");
+        
+        // Process tree hit
+        if (treeHit.collider != null)
+        {
+            Vector2 relativePos = (Vector2)transform.position - (Vector2)treeHit.point;
+            float distance = relativePos.magnitude;
+            if (distance < nearestTreeDistance) // Only update if closer
+            {
+                nearestTreePos = relativePos;
+                nearestTreeDistance = distance;
+                nearestTree = treeHit.collider.GetComponent<TreeHealth>();
+            }
+        }
+        
+        // Process teammate hit
+        if (teammateHit.collider != null)
+        {
+            Creature teammate = teammateHit.collider.GetComponent<Creature>();
+            if (teammate != null && teammate.gameObject != gameObject)
+            {
+                Vector2 relativePos = (Vector2)transform.position - (Vector2)teammateHit.point;
+                float distance = relativePos.magnitude;
+                if (distance < nearestTeammateDistance) // Only update if closer
+                {
+                    nearestTeammatePos = relativePos;
+                    nearestTeammateDistance = distance;
+                    nearestTeammate = teammate;
+                }
+            }
+        }
+        
+        // Process opponent hit
+        if (opponentHit.collider != null)
+        {
+            Creature opponent = opponentHit.collider.GetComponent<Creature>();
+            if (opponent != null && opponent.gameObject != gameObject)
+            {
+                Vector2 relativePos = (Vector2)transform.position - (Vector2)opponentHit.point;
+                float distance = relativePos.magnitude;
+                if (distance < nearestOpponentDistance) // Only update if closer
+                {
+                    nearestOpponentPos = relativePos;
+                    nearestOpponentDistance = distance;
+                    nearestOpponent = opponent;
+                    nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
+                }
+            }
+        }
+        
+        // Process ground hit
+        if (groundHit.collider != null)
+        {
+            Vector2 groundRelativePos = (Vector2)transform.position - (Vector2)groundHit.point;
+            float groundPointDistance = groundRelativePos.magnitude;
+            
+            if (groundPointDistance < nearestGroundDistance) // Only update if closer
+            {
+                nearestGroundPos = groundRelativePos;
+                nearestGroundDistance = groundPointDistance;
+                nearestGround = groundHit.collider;
+            }
+        }
+        
+        // Set current vision ranges to max since we're using 360-degree detection
+        currentTreeVisionRange = maxDetectionRange;
+        currentTeammateVisionRange = maxDetectionRange;
+        currentOpponentVisionRange = maxDetectionRange;
+        currentGroundVisionRange = maxDetectionRange;
+    }
+
     private void CalculateRangeIndicators()
     {
         // Calculate range indicators
@@ -479,45 +664,42 @@ public class Creature : MonoBehaviour
         obs[2] = reproductionMeter; // Reproduction meter (already 0-1)
         
         // Transform the observations according to the formula:
-        // 0 when outside FOV, 0 at FOV border, increases linearly to the max vision range when hugging creature
-        
-        // Get maximum detection range for consistent normalization
-        float maxDetectionRange = dynamicVisionRanges.Length > 0 ? dynamicVisionRanges[dynamicVisionRanges.Length - 1] : 20f;
-        
+        // 0 when outside FOV, 0 at FOV border, decreases linearly to -1 when hugging creature (analogous to a spring force pushing away from target)
+                
         // Teammate observations (x,y components) - normalize by max range
         Vector2 sameTypeObs = Vector2.zero;
         if (nearestTeammateDistance <= maxDetectionRange && nearestTeammateDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTeammateDistance / maxDetectionRange;
-            sameTypeObs = nearestTeammatePos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestTeammateDistance / maxDetectionRange;
+            sameTypeObs = nearestTeammatePos.normalized * intensity;
         }
         
         // Opponent observations (x,y components) - normalize by max range
         Vector2 oppositeTypeObs = Vector2.zero;
         if (nearestOpponentDistance <= maxDetectionRange && nearestOpponentDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestOpponentDistance / maxDetectionRange;
-            oppositeTypeObs = nearestOpponentPos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestOpponentDistance / maxDetectionRange;
+            oppositeTypeObs = nearestOpponentPos.normalized * intensity;
         }
         
         // Tree observations (x,y components) - normalize by max range
         Vector2 treeObs = Vector2.zero;
         if (nearestTreeDistance <= maxDetectionRange && nearestTreeDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestTreeDistance / maxDetectionRange;
-            treeObs = nearestTreePos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestTreeDistance / maxDetectionRange;
+            treeObs = nearestTreePos.normalized * intensity;
         }
 
         // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
         if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
         {
-            // Calculate intensity (0 at max range, maxDetectionRange when hugging)
-            float intensityFactor = 1.0f - nearestGroundDistance / maxDetectionRange;
-            groundObs = nearestGroundPos * intensityFactor;
+            // Calculate intensity (0 at max range, -1 when hugging)
+            float intensity = 1.0f - nearestGroundDistance / maxDetectionRange;
+            groundObs = nearestGroundPos.normalized * intensity;
         }
         
         // Use cached range indicators instead of calculating them again
@@ -728,48 +910,44 @@ public class Creature : MonoBehaviour
                 return;
             }
             
-            // Only get actions if we're not reproducing or moving to mate
-            if (!isReproducing && !isMovingToMate && !isWaitingForMate)
+            try
             {
-                try
+                // FIXED: Only fill reproduction meter if it's not full yet
+                if (reproductionMeter < 1.0f)
                 {
-                    // FIXED: Only fill reproduction meter if it's not full yet
-                    if (reproductionMeter < 1.0f)
-                    {
-                        reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
-                        
-                        // When meter is full, set canStartReproducing to true but don't reset the meter
-                        if (reproductionMeter >= 1f)
-                        {
-                            canStartReproducing = true;
-                        }
-                    }
+                    reproductionMeter = Mathf.Min(1f, reproductionMeter + reproductionRechargeRate * Time.fixedDeltaTime);
                     
-                    // Detect nearby objects once per frame and cache results
-                    DetectNearbyObjects();
-                    
-                    // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
-                    float[] observations = GetObservations();
-                    float[] actions = GetActions(observations);
-
-                    if (!disableBrainControl)
+                    // When meter is full, set canStartReproducing to true but don't reset the meter
+                    if (reproductionMeter >= 1f)
                     {
-                        // Process the network's action commands
-                        ProcessActionCommands(actions); //IMPROVEMENT: try using multithreading here, with jobs
+                        canStartReproducing = true;
                     }
                 }
-                catch (System.Exception e)
+                
+                // Detect nearby objects once per frame and cache results
+                DetectNearbyObjects();
+                
+                // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
+                float[] observations = GetObservations();
+                float[] actions = GetActions(observations);
+
+                if (!disableBrainControl)
                 {
-                    // Log detailed error information
-                    string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
-                    if (LogManager.Instance != null)
-                    {
-                        LogManager.LogError(errorMessage);
-                    }
-                    else
-                    {
-                        Debug.LogError(errorMessage);
-                    }
+                    // Process the network's action commands
+                    ProcessActionCommands(actions); //IMPROVEMENT: try using multithreading here, with jobs
+                }
+            }
+            catch (System.Exception e)
+            {
+                // Log detailed error information
+                string errorMessage = $"Error in Creature FixedUpdate action processing: {e.Message}\nStack trace: {e.StackTrace}";
+                if (LogManager.Instance != null)
+                {
+                    LogManager.LogError(errorMessage);
+                }
+                else
+                {
+                    Debug.LogError(errorMessage);
                 }
             }
         }
@@ -1004,56 +1182,8 @@ public class Creature : MonoBehaviour
                 // If LogManager is already cleaned up, just silently continue
             }
             
-        // If we were someone's target mate, free them but handle exceptions
-        if (targetMate != null && targetMate.gameObject != null && targetMate.gameObject.activeInHierarchy)
-            {
-                try
-        {
-            // Break the circular reference first
-            var tempMate = targetMate;
-            targetMate = null;
-            
-            // Reset their flags directly instead of using FreeMate which may start coroutines
-            tempMate.isMovingToMate = false;
-            tempMate.isWaitingForMate = false;
-            tempMate.isReproducing = false;
-            tempMate.canStartReproducing = false;
-            tempMate.targetMate = null;
-            
-            // If they're still alive and active, they can start their own timer
-            if (tempMate.gameObject.activeInHierarchy)
-            {
-                try 
-                {
-                    tempMate.StartCoroutine(tempMate.DelayedReproductionStart());
-                }
-                        catch (System.Exception e)
-                {
-                            Debug.LogError($"Error starting reproduction timer for mate: {e.Message}");
-                }
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError($"Error handling target mate in OnDestroy: {e.Message}");
-            }
-        }
 
-        // Decrement counter when creature is destroyed
-        totalCreatures--;
             
-            try
-            {
-                // Try to log, but catch any exceptions if LogManager is gone
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature destroyed. Total creatures: {totalCreatures}");
-                }
-            }
-            catch (System.Exception)
-            {
-                // If LogManager is already cleaned up, just silently continue
-            }
         }
         catch (System.Exception e)
         {
@@ -1264,12 +1394,4 @@ public class Creature : MonoBehaviour
         // Create a new network with the crossover results
         return new NEAT.NN.FeedForwardNetwork(childNodes, childConnections);
     }
-
-    // // Helper method for sword swing animation
-    // private IEnumerator SwingSwordWithDelay(SwordAnimation swordAnim)
-    // {
-    //     // Wait for at least the next frame to avoid multiple calls
-    //     yield return null;
-    //     swordAnim.SwingSword();
-    // }
 }

@@ -280,13 +280,6 @@ public class NEATTest : MonoBehaviour
                 LogManager.LogMessage($"Toggle gizmos: {!showGizmos} -> {showGizmos}");
                 showGizmos = !showGizmos;
             }
-
-            // // Add this to the Update method, after the other key checks
-            // if (Input.GetKeyDown(KeyCode.D))
-            // {
-            //     LogManager.LogMessage("Running neural network diagnostics...");
-            //     RunNeuralNetworkDiagnostics();
-            // }
         }
         catch (System.Exception e)
         {
@@ -373,7 +366,7 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            Debug.Log(ObjectPoolManager.ObjectPools);
+            // Debug.Log(ObjectPoolManager.ObjectPools);
             if (creature == null)
             {
                 LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
@@ -663,6 +656,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
         var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        ParenthoodManager.AssignParent(creature);
+        AnimatingDoTweenUtilities.PlayGrow(creature);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
@@ -789,6 +784,8 @@ public class NEATTest : MonoBehaviour
     {
         // Create the creature instance
         GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        ParenthoodManager.AssignParent(creature);
+        AnimatingDoTweenUtilities.PlayGrow(creature);
         Creature creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
@@ -1026,82 +1023,6 @@ public class NEATTest : MonoBehaviour
         catch (System.Exception e)
         {
             Debug.LogError($"NEATTest: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
-        }
-    }
-
-    private void RunNeuralNetworkDiagnostics() // TODO: remove this if unnecessary
-    {
-        try
-        {
-            var creatures = GameObject.FindObjectsOfType<Creature>();
-            int total = creatures.Length;
-            int withValidNetwork = 0;
-            int withNoNetwork = 0;
-            List<string> anomalies = new List<string>();
-            
-            LogManager.LogMessage($"Checking {total} creatures for neural network integrity...");
-            
-            foreach (var creature in creatures)
-            {
-                if (creature.brain == null)
-                {
-                    withNoNetwork++;
-                    continue;
-                }
-                
-                // Get and analyze neural network output
-                try
-                {
-                    float[] observations = creature.GetObservations();
-                    
-                    double[] doubleObservations = new double[observations.Length];
-                    for (int i = 0; i < observations.Length; i++)
-                    {
-                        doubleObservations[i] = (double)observations[i];
-                    }
-                    
-                    double[] doubleOutputs = creature.brain.Activate(doubleObservations);
-                    
-                    // Analyze outputs
-                    if (doubleOutputs.Length != ACTION_COUNT)
-                    {
-                        anomalies.Add($"Creature {creature.gameObject.name} (Gen {creature.generation}, Type {creature.type}): " +
-                                     $"Neural network returned {doubleOutputs.Length} outputs instead of {ACTION_COUNT}");
-                    }
-                    else
-                    {
-                        withValidNetwork++;
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    anomalies.Add($"Error processing creature {creature.gameObject.name}: {e.Message}");
-                }
-            }
-            
-            // Log summary
-            LogManager.LogMessage($"Neural Network Diagnostics Complete");
-            LogManager.LogMessage($"Total creatures: {total}");
-            LogManager.LogMessage($"With valid networks ({ACTION_COUNT} outputs): {withValidNetwork}");
-            LogManager.LogMessage($"With no network: {withNoNetwork}");
-            
-            // Log anomalies
-            if (anomalies.Count > 0)
-            {
-                LogManager.LogMessage($"Found {anomalies.Count} anomalies:");
-                foreach (var anomaly in anomalies)
-                {
-                    LogManager.LogError(anomaly);
-                }
-            }
-            else
-            {
-                LogManager.LogMessage($"No anomalies found! All networks are outputting {ACTION_COUNT} values.");
-            }
-        }
-        catch (System.Exception e)
-        {
-            LogManager.LogError($"Error running neural network diagnostics: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 

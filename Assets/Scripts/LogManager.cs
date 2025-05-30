@@ -10,11 +10,20 @@ public class LogManager : MonoBehaviour
     private static string logFilePath;
     private static bool isApplicationQuitting = false;
     
+    // Simple toggle to enable/disable all logging
+    public static bool enableLogging = false;
+    
     // Singleton pattern
     public static LogManager Instance
     {
         get
         {
+            // Don't create a new instance if logging is disabled
+            if (!enableLogging)
+            {
+                return null;
+            }
+            
             // Don't create a new instance during application quit
             if (isApplicationQuitting)
             {
@@ -42,6 +51,9 @@ public class LogManager : MonoBehaviour
     
     private void Awake()
     {
+        // Skip all initialization if logging is disabled
+        if (!enableLogging) return;
+        
         try
         {
             Debug.Log($"LogManager Awake called on {gameObject.name}");
@@ -66,6 +78,9 @@ public class LogManager : MonoBehaviour
     
     private void OnDestroy()
     {
+        // Skip cleanup if logging is disabled
+        if (!enableLogging) return;
+        
         try
         {
             Debug.Log($"LogManager OnDestroy called on {gameObject.name}");
@@ -86,6 +101,9 @@ public class LogManager : MonoBehaviour
     
     private void OnApplicationQuit()
     {
+        // Skip cleanup if logging is disabled
+        if (!enableLogging) return;
+        
         try
         {
             Debug.Log("LogManager: OnApplicationQuit called");
@@ -102,6 +120,9 @@ public class LogManager : MonoBehaviour
     // Static method to explicitly clean up the LogManager before scene changes
     public static void Cleanup()
     {
+        // Skip cleanup if logging is disabled
+        if (!enableLogging) return;
+        
         try
         {
             Debug.Log("LogManager: Cleanup method called");
@@ -129,6 +150,9 @@ public class LogManager : MonoBehaviour
     
     private void InitializeLogging()
     {
+        // Skip initialization if logging is disabled
+        if (!enableLogging) return;
+        
         try
         {
             // Create logs directory if it doesn't exist
@@ -196,6 +220,9 @@ public class LogManager : MonoBehaviour
     
     public static void LogMessage(string message)
     {
+        // Skip logging if disabled
+        if (!enableLogging) return;
+        
         // Skip logging if application is quitting
         if (isApplicationQuitting)
         {
@@ -237,6 +264,9 @@ public class LogManager : MonoBehaviour
     
     public static void LogError(string message)
     {
+        // Skip logging if disabled
+        if (!enableLogging) return;
+        
         // Also write to Debug.LogError to ensure we see errors in the console
         Debug.LogError($"LOG ERROR: {message}");
         
