@@ -656,6 +656,7 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
         var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        ParenthoodManager.AssignParent(creature);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
