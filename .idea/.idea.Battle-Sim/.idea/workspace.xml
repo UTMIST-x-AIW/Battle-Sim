@@ -6,20 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ExperimentalCode/AnimatingCreatureDoTween.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ExperimentalCode/AnimatingDoTweenUtilities.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ExperimentalCode/AnimatingCreatureDoTween.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ExperimentalCode/AnimatingDoTweenUtilities.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ExperimentalCode/InstantiatingCreatures.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ExperimentalCode/InstantiatingCreatures.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/ExperimentalCode/ParenthoodManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/ExperimentalCode/ParenthoodManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/TestingGrounds.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/TestingGrounds.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources/XCLang-EN.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources/XCLang-EN.asset.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources/XCLang-ZH.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources/XCLang-ZH.asset.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources/XCSettings.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources/XCSettings.asset.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources/XCTheme-Dark.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources/XCTheme-Dark.asset.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/XCharts/Resources/XCTheme-Default.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/XCharts/Resources/XCTheme-Default.asset.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +31,7 @@
 }</component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="SWEA" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -179,6 +165,8 @@
       <workItem from="1748445602202" duration="427000" />
       <workItem from="1748450267679" duration="175000" />
       <workItem from="1748453321409" duration="58000" />
+      <workItem from="1748547957256" duration="220000" />
+      <workItem from="1748548226683" duration="907000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
