@@ -782,6 +782,7 @@ public class NEATTest : MonoBehaviour
     {
         // Create the creature instance
         GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        ParenthoodManager.AssignParent(creature);
         Creature creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
