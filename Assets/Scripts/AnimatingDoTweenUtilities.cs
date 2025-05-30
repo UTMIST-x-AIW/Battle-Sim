@@ -30,7 +30,7 @@ public static class AnimatingDoTweenUtilities
 
     }
 
-    public static void PlayFlashRedAnimation(GameObject go, Ease ease = Ease.Flash, float duration = 0.2f)
+    public static void PlayFlashRedAnimation(GameObject go, Ease ease = Ease.Flash, float duration = 0.1f)
     {
         SpriteRenderer sprite = go.GetComponent<SpriteRenderer>();
 
@@ -41,6 +41,8 @@ public static class AnimatingDoTweenUtilities
 
         Sequence flashSequence = DOTween.Sequence();
         flashSequence.Append(sprite.DOColor(Color.red, duration)).SetEase(ease);
+        flashSequence.Append(sprite.DOColor(Color.white, duration)).SetEase(ease);
+
 
     }
 
