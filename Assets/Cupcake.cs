@@ -1,7 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using System;
 
-public class TreeHealth : Interactables
+public class Cupcake : Interactables
 {
     // Static event that gets fired when any tree is destroyed
 
@@ -12,8 +13,7 @@ public class TreeHealth : Interactables
         // Tree-specific setup:
         if (GetComponent<Collider2D>() == null)
             gameObject.AddComponent<BoxCollider2D>().isTrigger = false;
-        if (gameObject.tag != "Tree")
-            gameObject.tag = "Tree";
+        if (gameObject.tag != "Cupcake")
+            gameObject.tag = "Cupcake";
     }
-
-} 
+}

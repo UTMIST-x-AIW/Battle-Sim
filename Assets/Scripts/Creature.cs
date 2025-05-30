@@ -129,6 +129,9 @@ public class Creature : MonoBehaviour
 
     public float maxDetectionRange = 20f;
 
+    private Color originalColor;
+    private SpriteRenderer renderer;
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
@@ -186,7 +189,9 @@ public class Creature : MonoBehaviour
     {
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-        
+        renderer = GetComponent<SpriteRenderer>();
+        originalColor = renderer.color;
+
     }
 
 
@@ -1090,10 +1095,8 @@ public class Creature : MonoBehaviour
 
     private IEnumerator FlashHealthRestoration()
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>(); //IMPROVEMENT: minor improvement, instead of getting the component every time, just call it in start or something. also just check the rest of the codebase for this same thing happening elsewhere
         if (renderer != null)
-        {
-            Color originalColor = renderer.color;
+        {    
             renderer.color = Color.green;
             yield return new WaitForSeconds(0.1f);
             renderer.color = originalColor;
@@ -1110,10 +1113,8 @@ public class Creature : MonoBehaviour
 
     private IEnumerator FlashOnDamage()
     {
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>(); //IMPROVEMENT: minor improvement, instead of getting the component every time, just call it in start or something.
         if (renderer != null)
         {
-            Color originalColor = renderer.color;
             renderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
             renderer.color = originalColor;
