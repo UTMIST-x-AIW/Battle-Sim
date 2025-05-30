@@ -168,6 +168,7 @@ public class Reproduction : MonoBehaviour
                 }
 
                 ParenthoodManager.AssignParent(child);
+                AnimatingDoTweenUtilities.PlayGrow(child);
 
                 // Still tracking past mates for reference, but not restricting repeat mating
                 otherScript.gameObject_mated_with.Add(this.gameObject);

@@ -366,7 +366,7 @@ public class NEATTest : MonoBehaviour
             
             // Spawn the creature with a randomized brain
             var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-            Debug.Log(ObjectPoolManager.ObjectPools);
+            // Debug.Log(ObjectPoolManager.ObjectPools);
             if (creature == null)
             {
                 LogManager.LogError("Failed to spawn new Albert - SpawnCreatureWithRandomizedBrain returned null");
@@ -657,6 +657,7 @@ public class NEATTest : MonoBehaviour
     {
         var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
+        AnimatingDoTweenUtilities.PlayGrow(creature);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
@@ -784,6 +785,7 @@ public class NEATTest : MonoBehaviour
         // Create the creature instance
         GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
+        AnimatingDoTweenUtilities.PlayGrow(creature);
         Creature creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
         
