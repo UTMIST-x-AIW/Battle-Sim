@@ -14,6 +14,8 @@ public class Reproduction : MonoBehaviour
     private bool isMating = false;
     private Creature creatureComponent;
 
+    public LayerMask creatureLayer;
+
     private void Start()
     {
         // Get the Creature component
@@ -30,7 +32,7 @@ public class Reproduction : MonoBehaviour
 
         // Use the creature's vision range instead of fixed radius
         float detectionRadius = creatureComponent.currentTeammateVisionRange;
-        Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius);
+        Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius, creatureLayer);
         
         foreach (var collider in nearbycollider)
         {

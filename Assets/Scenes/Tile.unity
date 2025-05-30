@@ -19191,7 +19191,7 @@ MonoBehaviour:
   closeRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   bowRangeColor: {r: 0, g: 0.5, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 0
+  showSpawnArea: 1
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
@@ -74779,11 +74779,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 200
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 200
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
