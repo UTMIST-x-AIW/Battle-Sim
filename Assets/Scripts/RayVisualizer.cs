@@ -19,6 +19,8 @@ public class MultiRayShooter : MonoBehaviour
     
     private Movement characterMovement;
     private List<GameObject> lines = new List<GameObject>();
+    [SerializeField] private int maxRaycastHits = 50;
+    private RaycastHit2D[] raycastResults;
     
     // Hit detection storage for other systems to access
     private List<RaycastHit2D> allHits = new List<RaycastHit2D>();
@@ -31,6 +33,7 @@ public class MultiRayShooter : MonoBehaviour
     void Start()
     {
         characterMovement = GetComponent<Movement>();
+        raycastResults = new RaycastHit2D[maxRaycastHits];
         for (int i = 0; i < _rayCount; i++)
         {
             GameObject line = Instantiate(linePrefab);
@@ -81,14 +84,15 @@ public class MultiRayShooter : MonoBehaviour
             Vector2 endPos =  new Vector2(transform.position.x,transform.position.y) +
                              rayDir * rayDistance;
             Ray ray = new Ray(transform.position, rayDir);
-            RaycastHit2D[] allRayHits = Physics2D.RaycastAll(this.transform.position, rayDir, rayDistance, layer.value);
+            int hitCount = Physics2D.RaycastNonAlloc(this.transform.position, rayDir, raycastResults, rayDistance, layer.value);
             
             // Process all non-self hits from this ray
             RaycastHit2D closestHit = new RaycastHit2D();
             float closestDistance = float.MaxValue;
             
-            foreach (RaycastHit2D rayHit in allRayHits)
+            for (int h = 0; h < hitCount; h++)
             {
+                RaycastHit2D rayHit = raycastResults[h];
                 if (rayHit.collider != null && rayHit.collider.gameObject != gameObject)
                 {
                     // Store all valid hits

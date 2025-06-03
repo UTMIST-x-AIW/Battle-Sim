@@ -93,6 +93,7 @@ public class Creature : MonoBehaviour
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
     private Collider2D[] nearbyGroundColliders;    // For ground detection
     private Collider2D[] nearbyColliders;
+    private RaycastHit2D[] bowHitsBuffer;
     private TreeHealth nearestTree = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
@@ -136,6 +137,7 @@ public class Creature : MonoBehaviour
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
         {
+            bowHitsBuffer = new RaycastHit2D[preAllocCollidersCount];
 
             if (useRayDetection)
             {
@@ -619,13 +621,14 @@ public class Creature : MonoBehaviour
         if (nearestOpponent != null && nearestOpponentDistance <= bowRange)
         {
             Vector2 directionToOpposite = nearestOpponent.transform.position - transform.position;
-            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, directionToOpposite, nearestOpponentDistance);
+            int hitCount = Physics2D.RaycastNonAlloc(transform.position, directionToOpposite, bowHitsBuffer, nearestOpponentDistance);
             
             bool hitOppositeTypeFirst = false;
             bool blockedByObstacle = false;
-            
-            foreach (RaycastHit2D hit in hits)
+
+            for (int i = 0; i < hitCount; i++)
             {
+                RaycastHit2D hit = bowHitsBuffer[i];
                 if (hit.collider.gameObject == gameObject) continue; // Skip self
                 
                 // Check what we hit

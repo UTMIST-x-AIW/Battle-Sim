@@ -122,6 +122,8 @@ public class NEATTest : MonoBehaviour
     // Generation tracking for auto-saving
     private string currentRunSaveFolder = "";
     private HashSet<int> savedGenerations = new HashSet<int>();
+    private Queue<int> savedGenerationQueue = new Queue<int>();
+    private const int maxSavedGenerationEntries = 100;
 
     // Add new variables for Kai spawning
     private float lastKaiSpawnTime = 0f;
@@ -1309,6 +1311,7 @@ public class NEATTest : MonoBehaviour
             
             // Initialize tracking set
             savedGenerations.Clear();
+            savedGenerationQueue.Clear();
         }
         catch (Exception e)
         {
@@ -1338,6 +1341,12 @@ public class NEATTest : MonoBehaviour
             if (!savedGenerations.Contains(generation))
             {
                 savedGenerations.Add(generation);
+                savedGenerationQueue.Enqueue(generation);
+                if (savedGenerations.Count > maxSavedGenerationEntries)
+                {
+                    int oldGen = savedGenerationQueue.Dequeue();
+                    savedGenerations.Remove(oldGen);
+                }
                 Debug.Log($"First creature reached generation milestone {generation}");
             }
             else

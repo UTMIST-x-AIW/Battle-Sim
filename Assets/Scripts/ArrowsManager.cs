@@ -7,11 +7,13 @@ public class ArrowsManager : MonoBehaviour
     [Header("Arrow Settings")]
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private int poolSize = 500;
+    [SerializeField] private int maxPoolSize = 500; // Limit total arrows to avoid unbounded growth
     [SerializeField] private float arrowSpeed = 15f;
     [SerializeField] private string arrowSortingLayer = "Arrows";
     
     private Queue<GameObject> arrowPool = new Queue<GameObject>();
     private List<GameObject> activeArrows = new List<GameObject>();
+    private int totalArrowCount = 0;
     
     // Singleton pattern
     public static ArrowsManager Instance { get; private set; }
@@ -24,6 +26,7 @@ public class ArrowsManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializePool();
+            totalArrowCount = poolSize;
         }
         else
         {
@@ -86,9 +89,20 @@ public class ArrowsManager : MonoBehaviour
         {
             return arrowPool.Dequeue();
         }
-        
-        // If pool is empty, create a new arrow (expanding pool dynamically)
-        return CreateNewArrow();
+
+        // Only expand the pool if under the configured limit
+        if (totalArrowCount < maxPoolSize)
+        {
+            GameObject arrow = CreateNewArrow();
+            if (arrow != null)
+            {
+                totalArrowCount++;
+            }
+            return arrow;
+        }
+
+        // Pool limit reached, no arrow available
+        return null;
     }
     
     private IEnumerator MoveArrow(GameObject arrow, Vector3 direction, float maxDistance)
