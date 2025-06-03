@@ -7,73 +7,109 @@ using UnityEngine;
 [Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-    public static List<PooledObjectInfo> ObjectPools = new List<PooledObjectInfo>();
+	public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
 
-    public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPosition, Quaternion spawnRotation)
-    {
-        PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == objectToSpawn.name);
+	[SerializeField]
+	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
 
-        if (pool == null)
-        {
-            Debug.Log("The pool " + objectToSpawn.name + " was null");
-            pool = new PooledObjectInfo() { LookupString = objectToSpawn.name };
-            ObjectPools.Add(pool);
-        }
+	public static event Action<List<GameObject>> OnListChanged;
 
-        GameObject spawnableObj = null;
-        foreach (GameObject obj in pool.InactiveObject)
-        {
-            if (obj != null)
-            {
-                spawnableObj = obj;
-                break; 
-            }
-        }
+	private void LateUpdate()
+	{
+		pooledObjectInfos.Clear();
+		pooledObjectInfos.AddRange(ObjectPools);
+	}
 
-        if (spawnableObj == null)
-        {
-            spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
-        }
-        
-        else
-        
-        {
-            spawnableObj.transform.position = spawnPosition;
-            spawnableObj.transform.rotation = spawnRotation;
-            pool.InactiveObject.Remove(spawnableObj);
-            spawnableObj.SetActive(true);
-        }
+	public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPosition, Quaternion spawnRotation)
+	{
+		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == objectToSpawn.name);
 
-        return spawnableObj;
-    }
+		if (pool == null)
+		{
+			pool = new PooledObjectInfo() { LookupString = objectToSpawn.name };
+			ObjectPools.Add(pool);
+		}
 
-    public static void ReturnObjectToPool(GameObject obj)
-    {
-        // Get the base name without "(Clone)" suffix if it exists
-        string goName = obj.name;
-        if (goName.EndsWith("(Clone)"))
-        {
-            goName = goName.Substring(0, goName.Length - 7); // Remove "(Clone)"
-        }
+		GameObject spawnableObj = null;
+		foreach (GameObject obj in pool.InactiveObjects)
+		{
+			if (obj != null)
+			{
+				spawnableObj = obj;
+				break;
+			}
+		}
 
-        PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+		if (spawnableObj == null)
+		{
+			spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
+			pool.ActiveObjects.Add(spawnableObj);
+			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+			{
+				OnListChanged?.Invoke(pool.ActiveObjects);
+			}
 
-        if (pool == null)
-        {
-            Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
-        }
-        else
-        {
-            obj.SetActive(false);
-            pool.InactiveObject.Add(obj);
-            Debug.Log(obj.name + " was returned to the pool");
-        }
-    }
+		}
+
+		else
+
+		{
+			spawnableObj.transform.position = spawnPosition;
+			spawnableObj.transform.rotation = spawnRotation;
+			pool.InactiveObjects.Remove(spawnableObj);
+			pool.ActiveObjects.Add(spawnableObj);
+			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+			{
+				OnListChanged?.Invoke(pool.ActiveObjects);
+			}
+			spawnableObj.SetActive(true);
+		}
+
+		return spawnableObj;
+	}
+
+	public static void ReturnObjectToPool(GameObject obj)
+	{
+		string goName = obj.name.Replace("(Clone)", "");
+
+		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+
+		if (pool == null)
+		{
+			Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
+		}
+		else
+		{
+			obj.SetActive(false);
+			pool.InactiveObjects.Add(obj);
+			pool.ActiveObjects.Remove(obj);
+			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+			{
+				OnListChanged?.Invoke(pool.ActiveObjects);
+			}
+		}
+	}
+
+
+	void ClearingPools()
+	{
+		foreach (PooledObjectInfo pool in ObjectPools)
+		{
+			pool.ActiveObjects.Clear();
+			pool.InactiveObjects.Clear();
+		}
+	}
+
+	private void OnDisable()
+	{
+		ClearingPools();
+	}
 }
 
-
+[Serializable]
 public class PooledObjectInfo
 {
-    public string LookupString;
-    public List<GameObject> InactiveObject = new List<GameObject>();
+	public string LookupString;
+	public List<GameObject> InactiveObjects = new List<GameObject>();
+	public List<GameObject> ActiveObjects = new List<GameObject>();
 }
