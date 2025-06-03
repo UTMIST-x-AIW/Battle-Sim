@@ -51,7 +51,7 @@ public class Interactables : MonoBehaviour
         }
     }
 
-    private void Die()
+    public virtual void Die()
     {
         // Spawn some resources or particle effects
         // For now, just destroy the tree

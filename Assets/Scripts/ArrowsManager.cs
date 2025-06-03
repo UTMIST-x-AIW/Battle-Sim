@@ -7,15 +7,17 @@ public class ArrowsManager : MonoBehaviour
     [Header("Arrow Settings")]
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private int poolSize = 500;
+    [SerializeField] private int maxPoolSize = 500; // Limit total arrows to avoid unbounded growth
     [SerializeField] private float arrowSpeed = 15f;
     [SerializeField] private string arrowSortingLayer = "Arrows";
-    
+
     private Queue<GameObject> arrowPool = new Queue<GameObject>();
     private List<GameObject> activeArrows = new List<GameObject>();
-    
+    private int totalArrowCount = 0;
+
     // Singleton pattern
     public static ArrowsManager Instance { get; private set; }
-    
+
     private void Awake()
     {
         // Singleton setup
@@ -24,13 +26,14 @@ public class ArrowsManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
             InitializePool();
+            totalArrowCount = poolSize;
         }
         else
         {
             Destroy(gameObject);
         }
     }
-    
+
     private void InitializePool()
     {
         for (int i = 0; i < poolSize; i++)
@@ -40,20 +43,20 @@ public class ArrowsManager : MonoBehaviour
             arrowPool.Enqueue(arrow);
         }
     }
-    
+
     private GameObject CreateNewArrow()
     {
         GameObject arrow = null;
-        
+
         if (arrowPrefab != null)
         {
             arrow = Instantiate(arrowPrefab, transform);
         }
-        
+
         return arrow;
     }
-    
-    
+
+
     /// <summary>
     /// Fires an arrow from the shooter position towards the target position
     /// </summary>
@@ -64,52 +67,63 @@ public class ArrowsManager : MonoBehaviour
     {
         GameObject arrow = GetPooledArrow();
         if (arrow == null) return;
-        
+
         // Position and orient the arrow
         arrow.transform.position = shooterPos;
         Vector3 direction = (targetPos - shooterPos).normalized;
-        
+
         // Rotate arrow to point in the direction of travel
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90f;
         arrow.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-        
+
         arrow.SetActive(true);
         activeArrows.Add(arrow);
-        
+
         // Start the arrow's movement coroutine
         StartCoroutine(MoveArrow(arrow, direction, maxDistance));
     }
-    
+
     private GameObject GetPooledArrow()
     {
         if (arrowPool.Count > 0)
         {
             return arrowPool.Dequeue();
         }
-        
-        // If pool is empty, create a new arrow (expanding pool dynamically)
-        return CreateNewArrow();
+
+        // Only expand the pool if under the configured limit
+        if (totalArrowCount < maxPoolSize)
+        {
+            GameObject arrow = CreateNewArrow();
+            if (arrow != null)
+            {
+                totalArrowCount++;
+            }
+            return arrow;
+        }
+
+        // Pool limit reached, no arrow available
+        return null;
     }
-    
+
     private IEnumerator MoveArrow(GameObject arrow, Vector3 direction, float maxDistance)
     {
         Vector3 startPosition = arrow.transform.position;
         float distanceTraveled = 0f;
-        
+
         while (arrow != null && arrow.activeInHierarchy && distanceTraveled < maxDistance)
         {
             // Move the arrow
             Vector3 movement = direction * arrowSpeed * Time.deltaTime;
             arrow.transform.position += movement;
             distanceTraveled += movement.magnitude;
-            
+
             yield return null;
         }
-        
+
         // Return arrow to pool
         ReturnToPool(arrow);
     }
-    
+
     private void ReturnToPool(GameObject arrow)
     {
         if (arrow != null)
@@ -119,7 +133,7 @@ public class ArrowsManager : MonoBehaviour
             arrowPool.Enqueue(arrow);
         }
     }
-    
+
     /// <summary>
     /// Cleans up all active arrows and returns them to the pool
     /// </summary>
@@ -130,7 +144,7 @@ public class ArrowsManager : MonoBehaviour
             ReturnToPool(activeArrows[i]);
         }
     }
-    
+
     private void OnDestroy()
     {
         if (Instance == this)
@@ -138,4 +152,4 @@ public class ArrowsManager : MonoBehaviour
             Instance = null;
         }
     }
-} 
+}
