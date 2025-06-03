@@ -18967,75 +18967,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161969673379056834, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   m_PrefabInstance: {fileID: 157686792}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &159151521
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.7282448
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.03294325
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -18.538652
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5548893254051671234, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6133335937930934384, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
-      propertyPath: m_Name
-      value: Cupcake
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
 --- !u!1001 &172009070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -86610,6 +86541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowPrefab: {fileID: 7384258518370218500, guid: 4690bddc8a13e4bcb91ceb27f15a3e25, type: 3}
   poolSize: 500
+  maxPoolSize: 500
   arrowSpeed: 50
   arrowSortingLayer: Arrows
 --- !u!4 &1880141608
@@ -87922,4 +87854,3 @@ SceneRoots:
   - {fileID: 508018528}
   - {fileID: 1880141608}
   - {fileID: 444500968}
-  - {fileID: 159151521}
