@@ -21,6 +21,7 @@ public class Cupcake : Interactable
         if (byWhom != null)
         {
             byWhom.ModifyMoveSpeed();
+            byWhom.ModifyHealth();
         }
     }
 }

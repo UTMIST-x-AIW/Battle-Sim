@@ -65,10 +65,11 @@ public class Creature : MonoBehaviour
     [SerializeField] public float moveSpeedDefault = 5f;
 
     [Header("Progression Bonuses")]
-    [SerializeField] public float rockHealthBonus = 15f;
-    [SerializeField] public float treeCooldownBonus = 0.05f;
-    [SerializeField] public float enemyDamageBonus = 2f;
-    [SerializeField] public float cupcakeSpeedBonus = 0.3f;
+    [SerializeField] public float rockHealthBonus = 5f;
+    [SerializeField] public float treeCooldownBonus = 0.25f;
+    [SerializeField] public float enemyDamageBonus = 1f;
+    [SerializeField] public float cupcakeSpeedBonus = 1.3f;
+    [SerializeField] public float cupcakeHealthBonus = 5f;
 
     [Header("Stat Caps")]
     [SerializeField] public float maxHealthCap = 100f;
@@ -906,6 +907,11 @@ public class Creature : MonoBehaviour
     {
         moveSpeed = Mathf.Min(moveSpeed + cupcakeSpeedBonus, moveSpeedCap);
         CheckClassChange();
+    }
+
+    public void ModifyHealth()
+    {
+        health = Mathf.Min(health + cupcakeHealthBonus, maxHealth);
     }
 
     private void CheckClassChange()

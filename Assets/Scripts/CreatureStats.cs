@@ -76,6 +76,31 @@ public class CreatureStats : MonoBehaviour
         {
             generationText.text = $"Generation: {selectedCreature.generation}";
         }
+
+        if (maxHealthText != null)
+        {
+            maxHealthText.text = $"Max Health: {selectedCreature.maxHealth:F0}";
+        }
+
+        if (attackCooldownText != null)
+        {
+            attackCooldownText.text = $"Attack Cooldown: {selectedCreature.attackCooldown:F2}s";
+        }
+
+        if (attackDamageText != null)
+        {
+            attackDamageText.text = $"Attack Damage: {selectedCreature.attackDamage:F1}";
+        }
+
+        if (movementSpeedText != null)
+        {
+            movementSpeedText.text = $"Move Speed: {selectedCreature.moveSpeed:F1}";
+        }
+
+        if (classText != null)
+        {
+            classText.text = $"Class: {selectedCreature.CurrentClass}";
+        }
     }
     
     // Call this method to select a creature and show the panel
