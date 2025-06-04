@@ -1067,7 +1067,7 @@ public class Creature : MonoBehaviour
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, interact, attack
+                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs including reproduction
             }
 
             double[] doubleObservations = ConvertToDouble(observations); //TODO: remove this debugging code if it works without
@@ -1092,7 +1092,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
+                return new float[] { 0f, 0f, 0f, 0f, 0f };
             }
             catch (System.Exception e)
             {
@@ -1107,7 +1107,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
+                return new float[] { 0f, 0f, 0f, 0f, 0f };
             }
 
             float[] outputs = ConvertToFloat(doubleOutputs);
@@ -1179,7 +1179,7 @@ public class Creature : MonoBehaviour
                 Debug.LogError(errorMsg);
             }
 
-            return new float[] { 0f, 0f, 0f, 0f };  // Return default values on error
+            return new float[] { 0f, 0f, 0f, 0f, 0f };  // Return default values on error
         }
     }
 
@@ -1322,6 +1322,7 @@ public class Creature : MonoBehaviour
 
             // Process action commands
             float[] desires = { actions[2], actions[3] };
+            float reproductionDesire = actions.Length > 4 ? actions[4] : -1f;
 
 
             // Energy-limited action: Allow action only if we have sufficient energy
@@ -1380,6 +1381,16 @@ public class Creature : MonoBehaviour
                             }
                             break;
                     }
+                }
+            }
+
+            // Reproduction attempt is gated by reproduction meter
+            if (reproductionDesire > 0.0f && reproductionMeter >= 1f)
+            {
+                var repro = GetComponent<Reproduction>();
+                if (repro != null && !repro.IsMating)
+                {
+                    repro.AttemptReproduction();
                 }
             }
         }

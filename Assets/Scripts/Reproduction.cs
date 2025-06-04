@@ -22,23 +22,25 @@ public class Reproduction : MonoBehaviour
         creatureComponent = GetComponent<Creature>();
     }
 
-    private void LateUpdate()
-    {
-        // Skip if already in mating process
-        if (isMating) return;
+    // Public accessor to check if this creature is currently mating
+    public bool IsMating => isMating;
 
-        // Skip if creature isn't ready to reproduce (meter not filled)
+    // Called when the creature wishes to attempt reproduction
+    public void AttemptReproduction()
+    {
+        // Skip if already mating or not ready
+        if (isMating) return;
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
-        // Use the creature's vision range instead of fixed radius
         float detectionRadius = creatureComponent.currentTeammateVisionRange;
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius, creatureLayer);
-        
+
         foreach (var collider in nearbycollider)
         {
             if (collider != null && collider.gameObject != gameObject)
             {
                 EnableMating(collider);
+                if (isMating) break; // stop searching once mating begins
             }
         }
     }
