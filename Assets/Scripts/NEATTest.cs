@@ -664,7 +664,7 @@ public class NEATTest : MonoBehaviour
         creatureComponent.type = type;
 
         // Create initial neural network with appropriate genome
-        var genome = isKai ? CreateInitialKaiGenome() : CreateInitialGenome();
+        var genome = isKai ? CreateKaiInitialGenome() : CreateInitialGenome();
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
 
@@ -708,7 +708,7 @@ public class NEATTest : MonoBehaviour
         return genome;
     }
 
-    NEAT.Genome.Genome CreateInitialKaiGenome() // TODO: remove this
+    NEAT.Genome.Genome CreateKaiInitialGenome()
     {
         var genome = new NEAT.Genome.Genome(0);
 
@@ -783,7 +783,8 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, OBSERVATION_COUNT + 1, 0.5f)); // Ground y to vertical velocity
 
         // Bias reproduction output using the reproduction meter
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 2, OBSERVATION_COUNT + 4, reproBias));
+        const float reproductionBias = 0.5f;
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 2, OBSERVATION_COUNT + 4, reproductionBias));
 
         return genome;
     }
