@@ -12,7 +12,6 @@ public class Spawner : MonoBehaviour
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
     [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
     [SerializeField, Range(0f, 1f)] private float extraObjectRespawnRate = 0f; // 0 = never respawn, 1 = respawn at full probability
-    [SerializeField, Range(0.01f, 2f)] private float checkInterval = 0.5f; // How often to check for replenishment (seconds)
     [SerializeField] private bool useDistinctHeatmaps = true; // Whether to use separate heatmaps for regular and extra objects
     [SerializeField] private float extraObjectMinutesToExtinction = 0f; // Time for respawn rate to go from 1 to 0 (0 = never change)
     [SerializeField] private bool debugLogging = false; // Toggle for debug logging
@@ -32,11 +31,10 @@ public class Spawner : MonoBehaviour
 
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
     private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
-    private bool isSpawningRegular = false; // Flag to track if regular spawn is in progress
-    private bool isSpawningExtra = false; // Flag to track if extra spawn is in progress
+    private int regularIndex = 0;
+    private int extraIndex = 0;
     private List<TilePosData.TilePos> highProbabilityPositions; // Cache of good spawn positions for regular objects
     private List<TilePosData.TilePos> extraHighProbabilityPositions; // Cache of good spawn positions for extra objects
-    private float nextCheckTime = 0f; // Time of next replenishment check
     private float simulationStartTime; // When the simulation started, used for extinction timing
     private float initialRespawnRate; // Initial value of respawn rate
 
@@ -85,8 +83,8 @@ public class Spawner : MonoBehaviour
         // Pre-calculate and cache high probability positions
         CacheHighProbabilityPositions();
         
-        // Initial population of objects
-        StartCoroutine(InitialSpawning());
+        // Start continuous spawning loop
+        StartCoroutine(SpawnLoop());
     }
 
     private void Update()
@@ -121,46 +119,7 @@ public class Spawner : MonoBehaviour
             }
         }
         
-        // Only check periodically instead of every frame
-        if (Time.time >= nextCheckTime)
-        {
-            nextCheckTime = Time.time + checkInterval;
-            
-            // Check if we need to spawn more regular objects
-            int currentCount = prefabParent.transform.childCount;
-            if (currentCount < maxNumOfSpawns && !isSpawningRegular)
-            {
-                // Spawn objects to reach the desired count
-                int objectsToSpawn = maxNumOfSpawns - currentCount;
-                StartCoroutine(ReplenishSpawns(objectsToSpawn));
-            }
-            
-            // Check if we need to respawn extra objects (only if respawn rate > 0)
-            int currentExtraCount = extraPrefabParent.transform.childCount;
-            if (extraObjectRespawnRate > 0 && !isSpawningExtra)
-            {
-                if (currentExtraCount < numExtraObjects)
-                {
-                    // Spawn extra objects to reach the desired count
-                    int extraObjectsToSpawn = numExtraObjects - currentExtraCount;
-                    
-                    if (debugLogging)
-                    {
-                        Debug.Log($"[Spawner] Starting extra object replenish: need {extraObjectsToSpawn} more, rate={extraObjectRespawnRate:F3}");
-                    }
-                    
-                    StartCoroutine(ReplenishExtraObjects(extraObjectsToSpawn));
-                }
-                else if (debugLogging && Time.frameCount % 300 == 0)
-                {
-                    Debug.Log($"[Spawner] Extra objects at max capacity ({currentExtraCount}/{numExtraObjects})");
-                }
-            }
-            else if (debugLogging && Time.frameCount % 300 == 0 && extraObjectMinutesToExtinction > 0)
-            {
-                Debug.Log($"[Spawner] Extra spawn check - respawnRate={extraObjectRespawnRate:F3}, isSpawningExtra={isSpawningExtra}, count={currentExtraCount}/{numExtraObjects}");
-            }
-        }
+        // Spawning is handled by a coroutine
     }
 
     private void CacheHighProbabilityPositions()
@@ -190,256 +149,63 @@ public class Spawner : MonoBehaviour
             }
         }
         
-        // If we don't have enough high probability positions, use all positions
-        if (highProbPositions.Count < neededPositions)
-        {
-            highProbPositions = allPositions;
-        }
+
         
         // Shuffle the array for random access
         Shuffle(highProbPositions);
-        
+
         return highProbPositions;
     }
 
-    private IEnumerator InitialSpawning()
+    private IEnumerator SpawnLoop()
     {
-        // Ensure tile positions are available for regular objects
-        if (highProbabilityPositions == null || highProbabilityPositions.Count == 0)
+        while (true)
         {
-            Debug.LogError("Error: No valid spawn positions available for regular objects", this);
-            yield break;
-        }
-
-        // Ensure tile positions are available for extra objects
-        if (extraHighProbabilityPositions == null || extraHighProbabilityPositions.Count == 0)
-        {
-            Debug.LogError("Error: No valid spawn positions available for extra objects", this);
-            yield break;
-        }
-
-        isSpawningRegular = true;
-        isSpawningExtra = true;
-        int regularPositionIndex = 0;
-        int extraPositionIndex = 0;
-        int regularAttempts = 0;
-        int extraAttempts = 0;
-        const int maxAttempts = 100; // Safety limit
-
-        // Interleave spawning of regular and extra objects
-        while ((prefabParent.transform.childCount < maxNumOfSpawns || extraPrefabParent.transform.childCount < numExtraObjects) && 
-               regularAttempts < maxAttempts && extraAttempts < maxAttempts)
-        {
-            // First attempt to spawn a regular object (if needed)
-            if (prefabParent.transform.childCount < maxNumOfSpawns)
-        {
-            // Get the next position
-                var regularTile = highProbabilityPositions[regularPositionIndex];
-                regularPositionIndex = (regularPositionIndex + 1) % highProbabilityPositions.Count; // Wrap around
-            
-                regularAttempts++;
-            
-            // Calculate spawn probability and compare with a random value
-                float regularSpawnProbability = heatmapData.GetValue(regularTile.pos);
-                float regularRandomVal = Random.Range(0f, 100f);
-
-                if (regularSpawnProbability > regularRandomVal)
-            {
-                    // Spawn the regular prefab at the tile's position
-                    bool regularSuccess = SpawnPrefab(regularTile.pos, false);
-
-                    if (regularSuccess)
-                    {
-                // Reset attempts counter on successful spawn
-                        regularAttempts = 0;
-                        
-                        if (debugLogging)
-                        {
-                            Debug.Log($"[Spawner] Spawned regular object {prefabParent.transform.childCount}/{maxNumOfSpawns}");
-                        }
-                        
-                        // Wait for a short interval before attempting to spawn an extra object
-                        yield return new WaitForSeconds(spawnInterval * 0.5f);
-                    }
-                }
-            }
-            
-            // Then attempt to spawn an extra object (if needed)
-            if (extraPrefabParent.transform.childCount < numExtraObjects)
-            {
-                // Get the next position from the extra positions
-                var extraTile = extraHighProbabilityPositions[extraPositionIndex];
-                extraPositionIndex = (extraPositionIndex + 1) % extraHighProbabilityPositions.Count; // Wrap around
-                
-                extraAttempts++;
-                
-                // Calculate spawn probability using the appropriate heatmap
-                HeatMapData mapToUse = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
-                float extraSpawnProbability = mapToUse.GetValue(extraTile.pos);
-                float extraRandomVal = Random.Range(0f, 100f);
-
-                if (extraSpawnProbability > extraRandomVal)
-                {
-                    // Spawn the extra prefab at the tile's position
-                    bool extraSuccess = SpawnPrefab(extraTile.pos, true);
-                    
-                    if (extraSuccess)
-                    {
-                        // Reset attempts counter on successful spawn
-                        extraAttempts = 0;
-                        
-                        if (debugLogging)
-                        {
-                            Debug.Log($"[Spawner] Spawned extra object {extraPrefabParent.transform.childCount}/{numExtraObjects}");
-                        }
-                
-                // Wait for the specified interval before the next spawn attempt
-                        yield return new WaitForSeconds(spawnInterval * 0.5f);
-                    }
-                }
-            }
-            
-            // Check if we've reached both target counts
-            if (prefabParent.transform.childCount >= maxNumOfSpawns && extraPrefabParent.transform.childCount >= numExtraObjects)
-            {
-                break;
-            }
-            
-            // Yield every few attempts to avoid freezing
-            if ((regularAttempts + extraAttempts) % 10 == 0)
-            {
-                yield return null;
-            }
-        }
-
-        isSpawningRegular = false;
-        isSpawningExtra = false;
-        
-        if (debugLogging)
-        {
-            Debug.Log($"[Spawner] Initial spawning complete: {prefabParent.transform.childCount} regular objects, {extraPrefabParent.transform.childCount} extra objects");
+            AttemptRegularSpawn();
+            AttemptExtraSpawn();
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 
-    private IEnumerator ReplenishSpawns(int count)
+    private void AttemptRegularSpawn()
     {
-        if (count <= 0) yield break;
-        
-        isSpawningRegular = true;
-        int spawned = 0;
-        int positionIndex = Random.Range(0, highProbabilityPositions.Count);
-        
-        while (spawned < count)
-        {
-            // Get the next position from regular positions
-            var tile = highProbabilityPositions[positionIndex];
-            positionIndex = (positionIndex + 1) % highProbabilityPositions.Count; // Wrap around
-            
-            // Calculate spawn probability and compare with a random value
-            float spawnProbability = heatmapData.GetValue(tile.pos);
-            float randomVal = Random.Range(0f, 100f);
+        if (prefabParent.transform.childCount >= maxNumOfSpawns) return;
+        if (highProbabilityPositions == null || highProbabilityPositions.Count == 0) return;
 
-            if (spawnProbability > randomVal)
+        var tile = highProbabilityPositions[regularIndex];
+        regularIndex = (regularIndex + 1) % highProbabilityPositions.Count;
+
+        float probability = heatmapData.GetValue(tile.pos);
+        if (probability > Random.Range(0f, 100f))
+        {
+            if (SpawnPrefab(tile.pos, false) && debugLogging)
             {
-                // Spawn the regular prefab at the tile's position
-                SpawnPrefab(tile.pos, false);
-                spawned++;
-                
-                // Wait for the specified interval
-                yield return new WaitForSeconds(spawnInterval);
-            }
-            
-            // Occasionally yield to avoid freezing
-            if (positionIndex % 10 == 0)
-            {
-                yield return null;
+                Debug.Log($"[Spawner] Spawned regular object {prefabParent.transform.childCount}/{maxNumOfSpawns}");
             }
         }
-
-        isSpawningRegular = false;
     }
 
-    private IEnumerator ReplenishExtraObjects(int count)
+    private void AttemptExtraSpawn()
     {
-        if (count <= 0 || extraObjectRespawnRate <= 0)
-        {
-            if (debugLogging)
-            {
-                Debug.Log($"[Spawner] Skipping extra replenish: count={count}, rate={extraObjectRespawnRate:F3}");
-            }
-            yield break;
-        }
-        
-        isSpawningExtra = true;
-        int spawned = 0;
-        int attempts = 0;
-        int maxAttempts = 100; // Safety limit
-        int positionIndex = Random.Range(0, extraHighProbabilityPositions.Count);
-        
-        if (debugLogging)
-        {
-            Debug.Log($"[Spawner] Starting extra replenish for {count} objects, rate={extraObjectRespawnRate:F3}");
-        }
-        
-        while (spawned < count && attempts < maxAttempts)
-        {
-            attempts++;
-            
-            // Get the next position from extra positions
-            var tile = extraHighProbabilityPositions[positionIndex];
-            positionIndex = (positionIndex + 1) % extraHighProbabilityPositions.Count; // Wrap around
-            
-            // Calculate spawn probability using the appropriate heatmap
-            HeatMapData mapToUse = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
-            float spawnProbability = mapToUse.GetValue(tile.pos);
-            
-            // Apply the respawn rate to reduce the probability
-            spawnProbability *= extraObjectRespawnRate;
-            
-            // Compare with a random value
-            float randomVal = Random.Range(0f, 100f);
+        if (extraObjectRespawnRate <= 0f) return;
+        if (extraPrefabParent.transform.childCount >= numExtraObjects) return;
+        if (extraHighProbabilityPositions == null || extraHighProbabilityPositions.Count == 0) return;
 
-            if (debugLogging && attempts % 10 == 0)
-            {
-                Debug.Log($"[Spawner] Extra spawn attempt {attempts}: prob={spawnProbability:F1}, roll={randomVal:F1}, pos={tile.pos}");
-            }
+        var tile = extraHighProbabilityPositions[extraIndex];
+        extraIndex = (extraIndex + 1) % extraHighProbabilityPositions.Count;
 
-            if (spawnProbability > randomVal)
+        HeatMapData map = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
+        float probability = map.GetValue(tile.pos) * extraObjectRespawnRate;
+
+        if (probability > Random.Range(0f, 100f))
+        {
+            if (SpawnPrefab(tile.pos, true) && debugLogging)
             {
-                // Spawn the extra prefab at the tile's position
-                bool success = SpawnPrefab(tile.pos, true);
-                
-                if (success)
-                {
-                    spawned++;
-                    if (debugLogging)
-                    {
-                        Debug.Log($"[Spawner] Successfully spawned extra object {spawned}/{count} at {tile.pos}");
-                    }
-                }
-                else if (debugLogging)
-                {
-                    Debug.Log($"[Spawner] Failed to spawn extra object at {tile.pos} (position occupied)");
-                }
-                
-                // Wait for the specified interval
-                yield return new WaitForSeconds(spawnInterval);
-            }
-            
-            // Occasionally yield to avoid freezing
-            if (attempts % 10 == 0)
-            {
-                yield return null;
+                Debug.Log($"[Spawner] Spawned extra object {extraPrefabParent.transform.childCount}/{numExtraObjects}");
             }
         }
-
-        if (debugLogging)
-        {
-            Debug.Log($"[Spawner] Extra replenish complete: spawned {spawned}/{count} objects after {attempts} attempts");
-        }
-
-        isSpawningExtra = false;
     }
+
 
     private bool SpawnPrefab(Vector2 position, bool isExtra)
     {
