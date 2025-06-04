@@ -50,13 +50,13 @@ namespace XCharts.Example
             }
         }
 
-        void Update()
-        {
-            if (angle > 3000) return;
-            angle++;
-            float xvalue = Mathf.PI / 180 * angle;
-            float yvalue = Mathf.Sin(xvalue);
-            chart.AddData(0, xvalue, yvalue);
-        }
+        //void Update()
+        //{
+        //    if (angle > 3000) return;
+        //    angle++;
+        //    float xvalue = Mathf.PI / 180 * angle;
+        //    float yvalue = Mathf.Sin(xvalue);
+        //    chart.AddData(0, xvalue, yvalue);
+        //}
     }
 }
