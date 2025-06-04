@@ -44736,27 +44736,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1843174949638743588, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: prefab
       value: 
-      objectReference: {fileID: 6133335937930934384, guid: 6b24aadc24d41444d9a0f03b1a732f60, type: 3}
+      objectReference: {fileID: 4383530603220594374, guid: a0ac91c7986ef6d4bba8165f99a0d8e4, type: 3}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: checkInterval
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 200
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 200
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
@@ -44764,7 +44764,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectRespawnRate
-      value: 1
+      value: 0.07366667
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectMinutesToExtinction
@@ -86559,6 +86559,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1886011053
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1843174949638743588, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_Name
+      value: RockSpawnPoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 1843174949638743588, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: prefab
+      value: 
+      objectReference: {fileID: 2924760637134892396, guid: b312b80c2ef404498bce5a2c05704672, type: 3}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: checkInterval
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: spawnInterval
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: maxNumOfSpawns
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: numExtraObjects
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraHeatmapData
+      value: 
+      objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraObjectRespawnRate
+      value: 0.07366667
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraObjectMinutesToExtinction
+      value: 360
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: extraObjectSecondsToExtinction
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8246057672700537593, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
 --- !u!1001 &1895519334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87760,19 +87857,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: checkInterval
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.01
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 200
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 200
+      value: 66
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
@@ -87780,7 +87877,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectRespawnRate
-      value: 0.221
+      value: 0.07366667
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectMinutesToExtinction
@@ -87850,6 +87947,7 @@ SceneRoots:
   - {fileID: 302579215}
   - {fileID: 7016299647965348102}
   - {fileID: 838061650}
+  - {fileID: 1886011053}
   - {fileID: 260676806}
   - {fileID: 508018528}
   - {fileID: 1880141608}
