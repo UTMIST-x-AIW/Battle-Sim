@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 4166087550816610430}
   - component: {fileID: 8879605991141767902}
   - component: {fileID: 8202591198078679392}
+  - component: {fileID: 1598292887660499255}
   m_Layer: 0
   m_Name: rock1
-  m_TagString: Untagged
+  m_TagString: Rock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,3 +159,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 6.401327, y: 0.97966635}
   m_EdgeRadius: 0
+--- !u!114 &1598292887660499255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7149565122173711573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7ea2258afd24821b9efa2840c129f78, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
