@@ -9,10 +9,15 @@ using Unity.VisualScripting;
 public class Reproduction : MonoBehaviour
 {
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
-    public float pReproduction = 0.9f;
+    // Probability threshold for successful reproduction. A lower value
+    // means reproduction happens more often because matingChance must be
+    // greater than this value. Setting it to 0.7f results in roughly a 30%
+    // chance of reproduction each mating attempt.
+    public float pReproduction = 0.7f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
     private Creature creatureComponent;
+    private float reproductionCommand = 0f; // command from neural network
 
     public LayerMask creatureLayer;
 
@@ -22,10 +27,21 @@ public class Reproduction : MonoBehaviour
         creatureComponent = GetComponent<Creature>();
     }
 
+    public void SetReproductionCommand(float desire)
+    {
+        reproductionCommand = desire;
+    }
+
     private void LateUpdate()
     {
         // Skip if already in mating process
         if (isMating) return;
+
+        // Only attempt reproduction if commanded by the neural network
+        if (reproductionCommand <= 0f)
+        {
+            return;
+        }
 
         // Skip if creature isn't ready to reproduce (meter not filled)
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
@@ -41,6 +57,9 @@ public class Reproduction : MonoBehaviour
                 EnableMating(collider);
             }
         }
+
+        // Reset the command after attempting reproduction this frame
+        reproductionCommand = 0f;
     }
 
     private void EnableMating(Collider2D col)
