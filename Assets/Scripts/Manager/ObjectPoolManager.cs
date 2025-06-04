@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 [Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-	public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+        public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+
+        // Registry of active creature components for quick lookup
+        public static List<Creature> ActiveCreatures { get; private set; } = new List<Creature>();
 
 	[SerializeField]
 	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
@@ -40,33 +44,40 @@ public class ObjectPoolManager : MonoBehaviour
 			}
 		}
 
-		if (spawnableObj == null)
-		{
-			spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
-			pool.ActiveObjects.Add(spawnableObj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
+                if (spawnableObj == null)
+                {
+                        spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
+                        pool.ActiveObjects.Add(spawnableObj);
+                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                        {
+                                OnListChanged?.Invoke(pool.ActiveObjects);
+                        }
 
-		}
+                }
 
-		else
+                else
 
-		{
-			spawnableObj.transform.position = spawnPosition;
-			spawnableObj.transform.rotation = spawnRotation;
-			pool.InactiveObjects.Remove(spawnableObj);
-			pool.ActiveObjects.Add(spawnableObj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
-			spawnableObj.SetActive(true);
-		}
+                {
+                        spawnableObj.transform.position = spawnPosition;
+                        spawnableObj.transform.rotation = spawnRotation;
+                        pool.InactiveObjects.Remove(spawnableObj);
+                        pool.ActiveObjects.Add(spawnableObj);
+                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                        {
+                                OnListChanged?.Invoke(pool.ActiveObjects);
+                        }
+                        spawnableObj.SetActive(true);
+                }
 
-		return spawnableObj;
-	}
+                // Track active creatures
+                var creatureComp = spawnableObj.GetComponent<Creature>();
+                if (creatureComp != null && !ActiveCreatures.Contains(creatureComp))
+                {
+                        ActiveCreatures.Add(creatureComp);
+                }
+
+                return spawnableObj;
+        }
 
 	public static void ReturnObjectToPool(GameObject obj)
 	{
@@ -78,27 +89,35 @@ public class ObjectPoolManager : MonoBehaviour
 		{
 			Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
 		}
-		else
-		{
-			obj.SetActive(false);
-			pool.InactiveObjects.Add(obj);
-			pool.ActiveObjects.Remove(obj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
-		}
-	}
+                else
+                {
+                        obj.SetActive(false);
+                        pool.InactiveObjects.Add(obj);
+                        pool.ActiveObjects.Remove(obj);
+                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                        {
+                                OnListChanged?.Invoke(pool.ActiveObjects);
+                        }
+                }
+
+                // Remove from active creature registry if applicable
+                var creatureComp = obj.GetComponent<Creature>();
+                if (creatureComp != null)
+                {
+                        ActiveCreatures.Remove(creatureComp);
+                }
+        }
 
 
-	void ClearingPools()
-	{
-		foreach (PooledObjectInfo pool in ObjectPools)
-		{
-			pool.ActiveObjects.Clear();
-			pool.InactiveObjects.Clear();
-		}
-	}
+        void ClearingPools()
+        {
+                foreach (PooledObjectInfo pool in ObjectPools)
+                {
+                        pool.ActiveObjects.Clear();
+                        pool.InactiveObjects.Clear();
+                }
+                ActiveCreatures.Clear();
+        }
 
 	private void OnDisable()
 	{
