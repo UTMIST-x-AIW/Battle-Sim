@@ -9,7 +9,14 @@ public class CreatureStats : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI ageText;
     public TextMeshProUGUI generationText;
-    
+
+    public TextMeshProUGUI maxHealthText;
+    public TextMeshProUGUI attackCooldownText;
+    public TextMeshProUGUI attackDamageText;
+    public TextMeshProUGUI movementSpeedText;
+
+    public TextMeshProUGUI classText;
+
     // Cached components
     private Creature selectedCreature;
     private NetworkVisualizer networkVisualizer;
