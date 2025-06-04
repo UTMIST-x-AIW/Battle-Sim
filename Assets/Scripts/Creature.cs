@@ -1321,7 +1321,11 @@ public class Creature : MonoBehaviour
             ApplyMovement(desiredVelocity);
 
             // Process action commands
-            float[] desires = { actions[2], actions[3] };
+            float interactDesire = actions[2];
+            float attackDesire = actions[3];
+            float reproduceDesire = actions.Length > 4 ? actions[4] : -1f;
+
+            float[] desires = { interactDesire, attackDesire };
 
 
             // Energy-limited action: Allow action only if we have sufficient energy
@@ -1380,6 +1384,16 @@ public class Creature : MonoBehaviour
                             }
                             break;
                     }
+                }
+            }
+
+            // Handle reproduction as a separate action not gated by energy
+            if (reproduceDesire > 0f && reproductionMeter >= 1f)
+            {
+                var repro = GetComponent<Reproduction>();
+                if (repro != null)
+                {
+                    repro.AttemptReproduction();
                 }
             }
         }

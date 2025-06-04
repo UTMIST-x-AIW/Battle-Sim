@@ -22,7 +22,8 @@ public class Reproduction : MonoBehaviour
         creatureComponent = GetComponent<Creature>();
     }
 
-    private void LateUpdate()
+    // Called when the creature decides to reproduce
+    public void AttemptReproduction()
     {
         // Skip if already in mating process
         if (isMating) return;
@@ -30,10 +31,9 @@ public class Reproduction : MonoBehaviour
         // Skip if creature isn't ready to reproduce (meter not filled)
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
-        // Use the creature's vision range instead of fixed radius
         float detectionRadius = creatureComponent.currentTeammateVisionRange;
         Collider2D[] nearbycollider = Physics2D.OverlapCircleAll(transform.position, detectionRadius, creatureLayer);
-        
+
         foreach (var collider in nearbycollider)
         {
             if (collider != null && collider.gameObject != gameObject)
