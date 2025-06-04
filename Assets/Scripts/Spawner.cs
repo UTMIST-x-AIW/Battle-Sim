@@ -8,7 +8,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject prefab; // Prefab to spawn
     [SerializeField] private HeatMapData heatmapData; // Heatmap data for regular spawn probabilities
     [SerializeField] private HeatMapData extraHeatmapData; // Heatmap data for extra objects spawn probabilities
-    [SerializeField, Range(0.01f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
+    [SerializeField, Range(0.01f, 5f)] private float spawnInterval = 0.25f; // Time between spawn attempts
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
     [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
     [SerializeField, Range(0f, 1f)] private float extraObjectRespawnRate = 0f; // 0 = never respawn, 1 = respawn at full probability
@@ -16,6 +16,19 @@ public class Spawner : MonoBehaviour
     [SerializeField] private bool useDistinctHeatmaps = true; // Whether to use separate heatmaps for regular and extra objects
     [SerializeField] private float extraObjectMinutesToExtinction = 0f; // Time for respawn rate to go from 1 to 0 (0 = never change)
     [SerializeField] private bool debugLogging = false; // Toggle for debug logging
+
+    // Public accessors so other systems or UI can tweak spawn timing at runtime
+    public float SpawnInterval
+    {
+        get => spawnInterval;
+        set => spawnInterval = Mathf.Clamp(value, 0.01f, 5f);
+    }
+
+    public float ExtraObjectRespawnRate
+    {
+        get => extraObjectRespawnRate;
+        set => extraObjectRespawnRate = Mathf.Clamp01(value);
+    }
 
     private GameObject prefabParent; // Parent object for organizing spawned prefabs
     private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
@@ -61,10 +74,13 @@ public class Spawner : MonoBehaviour
         // Create a parent object to organize spawned prefabs
         prefabParent = GameObject.Find($"{prefab.name} Parent");
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
-        
+
         // Create a parent for extra objects
         extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");
         if (extraPrefabParent == null) extraPrefabParent = new GameObject($"{prefab.name} Extra Parent");
+
+        // Prewarm the object pool so spawning doesn't instantiate during gameplay
+        ObjectPoolManager.PrewarmPool(prefab, maxNumOfSpawns + numExtraObjects);
         
         // Pre-calculate and cache high probability positions
         CacheHighProbabilityPositions();
