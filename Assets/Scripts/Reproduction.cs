@@ -16,6 +16,20 @@ public class Reproduction : MonoBehaviour
 
     public LayerMask creatureLayer;
 
+    private void OnEnable()
+    {
+        // When the object is reused from the pool ensure internal state is reset
+        isMating = false;
+        gameObject_mated_with.Clear();
+    }
+
+    private void OnDisable()
+    {
+        // Clear references to prevent memory from growing when pooled
+        isMating = false;
+        gameObject_mated_with.Clear();
+    }
+
     private void Start()
     {
         // Get the Creature component
