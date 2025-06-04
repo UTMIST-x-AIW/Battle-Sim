@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class Reproduction : MonoBehaviour
 {
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
-    public float pReproduction = 0.9f;
+    public float pReproduction = 0.1f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
     private Creature creatureComponent;
@@ -88,7 +88,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // New check for minimum age requirement (21 years)
-        if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        if (creatureComponent.Lifetime < 18f || otherCreature.Lifetime < 18f)
         // if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
         {
             return; // At least one creature is too young
@@ -127,7 +127,7 @@ public class Reproduction : MonoBehaviour
         }
 
         float matingChance = Random.value;
-        if (matingChance > pReproduction)
+        if (matingChance < pReproduction)
         {
             // Get reference to NEATTest
             var neatTest = FindObjectOfType<NEATTest>();
@@ -201,7 +201,7 @@ public class Reproduction : MonoBehaviour
     private IEnumerator ResetMatingState()
     {
         // Wait a bit before allowing mating again
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(10f);
         isMating = false;
     }
 
