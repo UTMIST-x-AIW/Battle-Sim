@@ -18,19 +18,6 @@ public abstract class Interactable : MonoBehaviour
         originalColor = renderer.color;
     }
 
-    protected virtual void OnEnable()
-    {
-        currentHP = hitPoints;
-        if (renderer == null)
-        {
-            renderer = GetComponent<SpriteRenderer>();
-        }
-        if (renderer != null)
-        {
-            renderer.color = originalColor;
-        }
-    }
-
     public virtual void TakeDamage(float damage, Creature byWhom)
     {
         currentHP -= damage;
