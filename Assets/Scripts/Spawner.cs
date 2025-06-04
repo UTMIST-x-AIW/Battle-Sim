@@ -327,6 +327,7 @@ public class Spawner : MonoBehaviour
             {
                 // Spawn the regular prefab at the tile's position
                 SpawnPrefab(tile.pos, false);
+
                 spawned++;
                 
                 // Wait for the specified interval
@@ -436,16 +437,17 @@ public class Spawner : MonoBehaviour
         
         // Instantiate the prefab and set its parent
         GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        ParenthoodManager.AssignParent(spawnedPrefab);
         
         // Assign to the appropriate parent based on whether it's an extra object
-        if (isExtra)
-        {
-            spawnedPrefab.transform.SetParent(extraPrefabParent.transform, false);
-        }
-        else
-        {
-        spawnedPrefab.transform.SetParent(prefabParent.transform, false);
-        }
+        //if (isExtra)
+        //{
+        //    spawnedPrefab.transform.SetParent(extraPrefabParent.transform, false);
+        //}
+        //else
+        //{
+        //spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+        //}
         
         return true;
     }
