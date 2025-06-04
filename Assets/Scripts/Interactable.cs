@@ -50,7 +50,7 @@ public abstract class Interactable : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
+            //AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
             OnDestroyed(byWhom);
         }
     }

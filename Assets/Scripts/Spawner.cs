@@ -8,7 +8,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private GameObject prefab; // Prefab to spawn
     [SerializeField] private HeatMapData heatmapData; // Heatmap data for regular spawn probabilities
     [SerializeField] private HeatMapData extraHeatmapData; // Heatmap data for extra objects spawn probabilities
-    [SerializeField, Range(0.01f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
+    [SerializeField, Range(0.001f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
     [SerializeField] private int maxNumOfSpawns = 10; // Maximum number of spawned objects
     [SerializeField] private int numExtraObjects = 5; // Number of extra objects to spawn initially that won't respawn
     [SerializeField, Range(0f, 1f)] private float extraObjectRespawnRate = 0f; // 0 = never respawn, 1 = respawn at full probability
@@ -243,7 +243,7 @@ public class Spawner : MonoBehaviour
                         }
                         
                         // Wait for a short interval before attempting to spawn an extra object
-                        yield return new WaitForSeconds(spawnInterval * 0.5f);
+                        //yield return new WaitForSeconds(spawnInterval * 0.5f);
                     }
                 }
             }
@@ -278,7 +278,7 @@ public class Spawner : MonoBehaviour
                         }
                 
                 // Wait for the specified interval before the next spawn attempt
-                        yield return new WaitForSeconds(spawnInterval * 0.5f);
+                        //yield return new WaitForSeconds(spawnInterval * 0.5f);
                     }
                 }
             }
@@ -330,7 +330,7 @@ public class Spawner : MonoBehaviour
                 spawned++;
                 
                 // Wait for the specified interval
-                yield return new WaitForSeconds(spawnInterval);
+                //yield return new WaitForSeconds(spawnInterval);
             }
             
             // Occasionally yield to avoid freezing
@@ -407,7 +407,7 @@ public class Spawner : MonoBehaviour
                 }
                 
                 // Wait for the specified interval
-                yield return new WaitForSeconds(spawnInterval);
+                //yield return new WaitForSeconds(spawnInterval);
             }
             
             // Occasionally yield to avoid freezing
