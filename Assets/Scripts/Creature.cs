@@ -277,6 +277,33 @@ public class Creature : MonoBehaviour
         // It will be set when the meter fills to 1.0
     }
 
+    private void OnEnable()
+    {
+        health = maxHealth;
+        energyMeter = 0f;
+        reproductionMeter = 0f;
+        lifetime = 0f;
+        canStartReproducing = false;
+
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (renderer == null)
+        {
+            renderer = GetComponent<SpriteRenderer>();
+            if (renderer != null) originalColor = renderer.color;
+        }
+
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        if (renderer != null)
+        {
+            renderer.color = originalColor;
+        }
+    }
+
     private void Start()
     {
         // Setup Rigidbody2D
@@ -1217,7 +1244,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Die
-                Destroy(gameObject);
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
 
@@ -1413,7 +1440,7 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 
