@@ -169,6 +169,30 @@ public class Creature : MonoBehaviour
     public Rock GetNearestRock() => nearestRock;
     public Cupcake GetNearestCupcake() => nearestCupcake;
 
+    private Interactable GetClosestInteractableInRange()
+    {
+        float minDist = float.MaxValue;
+        Interactable closest = null;
+
+        if (nearestTree != null && nearestTreeDistance <= closeRange && nearestTreeDistance < minDist)
+        {
+            closest = nearestTree;
+            minDist = nearestTreeDistance;
+        }
+        if (nearestRock != null && nearestRockDistance <= closeRange && nearestRockDistance < minDist)
+        {
+            closest = nearestRock;
+            minDist = nearestRockDistance;
+        }
+        if (nearestCupcake != null && nearestCupcakeDistance <= closeRange && nearestCupcakeDistance < minDist)
+        {
+            closest = nearestCupcake;
+            minDist = nearestCupcakeDistance;
+        }
+
+        return closest;
+    }
+
     // Track the actual tree vision range currently being used
     public float currentTreeVisionRange;
     public float currentTeammateVisionRange;
@@ -1001,6 +1025,11 @@ public class Creature : MonoBehaviour
 
         obs[14] = nearestOpponentHealthNormalized;
 
+        // Normalized distances to nearby objects
+        obs[15] = Mathf.Clamp01(nearestTreeDistance / maxDetectionRange);
+        obs[16] = Mathf.Clamp01(nearestRockDistance / maxDetectionRange);
+        obs[17] = Mathf.Clamp01(nearestCupcakeDistance / maxDetectionRange);
+
         return obs;
     }
 
@@ -1032,7 +1061,7 @@ public class Creature : MonoBehaviour
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs: move x, move y, chop, sword, bow
+                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, interact, attack
             }
 
             double[] doubleObservations = ConvertToDouble(observations); //TODO: remove this debugging code if it works without
@@ -1203,7 +1232,7 @@ public class Creature : MonoBehaviour
                 // Detect nearby objects once per frame and cache results
                 DetectNearbyObjects();
 
-                // Get network outputs (x, y velocities, chop desire, sword desire, bow desire)
+                // Get network outputs (x, y velocities, interact desire, attack desire)
                 float[] observations = GetObservations();
                 float[] actions = GetActions(observations);
 
@@ -1286,7 +1315,7 @@ public class Creature : MonoBehaviour
             ApplyMovement(desiredVelocity);
 
             // Process action commands
-            float[] desires = { actions[2], actions[3], actions[4] };
+            float[] desires = { actions[2], actions[3] };
 
 
             // Energy-limited action: Allow action only if we have sufficient energy
@@ -1306,41 +1335,42 @@ public class Creature : MonoBehaviour
                     switch (strongestDesireIndex)
                     {
                         case 0:
-                            // Chop tree
-                            if (InChopRange)
+                            // Interact with closest object
+                            Interactable target = GetClosestInteractableInRange();
+                            if (target != null)
                             {
-                                nearestTree.TakeDamage(chopDamage, this);
+                                target.Interact(this);
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
                             }
                             break;
                         case 1:
-                            // Sword attack
-                            if (InSwordRange)
+                            // Weapon attack
+                            if (CurrentClass == CreatureClass.Archer)
                             {
-                                nearestOpponent.TakeDamage(swordDamage, this);
-                                energyMeter -= actionEnergyCost;
-                                toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
-                            }
-                            break;
-                        case 2:
-                            // Bow attack
-                            if (InBowRange)
-                            {
-                                toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
-                                energyMeter -= actionEnergyCost;
-
-                                // Fire arrow animation
-                                if (ArrowsManager.Instance != null)
+                                if (InBowRange)
                                 {
-                                    ArrowsManager.Instance.FireArrow(
-                                        transform.position,
-                                        nearestOpponent.transform.position,
-                                        bowRange
-                                    );
+                                    toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
+                                    energyMeter -= actionEnergyCost;
+                                    if (ArrowsManager.Instance != null)
+                                    {
+                                        ArrowsManager.Instance.FireArrow(
+                                            transform.position,
+                                            nearestOpponent.transform.position,
+                                            bowRange
+                                        );
+                                    }
+                                    nearestOpponent.TakeDamage(bowDamage, this);
                                 }
-
-                                nearestOpponent.TakeDamage(bowDamage, this);
+                            }
+                            else
+                            {
+                                if (InSwordRange)
+                                {
+                                    nearestOpponent.TakeDamage(swordDamage, this);
+                                    energyMeter -= actionEnergyCost;
+                                    toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
+                                }
                             }
                             break;
                     }

@@ -35,6 +35,16 @@ public abstract class Interactable : MonoBehaviour
         }
     }
 
+    // Basic interaction method used by creatures. By default this simply
+    // applies damage equal to the creature's chop damage.
+    public virtual void Interact(Creature byWhom)
+    {
+        if (byWhom != null)
+        {
+            TakeDamage(byWhom.chopDamage, byWhom);
+        }
+    }
+
     private System.Collections.IEnumerator FlashOnDamage()
     {
         
