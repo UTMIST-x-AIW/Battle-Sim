@@ -51,7 +51,7 @@ public class NEATTest : MonoBehaviour
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
     public const int OBSERVATION_COUNT = 18;
-    public const int ACTION_COUNT = 4;
+    public const int ACTION_COUNT = 5;
 
 
     [Header("Test Settings")]
@@ -721,27 +721,31 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
 
-        // Add output nodes (4 outputs: x,y velocity, interact, attack)
+        // Add output nodes (5 outputs: x,y velocity, interact, attack, reproduce)
         var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
         var outputNode4 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 3, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 4, NEAT.Genes.NodeType.Output); // Reproduce action
 
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
         outputNode3.Layer = 2;
         outputNode4.Layer = 2;
+        outputNode5.Layer = 2;
 
         // Explicitly set bias to 0 for output nodes to maintain previous behavior
         outputNode1.Bias = 0.0;
         outputNode2.Bias = 0.0;
         outputNode3.Bias = 0.0;
         outputNode4.Bias = 0.0;
+        outputNode5.Bias = 0.0;
 
         genome.AddNode(outputNode1);
         genome.AddNode(outputNode2);
         genome.AddNode(outputNode3);
         genome.AddNode(outputNode4);
+        genome.AddNode(outputNode5);
 
         // Add connections with different weights than Albert
         // Kais are more aggressive (stronger response to opposite type)
@@ -777,6 +781,9 @@ public class NEATTest : MonoBehaviour
         // Ground avoidance/attraction connections
         genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 11, OBSERVATION_COUNT, 0.5f)); // Ground x to horizontal velocity
         genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, OBSERVATION_COUNT + 1, 0.5f)); // Ground y to vertical velocity
+
+        // Bias reproduction output using the reproduction meter
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 2, OBSERVATION_COUNT + 4, reproBias));
 
         return genome;
     }
@@ -864,21 +871,25 @@ public class NEATTest : MonoBehaviour
         var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
         var outputNode4 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 3, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 4, NEAT.Genes.NodeType.Output); // Reproduce action
 
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
         outputNode3.Layer = 2;
         outputNode4.Layer = 2;
+        outputNode5.Layer = 2;
 
         outputNode1.Bias = 0.0;
         outputNode2.Bias = 0.0;
         outputNode3.Bias = 0.0;
         outputNode4.Bias = 0.0;
+        outputNode5.Bias = 0.0;
 
         genome.AddNode(outputNode1);
         genome.AddNode(outputNode2);
         genome.AddNode(outputNode3);
         genome.AddNode(outputNode4);
+        genome.AddNode(outputNode5);
 
         // Add connections for basic movement (low weights)
         genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, OBSERVATION_COUNT, 0.2f)); // Health to x movement
@@ -892,13 +903,16 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 2, OBSERVATION_COUNT, reproBias));  // ReproductionMeter to x movement
         genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 2, OBSERVATION_COUNT + 1, reproBias));  // ReproductionMeter to y movement
 
+        // Directly link reproduction meter to reproduction action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 2, OBSERVATION_COUNT + 4, reproBias));
+
         // Add connections to make creatures see each other
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 3, OBSERVATION_COUNT, 0.4f * reproBias));  // Same creature x to x movement (weighted by repro bias)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 4, OBSERVATION_COUNT + 1, 0.4f * reproBias));  // Same creature y to y movement (weighted by repro bias)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 3, OBSERVATION_COUNT, 0.4f * reproBias));  // Same creature x to x movement (weighted by repro bias)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 4, OBSERVATION_COUNT + 1, 0.4f * reproBias));  // Same creature y to y movement (weighted by repro bias)
 
         // Add connections for ground detection
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 11, OBSERVATION_COUNT, 0.3f));  // Ground x to x movement
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 12, OBSERVATION_COUNT + 1, 0.3f));  // Ground y to y movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 11, OBSERVATION_COUNT, 0.3f));  // Ground x to x movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 12, OBSERVATION_COUNT + 1, 0.3f));  // Ground y to y movement
 
         // Create the neural network and initialize the creature
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
