@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cupcake : Interactables
+public class Cupcake : Interactable
 {
     // Static event that gets fired when any tree is destroyed
 
@@ -10,10 +10,17 @@ public class Cupcake : Interactables
     {
         base.Start();                // initialize health, renderer, etc.
 
-        // Tree-specific setup:
         if (GetComponent<Collider2D>() == null)
             gameObject.AddComponent<BoxCollider2D>().isTrigger = false;
         if (gameObject.tag != "Cupcake")
             gameObject.tag = "Cupcake";
+    }
+
+    protected override void OnDestroyed(Creature byWhom)
+    {
+        if (byWhom != null)
+        {
+            byWhom.ModifyMoveSpeed();
+        }
     }
 }

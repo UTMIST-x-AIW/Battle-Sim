@@ -2,36 +2,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Interactables : MonoBehaviour
+public abstract class Interactable : MonoBehaviour
 {
-    // Static event that gets fired when any tree is destroyed
-    [Tooltip("How much health this object has at start")]
-    public float maxHealth = 5f;
-    [HideInInspector]
-    public float health;
+    [Tooltip("Starting hit points for this object")]
+    [SerializeField] public float hitPoints = 5f;
+    protected float currentHP;
 
     protected Color originalColor;
     protected SpriteRenderer renderer;
 
     protected virtual void Start()
     {
-        health = maxHealth;
+        currentHP = hitPoints;
         renderer = GetComponent<SpriteRenderer>();
         originalColor = renderer.color;
     }
 
-    public void TakeDamage(float damage)
+    public virtual void TakeDamage(float damage, Creature byWhom)
     {
-        health -= damage;
+        currentHP -= damage;
 
         // Visual feedback - could be replaced with more sophisticated effects
         // StartCoroutine(FlashOnDamage());
 
         AnimatingDoTweenUtilities.PlayFlashRedAnimation(gameObject);
 
-        if (health <= 0)
+        if (currentHP <= 0)
         {
             AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
+            OnDestroyed(byWhom);
             Die();
         }
     }
@@ -50,6 +49,8 @@ public class Interactables : MonoBehaviour
             yield return null;
         }
     }
+
+    protected virtual void OnDestroyed(Creature byWhom) { }
 
     public virtual void Die()
     {
