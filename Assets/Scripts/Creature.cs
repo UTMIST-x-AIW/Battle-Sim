@@ -7,6 +7,8 @@ using System;
 using Random = UnityEngine.Random;
 using NEAT.Genes;
 
+public enum CreatureClass { None, Tank, Scout, Swordsman, Archer }
+
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
@@ -74,6 +76,18 @@ public class Creature : MonoBehaviour
     [SerializeField] public float attackDamageCap = 20f;
     [SerializeField] public float moveSpeedCap = 10f;
 
+    [Header("Class Settings")]
+    [SerializeField] private float tankHealthThreshold = 250f;
+    [SerializeField] private float scoutSpeedThreshold = 8f;
+    [SerializeField] private float swordsmanDamageThreshold = 60f;
+    [SerializeField] private float archerCooldownThreshold = 0.4f;
+
+    [SerializeField] private float tankScale = 1.3f;
+    [SerializeField] private float scoutScale = 0.8f;
+    [SerializeField] private float swordsmanSwordScale = 1.3f;
+
+    public CreatureClass CurrentClass { get; private set; } = CreatureClass.None;
+
     [HideInInspector] public float attackCooldown;
     [HideInInspector] public float attackDamage;
 
@@ -92,6 +106,9 @@ public class Creature : MonoBehaviour
     // Neural Network
     public NEAT.NN.FeedForwardNetwork brain;
     private Rigidbody2D rb;
+    private Transform swordModel;
+    private Transform bowModel;
+    private Vector3 originalScale;
 
     // Add method to get brain
     public NEAT.NN.FeedForwardNetwork GetBrain()
@@ -205,6 +222,16 @@ public class Creature : MonoBehaviour
             reproductionMeter = 0f; // Initialize reproduction meter to 0
             lifetime = 0f;
             canStartReproducing = false;
+
+            originalScale = transform.localScale;
+            ToolAnimation tool = GetComponentInChildren<ToolAnimation>();
+            if (tool != null)
+            {
+                swordModel = tool.transform.Find("sword");
+                bowModel = tool.transform.Find("bow");
+            }
+
+            CheckClassChange();
         }
         catch (System.Exception e)
         {
@@ -836,21 +863,70 @@ public class Creature : MonoBehaviour
     public void ModifyMaxHealth()
     {
         maxHealth = Mathf.Min(maxHealth + rockHealthBonus, maxHealthCap);
+        CheckClassChange();
     }
 
     public void ModifyAttackCooldown()
     {
         attackCooldown = Mathf.Max(attackCooldown - treeCooldownBonus, minAttackCooldown);
+        CheckClassChange();
     }
 
     public void ModifyAttackDamage()
     {
         attackDamage = Mathf.Min(attackDamage + enemyDamageBonus, attackDamageCap);
+        CheckClassChange();
     }
 
     public void ModifyMoveSpeed()
     {
         moveSpeed = Mathf.Min(moveSpeed + cupcakeSpeedBonus, moveSpeedCap);
+        CheckClassChange();
+    }
+
+    private void CheckClassChange()
+    {
+        if (CurrentClass != CreatureClass.None) return;
+
+        int met = 0;
+        CreatureClass potential = CreatureClass.None;
+
+        if (maxHealth >= tankHealthThreshold) { met++; potential = CreatureClass.Tank; }
+        if (moveSpeed >= scoutSpeedThreshold) { met++; potential = CreatureClass.Scout; }
+        if (attackDamage >= swordsmanDamageThreshold) { met++; potential = CreatureClass.Swordsman; }
+        if (attackCooldown <= archerCooldownThreshold) { met++; potential = CreatureClass.Archer; }
+
+        if (met == 1)
+        {
+            SetClass(potential);
+        }
+    }
+
+    private void SetClass(CreatureClass newClass)
+    {
+        if (CurrentClass != CreatureClass.None) return;
+
+        CurrentClass = newClass;
+
+        switch (newClass)
+        {
+            case CreatureClass.Tank:
+                transform.localScale = originalScale * tankScale;
+                break;
+            case CreatureClass.Scout:
+                transform.localScale = originalScale * scoutScale;
+                break;
+            case CreatureClass.Swordsman:
+                if (swordModel != null)
+                    swordModel.localScale *= swordsmanSwordScale;
+                break;
+            case CreatureClass.Archer:
+                if (swordModel != null)
+                    swordModel.gameObject.SetActive(false);
+                if (bowModel != null)
+                    bowModel.gameObject.SetActive(true);
+                break;
+        }
     }
 
     // Generate observations for neural network using cached detection data
