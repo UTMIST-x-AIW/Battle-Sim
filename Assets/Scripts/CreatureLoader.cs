@@ -19,9 +19,14 @@ public static class CreatureLoader
             string json = File.ReadAllText(jsonPath);
             SavedCreature savedCreature = JsonUtility.FromJson<SavedCreature>(json);
 
-            // Create the creature instance
-            var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
-            var creatureComponent = creature.GetComponent<Creature>();
+        // Create the creature instance
+        var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
+        var creatureComponent = creature.GetComponent<Creature>();
+        // Track active creature since Instantiate bypasses the pool
+        if (creatureComponent != null && !ObjectPoolManager.ActiveCreatures.Contains(creatureComponent))
+        {
+            ObjectPoolManager.ActiveCreatures.Add(creatureComponent);
+        }
 
             // Load basic properties
             creatureComponent.type = savedCreature.type;
