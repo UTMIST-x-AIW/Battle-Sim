@@ -21,6 +21,7 @@ public class Reproduction : MonoBehaviour
         // When the object is reused from the pool ensure internal state is reset
         isMating = false;
         gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
     }
 
     private void OnDisable()
@@ -28,6 +29,8 @@ public class Reproduction : MonoBehaviour
         // Clear references to prevent memory from growing when pooled
         isMating = false;
         gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
+        StopAllCoroutines();
     }
 
     private void Start()

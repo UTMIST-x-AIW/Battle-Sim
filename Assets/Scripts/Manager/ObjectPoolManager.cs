@@ -7,12 +7,41 @@ using UnityEngine;
 [Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-	public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+        public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
 
 	[SerializeField]
 	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
 
-	public static event Action<List<GameObject>> OnListChanged;
+        public static event Action<List<GameObject>> OnListChanged;
+
+        /// <summary>
+        /// Optionally pre-populate a pool with inactive objects so spawns do not
+        /// incur the cost of instantiation during gameplay.
+        /// </summary>
+        /// <param name="prefab">Prefab to prewarm the pool with</param>
+        /// <param name="count">How many instances to create</param>
+        public static void PrewarmPool(GameObject prefab, int count)
+        {
+                if (count <= 0 || prefab == null)
+                {
+                        return;
+                }
+
+                PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == prefab.name);
+                if (pool == null)
+                {
+                        pool = new PooledObjectInfo() { LookupString = prefab.name };
+                        ObjectPools.Add(pool);
+                }
+
+                int toCreate = Mathf.Max(0, count - (pool.InactiveObjects.Count + pool.ActiveObjects.Count));
+                for (int i = 0; i < toCreate; i++)
+                {
+                        GameObject obj = Instantiate(prefab);
+                        obj.SetActive(false);
+                        pool.InactiveObjects.Add(obj);
+                }
+        }
 
 	private void LateUpdate()
 	{
