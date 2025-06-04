@@ -56,6 +56,27 @@ public class Creature : MonoBehaviour
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
     public float bowDamage = 1.0f;  // Damage dealt by bow
 
+    [Header("Progression Defaults")]
+    [SerializeField] public float maxHealthDefault = 3f;
+    [SerializeField] public float attackCooldownDefault = 1f;
+    [SerializeField] public float attackDamageDefault = 1f;
+    [SerializeField] public float moveSpeedDefault = 5f;
+
+    [Header("Progression Bonuses")]
+    [SerializeField] public float rockHealthBonus = 15f;
+    [SerializeField] public float treeCooldownBonus = 0.05f;
+    [SerializeField] public float enemyDamageBonus = 2f;
+    [SerializeField] public float cupcakeSpeedBonus = 0.3f;
+
+    [Header("Stat Caps")]
+    [SerializeField] public float maxHealthCap = 100f;
+    [SerializeField] public float minAttackCooldown = 0.1f;
+    [SerializeField] public float attackDamageCap = 20f;
+    [SerializeField] public float moveSpeedCap = 10f;
+
+    [HideInInspector] public float attackCooldown;
+    [HideInInspector] public float attackDamage;
+
     [Header("Detection Settings")]
     public float[] dynamicVisionRanges = { 2.5f, 5f, 10f, 15f, 20f };  // Progressive ranges for dynamic vision
     public int preAllocCollidersCount = 200;  // Size of pre-allocated collider array
@@ -92,18 +113,26 @@ public class Creature : MonoBehaviour
     private Collider2D[] nearbyTeammateColliders;  // For teammate detection
     private Collider2D[] nearbyOpponentColliders;  // For opponent detection
     private Collider2D[] nearbyGroundColliders;    // For ground detection
+    private Collider2D[] nearbyRockColliders;      // For rock detection
+    private Collider2D[] nearbyCupcakeColliders;   // For cupcake detection
     private Collider2D[] nearbyColliders;
     private RaycastHit2D[] bowHitsBuffer;
     private TreeHealth nearestTree = null;
+    private Rock nearestRock = null;
+    private Cupcake nearestCupcake = null;
     private Creature nearestOpponent = null;
     private Creature nearestTeammate = null;  // Reference to nearest teammate
     private Collider2D nearestGround = null;          // Reference to nearest ground collider
     // private Vector2 nearestCherryPos = Vector2.zero;
     private Vector2 nearestTreePos = Vector2.zero;
+    private Vector2 nearestRockPos = Vector2.zero;
+    private Vector2 nearestCupcakePos = Vector2.zero;
     private Vector2 nearestGroundPos = Vector2.zero;
     private Vector2 nearestTeammatePos = Vector2.zero;
     private Vector2 nearestOpponentPos = Vector2.zero;
     private float nearestTreeDistance = float.MaxValue;
+    private float nearestRockDistance = float.MaxValue;
+    private float nearestCupcakeDistance = float.MaxValue;
     private float nearestOpponentDistance = float.MaxValue;
     // private float nearestCherryDistance = float.MaxValue;
     private float nearestGroundDistance = float.MaxValue;
@@ -119,6 +148,9 @@ public class Creature : MonoBehaviour
     public bool InChopRange => inChopRange > 0.5f;
     public bool InSwordRange => inSwordRange > 0.5f;
     public bool InBowRange => inBowRange > 0.5f;
+
+    public Rock GetNearestRock() => nearestRock;
+    public Cupcake GetNearestCupcake() => nearestCupcake;
 
     // Track the actual tree vision range currently being used
     public float currentTreeVisionRange;
@@ -155,7 +187,9 @@ public class Creature : MonoBehaviour
                 nearbyTeammateColliders = new Collider2D[preAllocCollidersCount];
                 nearbyOpponentColliders = new Collider2D[preAllocCollidersCount];
                 nearbyGroundColliders = new Collider2D[preAllocCollidersCount];
-                nearbyColliders = new Collider2D[preAllocCollidersCount * 4];
+                nearbyRockColliders = new Collider2D[preAllocCollidersCount];
+                nearbyCupcakeColliders = new Collider2D[preAllocCollidersCount];
+                nearbyColliders = new Collider2D[preAllocCollidersCount * 6];
 
             }
 
@@ -163,6 +197,10 @@ public class Creature : MonoBehaviour
             neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
 
             // Initialize stats
+            maxHealth = maxHealthDefault;
+            attackCooldown = attackCooldownDefault;
+            attackDamage = attackDamageDefault;
+            moveSpeed = moveSpeedDefault;
             health = maxHealth;
             reproductionMeter = 0f; // Initialize reproduction meter to 0
             lifetime = 0f;
@@ -210,15 +248,21 @@ public class Creature : MonoBehaviour
         {
             // Reset all cached values
             nearestTree = null;
+            nearestRock = null;
+            nearestCupcake = null;
             nearestOpponent = null;
             nearestTeammate = null;
             nearestGround = null;
             // nearestCherryPos = Vector2.zero;
             nearestTreePos = Vector2.zero;
+            nearestRockPos = Vector2.zero;
+            nearestCupcakePos = Vector2.zero;
             nearestGroundPos = Vector2.zero;
             nearestTeammatePos = Vector2.zero;
             nearestOpponentPos = Vector2.zero;
             nearestTreeDistance = float.MaxValue;
+            nearestRockDistance = float.MaxValue;
+            nearestCupcakeDistance = float.MaxValue;
             nearestOpponentDistance = float.MaxValue;
             // nearestCherryDistance = float.MaxValue;
             nearestGroundDistance = float.MaxValue;
@@ -252,6 +296,8 @@ public class Creature : MonoBehaviour
                 DetectTeammatesProgressively();
                 DetectOpponentsProgressively();
                 DetectGroundProgressively();
+                DetectRocksProgressively();
+                DetectCupcakesProgressively();
             }
 
         }
@@ -396,6 +442,24 @@ public class Creature : MonoBehaviour
                     nearestGround = collider;
                 }
             }
+            else if (collider.CompareTag("Rock"))
+            {
+                if (distance < nearestRockDistance)
+                {
+                    nearestRockPos = relativePos;
+                    nearestRockDistance = distance;
+                    nearestRock = collider.GetComponent<Rock>();
+                }
+            }
+            else if (collider.CompareTag("Cupcake"))
+            {
+                if (distance < nearestCupcakeDistance)
+                {
+                    nearestCupcakePos = relativePos;
+                    nearestCupcakeDistance = distance;
+                    nearestCupcake = collider.GetComponent<Cupcake>();
+                }
+            }
         }
     }
 
@@ -524,6 +588,86 @@ public class Creature : MonoBehaviour
         }
     }
 
+    private void DetectRocksProgressively()
+    {
+        DetectRocksInRange(closeRange);
+        if (nearestRock == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
+            {
+                DetectRocksInRange(dynamicVisionRanges[i]);
+                if (nearestRock != null) break;
+            }
+        }
+    }
+
+    private void DetectCupcakesProgressively()
+    {
+        DetectCupcakesInRange(closeRange);
+        if (nearestCupcake == null)
+        {
+            for (int i = 0; i < dynamicVisionRanges.Length; i++)
+            {
+                DetectCupcakesInRange(dynamicVisionRanges[i]);
+                if (nearestCupcake != null) break;
+            }
+        }
+    }
+
+    private void DetectRocksInRange(float range)
+    {
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            range,
+            nearbyRockColliders
+        );
+
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyRockColliders[i];
+            if (collider.gameObject == gameObject) continue;
+
+            if (collider.CompareTag("Rock"))
+            {
+                Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+                float distance = relativePos.magnitude;
+                if (distance < nearestRockDistance)
+                {
+                    nearestRockPos = relativePos;
+                    nearestRockDistance = distance;
+                    nearestRock = collider.GetComponent<Rock>();
+                }
+            }
+        }
+    }
+
+    private void DetectCupcakesInRange(float range)
+    {
+        int numColliders = Physics2D.OverlapCircleNonAlloc(
+            transform.position,
+            range,
+            nearbyCupcakeColliders
+        );
+
+        for (int i = 0; i < numColliders; i++)
+        {
+            var collider = nearbyCupcakeColliders[i];
+            if (collider.gameObject == gameObject) continue;
+
+            if (collider.CompareTag("Cupcake"))
+            {
+                Vector2 relativePos = (Vector2)(transform.position - collider.transform.position);
+                float distance = relativePos.magnitude;
+                if (distance < nearestCupcakeDistance)
+                {
+                    nearestCupcakePos = relativePos;
+                    nearestCupcakeDistance = distance;
+                    nearestCupcake = collider.GetComponent<Cupcake>();
+                }
+            }
+        }
+    }
+
     // Ray-based detection system using MultiRayShooter data
     private void DetectObjectsWithRays()
     {
@@ -537,6 +681,8 @@ public class Creature : MonoBehaviour
         RaycastHit2D teammateHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Albert" : "Kai");
         RaycastHit2D opponentHit = rayShooter.GetNearestHitByTag(type == CreatureType.Albert ? "Kai" : "Albert");
         RaycastHit2D groundHit = rayShooter.GetNearestHitByTag("Ground");
+        RaycastHit2D rockHit = rayShooter.GetNearestHitByTag("Rock");
+        RaycastHit2D cupcakeHit = rayShooter.GetNearestHitByTag("Cupcake");
 
         // Process tree hit
         if (treeHit.collider != null)
@@ -583,6 +729,32 @@ public class Creature : MonoBehaviour
                     nearestOpponent = opponent;
                     nearestOpponentHealthNormalized = opponent.health / opponent.maxHealth;
                 }
+            }
+        }
+
+        // Process rock hit
+        if (rockHit.collider != null)
+        {
+            Vector2 relativePos = (Vector2)transform.position - (Vector2)rockHit.point;
+            float distance = relativePos.magnitude;
+            if (distance < nearestRockDistance)
+            {
+                nearestRockPos = relativePos;
+                nearestRockDistance = distance;
+                nearestRock = rockHit.collider.GetComponent<Rock>();
+            }
+        }
+
+        // Process cupcake hit
+        if (cupcakeHit.collider != null)
+        {
+            Vector2 relativePos = (Vector2)transform.position - (Vector2)cupcakeHit.point;
+            float distance = relativePos.magnitude;
+            if (distance < nearestCupcakeDistance)
+            {
+                nearestCupcakePos = relativePos;
+                nearestCupcakeDistance = distance;
+                nearestCupcake = cupcakeHit.collider.GetComponent<Cupcake>();
             }
         }
 
@@ -659,6 +831,26 @@ public class Creature : MonoBehaviour
                 inBowRange = 1f;
             }
         }
+    }
+
+    public void ModifyMaxHealth()
+    {
+        maxHealth = Mathf.Min(maxHealth + rockHealthBonus, maxHealthCap);
+    }
+
+    public void ModifyAttackCooldown()
+    {
+        attackCooldown = Mathf.Max(attackCooldown - treeCooldownBonus, minAttackCooldown);
+    }
+
+    public void ModifyAttackDamage()
+    {
+        attackDamage = Mathf.Min(attackDamage + enemyDamageBonus, attackDamageCap);
+    }
+
+    public void ModifyMoveSpeed()
+    {
+        moveSpeed = Mathf.Min(moveSpeed + cupcakeSpeedBonus, moveSpeedCap);
     }
 
     // Generate observations for neural network using cached detection data
@@ -1041,18 +1233,16 @@ public class Creature : MonoBehaviour
                             // Chop tree
                             if (InChopRange)
                             {
-                                nearestTree.TakeDamage(chopDamage);
+                                nearestTree.TakeDamage(chopDamage, this);
                                 energyMeter -= actionEnergyCost;
-                                health = maxHealth;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Axe);
-                                StartCoroutine(FlashHealthRestoration());
                             }
                             break;
                         case 1:
                             // Sword attack
                             if (InSwordRange)
                             {
-                                nearestOpponent.TakeDamage(swordDamage);
+                                nearestOpponent.TakeDamage(swordDamage, this);
                                 energyMeter -= actionEnergyCost;
                                 toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                             }
@@ -1074,7 +1264,7 @@ public class Creature : MonoBehaviour
                                     );
                                 }
 
-                                nearestOpponent.TakeDamage(bowDamage);
+                                nearestOpponent.TakeDamage(bowDamage, this);
                             }
                             break;
                     }
@@ -1097,22 +1287,22 @@ public class Creature : MonoBehaviour
 
 
 
-    private IEnumerator FlashHealthRestoration()
-    {
-        if (renderer != null)
-        {
-            renderer.color = Color.green;
-            yield return new WaitForSeconds(0.1f);
-            renderer.color = originalColor;
-        }
-    }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, Creature byWhom = null)
     {
         health -= damage;
 
         // Visual feedback when taking damage
         StartCoroutine(FlashOnDamage());
+
+        if (health <= 0)
+        {
+            if (byWhom != null && byWhom != this && byWhom.type != this.type)
+            {
+                byWhom.ModifyAttackDamage();
+            }
+            Destroy(gameObject);
+        }
     }
 
     private IEnumerator FlashOnDamage()
@@ -1134,38 +1324,15 @@ public class Creature : MonoBehaviour
             // Check if healths are approximately equal (within 0.1)
             if (Mathf.Abs(health - otherCreature.health) < 0.1f)
             {
-                // Both creatures take half damage
-                float damage = health / 2f;  // Use either health value since they're equal
-                health = Mathf.Max(0, health - damage);
-                otherCreature.health = Mathf.Max(0, otherCreature.health - damage);
-
-                // If the damage killed either creature, destroy them
-                if (health <= 0)
-                {
-                    Destroy(gameObject);
-                }
-                if (otherCreature.health <= 0)
-                {
-                    Destroy(otherCreature.gameObject);
-                }
+                float damage = health / 2f;
+                TakeDamage(damage, otherCreature);
+                otherCreature.TakeDamage(damage, this);
             }
-            // Only handle the collision once (let the creature with higher health handle it)
             else if (health > otherCreature.health)
             {
-                // Calculate damage as half of the killed creature's health
                 float damage = otherCreature.health / 2f;
-
-                // Apply damage to surviving creature
-                health = Mathf.Max(0, health - damage);
-
-                // Kill the creature with lower health
-                Destroy(otherCreature.gameObject);
-
-                // If the damage killed us too, destroy ourselves
-                if (health <= 0)
-                {
-                    Destroy(gameObject);
-                }
+                TakeDamage(damage, otherCreature);
+                otherCreature.TakeDamage(otherCreature.health, this);
             }
         }
     }

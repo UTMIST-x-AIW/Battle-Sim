@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class TreeHealth : Interactables
+public class TreeHealth : Interactable
 {
     // Static event that gets fired when any tree is destroyed
 
@@ -16,4 +16,12 @@ public class TreeHealth : Interactables
             gameObject.tag = "Tree";
     }
 
-} 
+    protected override void OnDestroyed(Creature byWhom)
+    {
+        if (byWhom != null)
+        {
+            byWhom.ModifyAttackCooldown();
+        }
+    }
+
+}
