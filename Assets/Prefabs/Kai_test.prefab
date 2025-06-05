@@ -356,6 +356,28 @@ MonoBehaviour:
   closeRange: 1.5
   bowRange: 5
   bowDamage: 1
+  maxHealthDefault: 3
+  attackCooldownDefault: 1
+  attackDamageDefault: 1
+  moveSpeedDefault: 5
+  rockHealthBonus: 5
+  treeCooldownBonus: 0.25
+  enemyDamageBonus: 3
+  cupcakeSpeedBonus: 1.3
+  cupcakeHealthBonus: 5
+  maxHealthCap: 100
+  minAttackCooldown: 0.1
+  attackDamageCap: 20
+  moveSpeedCap: 15
+  tankHealthThreshold: 30
+  scoutSpeedThreshold: 8
+  swordsmanDamageThreshold: 5
+  archerCooldownThreshold: 0.8
+  tankScale: 1.3
+  scoutScale: 0.8
+  swordsmanSwordScale: 1.3
+  attackCooldown: 0
+  attackDamage: 0
   dynamicVisionRanges: []
   preAllocCollidersCount: 200
   useRayDetection: 1
@@ -446,6 +468,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 960
   showLines: 0
+  maxRaycastHits: 50
 --- !u!1 &8111889471499386902
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class Reproduction : MonoBehaviour
 {
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
-    public float pReproduction = 0.1f;
+    public float pReproduction = 0.25f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
     private Creature creatureComponent;

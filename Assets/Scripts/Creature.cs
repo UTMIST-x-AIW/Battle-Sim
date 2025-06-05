@@ -67,7 +67,7 @@ public class Creature : MonoBehaviour
     [Header("Progression Bonuses")]
     [SerializeField] public float rockHealthBonus = 5f;
     [SerializeField] public float treeCooldownBonus = 0.25f;
-    [SerializeField] public float enemyDamageBonus = 1f;
+    [SerializeField] public float enemyDamageBonus = 3f;
     [SerializeField] public float cupcakeSpeedBonus = 1.3f;
     [SerializeField] public float cupcakeHealthBonus = 5f;
 
@@ -75,13 +75,13 @@ public class Creature : MonoBehaviour
     [SerializeField] public float maxHealthCap = 100f;
     [SerializeField] public float minAttackCooldown = 0.1f;
     [SerializeField] public float attackDamageCap = 20f;
-    [SerializeField] public float moveSpeedCap = 10f;
+    [SerializeField] public float moveSpeedCap = 15f;
 
     [Header("Class Settings")]
-    [SerializeField] private float tankHealthThreshold = 250f;
+    [SerializeField] private float tankHealthThreshold = 30f;
     [SerializeField] private float scoutSpeedThreshold = 8f;
-    [SerializeField] private float swordsmanDamageThreshold = 60f;
-    [SerializeField] private float archerCooldownThreshold = 0.4f;
+    [SerializeField] private float swordsmanDamageThreshold = 5f;
+    [SerializeField] private float archerCooldownThreshold = 0.8f;
 
     [SerializeField] private float tankScale = 1.3f;
     [SerializeField] private float scoutScale = 0.8f;
