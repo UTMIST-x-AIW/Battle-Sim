@@ -1031,6 +1031,8 @@ public class NEATTest : MonoBehaviour
                 {
                     Debug.Log("NEATTest: LogManager instance is null, skipping cleanup");
                 }
+
+                ObjectPoolManager.ClearPools();
             }
             else
             {
@@ -1057,6 +1059,8 @@ public class NEATTest : MonoBehaviour
             {
                 ObjectPoolManager.ReturnObjectToPool(creature.gameObject);
             }
+
+            ObjectPoolManager.ClearPools();
 
             // Wait a frame to ensure cleanup completes
             StartCoroutine(RestartAfterCleanup());
