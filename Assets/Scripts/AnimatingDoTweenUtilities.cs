@@ -47,9 +47,9 @@ public static class AnimatingDoTweenUtilities
     }
 
     private static void Die(GameObject go)
-    {        
+    {
         // Spawn some resources or particle effects
-        // For now, just destroy the tree
+        // Return the object to the pool instead of destroying it
         ObjectPoolManager.ReturnObjectToPool(go);
     }
 }
