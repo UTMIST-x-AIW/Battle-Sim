@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using XCharts;
@@ -32,7 +31,6 @@ public class PopulationGraphing : MonoBehaviour
 		yAxis.min = 0;
 
 		foreach (GraphInfo graph in graphs){
-
 			graph.serie = chart.AddSerie<Line>(graph.Name);
 			graph.serie.EnsureComponent<AreaStyle>().show = true;
 			graph.serie.symbol.show = false;
@@ -59,9 +57,7 @@ public class PopulationGraphing : MonoBehaviour
 
 	void UpdateGraph(GraphInfo info, int index, Color color){
 		// Count creatures by tag
-		Transform parentTransform = ParenthoodManager.GetParent(info.prefab);
-		if (parentTransform == null) return;
-		int creatureCount = parentTransform.childCount;
+		var creatureCount = GetChildCount(info);
 		// Keep X-axis and Y-data within time window
 		if (info.serie.dataCount >= maxSeconds)
 		{
@@ -85,17 +81,11 @@ public class PopulationGraphing : MonoBehaviour
 		chart.RefreshChart(); // Trigger render
 	}
 
-	
-
-}
-
-[Serializable]
-public class GraphInfo 
-{
-	public string Name;
-	public GameObject prefab;
-	[HideInInspector] 
-	public  Serie serie;
-	public Color color;
-	public float Opacity;
+	private static int GetChildCount(GraphInfo info)
+	{
+		Transform parentTransform = ParenthoodManager.GetParent(info.prefab);
+		if (parentTransform == null) return 0;
+		int creatureCount = parentTransform.childCount;
+		return creatureCount;
+	}
 }
