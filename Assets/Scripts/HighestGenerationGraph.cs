@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XCharts.Runtime;
 
-public class GenerationGraph : MonoBehaviour
+public class HighestGenerationGraph : MonoBehaviour
 {
     public LineChart chart;
     [SerializeField][Range(.1f,1)]
@@ -56,7 +56,6 @@ public class GenerationGraph : MonoBehaviour
     void UpdateGraph(GraphInfo info, int index, Color color){
 
         int highestGeneration = GetHighestGeneration(info);
-        yAxis.max = highestGeneration + 5;
         // Keep X-axis and Y-data within time window
         if (info.serie.dataCount >= maxSeconds)
         {
@@ -84,7 +83,7 @@ public class GenerationGraph : MonoBehaviour
         int currentHighestGeneration = 0;
 
         var creatureInstances = ParenthoodManager.GetParent(info.prefab)?.GetComponentsInChildren<Creature>();
-        if (creatureInstances == null) return 0;
+        if (creatureInstances == null) return 1;
         foreach (var creatureInstance in creatureInstances)
         {
             if (creatureInstance.generation > currentHighestGeneration)
