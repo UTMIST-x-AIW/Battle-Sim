@@ -7,7 +7,9 @@ using UnityEngine;
 [Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-	public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+        public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+
+        private const int MAX_INACTIVE_PER_POOL = 200; // Prevent unbounded growth
 
 	[SerializeField]
 	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
@@ -68,27 +70,33 @@ public class ObjectPoolManager : MonoBehaviour
 		return spawnableObj;
 	}
 
-	public static void ReturnObjectToPool(GameObject obj)
-	{
-		string goName = obj.name.Replace("(Clone)", "");
+        public static void ReturnObjectToPool(GameObject obj)
+        {
+                string goName = obj.name.Replace("(Clone)", "");
 
 		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
 
-		if (pool == null)
-		{
-			Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
-		}
-		else
-		{
-			obj.SetActive(false);
-			pool.InactiveObjects.Add(obj);
-			pool.ActiveObjects.Remove(obj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
-		}
-	}
+                if (pool == null)
+                {
+                        Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
+                }
+                else
+                {
+                        obj.SetActive(false);
+                        pool.InactiveObjects.Add(obj);
+                        pool.ActiveObjects.Remove(obj);
+                        if (pool.InactiveObjects.Count > MAX_INACTIVE_PER_POOL)
+                        {
+                                var excess = pool.InactiveObjects[0];
+                                pool.InactiveObjects.RemoveAt(0);
+                                Destroy(excess);
+                        }
+                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                        {
+                                OnListChanged?.Invoke(pool.ActiveObjects);
+                        }
+                }
+        }
 
 
 	void ClearingPools()

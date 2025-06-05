@@ -380,9 +380,27 @@ public class Reproduction : MonoBehaviour
         const float DELETE_CONNECTION_PROB = 0.2f; // Was 0.1f
         const float MODIFY_WEIGHT_PROB = 0.6f;   // Was 0.3f
 
-        // 1. Add new node mutation
-        if (Random.value < ADD_NODE_PROB && genome.Connections.Count > 0)
+        // Retrieve max hidden layer setting from NEATTest (fallback to 10)
+        int maxHiddenLayers = 10;
+        var neatTest = FindObjectOfType<NEATTest>();
+        if (neatTest != null)
         {
+            maxHiddenLayers = neatTest.maxHiddenLayers;
+        }
+
+        const int MAX_HIDDEN_NODES = 100;   // Hard cap on hidden node count
+        const int MAX_CONNECTIONS = 300;    // Hard cap on total connections
+
+        // 1. Add new node mutation
+        if (Random.value < ADD_NODE_PROB && genome.Connections.Count > 0 && genome.Connections.Count < MAX_CONNECTIONS - 1)
+        {
+            // Respect hard cap on hidden nodes
+            int hiddenCount = genome.Nodes.Values.Count(n => n.Type == NEAT.Genes.NodeType.Hidden);
+            if (hiddenCount >= MAX_HIDDEN_NODES)
+            {
+                goto SkipAddNode;
+            }
+
             // Pick a random connection to split
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToSplit = connList[Random.Range(0, connList.Count)];
@@ -398,12 +416,15 @@ public class Reproduction : MonoBehaviour
             var inputNode = genome.Nodes[connToSplit.InputKey];
             var outputNode = genome.Nodes[connToSplit.OutputKey];
             newNode.Layer = (inputNode.Layer + outputNode.Layer) / 2;
-            
+
             // If the layer would be the same as the input layer, increment it
             if (newNode.Layer <= inputNode.Layer)
             {
                 newNode.Layer = inputNode.Layer + 1;
             }
+
+            // Clamp layer to respect configured max hidden layers
+            newNode.Layer = Mathf.Clamp(newNode.Layer, 1, maxHiddenLayers);
             
             // Disable the original connection
             connToSplit.Enabled = false;
@@ -426,6 +447,8 @@ public class Reproduction : MonoBehaviour
                 
             genome.AddConnection(conn1);
             genome.AddConnection(conn2);
+
+        SkipAddNode: ;
         }
 
         // 2. Delete node mutation
@@ -468,7 +491,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // 4. Add connection mutation
-        if (Random.value < ADD_CONNECTION_PROB)
+        if (Random.value < ADD_CONNECTION_PROB && genome.Connections.Count < MAX_CONNECTIONS)
         {
             // Try a few times to find a valid connection
             for (int tries = 0; tries < 5; tries++)
