@@ -53,26 +53,26 @@ public class HighestGenerationGraph : MonoBehaviour
         }
     }
 
-    void UpdateGraph(GraphInfo info, int index, Color color){
+    void UpdateGraph(GraphInfo graphInfo, int index, Color color){
 
-        int highestGeneration = GetHighestGeneration(info);
+        int highestGeneration = GetHighestGeneration(graphInfo);
         // Keep X-axis and Y-data within time window
-        if (info.serie.dataCount >= maxSeconds)
+        if (graphInfo.serie.dataCount >= maxSeconds)
         {
-            info.serie.data.RemoveAt(0);
+            graphInfo.serie.data.RemoveAt(0);
             xAxis.data.RemoveAt(0);
         }
 
-        info.serie.lineStyle.color = new Color(color.r,color.g,color.b);
-        info.serie.areaStyle.color = new Color(color.r, color.g, color.b);
-        info.serie.areaStyle.opacity = 0.5f;
+        graphInfo.serie.lineStyle.color = new Color(color.r,color.g,color.b);
+        graphInfo.serie.areaStyle.color = new Color(color.r, color.g, color.b);
+        graphInfo.serie.areaStyle.opacity = graphInfo.Opacity;
 
         // Add new data
         chart.AddXAxisData($"{timeCounter}s");
-        chart.AddData(index, highestGeneration, info.Name);
+        chart.AddData(index, highestGeneration, graphInfo.Name);
 
         // Auto-scale Y-axis to peak value
-        float max = Mathf.Max(info.serie.maxCache, 2f);
+        float max = Mathf.Max(graphInfo.serie.maxCache, 2f);
         yAxis.max = Mathf.Ceil(max * 1.0f + 10); // Add 10% padding
 
         chart.RefreshChart(); // Trigger render
