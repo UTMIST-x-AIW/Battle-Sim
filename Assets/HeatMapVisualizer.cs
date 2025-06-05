@@ -9,6 +9,7 @@ public class TilemapMeshGenerator : MonoBehaviour
 {
     public Tilemap tilemap; // Assign in Inspector
     private Mesh mesh;
+    private bool meshLoaded;
     [SerializeField] Vector2 offset;
     public HeatMapContainer mapContainer;
 
@@ -17,18 +18,31 @@ public class TilemapMeshGenerator : MonoBehaviour
         GenerateMesh();
         Debug.Log(Application.dataPath);
     }
+
     private void LateUpdate()
     {
-        GenerateMesh();
+        if (!meshLoaded)
+        {
+            GenerateMesh();
+        }
     }
 
 
     void GenerateMesh()
     {
-        if (LoadMesh("HeatMap1") != null)
+        if (meshLoaded)
         {
             return;
         }
+
+        mesh = LoadMesh("HeatMap1");
+        if (mesh != null)
+        {
+            GetComponent<MeshFilter>().mesh = mesh;
+            meshLoaded = true;
+            return;
+        }
+
         mesh = new Mesh();
 
         List<Vector3> vertices = new List<Vector3>();
@@ -90,6 +104,7 @@ public class TilemapMeshGenerator : MonoBehaviour
         // Attach mesh to MeshFilter
         GetComponent<MeshFilter>().mesh = mesh;
         SaveMesh(mesh, "HeatMap1");
+        meshLoaded = true;
     }
 
     public static void SaveMesh(Mesh mesh, string fileName)
