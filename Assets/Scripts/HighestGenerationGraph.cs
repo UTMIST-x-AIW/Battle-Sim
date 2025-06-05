@@ -83,7 +83,7 @@ public class HighestGenerationGraph : MonoBehaviour
         int currentHighestGeneration = 0;
 
         var creatureInstances = ParenthoodManager.GetParent(info.prefab)?.GetComponentsInChildren<Creature>();
-        if (creatureInstances == null) return 1;
+        if (creatureInstances == null) return 0;
         foreach (var creatureInstance in creatureInstances)
         {
             if (creatureInstance.generation > currentHighestGeneration)

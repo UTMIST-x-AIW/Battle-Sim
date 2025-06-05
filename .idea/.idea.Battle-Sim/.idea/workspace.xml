@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="" />
+    <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/HighestGenerationGraph.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/HighestGenerationGraph.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,8 +43,9 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Standalone Player.Start Unity.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;GameObject__class&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gen-100-alberts-vs-kais-fighting&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -144,6 +149,8 @@
       <workItem from="1740785816069" duration="4000" />
       <workItem from="1747869117712" duration="4000" />
       <workItem from="1749137701029" duration="4056000" />
+      <workItem from="1749141979358" duration="250000" />
+      <workItem from="1749145073470" duration="227000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
