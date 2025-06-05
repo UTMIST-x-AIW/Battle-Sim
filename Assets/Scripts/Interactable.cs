@@ -8,6 +8,13 @@ public abstract class Interactable : MonoBehaviour
     [SerializeField] public float hitPoints = 5f;
     protected float currentHP;
 
+    // Expose currentHP for saving and loading game state
+    public float CurrentHP
+    {
+        get => currentHP;
+        set => currentHP = value;
+    }
+
     protected Color originalColor;
     protected SpriteRenderer renderer;
 
