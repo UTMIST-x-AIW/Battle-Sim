@@ -31,7 +31,6 @@ public abstract class Interactable : MonoBehaviour
         {
             AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
             OnDestroyed(byWhom);
-            Die();
         }
     }
 
@@ -65,7 +64,7 @@ public abstract class Interactable : MonoBehaviour
     public virtual void Die()
     {
         // Spawn some resources or particle effects
-        // For now, just destroy the tree
-        Destroy(gameObject);
+        // Return the object to the pool instead of destroying it
+        ObjectPoolManager.ReturnObjectToPool(gameObject);
     }
 }

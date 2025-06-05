@@ -1217,7 +1217,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Die
-                Destroy(gameObject);
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
 
@@ -1424,7 +1424,7 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 
