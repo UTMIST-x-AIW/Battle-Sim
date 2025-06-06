@@ -1477,7 +1477,7 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 
@@ -1488,32 +1488,6 @@ public class Creature : MonoBehaviour
             renderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
             renderer.color = originalColor;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        try
-        {
-            try
-            {
-                // Try to log, but catch any exceptions if LogManager is gone
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
-                }
-            }
-            catch (System.Exception)
-            {
-                // If LogManager is already cleaned up, just silently continue
-            }
-
-
-
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 
