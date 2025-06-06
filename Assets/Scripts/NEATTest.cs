@@ -497,22 +497,8 @@ public class NEATTest : MonoBehaviour
 
     private int CountKais()
     {
-        try
-        {
-            // Find all creatures in the scene
-            var creatures = GameObject.FindObjectsOfType<Creature>();
-
-            // Count only Kais
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Kai);
-
-            LogManager.LogMessage($"Counted {count} Kai creatures in the scene");
-            return count;
-        }
-        catch (System.Exception e)
-        {
-            LogManager.LogError($"Error in CountKais: {e.Message}\nStack trace: {e.StackTrace}");
-            return 0;  // Return 0 if there's an error
-        }
+        Transform parentTransform = ParenthoodManager.GetParent(kaiCreaturePrefab);
+        return parentTransform != null ? parentTransform.childCount : 0;
     }
 
     private void SetupNormalGame()
@@ -963,22 +949,9 @@ public class NEATTest : MonoBehaviour
 
     private int CountAlberts()
     {
-        try
-        {
-            // Find all creatures in the scene
-            var creatures = GameObject.FindObjectsOfType<Creature>();
+        Transform parentTransform = ParenthoodManager.GetParent(albertCreaturePrefab);
+        return parentTransform != null ? parentTransform.childCount : 0;
 
-            // Count only Alberts
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Albert);
-
-            LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
-            return count;
-        }
-        catch (System.Exception e)
-        {
-            LogManager.LogError($"Error in CountAlberts: {e.Message}\nStack trace: {e.StackTrace}");
-            return 0;  // Return 0 if there's an error
-        }
     }
 
     private void OnDestroy()
