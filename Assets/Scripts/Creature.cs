@@ -1438,28 +1438,6 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if we collided with another creature
-        Creature otherCreature = collision.gameObject.GetComponent<Creature>();
-        if (otherCreature != null && otherCreature.type != type)
-        {
-            // Check if healths are approximately equal (within 0.1)
-            if (Mathf.Abs(health - otherCreature.health) < 0.1f)
-            {
-                float damage = health / 2f;
-                TakeDamage(damage, otherCreature);
-                otherCreature.TakeDamage(damage, this);
-            }
-            else if (health > otherCreature.health)
-            {
-                float damage = otherCreature.health / 2f;
-                TakeDamage(damage, otherCreature);
-                otherCreature.TakeDamage(otherCreature.health, this);
-            }
-        }
-    }
-
     private void OnDestroy()
     {
         try
