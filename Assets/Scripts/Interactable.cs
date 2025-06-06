@@ -29,6 +29,11 @@ public abstract class Interactable : MonoBehaviour
         }
         if (renderer != null)
         {
+            // If originalColor hasn't been set yet (first time or pooled object), capture it now
+            if (originalColor == default(Color))
+            {
+                originalColor = renderer.color;
+            }
             renderer.color = originalColor;
         }
     }
