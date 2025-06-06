@@ -50,6 +50,7 @@ public static class AnimatingDoTweenUtilities
     {        
         // Spawn some resources or particle effects
         // For now, just destroy the tree
-        ObjectPoolManager.ReturnObjectToPool(go);
+        // ObjectPoolManager.ReturnObjectToPool(go); //TODO-OBJECTPOOL: return to this after making sure everything works without object pooling (no need to implement reset for this)
+        Object.Destroy(go);
     }
 }

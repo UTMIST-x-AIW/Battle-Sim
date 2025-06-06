@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour
             Debug.LogError("Error: Prefab or HeatMapData are uninitialized", this);
             enabled = false; // Disable the script if critical references are missing
         }
-        
+
         // For extra heatmap, only check if we're using distinct heatmaps
         if (useDistinctHeatmaps && extraHeatmapData == null)
         {
@@ -57,7 +57,7 @@ public class Spawner : MonoBehaviour
             extraObjectRespawnRate = 1.0f;
             if (debugLogging) Debug.Log($"[Spawner] Starting with extraObjectRespawnRate=1.0 (extinction time={extraObjectMinutesToExtinction}m)");
         }
-        
+
         // Create a parent object to organize spawned prefabs
         prefabParent = GameObject.Find($"{prefab.name} Parent");
         if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
@@ -81,7 +81,7 @@ public class Spawner : MonoBehaviour
             // Calculate how much time has passed since the start
             float elapsedTime = Time.time - simulationStartTime;
             float extinctionTimeInSeconds = extraObjectMinutesToExtinction * 60f;
-            
+
             // Calculate the new respawn rate (linear decrease from 1 to 0)
             if (elapsedTime < extinctionTimeInSeconds)
             {
@@ -100,7 +100,7 @@ public class Spawner : MonoBehaviour
                 
                 if (debugLogging && extraObjectRespawnRate > 0) // Only log when it first reaches 0
                 {
-                    Debug.Log("[Spawner] Extinction period complete, respawn rate set to 0");
+                Debug.Log("[Spawner] Extinction period complete, respawn rate set to 0");
                 }
             }
         }
@@ -151,12 +151,12 @@ public class Spawner : MonoBehaviour
     {
         // Cache positions for regular spawns
         highProbabilityPositions = CacheProbabilityPositionsForHeatmap(heatmapData, maxNumOfSpawns * 2);
-        
+
         // Cache positions for extra objects - use specific heatmap if available, otherwise use the regular one
         HeatMapData extraMap = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
         extraHighProbabilityPositions = CacheProbabilityPositionsForHeatmap(extraMap, numExtraObjects * 2);
     }
-    
+
     private List<TilePosData.TilePos> CacheProbabilityPositionsForHeatmap(HeatMapData map, int neededPositions)
     {
         // Get all tile positions
@@ -164,7 +164,7 @@ public class Spawner : MonoBehaviour
         
         // Pre-filter positions with decent spawn probability
         var highProbPositions = new List<TilePosData.TilePos>();
-        
+
         foreach (var tile in allPositions)
         {
             float probability = map.GetValue(tile.pos);
@@ -173,7 +173,7 @@ public class Spawner : MonoBehaviour
                 highProbPositions.Add(tile);
             }
         }
-        
+
         // If we don't have enough high probability positions, use all positions
         if (highProbPositions.Count < neededPositions)
         {
@@ -433,10 +433,10 @@ public class Spawner : MonoBehaviour
         {
             return false; // Skip spawning to avoid overlaps
         }
-        
+
         // Instantiate the prefab and set its parent
-        GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        
+        // GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        GameObject spawnedPrefab = Instantiate(prefab, position, Quaternion.identity);
         // Assign to the appropriate parent based on whether it's an extra object
         if (isExtra)
         {

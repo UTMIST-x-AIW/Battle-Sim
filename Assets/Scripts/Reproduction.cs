@@ -213,12 +213,14 @@ public class Reproduction : MonoBehaviour
         }
 
         // Spawn the child creature
-        var child = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
+        // var child = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        var child = Instantiate(prefab, position, Quaternion.identity);
         var childCreature = child.GetComponent<Creature>();
         
         if (childCreature == null)
         {
-            ObjectPoolManager.ReturnObjectToPool(child);
+            // ObjectPoolManager.ReturnObjectToPool(child); //TODO-OBJECTPOOL: return to this after implementing reset
+            Destroy(child);
             return null;
         }
 

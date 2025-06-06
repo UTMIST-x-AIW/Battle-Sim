@@ -30,6 +30,7 @@ public class ArrowsManager : MonoBehaviour
         }
         else
         {
+            // ObjectPoolManager.ReturnObjectToPool(gameObject); //TODO-OBJECTPOOL: return to this after making sure everything works without object pooling (no need to implement reset for this)
             Destroy(gameObject);
         }
     }
@@ -50,6 +51,7 @@ public class ArrowsManager : MonoBehaviour
 
         if (arrowPrefab != null)
         {
+            // arrow = ObjectPoolManager.SpawnObject(arrowPrefab, transform.position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after making sure everything works without object pooling (no need to implement reset for this)
             arrow = Instantiate(arrowPrefab, transform);
         }
 
