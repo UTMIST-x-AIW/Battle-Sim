@@ -26,8 +26,8 @@ public class Creature : MonoBehaviour
     public float energyMeter = 0f;  // Renamed from energy
     public float maxHealth = 3f;
     public float maxEnergy = 1f;
-    public float energyRechargeRate = 0.333f; // Fill from 0 to 1 in 3 seconds
-    public float reproductionRechargeRate = 0.333f; // Fill from 0 to 1 in 10 seconds
+    public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
+    public float reproductionRechargeRate = 0.444f; // Fill from 0 to 1 in 10 seconds
 
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
@@ -60,20 +60,20 @@ public class Creature : MonoBehaviour
 
     [Header("Progression Defaults")]
     [SerializeField] public float maxHealthDefault = 3f;
-    [SerializeField] public float attackCooldownDefault = 1f;
+    [SerializeField] public float energyRechargeRateDefault = 1.2f;
     [SerializeField] public float attackDamageDefault = 1f;
     [SerializeField] public float moveSpeedDefault = 5f;
 
     [Header("Progression Bonuses")]
     [SerializeField] public float rockHealthBonus = 5f;
-    [SerializeField] public float treeCooldownBonus = 0.25f;
+    [SerializeField] public float treeEnergyRechargeRateBonus = 0.4f;
     [SerializeField] public float enemyDamageBonus = 3f;
     [SerializeField] public float cupcakeSpeedBonus = 1.3f;
     [SerializeField] public float cupcakeHealthBonus = 5f;
 
     [Header("Stat Caps")]
     [SerializeField] public float maxHealthCap = 100f;
-    [SerializeField] public float minAttackCooldown = 0.1f;
+    [SerializeField] public float maxEnergyRechargeRateCap = 2.4f;
     [SerializeField] public float attackDamageCap = 20f;
     [SerializeField] public float moveSpeedCap = 15f;
 
@@ -81,7 +81,7 @@ public class Creature : MonoBehaviour
     [SerializeField] private float tankHealthThreshold = 30f;
     [SerializeField] private float scoutSpeedThreshold = 8f;
     [SerializeField] private float swordsmanDamageThreshold = 5f;
-    [SerializeField] private float archerCooldownThreshold = 0.8f;
+    [SerializeField] private float archerEnergyRechargeRateThreshold = 1.5f;
 
     [SerializeField] private float tankScale = 1.3f;
     [SerializeField] private float scoutScale = 0.8f;
@@ -89,7 +89,6 @@ public class Creature : MonoBehaviour
 
     public CreatureClass CurrentClass { get; private set; } = CreatureClass.None;
 
-    [HideInInspector] public float attackCooldown;
     [HideInInspector] public float attackDamage;
 
     [Header("Detection Settings")]
@@ -240,7 +239,7 @@ public class Creature : MonoBehaviour
 
             // Initialize stats
             maxHealth = maxHealthDefault;
-            attackCooldown = attackCooldownDefault;
+            energyRechargeRate = energyRechargeRateDefault;
             attackDamage = attackDamageDefault;
             moveSpeed = moveSpeedDefault;
             health = maxHealth;
@@ -249,6 +248,7 @@ public class Creature : MonoBehaviour
             canStartReproducing = false;
 
             originalScale = transform.localScale;
+
             ToolAnimation tool = GetComponentInChildren<ToolAnimation>();
             if (tool != null)
             {
@@ -891,9 +891,10 @@ public class Creature : MonoBehaviour
         CheckClassChange();
     }
 
-    public void ModifyAttackCooldown()
+    public void ModifyEnergyRechargeRate()
     {
-        attackCooldown = Mathf.Max(attackCooldown - treeCooldownBonus, minAttackCooldown);
+        energyRechargeRate = Mathf.Min(energyRechargeRate + treeEnergyRechargeRateBonus, maxEnergyRechargeRateCap);
+
         CheckClassChange();
     }
 
@@ -924,7 +925,7 @@ public class Creature : MonoBehaviour
         if (maxHealth >= tankHealthThreshold) { met++; potential = CreatureClass.Tank; }
         if (moveSpeed >= scoutSpeedThreshold) { met++; potential = CreatureClass.Scout; }
         if (attackDamage >= swordsmanDamageThreshold) { met++; potential = CreatureClass.Swordsman; }
-        if (attackCooldown <= archerCooldownThreshold) { met++; potential = CreatureClass.Archer; }
+        if (energyRechargeRate >= archerEnergyRechargeRateThreshold) { met++; potential = CreatureClass.Archer; }
 
         if (met == 1)
         {

@@ -20,7 +20,7 @@ public class TreeHealth : Interactable
     {
         if (byWhom != null)
         {
-            byWhom.ModifyAttackCooldown();
+            byWhom.ModifyEnergyRechargeRate();
         }
     }
 

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.077568024, g: 0.05884268, b: 0.36068055, a: 1}
+  m_IndirectSpecularColor: {r: 0.077538714, g: 0.058890745, b: 0.36128187, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -19256,14 +19256,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 80
-  MAX_ALBERTS: 160
-  INITIAL_ALBERTS: 132
+  MIN_ALBERTS: 10
+  MAX_ALBERTS: 10
+  INITIAL_ALBERTS: 10
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 80
-  MAX_KAIS: 160
-  INITIAL_KAIS: 132
+  MIN_KAIS: 10
+  MAX_KAIS: 10
+  INITIAL_KAIS: 10
   MIN_STARTING_AGE_KAI: 0
   MAX_STARTING_AGE_KAI: 5
   _current_alberts: 0
@@ -19281,11 +19281,11 @@ MonoBehaviour:
   closeRangeColor: {r: 0.5, g: 0, b: 0.5, a: 0.2}
   bowRangeColor: {r: 0, g: 0.5, b: 0.5, a: 0.2}
   showCreatureLabels: 0
-  showSpawnArea: 0
+  showSpawnArea: 1
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
-  rightSpawnCenter: {x: 21, y: 0}
+  rightSpawnCenter: {x: -5.4, y: 0}
   rightSpawnSpreadRadius: 1.23
   savedCreaturePath: 
   albertsFolderPath: /Users/anooprehman/Library/Application Support/com.DefaultCompany.2DProject/SavedCreatures/20250510__am_10_42_22/gen4
@@ -43027,7 +43027,7 @@ GameObject:
   - component: {fileID: 486524791}
   - component: {fileID: 486524790}
   m_Layer: 5
-  m_Name: AttackCooldownText
+  m_Name: EnergyRechargeRateText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43072,7 +43072,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Attack Cooldown: 0'
+  m_text: 'Energy Recharge Rate: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -44712,7 +44712,7 @@ MonoBehaviour:
   ageText: {fileID: 417709800}
   generationText: {fileID: 1716402761}
   maxHealthText: {fileID: 1965619532}
-  attackCooldownText: {fileID: 486524790}
+  energyRechargeRateText: {fileID: 486524790}
   attackDamageText: {fileID: 803719864}
   movementSpeedText: {fileID: 1687610916}
   classText: {fileID: 103364012}
@@ -45164,11 +45164,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 396
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 396
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
