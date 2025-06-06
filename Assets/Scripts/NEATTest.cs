@@ -857,7 +857,7 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
 
-        // Add output nodes
+        // Add output nodes (including reproduction action)
         var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action

@@ -22,7 +22,6 @@ public static class CreatureLoader
             // Create the creature instance
             var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
             var creatureComponent = creature.GetComponent<Creature>();
-
             // Load basic properties
             creatureComponent.type = savedCreature.type;
             creatureComponent.health = savedCreature.health;
@@ -90,4 +89,4 @@ public static class CreatureLoader
             return null;
         }
     }
-} 
+}
