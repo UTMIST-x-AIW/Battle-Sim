@@ -68,6 +68,10 @@ public class MultiRayShooter : MonoBehaviour
 
         direction.Normalize();
         float halfSpread = SpreadAngle / 2f;
+        if (lines.Count == 0)
+        {
+            return;
+        }
 
         for (int i = 0; i < _rayCount; i++)
         {
