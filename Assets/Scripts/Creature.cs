@@ -159,14 +159,6 @@ public class Creature : MonoBehaviour
     private float inSwordRange = 0f;
     private float inBowRange = 0f;
 
-    // Public properties to access range indicators
-    public bool InChopRange => inChopRange > 0.5f;
-    public bool InSwordRange => inSwordRange > 0.5f;
-    public bool InBowRange => inBowRange > 0.5f;
-
-    public Rock GetNearestRock() => nearestRock;
-    public Cupcake GetNearestCupcake() => nearestCupcake;
-
     private Interactable GetClosestInteractableInRange()
     {
         float minDist = float.MaxValue;
@@ -272,13 +264,74 @@ public class Creature : MonoBehaviour
         attackDamage = attackDamageDefault;
 
 
-
-
-
-
+        CurrentClass = CreatureClass.None;
         reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
+        disableBrainControl = false;
+        nearestOpponentHealthNormalized = 0f;
+        inChopRange = 0f;
+        inSwordRange = 0f;
+        inBowRange = 0f;
+        lastDetectionTime = 0f;
+
+        brain = null;
+
+
+        // Reset all the nearby collider lists and bowHitsBuffer
+        if (nearbyTreeColliders != null)
+        {
+            System.Array.Clear(nearbyTreeColliders, 0, nearbyTreeColliders.Length);
+        }
+        if (nearbyTeammateColliders != null)
+        {
+            System.Array.Clear(nearbyTeammateColliders, 0, nearbyTeammateColliders.Length);
+        }
+        if (nearbyOpponentColliders != null)
+        {
+            System.Array.Clear(nearbyOpponentColliders, 0, nearbyOpponentColliders.Length);
+        }
+        if (nearbyGroundColliders != null)
+        {
+            System.Array.Clear(nearbyGroundColliders, 0, nearbyGroundColliders.Length);
+        }
+        if (nearbyRockColliders != null)
+        {
+            System.Array.Clear(nearbyRockColliders, 0, nearbyRockColliders.Length);
+        }
+        if (nearbyCupcakeColliders != null)
+        {
+            System.Array.Clear(nearbyCupcakeColliders, 0, nearbyCupcakeColliders.Length);
+        }
+        if (nearbyColliders != null)
+        {
+            System.Array.Clear(nearbyColliders, 0, nearbyColliders.Length);
+        }
+        if (bowHitsBuffer != null)
+        {
+            System.Array.Clear(bowHitsBuffer, 0, bowHitsBuffer.Length);
+        }
+
+        // Reset all the nearby objects, and their positions and distances
+        nearestTree = null;
+        nearestRock = null;
+        nearestCupcake = null;
+        nearestOpponent = null;
+        nearestTeammate = null;
+        nearestGround = null;
+        nearestTreePos = Vector2.zero;
+        nearestRockPos = Vector2.zero;
+        nearestCupcakePos = Vector2.zero;
+        nearestGroundPos = Vector2.zero;
+        nearestTeammatePos = Vector2.zero;
+        nearestOpponentPos = Vector2.zero;
+        nearestTreeDistance = float.MaxValue;
+        nearestRockDistance = float.MaxValue;
+        nearestCupcakeDistance = float.MaxValue;
+        nearestOpponentDistance = float.MaxValue;
+        nearestGroundDistance = float.MaxValue;
+        nearestTeammateDistance = float.MaxValue;
+
     }
 
     public IEnumerator DelayedReproductionStart()
@@ -1355,7 +1408,7 @@ public class Creature : MonoBehaviour
                             // Weapon attack
                             if (CurrentClass == CreatureClass.Archer)
                             {
-                                if (InBowRange)
+                                if (inBowRange > 0.5f)
                                 {
                                     toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
                                     energyMeter -= actionEnergyCost;
@@ -1372,7 +1425,7 @@ public class Creature : MonoBehaviour
                             }
                             else
                             {
-                                if (InSwordRange)
+                                if (inSwordRange > 0.5f)
                                 {
                                     nearestOpponent.TakeDamage(attackDamage, this);
                                     energyMeter -= actionEnergyCost;
