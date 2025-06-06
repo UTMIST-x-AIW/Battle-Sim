@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Pool;
 
-[Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
         public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
@@ -121,12 +118,5 @@ public class ObjectPoolManager : MonoBehaviour
         {
                 ClearPools();
         }
-}
 
-[Serializable]
-public class PooledObjectInfo
-{
-	public string LookupString;
-	public List<GameObject> InactiveObjects = new List<GameObject>();
-	public List<GameObject> ActiveObjects = new List<GameObject>();
 }

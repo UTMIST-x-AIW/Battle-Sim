@@ -264,6 +264,31 @@ public class Creature : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        // Reset dynamic stats when reusing this object from the pool
+        health = maxHealthDefault;
+        maxHealth = maxHealthDefault;
+        attackCooldown = attackCooldownDefault;
+        attackDamage = attackDamageDefault;
+        moveSpeed = moveSpeedDefault;
+        energyMeter = 0f;
+        reproductionMeter = 0f;
+        lifetime = 0f;
+        canStartReproducing = false;
+
+        if (renderer != null)
+        {
+            renderer.color = originalColor;
+        }
+
+        transform.localScale = originalScale;
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
+    }
+
     public IEnumerator DelayedReproductionStart()
     {
         // Reset flags and meter after reproduction
@@ -1216,8 +1241,8 @@ public class Creature : MonoBehaviour
                     Debug.Log($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
                 }
 
-                // Die
-                Destroy(gameObject);
+                // Return to the object pool instead of destroying
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
 
@@ -1384,6 +1409,7 @@ public class Creature : MonoBehaviour
                 }
             }
 
+
             // Reproduction attempt is gated by reproduction meter
             if (reproductionDesire > 0.0f && reproductionMeter >= 1f)
             {
@@ -1424,7 +1450,8 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            // Use pooling instead of destroying the creature
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 

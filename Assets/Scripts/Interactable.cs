@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public abstract class Interactable : MonoBehaviour
 {
@@ -23,6 +24,26 @@ public abstract class Interactable : MonoBehaviour
         currentHP = hitPoints;
         renderer = GetComponent<SpriteRenderer>();
         originalColor = renderer.color;
+    }
+
+    private void OnEnable()
+    {
+        // Reset state when the object is reused from the pool
+        currentHP = hitPoints;
+        if (renderer == null)
+        {
+            renderer = GetComponent<SpriteRenderer>();
+        }
+        if (renderer != null)
+        {
+            renderer.color = originalColor;
+        }
+    }
+
+    private void OnDisable()
+    {
+        // Ensure any running tweens are cleaned up when returned to the pool
+        DG.Tweening.DOTween.Kill(gameObject);
     }
 
     public virtual void TakeDamage(float damage, Creature byWhom)
@@ -71,8 +92,7 @@ public abstract class Interactable : MonoBehaviour
 
     public virtual void Die()
     {
-        // Spawn some resources or particle effects
-        // For now, just destroy the tree
-        Destroy(gameObject);
+        // Return to the object pool instead of destroying
+        ObjectPoolManager.ReturnObjectToPool(gameObject);
     }
 }

@@ -16,11 +16,29 @@ public class Reproduction : MonoBehaviour
 
     public LayerMask creatureLayer;
 
+    private void OnEnable()
+    {
+        // When the object is reused from the pool ensure internal state is reset
+        isMating = false;
+        gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
+    }
+
+    private void OnDisable()
+    {
+        // Clear references to prevent memory from growing when pooled
+        isMating = false;
+        gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
+        StopAllCoroutines();
+    }
+
     private void Start()
     {
         // Get the Creature component
         creatureComponent = GetComponent<Creature>();
     }
+
 
     // Public accessor to check if this creature is currently mating
     public bool IsMating => isMating;
@@ -71,7 +89,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // New check for minimum age requirement (21 years)
-        if (creatureComponent.Lifetime < 20f || otherCreature.Lifetime < 20f)
+        if (creatureComponent.Lifetime < 18f || otherCreature.Lifetime < 18f)
         // if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
         {
             return; // At least one creature is too young
