@@ -60,7 +60,7 @@ public class UIQuadGrid : MonoBehaviour
         //    Debug.Log(pos);
 
         //}
-       if (tilePosList.Count <= 0)  tilePosList = MaketilePosList();
+       if (tilePosList.Count <= 0)  MaketilePosList();
 
 
         //BoundsInt bounds = tilemap.cellBounds;
@@ -95,7 +95,7 @@ public class UIQuadGrid : MonoBehaviour
             }
             return;
         }
-        if (tilePosList.Count <= 0) tilePosList = MaketilePosList();
+        if (tilePosList.Count <= 0) MaketilePosList();
 
 
         KaiMaterial.SetFloat("_TextureSamplingScale", TextureSize);
@@ -118,9 +118,13 @@ public class UIQuadGrid : MonoBehaviour
         }
     }
 
-    private List<Vector3> MaketilePosList()
+    private void MaketilePosList()
     {
-        List<Vector3> tilePosList = new List<Vector3>(bounds*bounds);
+        tilePosList.Clear();
+        if (tilePosList.Capacity < bounds * bounds)
+        {
+            tilePosList.Capacity = bounds * bounds;
+        }
         for (int x = -bounds; x < bounds; x++)
         {
             for (int y = -bounds; y < bounds; y++)
@@ -135,7 +139,6 @@ public class UIQuadGrid : MonoBehaviour
             }
         }
         RedoTilemap = false;
-        return tilePosList;
     }
     public void KillChildren()
     {
