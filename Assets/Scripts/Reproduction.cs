@@ -9,12 +9,29 @@ using Unity.VisualScripting;
 public class Reproduction : MonoBehaviour
 {
     public List<GameObject> gameObject_mated_with = new List<GameObject>();
-    public float pReproduction = 0.9f;
+    public float pReproduction = 0.1f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
     private Creature creatureComponent;
 
     public LayerMask creatureLayer;
+
+    private void OnEnable()
+    {
+        // When the object is reused from the pool ensure internal state is reset
+        isMating = false;
+        gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
+    }
+
+    private void OnDisable()
+    {
+        // Clear references to prevent memory from growing when pooled
+        isMating = false;
+        gameObject_mated_with.Clear();
+        gameObject_mated_with.TrimExcess();
+        StopAllCoroutines();
+    }
 
     private void Start()
     {
@@ -22,13 +39,15 @@ public class Reproduction : MonoBehaviour
         creatureComponent = GetComponent<Creature>();
     }
 
-    // Called when the creature decides to reproduce
+
+    // Public accessor to check if this creature is currently mating
+    public bool IsMating => isMating;
+
+    // Called when the creature wishes to attempt reproduction
     public void AttemptReproduction()
     {
-        // Skip if already in mating process
+        // Skip if already mating or not ready
         if (isMating) return;
-
-        // Skip if creature isn't ready to reproduce (meter not filled)
         if (creatureComponent == null || !creatureComponent.canStartReproducing) return;
 
         float detectionRadius = creatureComponent.currentTeammateVisionRange;
@@ -39,6 +58,7 @@ public class Reproduction : MonoBehaviour
             if (collider != null && collider.gameObject != gameObject)
             {
                 EnableMating(collider);
+                if (isMating) break; // stop searching once mating begins
             }
         }
     }
@@ -69,7 +89,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // New check for minimum age requirement (21 years)
-        if (creatureComponent.Lifetime < 21f || otherCreature.Lifetime < 21f)
+        if (creatureComponent.Lifetime < 18f || otherCreature.Lifetime < 18f)
         // if (creatureComponent.Lifetime < 3f || otherCreature.Lifetime < 3f)
         {
             return; // At least one creature is too young
@@ -108,7 +128,7 @@ public class Reproduction : MonoBehaviour
         }
 
         float matingChance = Random.value;
-        if (matingChance > pReproduction)
+        if (matingChance < pReproduction)
         {
             // Get reference to NEATTest
             var neatTest = FindObjectOfType<NEATTest>();
@@ -182,7 +202,7 @@ public class Reproduction : MonoBehaviour
     private IEnumerator ResetMatingState()
     {
         // Wait a bit before allowing mating again
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(10f);
         isMating = false;
     }
 

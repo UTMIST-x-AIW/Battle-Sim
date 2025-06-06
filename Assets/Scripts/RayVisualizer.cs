@@ -6,6 +6,7 @@ using System.Collections;
 public class MultiRayShooter : MonoBehaviour
 {
     [SerializeField] int _rayCount = 12;
+    private int _previousRayCount;
     [SerializeField] float SpreadAngle = 360f;
     [SerializeField] public float rayDistance = 20f;
     [SerializeField, Range(0.05f, 0.1f)] float _raywidth = 0.06f;
@@ -34,16 +35,36 @@ public class MultiRayShooter : MonoBehaviour
     {
         characterMovement = GetComponent<Movement>();
         raycastResults = new RaycastHit2D[maxRaycastHits];
-        for (int i = 0; i < _rayCount; i++)
+        _previousRayCount = _rayCount;
+        EnsureLineCount();
+    }
+
+    void OnEnable()
+    {
+        EnsureLineCount();
+    }
+
+    void OnValidate()
+    {
+        if (Application.isPlaying)
         {
-            GameObject line = Instantiate(linePrefab);
-            line.hideFlags = HideFlags.HideInHierarchy;
-            lines.Add(line);
+            if (_rayCount != _previousRayCount)
+            {
+                EnsureLineCount();
+            }
+        }
+        else
+        {
+            _previousRayCount = _rayCount;
         }
     }
 
     void Update()
     {
+        if (_rayCount != _previousRayCount)
+        {
+            EnsureLineCount();
+        }
         // For 360-degree detection, direction doesn't matter, use fixed direction
         if (SpreadAngle >= 360f)
         {
@@ -149,6 +170,25 @@ public class MultiRayShooter : MonoBehaviour
         float t = Mathf.Cos(2 * Mathf.PI * Time.fixedTime * duration * Mathf.Deg2Rad) * 0.4f + 0.5f;
         t = Mathf.Clamp(t, 0f, 0.2f);
         line.material.color = new Color(initialColor.r, initialColor.g, initialColor.b, t);
+    }
+
+    void EnsureLineCount()
+    {
+        while (lines.Count < _rayCount)
+        {
+            GameObject line = Instantiate(linePrefab);
+            line.hideFlags = HideFlags.HideInHierarchy;
+            lines.Add(line);
+        }
+
+        while (lines.Count > _rayCount)
+        {
+            var toRemove = lines[lines.Count - 1];
+            lines.RemoveAt(lines.Count - 1);
+            Destroy(toRemove);
+        }
+
+        _previousRayCount = _rayCount;
     }
 
     private void OnDisable()

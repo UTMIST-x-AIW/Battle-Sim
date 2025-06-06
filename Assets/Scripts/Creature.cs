@@ -264,6 +264,31 @@ public class Creature : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        // Reset dynamic stats when reusing this object from the pool
+        health = maxHealthDefault;
+        maxHealth = maxHealthDefault;
+        attackCooldown = attackCooldownDefault;
+        attackDamage = attackDamageDefault;
+        moveSpeed = moveSpeedDefault;
+        energyMeter = 0f;
+        reproductionMeter = 0f;
+        lifetime = 0f;
+        canStartReproducing = false;
+
+        if (renderer != null)
+        {
+            renderer.color = originalColor;
+        }
+
+        transform.localScale = originalScale;
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+        }
+    }
+
     public IEnumerator DelayedReproductionStart()
     {
         // Reset flags and meter after reproduction
@@ -1067,7 +1092,7 @@ public class Creature : MonoBehaviour
             if (brain == null)
             {
                 // Debug.LogWarning(string.Format("{0}: Brain is null, returning zero movement", gameObject.name));
-                return new float[] { 0f, 0f, 0f, 0f };  // 4 outputs: move x, move y, interact, attack
+                return new float[] { 0f, 0f, 0f, 0f, 0f };  // 5 outputs including reproduction
             }
 
             double[] doubleObservations = ConvertToDouble(observations); //TODO: remove this debugging code if it works without
@@ -1092,7 +1117,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
+                return new float[] { 0f, 0f, 0f, 0f, 0f };
             }
             catch (System.Exception e)
             {
@@ -1107,7 +1132,7 @@ public class Creature : MonoBehaviour
                 }
 
                 // Return safe values
-                return new float[] { 0f, 0f, 0f, 0f };
+                return new float[] { 0f, 0f, 0f, 0f, 0f };
             }
 
             float[] outputs = ConvertToFloat(doubleOutputs);
@@ -1179,7 +1204,7 @@ public class Creature : MonoBehaviour
                 Debug.LogError(errorMsg);
             }
 
-            return new float[] { 0f, 0f, 0f, 0f };  // Return default values on error
+            return new float[] { 0f, 0f, 0f, 0f, 0f };  // Return default values on error
         }
     }
 
@@ -1216,8 +1241,8 @@ public class Creature : MonoBehaviour
                     Debug.Log($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
                 }
 
-                // Die
-                Destroy(gameObject);
+                // Return to the object pool instead of destroying
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
                 return;
             }
 
@@ -1321,11 +1346,8 @@ public class Creature : MonoBehaviour
             ApplyMovement(desiredVelocity);
 
             // Process action commands
-            float interactDesire = actions[2];
-            float attackDesire = actions[3];
-            float reproduceDesire = actions.Length > 4 ? actions[4] : -1f;
-
-            float[] desires = { interactDesire, attackDesire };
+            float[] desires = { actions[2], actions[3] };
+            float reproductionDesire = actions.Length > 4 ? actions[4] : -1f;
 
 
             // Energy-limited action: Allow action only if we have sufficient energy
@@ -1387,11 +1409,12 @@ public class Creature : MonoBehaviour
                 }
             }
 
-            // Handle reproduction as a separate action not gated by energy
-            if (reproduceDesire > 0f && reproductionMeter >= 1f)
+
+            // Reproduction attempt is gated by reproduction meter
+            if (reproductionDesire > 0.0f && reproductionMeter >= 1f)
             {
                 var repro = GetComponent<Reproduction>();
-                if (repro != null)
+                if (repro != null && !repro.IsMating)
                 {
                     repro.AttemptReproduction();
                 }
@@ -1427,7 +1450,8 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            // Use pooling instead of destroying the creature
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 

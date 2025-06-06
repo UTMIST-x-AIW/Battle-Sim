@@ -1,134 +1,67 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using System.Linq;
+using UnityEngine.Pool;
 
-[Serializable]
 public class ObjectPoolManager : MonoBehaviour
 {
-        public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+    public static Dictionary<string, ObjectPool<GameObject>> Pools { get; } = new();
 
-        // Registry of active creature components for quick lookup
-        public static List<Creature> ActiveCreatures { get; private set; } = new List<Creature>();
-
-	[SerializeField]
-	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
-
-	public static event Action<List<GameObject>> OnListChanged;
-
-	private void LateUpdate()
-	{
-		pooledObjectInfos.Clear();
-		pooledObjectInfos.AddRange(ObjectPools);
-	}
-
-	public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPosition, Quaternion spawnRotation)
-	{
-		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == objectToSpawn.name);
-
-		if (pool == null)
-		{
-			pool = new PooledObjectInfo() { LookupString = objectToSpawn.name };
-			ObjectPools.Add(pool);
-		}
-
-		GameObject spawnableObj = null;
-		foreach (GameObject obj in pool.InactiveObjects)
-		{
-			if (obj != null)
-			{
-				spawnableObj = obj;
-				break;
-			}
-		}
-
-                if (spawnableObj == null)
-                {
-                        spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
-                        pool.ActiveObjects.Add(spawnableObj);
-                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-                        {
-                                OnListChanged?.Invoke(pool.ActiveObjects);
-                        }
-
-                }
-
-                else
-
-                {
-                        spawnableObj.transform.position = spawnPosition;
-                        spawnableObj.transform.rotation = spawnRotation;
-                        pool.InactiveObjects.Remove(spawnableObj);
-                        pool.ActiveObjects.Add(spawnableObj);
-                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-                        {
-                                OnListChanged?.Invoke(pool.ActiveObjects);
-                        }
-                        spawnableObj.SetActive(true);
-                }
-
-                // Track active creatures
-                var creatureComp = spawnableObj.GetComponent<Creature>();
-                if (creatureComp != null && !ActiveCreatures.Contains(creatureComp))
-                {
-                        ActiveCreatures.Add(creatureComp);
-                }
-
-                return spawnableObj;
-        }
-
-	public static void ReturnObjectToPool(GameObject obj)
-	{
-		string goName = obj.name.Replace("(Clone)", "");
-
-		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
-
-		if (pool == null)
-		{
-			Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
-		}
-                else
-                {
-                        obj.SetActive(false);
-                        pool.InactiveObjects.Add(obj);
-                        pool.ActiveObjects.Remove(obj);
-                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-                        {
-                                OnListChanged?.Invoke(pool.ActiveObjects);
-                        }
-                }
-
-                // Remove from active creature registry if applicable
-                var creatureComp = obj.GetComponent<Creature>();
-                if (creatureComp != null)
-                {
-                        ActiveCreatures.Remove(creatureComp);
-                }
-        }
-
-
-        void ClearingPools()
+    public static void PrewarmPool(GameObject prefab, int count)
+    {
+        if (prefab == null || count <= 0) return;
+        var pool = GetOrCreatePool(prefab, count);
+        for (int i = 0; i < count; i++)
         {
-                foreach (PooledObjectInfo pool in ObjectPools)
-                {
-                        pool.ActiveObjects.Clear();
-                        pool.InactiveObjects.Clear();
-                }
-                ActiveCreatures.Clear();
+            var obj = pool.Get();
+            pool.Release(obj);
         }
+    }
 
-	private void OnDisable()
-	{
-		ClearingPools();
-	}
-}
+    public static GameObject SpawnObject(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        var pool = GetOrCreatePool(prefab);
+        GameObject obj = pool.Get();
+        obj.transform.SetPositionAndRotation(position, rotation);
+        return obj;
+    }
 
-[Serializable]
-public class PooledObjectInfo
-{
-	public string LookupString;
-	public List<GameObject> InactiveObjects = new List<GameObject>();
-	public List<GameObject> ActiveObjects = new List<GameObject>();
+    public static void ReturnObjectToPool(GameObject obj)
+    {
+        if (obj == null) return;
+        string key = obj.name.Replace("(Clone)", string.Empty);
+        if (Pools.TryGetValue(key, out var pool))
+        {
+            pool.Release(obj);
+        }
+        else
+        {
+            Object.Destroy(obj);
+        }
+    }
+
+    static ObjectPool<GameObject> GetOrCreatePool(GameObject prefab, int defaultCapacity = 10)
+    {
+        if (!Pools.TryGetValue(prefab.name, out var pool))
+        {
+            pool = new ObjectPool<GameObject>(
+                () => Instantiate(prefab),
+                obj => obj.SetActive(true),
+                obj => obj.SetActive(false),
+                obj => Destroy(obj),
+                true,
+                defaultCapacity,
+                1000);
+            Pools[prefab.name] = pool;
+        }
+        return pool;
+    }
+
+    void OnDisable()
+    {
+        foreach (var pool in Pools.Values)
+        {
+            pool.Clear();
+        }
+        Pools.Clear();
+    }
 }

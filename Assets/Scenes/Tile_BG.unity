@@ -19256,12 +19256,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 51
+  MIN_ALBERTS: 80
   MAX_ALBERTS: 201
   INITIAL_ALBERTS: 132
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 51
+  MIN_KAIS: 80
   MAX_KAIS: 201
   INITIAL_KAIS: 132
   MIN_STARTING_AGE_KAI: 0
@@ -45156,19 +45156,19 @@ PrefabInstance:
       objectReference: {fileID: 4383530603220594374, guid: a0ac91c7986ef6d4bba8165f99a0d8e4, type: 3}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: checkInterval
-      value: 0.03
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.03
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
-      value: 66
+      value: 396
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: numExtraObjects
-      value: 66
+      value: 396
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraHeatmapData
@@ -45176,7 +45176,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectRespawnRate
-      value: 0.07366667
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: extraObjectMinutesToExtinction
@@ -87127,11 +87127,11 @@ PrefabInstance:
       objectReference: {fileID: 2924760637134892396, guid: b312b80c2ef404498bce5a2c05704672, type: 3}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: checkInterval
-      value: 0.03
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.03
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns
@@ -88537,11 +88537,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: checkInterval
-      value: 0.03
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: spawnInterval
-      value: 0.03
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: 7318173359843721849, guid: 18b0b188cec3991438c353a5e0cb7422, type: 3}
       propertyPath: maxNumOfSpawns

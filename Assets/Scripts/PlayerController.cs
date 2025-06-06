@@ -62,8 +62,10 @@ public class PlayerController : MonoBehaviour
         actions[1] = vertical;
         actions[2] = interactDesire;
         actions[3] = attackDesire;
-        if (NEATTest.ACTION_COUNT > 4)
+        if (actions.Length > 4)
+        {
             actions[4] = reproduceDesire;
+        }
         // Pass the actions to the creature's processing method
         creatureComponent.ProcessActionCommands(actions);
     }
