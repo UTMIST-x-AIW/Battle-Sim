@@ -1349,6 +1349,10 @@ public class Creature : MonoBehaviour
 
     public void ProcessActionCommands(float[] actions)
     {
+        // Don't process actions if this GameObject is inactive (returned to pool)
+        if (!gameObject.activeInHierarchy)
+            return;
+
         try
         {
             // Log if the array length wasn't NEATTest.ACTION_COUNT
@@ -1396,6 +1400,10 @@ public class Creature : MonoBehaviour
 
                     // Get animation for the strongest desire
                     ToolAnimation toolAnim = GetComponentInChildren<ToolAnimation>();
+
+                    // Safety check: only proceed if toolAnim is available and active
+                    if (toolAnim == null || !toolAnim.gameObject.activeInHierarchy)
+                        return;
 
                     switch (strongestDesireIndex)
                     {
