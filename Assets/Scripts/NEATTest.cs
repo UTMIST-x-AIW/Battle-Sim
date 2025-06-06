@@ -166,8 +166,8 @@ public class NEATTest : MonoBehaviour
         // Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
         foreach (var creature in existingCreatures)
         {
-            // ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
-            Destroy(creature.gameObject);
+            ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
+            // Destroy(creature.gameObject);
         }
 
         if (runTests)
@@ -644,8 +644,8 @@ public class NEATTest : MonoBehaviour
 
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
-        // var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // var creature = Instantiate(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
         AnimatingDoTweenUtilities.PlayGrow(creature);
         var creatureComponent = creature.GetComponent<Creature>();
@@ -781,8 +781,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithRandomizedBrain(GameObject prefab, Vector3 position, Creature.CreatureType type)
     {
         // Create the creature instance
-        // GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        GameObject creature = Instantiate(prefab, position, Quaternion.identity);
+        GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // GameObject creature = Instantiate(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
         AnimatingDoTweenUtilities.PlayGrow(creature);
         Creature creatureComponent = creature.GetComponent<Creature>();
@@ -839,8 +839,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithReproductionBias(GameObject prefab, Vector2 position, Creature.CreatureType type, float reproBias)
     {
         // Create the creature instance
-        // var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
 
@@ -1034,8 +1034,8 @@ public class NEATTest : MonoBehaviour
 
             foreach (var creature in existingCreatures)
             {
-                // ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
-                Destroy(creature.gameObject);
+                ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
+                // Destroy(creature.gameObject);
             }
 
             ObjectPoolManager.ClearPools();
@@ -1703,15 +1703,15 @@ public class NEATTest : MonoBehaviour
             }
 
             // Instantiate the creature prefab at the specified position
-            // GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-            GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
+            GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+            // GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
             Creature creatureComponent = creatureObj.GetComponent<Creature>();
 
             if (creatureComponent == null)
             {
                 Debug.LogError("Prefab does not have a Creature component");
-                // ObjectPoolManager.ReturnObjectToPool(creatureObj); //TODO-OBJECTPOOL: return to this after implementing reset
-                Destroy(creatureObj);
+                ObjectPoolManager.ReturnObjectToPool(creatureObj); //TODO-OBJECTPOOL: return to this after implementing reset
+                // Destroy(creatureObj);
                 return null;
             }
 

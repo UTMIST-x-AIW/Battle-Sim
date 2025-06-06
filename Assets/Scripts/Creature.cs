@@ -206,6 +206,10 @@ public class Creature : MonoBehaviour
     private Color originalColor;
     private SpriteRenderer renderer;
 
+    [SerializeField] private float originalHealth;
+
+
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
@@ -237,15 +241,6 @@ public class Creature : MonoBehaviour
             // Cache NEATTest reference if not already cached
             neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
 
-            // Initialize stats
-            maxHealth = maxHealthDefault;
-            energyRechargeRate = energyRechargeRateDefault;
-            attackDamage = attackDamageDefault;
-            moveSpeed = moveSpeedDefault;
-            health = maxHealth;
-            reproductionMeter = 0f; // Initialize reproduction meter to 0
-            lifetime = 0f;
-            canStartReproducing = false;
 
             originalScale = transform.localScale;
 
@@ -262,6 +257,20 @@ public class Creature : MonoBehaviour
         {
             Debug.LogError($"Error in Creature Awake: {e.Message}\n{e.StackTrace}");
         }
+
+    }
+
+    private void OnEnable()
+    {
+        // Initialize stats
+        maxHealth = maxHealthDefault;
+        energyRechargeRate = energyRechargeRateDefault;
+        attackDamage = attackDamageDefault;
+        moveSpeed = moveSpeedDefault;
+        health = maxHealth;
+        reproductionMeter = 0f; // Initialize reproduction meter to 0
+        lifetime = 0f;
+        canStartReproducing = false;
     }
 
     public IEnumerator DelayedReproductionStart()

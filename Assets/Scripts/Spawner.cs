@@ -431,7 +431,7 @@ public class Spawner : MonoBehaviour
         GameObject spawnedPrefab;
         if (isExtra)
         {
-            spawnedPrefab = ObjectPoolManager.SpawnObject(extraPrefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+            spawnedPrefab = ObjectPoolManager.SpawnObject(extraPrefab, position, Quaternion.identity);
             // GameObject spawnedPrefab = Instantiate(extraPrefab, position, Quaternion.identity);
         }
         else
