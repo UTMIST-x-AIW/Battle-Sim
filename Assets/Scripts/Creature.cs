@@ -61,20 +61,23 @@ public class Creature : MonoBehaviour
     [Header("Progression Defaults")]
     [SerializeField] public float maxHealthDefault = 3f;
     [SerializeField] public float energyRechargeRateDefault = 1.2f;
-    [SerializeField] public float attackDamageDefault = 1f;
+    [SerializeField] public float bowDamageDefault = 1f;
+    [SerializeField] public float swordDamageDefault = 1f;
     [SerializeField] public float moveSpeedDefault = 5f;
 
     [Header("Progression Bonuses")]
     [SerializeField] public float rockHealthBonus = 5f;
     [SerializeField] public float treeEnergyRechargeRateBonus = 0.4f;
-    [SerializeField] public float enemyDamageBonus = 3f;
+    [SerializeField] public float bowDamageBonus = 3f;
+    [SerializeField] public float swordDamageBonus = 3f;
     [SerializeField] public float cupcakeSpeedBonus = 1.3f;
     [SerializeField] public float cupcakeHealthBonus = 5f;
 
     [Header("Stat Caps")]
     [SerializeField] public float maxHealthCap = 100f;
     [SerializeField] public float maxEnergyRechargeRateCap = 2.4f;
-    [SerializeField] public float attackDamageCap = 20f;
+    [SerializeField] public float bowDamageCap = 20f;
+    [SerializeField] public float swordDamageCap = 20f;
     [SerializeField] public float moveSpeedCap = 15f;
 
     [Header("Class Settings")]
@@ -89,7 +92,6 @@ public class Creature : MonoBehaviour
 
     public CreatureClass CurrentClass { get; private set; } = CreatureClass.None;
 
-    [HideInInspector] public float attackDamage;
 
     [Header("Detection Settings")]
     public float[] dynamicVisionRanges = { 2.5f, 5f, 10f, 15f, 20f };  // Progressive ranges for dynamic vision
@@ -264,10 +266,19 @@ public class Creature : MonoBehaviour
     {
         // Initialize stats
         maxHealth = maxHealthDefault;
-        energyRechargeRate = energyRechargeRateDefault;
-        attackDamage = attackDamageDefault;
-        moveSpeed = moveSpeedDefault;
         health = maxHealth;
+        energyMeter = 0f;
+        energyRechargeRate = energyRechargeRateDefault;
+        generation = 0;
+        moveSpeed = moveSpeedDefault;
+        bowDamage = bowDamageDefault;
+        swordDamage = swordDamageDefault;
+
+
+
+
+
+
         reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
@@ -907,9 +918,21 @@ public class Creature : MonoBehaviour
         CheckClassChange();
     }
 
-    public void ModifyAttackDamage()
+    // public void ModifyAttackDamage()
+    // {
+    //     attackDamage = Mathf.Min(attackDamage + enemyDamageBonus, attackDamageCap);
+    //     CheckClassChange();
+    // }
+
+    public void ModifyBowDamage()
     {
-        attackDamage = Mathf.Min(attackDamage + enemyDamageBonus, attackDamageCap);
+        bowDamage = Mathf.Min(bowDamage + bowDamageBonus, bowDamageCap);
+        CheckClassChange();
+    }
+
+    public void ModifySwordDamage()
+    {
+        swordDamage = Mathf.Min(swordDamage + swordDamageBonus, swordDamageCap);
         CheckClassChange();
     }
 
@@ -933,7 +956,7 @@ public class Creature : MonoBehaviour
 
         if (maxHealth >= tankHealthThreshold) { met++; potential = CreatureClass.Tank; }
         if (moveSpeed >= scoutSpeedThreshold) { met++; potential = CreatureClass.Scout; }
-        if (attackDamage >= swordsmanDamageThreshold) { met++; potential = CreatureClass.Swordsman; }
+        if (swordDamage >= swordsmanDamageThreshold) { met++; potential = CreatureClass.Swordsman; }
         if (energyRechargeRate >= archerEnergyRechargeRateThreshold) { met++; potential = CreatureClass.Archer; }
 
         if (met == 1)
@@ -1359,16 +1382,18 @@ public class Creature : MonoBehaviour
                                             bowRange
                                         );
                                     }
-                                    nearestOpponent.TakeDamage(bowDamage, this);
+                                    nearestOpponent.TakeDamage(bowDamage);
+                                    ModifyBowDamage();
                                 }
                             }
                             else
                             {
                                 if (InSwordRange)
                                 {
-                                    nearestOpponent.TakeDamage(swordDamage, this);
+                                    nearestOpponent.TakeDamage(swordDamage);
                                     energyMeter -= actionEnergyCost;
                                     toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
+                                    ModifySwordDamage();
                                 }
                             }
                             break;
@@ -1403,7 +1428,7 @@ public class Creature : MonoBehaviour
 
 
 
-    public void TakeDamage(float damage, Creature byWhom = null)
+    public void TakeDamage(float damage)
     {
         health -= damage;
 
@@ -1412,11 +1437,7 @@ public class Creature : MonoBehaviour
 
         if (health <= 0)
         {
-            if (byWhom != null && byWhom != this && byWhom.type != this.type)
-            {
-                byWhom.ModifyAttackDamage();
-            }
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 
@@ -1430,31 +1451,6 @@ public class Creature : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        try
-        {
-            try
-            {
-                // Try to log, but catch any exceptions if LogManager is gone
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
-                }
-            }
-            catch (System.Exception)
-            {
-                // If LogManager is already cleaned up, just silently continue
-            }
-
-
-
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
-        }
-    }
 
     private void OnGUI()
     {
