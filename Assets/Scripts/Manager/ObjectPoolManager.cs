@@ -4,64 +4,119 @@ using UnityEngine.Pool;
 
 public class ObjectPoolManager : MonoBehaviour
 {
-    public static Dictionary<string, ObjectPool<GameObject>> Pools { get; } = new();
+        public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
 
-    public static void PrewarmPool(GameObject prefab, int count)
-    {
-        if (prefab == null || count <= 0) return;
-        var pool = GetOrCreatePool(prefab, count);
-        for (int i = 0; i < count; i++)
-        {
-            var obj = pool.Get();
-            pool.Release(obj);
-        }
-    }
+        private const int MAX_INACTIVE_PER_POOL = 200; // Prevent unbounded growth
 
-    public static GameObject SpawnObject(GameObject prefab, Vector3 position, Quaternion rotation)
-    {
-        var pool = GetOrCreatePool(prefab);
-        GameObject obj = pool.Get();
-        obj.transform.SetPositionAndRotation(position, rotation);
-        return obj;
-    }
+	[SerializeField]
+	public List<PooledObjectInfo> pooledObjectInfos = new List<PooledObjectInfo>();
 
-    public static void ReturnObjectToPool(GameObject obj)
-    {
-        if (obj == null) return;
-        string key = obj.name.Replace("(Clone)", string.Empty);
-        if (Pools.TryGetValue(key, out var pool))
-        {
-            pool.Release(obj);
-        }
-        else
-        {
-            Object.Destroy(obj);
-        }
-    }
+	public static event Action<List<GameObject>> OnListChanged;
 
-    static ObjectPool<GameObject> GetOrCreatePool(GameObject prefab, int defaultCapacity = 10)
-    {
-        if (!Pools.TryGetValue(prefab.name, out var pool))
-        {
-            pool = new ObjectPool<GameObject>(
-                () => Instantiate(prefab),
-                obj => obj.SetActive(true),
-                obj => obj.SetActive(false),
-                obj => Destroy(obj),
-                true,
-                defaultCapacity,
-                1000);
-            Pools[prefab.name] = pool;
-        }
-        return pool;
-    }
+	private void LateUpdate()
+	{
+		pooledObjectInfos.Clear();
+		pooledObjectInfos.AddRange(ObjectPools);
+	}
 
-    void OnDisable()
-    {
-        foreach (var pool in Pools.Values)
+	public static GameObject SpawnObject(GameObject objectToSpawn, Vector3 spawnPosition, Quaternion spawnRotation)
+	{
+		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == objectToSpawn.name);
+
+		if (pool == null)
+		{
+			pool = new PooledObjectInfo() { LookupString = objectToSpawn.name };
+			ObjectPools.Add(pool);
+		}
+
+		GameObject spawnableObj = null;
+		foreach (GameObject obj in pool.InactiveObjects)
+		{
+			if (obj != null)
+			{
+				spawnableObj = obj;
+				break;
+			}
+		}
+
+		if (spawnableObj == null)
+		{
+			spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
+			pool.ActiveObjects.Add(spawnableObj);
+			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+			{
+				OnListChanged?.Invoke(pool.ActiveObjects);
+			}
+
+		}
+
+		else
+
+		{
+			spawnableObj.transform.position = spawnPosition;
+			spawnableObj.transform.rotation = spawnRotation;
+			pool.InactiveObjects.Remove(spawnableObj);
+			pool.ActiveObjects.Add(spawnableObj);
+			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+			{
+				OnListChanged?.Invoke(pool.ActiveObjects);
+			}
+			spawnableObj.SetActive(true);
+		}
+
+		return spawnableObj;
+	}
+
+        public static void ReturnObjectToPool(GameObject obj)
         {
-            pool.Clear();
+                string goName = obj.name.Replace("(Clone)", "");
+
+                PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+
+                if (pool == null)
+                {
+                        Debug.LogWarning($"Trying to release an object that is not pooled: {goName}. Destroying.");
+                        Destroy(obj);
+                        return;
+                }
+                else
+                {
+                        obj.SetActive(false);
+                        pool.InactiveObjects.Add(obj);
+                        pool.ActiveObjects.Remove(obj);
+                        if (pool.InactiveObjects.Count > MAX_INACTIVE_PER_POOL)
+                        {
+                                var excess = pool.InactiveObjects[0];
+                                pool.InactiveObjects.RemoveAt(0);
+                                Destroy(excess);
+                        }
+                        if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                        {
+                                OnListChanged?.Invoke(pool.ActiveObjects);
+                        }
+                }
         }
-        Pools.Clear();
-    }
+
+        public static void ClearPools()
+        {
+                foreach (PooledObjectInfo pool in ObjectPools)
+                {
+                        foreach (var obj in pool.InactiveObjects)
+                        {
+                                if (obj != null)
+                                {
+                                        Destroy(obj);
+                                }
+                        }
+                        pool.ActiveObjects.Clear();
+                        pool.InactiveObjects.Clear();
+                }
+        }
+
+
+        private void OnDisable()
+        {
+                ClearPools();
+        }
+
 }
