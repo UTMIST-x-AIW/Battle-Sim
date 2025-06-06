@@ -7,6 +7,7 @@ using System;
 public class ObjectPoolManager : MonoBehaviour
 {
         public static List<PooledObjectInfo> ObjectPools { get; private set; } = new List<PooledObjectInfo>();
+        public static List<Creature> ActiveCreatures { get; private set; } = new List<Creature>();
 
         private const int MAX_INACTIVE_PER_POOL = 200; // Prevent unbounded growth
 
@@ -41,33 +42,34 @@ public class ObjectPoolManager : MonoBehaviour
 			}
 		}
 
-		if (spawnableObj == null)
-		{
-			spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
-			pool.ActiveObjects.Add(spawnableObj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
+                if (spawnableObj == null)
+                {
+                        spawnableObj = Instantiate(objectToSpawn, spawnPosition, spawnRotation);
+                        pool.ActiveObjects.Add(spawnableObj);
 
-		}
+                }
+                else
+                {
+                        spawnableObj.transform.position = spawnPosition;
+                        spawnableObj.transform.rotation = spawnRotation;
+                        pool.InactiveObjects.Remove(spawnableObj);
+                        pool.ActiveObjects.Add(spawnableObj);
+                        spawnableObj.SetActive(true);
+                }
 
-		else
+                if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
+                {
+                        OnListChanged?.Invoke(pool.ActiveObjects);
+                }
 
-		{
-			spawnableObj.transform.position = spawnPosition;
-			spawnableObj.transform.rotation = spawnRotation;
-			pool.InactiveObjects.Remove(spawnableObj);
-			pool.ActiveObjects.Add(spawnableObj);
-			if (pool.LookupString == "Albert" || pool.LookupString == "Kai")
-			{
-				OnListChanged?.Invoke(pool.ActiveObjects);
-			}
-			spawnableObj.SetActive(true);
-		}
+                var creatureComponent = spawnableObj.GetComponent<Creature>();
+                if (creatureComponent != null && !ActiveCreatures.Contains(creatureComponent))
+                {
+                        ActiveCreatures.Add(creatureComponent);
+                }
 
-		return spawnableObj;
-	}
+                return spawnableObj;
+        }
 
         public static void ReturnObjectToPool(GameObject obj)
         {
@@ -86,6 +88,12 @@ public class ObjectPoolManager : MonoBehaviour
                         obj.SetActive(false);
                         pool.InactiveObjects.Add(obj);
                         pool.ActiveObjects.Remove(obj);
+
+                        var creatureComponent = obj.GetComponent<Creature>();
+                        if (creatureComponent != null)
+                        {
+                                ActiveCreatures.Remove(creatureComponent);
+                        }
                         if (pool.InactiveObjects.Count > MAX_INACTIVE_PER_POOL)
                         {
                                 var excess = pool.InactiveObjects[0];

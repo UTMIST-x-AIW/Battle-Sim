@@ -17,26 +17,26 @@ public abstract class Interactable : MonoBehaviour
     }
 
     protected Color originalColor;
-    protected SpriteRenderer renderer;
+    protected SpriteRenderer spriteRenderer;
 
     protected virtual void Start()
     {
         currentHP = hitPoints;
-        renderer = GetComponent<SpriteRenderer>();
-        originalColor = renderer.color;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        originalColor = spriteRenderer.color;
     }
 
     private void OnEnable()
     {
         // Reset state when the object is reused from the pool
         currentHP = hitPoints;
-        if (renderer == null)
+        if (spriteRenderer == null)
         {
-            renderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
-        if (renderer != null)
+        if (spriteRenderer != null)
         {
-            renderer.color = originalColor;
+            spriteRenderer.color = originalColor;
         }
     }
 
@@ -76,11 +76,11 @@ public abstract class Interactable : MonoBehaviour
     private System.Collections.IEnumerator FlashOnDamage()
     {
         
-        if (renderer != null)
+        if (spriteRenderer != null)
         {
-            renderer.color = Color.red;
+            spriteRenderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
-            renderer.color = originalColor;
+            spriteRenderer.color = originalColor;
         }
         else
         {

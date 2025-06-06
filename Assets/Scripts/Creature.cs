@@ -205,7 +205,7 @@ public class Creature : MonoBehaviour
     public float maxDetectionRange = 20f;
 
     private Color originalColor;
-    private SpriteRenderer renderer;
+    private SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
@@ -277,9 +277,9 @@ public class Creature : MonoBehaviour
         lifetime = 0f;
         canStartReproducing = false;
 
-        if (renderer != null)
+        if (spriteRenderer != null)
         {
-            renderer.color = originalColor;
+            spriteRenderer.color = originalColor;
         }
 
         transform.localScale = originalScale;
@@ -306,8 +306,8 @@ public class Creature : MonoBehaviour
     {
         // Setup Rigidbody2D
         rb = gameObject.GetComponent<Rigidbody2D>();
-        renderer = GetComponent<SpriteRenderer>();
-        originalColor = renderer.color;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        originalColor = spriteRenderer.color;
 
     }
 
@@ -1457,11 +1457,11 @@ public class Creature : MonoBehaviour
 
     private IEnumerator FlashOnDamage()
     {
-        if (renderer != null)
+        if (spriteRenderer != null)
         {
-            renderer.color = Color.red;
+            spriteRenderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
-            renderer.color = originalColor;
+            spriteRenderer.color = originalColor;
         }
     }
 
