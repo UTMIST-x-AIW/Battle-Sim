@@ -498,11 +498,8 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Find all creatures in the scene
-            var creatures = GameObject.FindObjectsOfType<Creature>();
-
-            // Count only Kais
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Kai);
+            // Count Kais using the active creature registry
+            int count = ObjectPoolManager.ActiveCreatures.Count(c => c.type == Creature.CreatureType.Kai);
 
             LogManager.LogMessage($"Counted {count} Kai creatures in the scene");
             return count;
@@ -867,7 +864,7 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
 
-        // Add output nodes
+        // Add output nodes (including reproduction action)
         var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
@@ -915,6 +912,9 @@ public class NEATTest : MonoBehaviour
         genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 11, OBSERVATION_COUNT, 0.3f));  // Ground x to x movement
         genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 12, OBSERVATION_COUNT + 1, 0.3f));  // Ground y to y movement
 
+        // Base connection for reproduction action
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 2, OBSERVATION_COUNT + 4, reproBias)); // ReproductionMeter to reproduce action
+
         // Create the neural network and initialize the creature
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
         creatureComponent.InitializeNetwork(network);
@@ -961,11 +961,8 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Find all creatures in the scene
-            var creatures = GameObject.FindObjectsOfType<Creature>();
-
-            // Count only Alberts
-            int count = creatures.Count(c => c.type == Creature.CreatureType.Albert);
+            // Count Alberts using the active creature registry
+            int count = ObjectPoolManager.ActiveCreatures.Count(c => c.type == Creature.CreatureType.Albert);
 
             LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
             return count;

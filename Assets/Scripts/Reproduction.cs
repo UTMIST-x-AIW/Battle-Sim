@@ -39,6 +39,7 @@ public class Reproduction : MonoBehaviour
         creatureComponent = GetComponent<Creature>();
     }
 
+
     // Public accessor to check if this creature is currently mating
     public bool IsMating => isMating;
 

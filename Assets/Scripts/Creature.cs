@@ -1409,6 +1409,7 @@ public class Creature : MonoBehaviour
                 }
             }
 
+
             // Reproduction attempt is gated by reproduction meter
             if (reproductionDesire > 0.0f && reproductionMeter >= 1f)
             {
