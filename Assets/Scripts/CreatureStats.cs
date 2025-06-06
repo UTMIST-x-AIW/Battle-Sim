@@ -12,8 +12,7 @@ public class CreatureStats : MonoBehaviour
 
     public TextMeshProUGUI maxHealthText;
     public TextMeshProUGUI energyRechargeRateText;
-    public TextMeshProUGUI swordDamageText;
-    public TextMeshProUGUI bowDamageText;
+    public TextMeshProUGUI attackDamageText;
     public TextMeshProUGUI movementSpeedText;
 
     public TextMeshProUGUI classText;
@@ -88,14 +87,9 @@ public class CreatureStats : MonoBehaviour
             energyRechargeRateText.text = $"Energy Recharge Rate: {selectedCreature.energyRechargeRate:F2}";
         }
 
-        if (swordDamageText != null)
+        if (attackDamageText != null)
         {
-            swordDamageText.text = $"Sword Damage: {selectedCreature.swordDamage:F1}";
-        }
-
-        if (bowDamageText != null)
-        {
-            bowDamageText.text = $"Bow Damage: {selectedCreature.bowDamage:F1}";
+            attackDamageText.text = $"Attack Damage: {selectedCreature.attackDamage:F1}";
         }
 
         if (movementSpeedText != null)
