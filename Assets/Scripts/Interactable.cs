@@ -57,6 +57,7 @@ public abstract class Interactable : MonoBehaviour
         {
             //AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
             OnDestroyed(byWhom);
+            Die();
         }
     }
 
