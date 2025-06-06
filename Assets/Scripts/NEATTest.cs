@@ -497,8 +497,7 @@ public class NEATTest : MonoBehaviour
 
     private int CountKais()
     {
-        Transform parentTransform = ParenthoodManager.GetParent(kaiCreaturePrefab);
-        return parentTransform != null ? parentTransform.childCount : 0;
+        return ObjectPoolManager.GetActiveChildCount(kaiCreaturePrefab);
     }
 
     private void SetupNormalGame()
@@ -949,9 +948,7 @@ public class NEATTest : MonoBehaviour
 
     private int CountAlberts()
     {
-        Transform parentTransform = ParenthoodManager.GetParent(albertCreaturePrefab);
-        return parentTransform != null ? parentTransform.childCount : 0;
-
+        return ObjectPoolManager.GetActiveChildCount(albertCreaturePrefab);
     }
 
     private void OnDestroy()
