@@ -59,7 +59,8 @@ public abstract class Interactable : MonoBehaviour
         {
             OnDestroyed(byWhom);
             // Let the death animation handle returning the object to the pool.
-            AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
+            // AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
+            Die();
         }
     }
 
