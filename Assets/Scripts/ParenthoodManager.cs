@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class ParenthoodManager
 {
-    private static readonly Dictionary<string,Transform> ParentsTransformNameDict = new();
+    private static readonly Dictionary<string, Transform> ParentsTransformNameDict = new();
 
     /// <summary>
     /// Makes a parent of the GameObject go using a stripped-down name that had all (Clone) removed,
@@ -15,12 +15,18 @@ public static class ParenthoodManager
     static GameObject MakeParent(GameObject go)
     {
         string goName = go.name.Replace("(Clone)", "") + "---Parent";
-        
-        if (ParentsTransformNameDict.TryGetValue(goName, out var existingParent))
+
+        if (ParentsTransformNameDict.TryGetValue(goName, out var existingParent) && existingParent != null)
             return existingParent.gameObject;
-                    
+
+        // Remove destroyed reference if it exists
+        if (existingParent == null && ParentsTransformNameDict.ContainsKey(goName))
+        {
+            ParentsTransformNameDict.Remove(goName);
+        }
+
         GameObject goParent = new GameObject(goName);
-        
+
 
         ParentsTransformNameDict[goParent.name] = goParent.transform;
         return goParent;
@@ -33,35 +39,46 @@ public static class ParenthoodManager
     /// <param name="go"></param>
     public static void AssignParent(GameObject go)
     {
-
         string goName = go.name.Replace("(Clone)", "") + "---Parent";
-        if (ParentsTransformNameDict.TryGetValue(goName, out var value))
+        if (ParentsTransformNameDict.TryGetValue(goName, out var value) && value != null)
         {
             go.transform.SetParent(value, false);
         }
         else
         {
+            // Remove destroyed reference if it exists
+            if (value == null && ParentsTransformNameDict.ContainsKey(goName))
+            {
+                ParentsTransformNameDict.Remove(goName);
+            }
+
             GameObject goParent = MakeParent(go);
             go.transform.SetParent(goParent.transform, false);
         }
     }
-    
-    
+
+
     public static Transform GetParent(GameObject go)
     {
         string goName = go.name.Replace("(Clone)", "") + "---Parent";
-        if (ParentsTransformNameDict.TryGetValue(goName, out var value))
+        if (ParentsTransformNameDict.TryGetValue(goName, out var value) && value != null)
         {
             return value;
         }
         else
         {
-            Debug.LogWarning("Parent not found: " + goName);
+            // Remove destroyed reference if it exists
+            if (value == null && ParentsTransformNameDict.ContainsKey(goName))
+            {
+                ParentsTransformNameDict.Remove(goName);
+            }
+
+            // Don't log warning - parent objects are created on-demand when creatures are spawned
             return null;
         }
     }
 
-    
+
     /// <summary>
     /// Clears ParentsTransformNameDict
     /// </summary>
