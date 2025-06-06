@@ -74,27 +74,13 @@ public abstract class Interactable : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator FlashOnDamage()
-    {
-        
-        if (renderer != null)
-        {
-            renderer.color = Color.red;
-            yield return new WaitForSeconds(0.1f);
-            renderer.color = originalColor;
-        }
-        else
-        {
-            yield return null;
-        }
-    }
-
     protected virtual void OnDestroyed(Creature byWhom) { }
 
     public virtual void Die()
     {
         // Spawn some resources or particle effects
         // For now, just destroy the tree
-        Destroy(gameObject);
+        // Destroy(gameObject);
+        ObjectPoolManager.ReturnObjectToPool(gameObject);
     }
 }

@@ -428,17 +428,19 @@ public class Spawner : MonoBehaviour
 
         // // Instantiate the prefab and set its parent
 
+        GameObject spawnedPrefab;
         if (isExtra)
         {
-            // GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-            GameObject spawnedPrefab = Instantiate(extraPrefab, position, Quaternion.identity);
-            ParenthoodManager.AssignParent(spawnedPrefab);
+            spawnedPrefab = ObjectPoolManager.SpawnObject(extraPrefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+            // GameObject spawnedPrefab = Instantiate(extraPrefab, position, Quaternion.identity);
         }
         else
         {
-            GameObject spawnedPrefab = Instantiate(regularPrefab, position, Quaternion.identity);
-            ParenthoodManager.AssignParent(spawnedPrefab);
+            // GameObject spawnedPrefab = Instantiate(regularPrefab, position, Quaternion.identity);
+            spawnedPrefab = ObjectPoolManager.SpawnObject(regularPrefab, position, Quaternion.identity);
         }
+        ParenthoodManager.AssignParent(spawnedPrefab);
+
 
         return true;
     }

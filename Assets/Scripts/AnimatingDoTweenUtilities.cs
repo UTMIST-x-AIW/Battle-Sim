@@ -26,7 +26,7 @@ public static class AnimatingDoTweenUtilities
            SetEase(ease);
         deathSequence.Append(sprite.DOFade(0f, 0.1f / 1.4f * duration));
         deathSequence.OnComplete(() => Die(go));
-        
+
 
     }
 
@@ -47,10 +47,10 @@ public static class AnimatingDoTweenUtilities
     }
 
     private static void Die(GameObject go)
-    {        
+    {
         // Spawn some resources or particle effects
         // For now, just destroy the tree
-        // ObjectPoolManager.ReturnObjectToPool(go); //TODO-OBJECTPOOL: return to this after making sure everything works without object pooling (no need to implement reset for this)
-        Object.Destroy(go);
+        ObjectPoolManager.ReturnObjectToPool(go); //TODO-OBJECTPOOL: return to this after making sure everything works without object pooling (no need to implement reset for this)
+        // Object.Destroy(go);
     }
 }
