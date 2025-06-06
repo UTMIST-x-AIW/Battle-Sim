@@ -8,6 +8,13 @@ public abstract class Interactable : MonoBehaviour
     [SerializeField] public float hitPoints = 5f;
     protected float currentHP;
 
+    // Expose currentHP for saving and loading game state
+    public float CurrentHP
+    {
+        get => currentHP;
+        set => currentHP = value;
+    }
+
     protected Color originalColor;
     protected SpriteRenderer renderer;
 
@@ -29,9 +36,9 @@ public abstract class Interactable : MonoBehaviour
 
         if (currentHP <= 0)
         {
-            AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
             OnDestroyed(byWhom);
-            Die();
+            // Let the death animation handle returning the object to the pool.
+            AnimatingDoTweenUtilities.PlayDeathAnimation(gameObject);
         }
     }
 
