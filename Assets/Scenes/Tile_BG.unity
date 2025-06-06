@@ -86550,6 +86550,56 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161969673379056834, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   m_PrefabInstance: {fileID: 1690471892}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1694587898
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1694587900}
+  - component: {fileID: 1694587899}
+  m_Layer: 0
+  m_Name: GameStateManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1694587899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694587898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca0db1f88ae548c5ba4a337ffffa0764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  albertPrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
+  kaiPrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
+  treePrefab: {fileID: 8827735956283543281, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
+  rockPrefab: {fileID: 2924760637134892396, guid: b312b80c2ef404498bce5a2c05704672, type: 3}
+  cupcakePrefab: {fileID: 4383530603220594374, guid: a0ac91c7986ef6d4bba8165f99a0d8e4, type: 3}
+  autosaveInterval: 1800
+--- !u!4 &1694587900
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694587898}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1, y: -6.875, z: -0.94514054}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1702594070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -88632,3 +88682,4 @@ SceneRoots:
   - {fileID: 508018528}
   - {fileID: 1880141608}
   - {fileID: 444500968}
+  - {fileID: 1694587900}

@@ -74,11 +74,13 @@ public class ObjectPoolManager : MonoBehaviour
         {
                 string goName = obj.name.Replace("(Clone)", "");
 
-		PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+                PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
 
                 if (pool == null)
                 {
-                        Debug.LogWarning("Trying to release an object that is not pooled: " + goName);
+                        Debug.LogWarning($"Trying to release an object that is not pooled: {goName}. Destroying.");
+                        Destroy(obj);
+                        return;
                 }
                 else
                 {
@@ -98,20 +100,27 @@ public class ObjectPoolManager : MonoBehaviour
                 }
         }
 
+        public static void ClearPools()
+        {
+                foreach (PooledObjectInfo pool in ObjectPools)
+                {
+                        foreach (var obj in pool.InactiveObjects)
+                        {
+                                if (obj != null)
+                                {
+                                        Destroy(obj);
+                                }
+                        }
+                        pool.ActiveObjects.Clear();
+                        pool.InactiveObjects.Clear();
+                }
+        }
 
-	void ClearingPools()
-	{
-		foreach (PooledObjectInfo pool in ObjectPools)
-		{
-			pool.ActiveObjects.Clear();
-			pool.InactiveObjects.Clear();
-		}
-	}
 
-	private void OnDisable()
-	{
-		ClearingPools();
-	}
+        private void OnDisable()
+        {
+                ClearPools();
+        }
 }
 
 [Serializable]
