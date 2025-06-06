@@ -77,6 +77,7 @@ public class HighestGenerationGraph : MonoBehaviour
 
         chart.RefreshChart(); // Trigger render
     }
+    
 
     private int GetHighestGeneration(GraphInfo info)
     {

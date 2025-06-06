@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f45b63db-215e-4313-8905-046e429112c3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Battle-Sim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Tile.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/HighestGenerationGraph.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/HighestGenerationGraph.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -21,13 +20,14 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f7237cf7abef49bfbb552d7eb076e422174200/4f/c259a23a/Mathf.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/GameObjectClass.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/InspectorButton.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/ab14d35a27c043688812ae199c64b5aa151218/64/bf768e72/Gizmos.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/f7237cf7abef49bfbb552d7eb076e422174200/71/e4332eae/Gizmos.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RayVisualizer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/Downloads/raycasting-explained-main/raycasting-explained-main/Assets/Scripts/RaycastDemo.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$USER_HOME$/Hero Born/Assets/Scripts/BulletBehaviour.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -150,7 +150,7 @@
       <workItem from="1747869117712" duration="4000" />
       <workItem from="1749137701029" duration="4056000" />
       <workItem from="1749141979358" duration="250000" />
-      <workItem from="1749145073470" duration="227000" />
+      <workItem from="1749145073470" duration="1683000" />
     </task>
     <task id="LOCAL-00001" summary="Add the GameObjectClass.cs the parent class that other Alberts, Kai, Tress, and Rocks.">
       <option name="closed" value="true" />
@@ -191,6 +191,17 @@
         <option value="Default.Subject" />
         <option value="GitHub.CommitStatus" />
       </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
     </option>
   </component>
   <component name="VcsManagerConfiguration">
