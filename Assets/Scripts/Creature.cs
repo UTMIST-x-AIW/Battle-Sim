@@ -1203,24 +1203,6 @@ public class Creature : MonoBehaviour
             // Recharge energy gradually
             energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
 
-            // Check if we're dead
-            if (health <= 0f)
-            {
-                // Log the death
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
-                }
-                else
-                {
-                    Debug.Log($"Creature dying due to health <= 0 - Type: {type}, Health: {health}, Age: {lifetime}, Generation: {generation}");
-                }
-
-                // Die
-                Destroy(gameObject);
-                return;
-            }
-
             try
             {
                 // FIXED: Only fill reproduction meter if it's not full yet
