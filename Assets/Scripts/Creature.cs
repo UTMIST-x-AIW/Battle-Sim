@@ -1271,6 +1271,11 @@ public class Creature : MonoBehaviour
                 health -= agingRate * Time.fixedDeltaTime;
             }
 
+            if (health <= 0f)
+            {
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
+            }
+
             // Recharge energy gradually
             energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
 
