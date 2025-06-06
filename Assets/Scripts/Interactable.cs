@@ -37,7 +37,7 @@ public abstract class Interactable : MonoBehaviour
 
         if (renderer != null)
         {
-            renderer.color = originalColor;
+            renderer.color = Color.white;
         }
     }
 
