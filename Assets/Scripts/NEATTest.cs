@@ -48,6 +48,8 @@ public class NEATTest : MonoBehaviour
         private set { _current_kais = value; }
     }
 
+
+
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
     public const int OBSERVATION_COUNT = 18;
@@ -498,10 +500,9 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Count Kais using the active creature registry
-            int count = ObjectPoolManager.ActiveCreatures.Count(c => c.type == Creature.CreatureType.Kai);
-
-            LogManager.LogMessage($"Counted {count} Kai creatures in the scene");
+            Transform parentTransform = ParenthoodManager.GetParent(kaiCreaturePrefab);
+            int count = parentTransform != null ? parentTransform.childCount : 0;
+            LogManager.LogMessage($"Counted {count} Kai creatures using ParenthoodManager");
             return count;
         }
         catch (System.Exception e)
@@ -961,10 +962,9 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            // Count Alberts using the active creature registry
-            int count = ObjectPoolManager.ActiveCreatures.Count(c => c.type == Creature.CreatureType.Albert);
-
-            LogManager.LogMessage($"Counted {count} Albert creatures in the scene");
+            Transform parentTransform = ParenthoodManager.GetParent(albertCreaturePrefab);
+            int count = parentTransform != null ? parentTransform.childCount : 0;
+            LogManager.LogMessage($"Counted {count} Albert creatures using ParenthoodManager");
             return count;
         }
         catch (System.Exception e)
