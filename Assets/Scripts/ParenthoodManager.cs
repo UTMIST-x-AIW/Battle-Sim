@@ -78,6 +78,16 @@ public static class ParenthoodManager
         }
     }
 
+    public static int GetTotalChildCount(GameObject child)
+    {
+        Transform parent = GetParent(child);
+        if (parent == null)
+        {
+            return 0;
+        }
+        return parent.childCount;
+    }
+
 
     /// <summary>
     /// Clears ParentsTransformNameDict

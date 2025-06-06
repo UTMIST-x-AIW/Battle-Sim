@@ -102,7 +102,7 @@ public class Spawner : MonoBehaviour
             nextCheckTime = Time.time + checkInterval;
 
             // Check if we need to spawn more regular objects
-            int currentCount = GetCount(regularPrefab);
+            int currentCount = ObjectPoolManager.GetActiveChildCount(regularPrefab);
             if (currentCount < maxNumOfSpawns && !isSpawningRegular)
             {
                 // Spawn objects to reach the desired count
@@ -111,7 +111,7 @@ public class Spawner : MonoBehaviour
             }
 
             // Check if we need to respawn extra objects (only if respawn rate > 0)
-            int currentExtraCount = GetCount(extraPrefab);
+            int currentExtraCount = ObjectPoolManager.GetActiveChildCount(extraPrefab);
             if (extraObjectRespawnRate > 0 && !isSpawningExtra)
             {
                 if (currentExtraCount < numExtraObjects)
@@ -202,11 +202,11 @@ public class Spawner : MonoBehaviour
         const int maxAttempts = 100; // Safety limit
 
         // Interleave spawning of regular and extra objects
-        while ((GetCount(regularPrefab) < maxNumOfSpawns || GetCount(extraPrefab) < numExtraObjects) &&
+        while ((ObjectPoolManager.GetActiveChildCount(regularPrefab) < maxNumOfSpawns || ObjectPoolManager.GetActiveChildCount(extraPrefab) < numExtraObjects) &&
                regularAttempts < maxAttempts && extraAttempts < maxAttempts)
         {
             // First attempt to spawn a regular object (if needed)
-            if (GetCount(regularPrefab) < maxNumOfSpawns)
+            if (ObjectPoolManager.GetActiveChildCount(regularPrefab) < maxNumOfSpawns)
             {
                 // Get the next position
                 var regularTile = highProbabilityPositions[regularPositionIndex];
@@ -230,7 +230,7 @@ public class Spawner : MonoBehaviour
 
                         if (debugLogging)
                         {
-                            Debug.Log($"[Spawner] Spawned regular object {GetCount(regularPrefab)}/{maxNumOfSpawns}");
+                            Debug.Log($"[Spawner] Spawned regular object {ObjectPoolManager.GetActiveChildCount(regularPrefab)}/{maxNumOfSpawns}");
                         }
 
                         // Wait for a short interval before attempting to spawn an extra object
@@ -240,7 +240,7 @@ public class Spawner : MonoBehaviour
             }
 
             // Then attempt to spawn an extra object (if needed)
-            if (GetCount(extraPrefab) < numExtraObjects)
+            if (ObjectPoolManager.GetActiveChildCount(extraPrefab) < numExtraObjects)
             {
                 // Get the next position from the extra positions
                 var extraTile = extraHighProbabilityPositions[extraPositionIndex];
@@ -265,7 +265,7 @@ public class Spawner : MonoBehaviour
 
                         if (debugLogging)
                         {
-                            Debug.Log($"[Spawner] Spawned extra object {GetCount(extraPrefab)}/{numExtraObjects}");
+                            Debug.Log($"[Spawner] Spawned extra object {ObjectPoolManager.GetActiveChildCount(extraPrefab)}/{numExtraObjects}");
                         }
 
                         // Wait for the specified interval before the next spawn attempt
@@ -275,7 +275,7 @@ public class Spawner : MonoBehaviour
             }
 
             // Check if we've reached both target counts
-            if (GetCount(regularPrefab) >= maxNumOfSpawns && GetCount(extraPrefab) >= numExtraObjects)
+            if (ObjectPoolManager.GetActiveChildCount(regularPrefab) >= maxNumOfSpawns && ObjectPoolManager.GetActiveChildCount(extraPrefab) >= numExtraObjects)
             {
                 break;
             }
@@ -292,7 +292,7 @@ public class Spawner : MonoBehaviour
 
         if (debugLogging)
         {
-            Debug.Log($"[Spawner] Initial spawning complete: {GetCount(regularPrefab)} regular objects, {GetCount(extraPrefab)} extra objects");
+            Debug.Log($"[Spawner] Initial spawning complete: {ObjectPoolManager.GetActiveChildCount(regularPrefab)} regular objects, {ObjectPoolManager.GetActiveChildCount(extraPrefab)} extra objects");
         }
     }
 
@@ -455,14 +455,4 @@ public class Spawner : MonoBehaviour
         }
     }
 
-
-    public int GetCount(GameObject child)
-    {
-        Transform parent = ParenthoodManager.GetParent(child);
-        if (parent == null)
-        {
-            return 0;
-        }
-        return parent.childCount;
-    }
 }

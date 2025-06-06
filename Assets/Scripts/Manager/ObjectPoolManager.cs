@@ -122,6 +122,22 @@ public class ObjectPoolManager : MonoBehaviour
     {
         ClearPools();
     }
+
+    public static int GetActiveChildCount(GameObject child)
+    {
+        string goName = child.name.Replace("(Clone)", "");
+
+        PooledObjectInfo pool = ObjectPools.Find(p => p.LookupString == goName);
+
+        if (pool == null)
+        {
+            return 0;
+        }
+        else
+        {
+            return pool.ActiveObjects.Count;
+        }
+    }
 }
 
 [Serializable]
