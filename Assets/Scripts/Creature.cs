@@ -53,9 +53,10 @@ public class Creature : MonoBehaviour
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
-    public float attackDamage = 2.3f;
+    public float swordDamage = 2.3f;
     public float closeRange = 1.5f;   // Range at which creatures can chop trees
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
+    public float bowDamage = 1.0f;  // Damage dealt by bow
 
     [Header("Progression Defaults")]
     [SerializeField] public float maxHealthDefault = 3f;
@@ -88,6 +89,7 @@ public class Creature : MonoBehaviour
 
     public CreatureClass CurrentClass { get; private set; } = CreatureClass.None;
 
+    [HideInInspector] public float attackDamage;
 
     [Header("Detection Settings")]
     public float[] dynamicVisionRanges = { 2.5f, 5f, 10f, 15f, 20f };  // Progressive ranges for dynamic vision
@@ -262,20 +264,10 @@ public class Creature : MonoBehaviour
     {
         // Initialize stats
         maxHealth = maxHealthDefault;
-        health = maxHealth;
-        energyMeter = 0f;
         energyRechargeRate = energyRechargeRateDefault;
         attackDamage = attackDamageDefault;
-        generation = 0;
         moveSpeed = moveSpeedDefault;
         health = maxHealth;
-        attackDamage = attackDamageDefault;
-
-
-
-
-
-
         reproductionMeter = 0f; // Initialize reproduction meter to 0
         lifetime = 0f;
         canStartReproducing = false;
@@ -1367,14 +1359,14 @@ public class Creature : MonoBehaviour
                                             bowRange
                                         );
                                     }
-                                    nearestOpponent.TakeDamage(attackDamage, this);
+                                    nearestOpponent.TakeDamage(bowDamage, this);
                                 }
                             }
                             else
                             {
                                 if (InSwordRange)
                                 {
-                                    nearestOpponent.TakeDamage(attackDamage, this);
+                                    nearestOpponent.TakeDamage(swordDamage, this);
                                     energyMeter -= actionEnergyCost;
                                     toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                                 }

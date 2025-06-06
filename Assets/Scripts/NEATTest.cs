@@ -1401,7 +1401,7 @@ public class NEATTest : MonoBehaviour
                 bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
-                attackDamage = creature.attackDamage,
+                swordDamage = creature.swordDamage,
                 weightMutationRate = creature.weightMutationRate,
                 mutationRange = creature.mutationRange,
                 addNodeRate = creature.addNodeRate,
@@ -1731,7 +1731,7 @@ public class NEATTest : MonoBehaviour
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
-            creatureComponent.attackDamage = savedCreature.attackDamage;
+            creatureComponent.swordDamage = savedCreature.swordDamage;
 
             // Copy neural network parameters
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;
