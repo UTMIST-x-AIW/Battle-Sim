@@ -196,8 +196,6 @@ public class Creature : MonoBehaviour
     private Color originalColor;
     private SpriteRenderer renderer;
 
-    [SerializeField] private float originalHealth;
-
 
 
     private void Awake()
