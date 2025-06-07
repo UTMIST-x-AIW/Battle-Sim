@@ -22,12 +22,12 @@ public class Creature : MonoBehaviour
     }
 
     [Header("Basic Stats")]
+    public float reproductionRechargeRate = 0.444f; // Fill from 0 to 1 in 10 seconds
     [HideInInspector] public float health = 3f;
     [HideInInspector] public float energyMeter = 0f;  // Renamed from energy
     [HideInInspector] public float maxHealth = 3f;
     [HideInInspector] public float maxEnergy = 1f;
     [HideInInspector] public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
-    public float reproductionRechargeRate = 0.444f; // Fill from 0 to 1 in 10 seconds
 
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
