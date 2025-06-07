@@ -21112,14 +21112,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 2
-  MAX_ALBERTS: 2
-  INITIAL_ALBERTS: 2
+  MIN_ALBERTS: 80
+  MAX_ALBERTS: 160
+  INITIAL_ALBERTS: 132
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 10
-  MAX_KAIS: 10
-  INITIAL_KAIS: 10
+  MIN_KAIS: 80
+  MAX_KAIS: 160
+  INITIAL_KAIS: 132
   MIN_STARTING_AGE_KAI: 0
   MAX_STARTING_AGE_KAI: 5
   _current_alberts: 0
@@ -21141,7 +21141,7 @@ MonoBehaviour:
   spawnAreaColor: {r: 0.2, g: 0.8, b: 0.2, a: 0.2}
   spawnCenter: {x: -21, y: 0}
   spawnSpreadRadius: 1.23
-  rightSpawnCenter: {x: -5.4, y: 0}
+  rightSpawnCenter: {x: 21, y: 0}
   rightSpawnSpreadRadius: 1.23
   savedCreaturePath: 
   albertsFolderPath: /Users/anooprehman/Library/Application Support/com.DefaultCompany.2DProject/SavedCreatures/20250510__am_10_42_22/gen4
@@ -89606,8 +89606,8 @@ RectTransform:
   - {fileID: 1809343959}
   - {fileID: 1015786679}
   - {fileID: 494772836}
-  - {fileID: 899323200}
   - {fileID: 1780070097}
+  - {fileID: 899323200}
   m_Father: {fileID: 1548064609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -92480,8 +92480,8 @@ RectTransform:
   - {fileID: 207024837}
   - {fileID: 968495874}
   - {fileID: 399430986}
-  - {fileID: 1010476418}
   - {fileID: 157087036}
+  - {fileID: 1010476418}
   m_Father: {fileID: 1548064609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -95911,8 +95911,8 @@ RectTransform:
   - {fileID: 2136145543}
   - {fileID: 1481923705}
   - {fileID: 89718713}
-  - {fileID: 1735637179}
   - {fileID: 618352829}
+  - {fileID: 1735637179}
   m_Father: {fileID: 1548064609}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
