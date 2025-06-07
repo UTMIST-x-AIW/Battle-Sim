@@ -333,6 +333,12 @@ public class Creature : MonoBehaviour
         nearestOpponentDistance = float.MaxValue;
         nearestGroundDistance = float.MaxValue;
         nearestTeammateDistance = float.MaxValue;
+
+        // Reset visual state for object pooling
+        if (renderer != null)
+        {
+            renderer.color = originalColor;
+        }
     }
 
     public IEnumerator DelayedReproductionStart()
@@ -1269,12 +1275,8 @@ public class Creature : MonoBehaviour
             // Start aging process after a threshold time
             if (lifetime > agingStartTime)
             {
-                health -= agingRate * Time.fixedDeltaTime;
-            }
-
-            if (health <= 0f)
-            {
-                ObjectPoolManager.ReturnObjectToPool(gameObject);
+                float agingDamage = agingRate * Time.fixedDeltaTime;
+                TakeDamage(agingDamage);
             }
 
             // Recharge energy gradually
@@ -1480,12 +1482,13 @@ public class Creature : MonoBehaviour
 
     public void TakeDamage(float damage, Creature byWhom = null)
     {
-        health -= damage;
 
-        // Visual feedback when taking damage
-        StartCoroutine(FlashOnDamage());
+        if (!gameObject.activeInHierarchy)
+            return;
 
-        if (health <= 0)
+        float resultingHP = health - damage;
+
+        if (resultingHP <= 0f)
         {
             if (byWhom != null && byWhom != this && byWhom.type != this.type)
             {
@@ -1493,6 +1496,17 @@ public class Creature : MonoBehaviour
             }
             ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
+        else
+        {
+            health = resultingHP;
+
+            if (byWhom != null && byWhom != this && byWhom.type != this.type)
+            {
+                StartCoroutine(FlashOnDamage());
+            }
+
+        }
+
     }
 
     private IEnumerator FlashOnDamage()
