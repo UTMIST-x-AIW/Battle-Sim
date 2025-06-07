@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] private GameObject prefab; // Prefab to spawn
+    [SerializeField] private GameObject regularPrefab; // Regular prefab to spawn
+    [SerializeField] private GameObject extraPrefab; // Extra prefab to spawn
     [SerializeField] private HeatMapData heatmapData; // Heatmap data for regular spawn probabilities
     [SerializeField] private HeatMapData extraHeatmapData; // Heatmap data for extra objects spawn probabilities
     [SerializeField, Range(0.01f, 5f)] private float spawnInterval = 1f; // Time between spawn attempts
@@ -17,8 +18,6 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float extraObjectMinutesToExtinction = 0f; // Time for respawn rate to go from 1 to 0 (0 = never change)
     [SerializeField] private bool debugLogging = false; // Toggle for debug logging
 
-    private GameObject prefabParent; // Parent object for organizing spawned prefabs
-    private GameObject extraPrefabParent; // Parent for extra objects that don't respawn
     private bool isSpawningRegular = false; // Flag to track if regular spawn is in progress
     private bool isSpawningExtra = false; // Flag to track if extra spawn is in progress
     private List<TilePosData.TilePos> highProbabilityPositions; // Cache of good spawn positions for regular objects
@@ -30,7 +29,7 @@ public class Spawner : MonoBehaviour
     private void OnEnable()
     {
         // Validate required references
-        if (prefab == null || heatmapData == null)
+        if (regularPrefab == null || heatmapData == null)
         {
             Debug.LogError("Error: Prefab or HeatMapData are uninitialized", this);
             enabled = false; // Disable the script if critical references are missing
@@ -58,17 +57,9 @@ public class Spawner : MonoBehaviour
             if (debugLogging) Debug.Log($"[Spawner] Starting with extraObjectRespawnRate=1.0 (extinction time={extraObjectMinutesToExtinction}m)");
         }
 
-        // Create a parent object to organize spawned prefabs
-        prefabParent = GameObject.Find($"{prefab.name} Parent");
-        if (prefabParent == null) prefabParent = new GameObject($"{prefab.name} Parent");
-        
-        // Create a parent for extra objects
-        extraPrefabParent = GameObject.Find($"{prefab.name} Extra Parent");
-        if (extraPrefabParent == null) extraPrefabParent = new GameObject($"{prefab.name} Extra Parent");
-        
         // Pre-calculate and cache high probability positions
         CacheHighProbabilityPositions();
-        
+
         // Initial population of objects
         StartCoroutine(InitialSpawning());
     }
@@ -87,7 +78,7 @@ public class Spawner : MonoBehaviour
             {
                 // Linear interpolation: 1.0 at time 0, 0.0 at extinction time
                 extraObjectRespawnRate = 1.0f - (elapsedTime / extinctionTimeInSeconds);
-                
+
                 if (debugLogging && Time.frameCount % 300 == 0) // Log every 300 frames to avoid spam
                 {
                     Debug.Log($"[Spawner] Current extraObjectRespawnRate={extraObjectRespawnRate:F3}, elapsed={elapsedTime:F1}s/{extinctionTimeInSeconds:F1}s");
@@ -97,42 +88,42 @@ public class Spawner : MonoBehaviour
             {
                 // After extinction time, set to 0
                 extraObjectRespawnRate = 0f;
-                
+
                 if (debugLogging && extraObjectRespawnRate > 0) // Only log when it first reaches 0
                 {
-                Debug.Log("[Spawner] Extinction period complete, respawn rate set to 0");
+                    Debug.Log("[Spawner] Extinction period complete, respawn rate set to 0");
                 }
             }
         }
-        
+
         // Only check periodically instead of every frame
         if (Time.time >= nextCheckTime)
         {
             nextCheckTime = Time.time + checkInterval;
-            
+
             // Check if we need to spawn more regular objects
-            int currentCount = prefabParent.transform.childCount;
+            int currentCount = ObjectPoolManager.GetActiveChildCount(regularPrefab);
             if (currentCount < maxNumOfSpawns && !isSpawningRegular)
             {
                 // Spawn objects to reach the desired count
                 int objectsToSpawn = maxNumOfSpawns - currentCount;
                 StartCoroutine(ReplenishSpawns(objectsToSpawn));
             }
-            
+
             // Check if we need to respawn extra objects (only if respawn rate > 0)
-            int currentExtraCount = extraPrefabParent.transform.childCount;
+            int currentExtraCount = ObjectPoolManager.GetActiveChildCount(extraPrefab);
             if (extraObjectRespawnRate > 0 && !isSpawningExtra)
             {
                 if (currentExtraCount < numExtraObjects)
                 {
                     // Spawn extra objects to reach the desired count
                     int extraObjectsToSpawn = numExtraObjects - currentExtraCount;
-                    
+
                     if (debugLogging)
                     {
                         Debug.Log($"[Spawner] Starting extra object replenish: need {extraObjectsToSpawn} more, rate={extraObjectRespawnRate:F3}");
                     }
-                    
+
                     StartCoroutine(ReplenishExtraObjects(extraObjectsToSpawn));
                 }
                 else if (debugLogging && Time.frameCount % 300 == 0)
@@ -161,14 +152,14 @@ public class Spawner : MonoBehaviour
     {
         // Get all tile positions
         var allPositions = map.tilePosData.TilePositions.ToList();
-        
+
         // Pre-filter positions with decent spawn probability
         var highProbPositions = new List<TilePosData.TilePos>();
 
         foreach (var tile in allPositions)
         {
             float probability = map.GetValue(tile.pos);
-            if (probability > 50f) // Only keep positions with >50% spawn probability
+            if (probability > 50f) // Only keep positions with >50% spawn probability //TODO: try making this like 0 instead
             {
                 highProbPositions.Add(tile);
             }
@@ -179,10 +170,10 @@ public class Spawner : MonoBehaviour
         {
             highProbPositions = allPositions;
         }
-        
+
         // Shuffle the array for random access
         Shuffle(highProbPositions);
-        
+
         return highProbPositions;
     }
 
@@ -211,52 +202,52 @@ public class Spawner : MonoBehaviour
         const int maxAttempts = 100; // Safety limit
 
         // Interleave spawning of regular and extra objects
-        while ((prefabParent.transform.childCount < maxNumOfSpawns || extraPrefabParent.transform.childCount < numExtraObjects) && 
+        while ((ObjectPoolManager.GetActiveChildCount(regularPrefab) < maxNumOfSpawns || ObjectPoolManager.GetActiveChildCount(extraPrefab) < numExtraObjects) &&
                regularAttempts < maxAttempts && extraAttempts < maxAttempts)
         {
             // First attempt to spawn a regular object (if needed)
-            if (prefabParent.transform.childCount < maxNumOfSpawns)
-        {
-            // Get the next position
+            if (ObjectPoolManager.GetActiveChildCount(regularPrefab) < maxNumOfSpawns)
+            {
+                // Get the next position
                 var regularTile = highProbabilityPositions[regularPositionIndex];
                 regularPositionIndex = (regularPositionIndex + 1) % highProbabilityPositions.Count; // Wrap around
-            
+
                 regularAttempts++;
-            
-            // Calculate spawn probability and compare with a random value
+
+                // Calculate spawn probability and compare with a random value
                 float regularSpawnProbability = heatmapData.GetValue(regularTile.pos);
                 float regularRandomVal = Random.Range(0f, 100f);
 
                 if (regularSpawnProbability > regularRandomVal)
-            {
+                {
                     // Spawn the regular prefab at the tile's position
                     bool regularSuccess = SpawnPrefab(regularTile.pos, false);
 
                     if (regularSuccess)
                     {
-                // Reset attempts counter on successful spawn
+                        // Reset attempts counter on successful spawn
                         regularAttempts = 0;
-                        
+
                         if (debugLogging)
                         {
-                            Debug.Log($"[Spawner] Spawned regular object {prefabParent.transform.childCount}/{maxNumOfSpawns}");
+                            Debug.Log($"[Spawner] Spawned regular object {ObjectPoolManager.GetActiveChildCount(regularPrefab)}/{maxNumOfSpawns}");
                         }
-                        
+
                         // Wait for a short interval before attempting to spawn an extra object
                         yield return new WaitForSeconds(spawnInterval * 0.5f);
                     }
                 }
             }
-            
+
             // Then attempt to spawn an extra object (if needed)
-            if (extraPrefabParent.transform.childCount < numExtraObjects)
+            if (ObjectPoolManager.GetActiveChildCount(extraPrefab) < numExtraObjects)
             {
                 // Get the next position from the extra positions
                 var extraTile = extraHighProbabilityPositions[extraPositionIndex];
                 extraPositionIndex = (extraPositionIndex + 1) % extraHighProbabilityPositions.Count; // Wrap around
-                
+
                 extraAttempts++;
-                
+
                 // Calculate spawn probability using the appropriate heatmap
                 HeatMapData mapToUse = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
                 float extraSpawnProbability = mapToUse.GetValue(extraTile.pos);
@@ -266,29 +257,29 @@ public class Spawner : MonoBehaviour
                 {
                     // Spawn the extra prefab at the tile's position
                     bool extraSuccess = SpawnPrefab(extraTile.pos, true);
-                    
+
                     if (extraSuccess)
                     {
                         // Reset attempts counter on successful spawn
                         extraAttempts = 0;
-                        
+
                         if (debugLogging)
                         {
-                            Debug.Log($"[Spawner] Spawned extra object {extraPrefabParent.transform.childCount}/{numExtraObjects}");
+                            Debug.Log($"[Spawner] Spawned extra object {ObjectPoolManager.GetActiveChildCount(extraPrefab)}/{numExtraObjects}");
                         }
-                
-                // Wait for the specified interval before the next spawn attempt
+
+                        // Wait for the specified interval before the next spawn attempt
                         yield return new WaitForSeconds(spawnInterval * 0.5f);
                     }
                 }
             }
-            
+
             // Check if we've reached both target counts
-            if (prefabParent.transform.childCount >= maxNumOfSpawns && extraPrefabParent.transform.childCount >= numExtraObjects)
+            if (ObjectPoolManager.GetActiveChildCount(regularPrefab) >= maxNumOfSpawns && ObjectPoolManager.GetActiveChildCount(extraPrefab) >= numExtraObjects)
             {
                 break;
             }
-            
+
             // Yield every few attempts to avoid freezing
             if ((regularAttempts + extraAttempts) % 10 == 0)
             {
@@ -298,27 +289,27 @@ public class Spawner : MonoBehaviour
 
         isSpawningRegular = false;
         isSpawningExtra = false;
-        
+
         if (debugLogging)
         {
-            Debug.Log($"[Spawner] Initial spawning complete: {prefabParent.transform.childCount} regular objects, {extraPrefabParent.transform.childCount} extra objects");
+            Debug.Log($"[Spawner] Initial spawning complete: {ObjectPoolManager.GetActiveChildCount(regularPrefab)} regular objects, {ObjectPoolManager.GetActiveChildCount(extraPrefab)} extra objects");
         }
     }
 
     private IEnumerator ReplenishSpawns(int count)
     {
         if (count <= 0) yield break;
-        
+
         isSpawningRegular = true;
         int spawned = 0;
         int positionIndex = Random.Range(0, highProbabilityPositions.Count);
-        
+
         while (spawned < count)
         {
             // Get the next position from regular positions
             var tile = highProbabilityPositions[positionIndex];
             positionIndex = (positionIndex + 1) % highProbabilityPositions.Count; // Wrap around
-            
+
             // Calculate spawn probability and compare with a random value
             float spawnProbability = heatmapData.GetValue(tile.pos);
             float randomVal = Random.Range(0f, 100f);
@@ -327,12 +318,13 @@ public class Spawner : MonoBehaviour
             {
                 // Spawn the regular prefab at the tile's position
                 SpawnPrefab(tile.pos, false);
+
                 spawned++;
-                
+
                 // Wait for the specified interval
                 yield return new WaitForSeconds(spawnInterval);
             }
-            
+
             // Occasionally yield to avoid freezing
             if (positionIndex % 10 == 0)
             {
@@ -353,33 +345,33 @@ public class Spawner : MonoBehaviour
             }
             yield break;
         }
-        
+
         isSpawningExtra = true;
         int spawned = 0;
         int attempts = 0;
         int maxAttempts = 100; // Safety limit
         int positionIndex = Random.Range(0, extraHighProbabilityPositions.Count);
-        
+
         if (debugLogging)
         {
             Debug.Log($"[Spawner] Starting extra replenish for {count} objects, rate={extraObjectRespawnRate:F3}");
         }
-        
+
         while (spawned < count && attempts < maxAttempts)
         {
             attempts++;
-            
+
             // Get the next position from extra positions
             var tile = extraHighProbabilityPositions[positionIndex];
             positionIndex = (positionIndex + 1) % extraHighProbabilityPositions.Count; // Wrap around
-            
+
             // Calculate spawn probability using the appropriate heatmap
             HeatMapData mapToUse = useDistinctHeatmaps && extraHeatmapData != null ? extraHeatmapData : heatmapData;
             float spawnProbability = mapToUse.GetValue(tile.pos);
-            
+
             // Apply the respawn rate to reduce the probability
             spawnProbability *= extraObjectRespawnRate;
-            
+
             // Compare with a random value
             float randomVal = Random.Range(0f, 100f);
 
@@ -392,7 +384,7 @@ public class Spawner : MonoBehaviour
             {
                 // Spawn the extra prefab at the tile's position
                 bool success = SpawnPrefab(tile.pos, true);
-                
+
                 if (success)
                 {
                     spawned++;
@@ -405,11 +397,11 @@ public class Spawner : MonoBehaviour
                 {
                     Debug.Log($"[Spawner] Failed to spawn extra object at {tile.pos} (position occupied)");
                 }
-                
+
                 // Wait for the specified interval
                 yield return new WaitForSeconds(spawnInterval);
             }
-            
+
             // Occasionally yield to avoid freezing
             if (attempts % 10 == 0)
             {
@@ -434,19 +426,22 @@ public class Spawner : MonoBehaviour
             return false; // Skip spawning to avoid overlaps
         }
 
-        // Instantiate the prefab and set its parent
-        // GameObject spawnedPrefab = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-        GameObject spawnedPrefab = Instantiate(prefab, position, Quaternion.identity);
-        // Assign to the appropriate parent based on whether it's an extra object
+        // // Instantiate the prefab and set its parent
+
+        GameObject spawnedPrefab;
         if (isExtra)
         {
-            spawnedPrefab.transform.SetParent(extraPrefabParent.transform, false);
+            spawnedPrefab = ObjectPoolManager.SpawnObject(extraPrefab, position, Quaternion.identity);
+            // GameObject spawnedPrefab = Instantiate(extraPrefab, position, Quaternion.identity);
         }
         else
         {
-        spawnedPrefab.transform.SetParent(prefabParent.transform, false);
+            // GameObject spawnedPrefab = Instantiate(regularPrefab, position, Quaternion.identity);
+            spawnedPrefab = ObjectPoolManager.SpawnObject(regularPrefab, position, Quaternion.identity);
         }
-        
+        ParenthoodManager.AssignParent(spawnedPrefab);
+
+
         return true;
     }
 
@@ -459,4 +454,5 @@ public class Spawner : MonoBehaviour
             (list[i], list[j]) = (list[j], list[i]);
         }
     }
+
 }

@@ -166,8 +166,8 @@ public class NEATTest : MonoBehaviour
         // Debug.Log($"Found {existingCreatures.Length} existing creatures to clean up");
         foreach (var creature in existingCreatures)
         {
-            // ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
-            Destroy(creature.gameObject);
+            ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
+            // Destroy(creature.gameObject);
         }
 
         if (runTests)
@@ -497,8 +497,7 @@ public class NEATTest : MonoBehaviour
 
     private int CountKais()
     {
-        Transform parentTransform = ParenthoodManager.GetParent(kaiCreaturePrefab);
-        return parentTransform != null ? parentTransform.childCount : 0;
+        return ObjectPoolManager.GetActiveChildCount(kaiCreaturePrefab);
     }
 
     private void SetupNormalGame()
@@ -644,8 +643,8 @@ public class NEATTest : MonoBehaviour
 
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
     {
-        // var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // var creature = Instantiate(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
         AnimatingDoTweenUtilities.PlayGrow(creature);
         var creatureComponent = creature.GetComponent<Creature>();
@@ -781,8 +780,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithRandomizedBrain(GameObject prefab, Vector3 position, Creature.CreatureType type)
     {
         // Create the creature instance
-        // GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        GameObject creature = Instantiate(prefab, position, Quaternion.identity);
+        GameObject creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // GameObject creature = Instantiate(prefab, position, Quaternion.identity);
         ParenthoodManager.AssignParent(creature);
         AnimatingDoTweenUtilities.PlayGrow(creature);
         Creature creatureComponent = creature.GetComponent<Creature>();
@@ -839,8 +838,8 @@ public class NEATTest : MonoBehaviour
     private Creature SpawnCreatureWithReproductionBias(GameObject prefab, Vector2 position, Creature.CreatureType type, float reproBias)
     {
         // Create the creature instance
-        // var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-        var creature = Instantiate(prefab, position, Quaternion.identity);
+        var creature = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // var creature = Instantiate(prefab, position, Quaternion.identity);
         var creatureComponent = creature.GetComponent<Creature>();
         creatureComponent.type = type;
 
@@ -857,7 +856,7 @@ public class NEATTest : MonoBehaviour
             genome.AddNode(node);
         }
 
-        // Add output nodes
+        // Add output nodes (including reproduction action)
         var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
         var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
         var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
@@ -949,9 +948,7 @@ public class NEATTest : MonoBehaviour
 
     private int CountAlberts()
     {
-        Transform parentTransform = ParenthoodManager.GetParent(albertCreaturePrefab);
-        return parentTransform != null ? parentTransform.childCount : 0;
-
+        return ObjectPoolManager.GetActiveChildCount(albertCreaturePrefab);
     }
 
     private void OnDestroy()
@@ -1034,8 +1031,8 @@ public class NEATTest : MonoBehaviour
 
             foreach (var creature in existingCreatures)
             {
-                // ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
-                Destroy(creature.gameObject);
+                ObjectPoolManager.ReturnObjectToPool(creature.gameObject); //TODO-OBJECTPOOL: return to this after implementing reset
+                // Destroy(creature.gameObject);
             }
 
             ObjectPoolManager.ClearPools();
@@ -1401,7 +1398,7 @@ public class NEATTest : MonoBehaviour
                 bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
-                swordDamage = creature.swordDamage,
+                attackDamage = creature.attackDamage,
                 weightMutationRate = creature.weightMutationRate,
                 mutationRange = creature.mutationRange,
                 addNodeRate = creature.addNodeRate,
@@ -1703,15 +1700,15 @@ public class NEATTest : MonoBehaviour
             }
 
             // Instantiate the creature prefab at the specified position
-            // GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity);
-            GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
+            GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+            // GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
             Creature creatureComponent = creatureObj.GetComponent<Creature>();
 
             if (creatureComponent == null)
             {
                 Debug.LogError("Prefab does not have a Creature component");
-                // ObjectPoolManager.ReturnObjectToPool(creatureObj); //TODO-OBJECTPOOL: return to this after implementing reset
-                Destroy(creatureObj);
+                ObjectPoolManager.ReturnObjectToPool(creatureObj); //TODO-OBJECTPOOL: return to this after implementing reset
+                // Destroy(creatureObj);
                 return null;
             }
 
@@ -1731,7 +1728,7 @@ public class NEATTest : MonoBehaviour
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
-            creatureComponent.swordDamage = savedCreature.swordDamage;
+            creatureComponent.attackDamage = savedCreature.attackDamage;
 
             // Copy neural network parameters
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;

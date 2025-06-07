@@ -22,7 +22,6 @@ public static class CreatureLoader
             // Create the creature instance
             var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
             var creatureComponent = creature.GetComponent<Creature>();
-
             // Load basic properties
             creatureComponent.type = savedCreature.type;
             creatureComponent.health = savedCreature.health;
@@ -37,7 +36,7 @@ public static class CreatureLoader
             creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
-            creatureComponent.swordDamage = savedCreature.swordDamage;
+            creatureComponent.attackDamage = savedCreature.attackDamage;
             creatureComponent.weightMutationRate = savedCreature.weightMutationRate;
             creatureComponent.mutationRange = savedCreature.mutationRange;
             creatureComponent.addNodeRate = savedCreature.addNodeRate;
@@ -90,4 +89,4 @@ public static class CreatureLoader
             return null;
         }
     }
-} 
+}

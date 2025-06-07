@@ -131,7 +131,7 @@ public class GameStateManager : MonoBehaviour
             bowRange = creature.bowRange,
             actionEnergyCost = creature.actionEnergyCost,
             chopDamage = creature.chopDamage,
-            swordDamage = creature.swordDamage,
+            attackDamage = creature.attackDamage,
             weightMutationRate = creature.weightMutationRate,
             mutationRange = creature.mutationRange,
             addNodeRate = creature.addNodeRate,
@@ -268,7 +268,7 @@ public class GameStateManager : MonoBehaviour
                 comp.bowRange = data.bowRange;
                 comp.actionEnergyCost = data.actionEnergyCost;
                 comp.chopDamage = data.chopDamage;
-                comp.swordDamage = data.swordDamage;
+                comp.attackDamage = data.attackDamage;
                 comp.weightMutationRate = data.weightMutationRate;
                 comp.mutationRange = data.mutationRange;
                 comp.addNodeRate = data.addNodeRate;

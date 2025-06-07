@@ -22,22 +22,22 @@ public class Creature : MonoBehaviour
     }
 
     [Header("Basic Stats")]
-    public float health = 3f;
-    public float energyMeter = 0f;  // Renamed from energy
-    public float maxHealth = 3f;
-    public float maxEnergy = 1f;
-    public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
     public float reproductionRechargeRate = 0.444f; // Fill from 0 to 1 in 10 seconds
+    [HideInInspector] public float health = 3f;
+    [HideInInspector] public float energyMeter = 0f;  // Renamed from energy
+    [HideInInspector] public float maxHealth = 3f;
+    [HideInInspector] public float maxEnergy = 1f;
+    [HideInInspector] public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
 
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
     public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
     private float lifetime = 0f;        // How long the creature has lived
-    public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
-    public int generation = 0;          // The generation number of this creature
+    [HideInInspector] public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
+    [HideInInspector] public int generation = 0;          // The generation number of this creature
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;  // Maximum speed in any direction
+    [HideInInspector] public float moveSpeed = 5f;  // Maximum speed in any direction
     public float pushForce = 20f; // Force applied for pushing, higher value means stronger pushing
 
     [Header("Reproduction Settings")]
@@ -53,10 +53,9 @@ public class Creature : MonoBehaviour
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
-    public float swordDamage = 2.3f;
+    [HideInInspector] public float attackDamage = 2.3f;
     public float closeRange = 1.5f;   // Range at which creatures can chop trees
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
-    public float bowDamage = 1.0f;  // Damage dealt by bow
 
     [Header("Progression Defaults")]
     [SerializeField] public float maxHealthDefault = 3f;
@@ -89,7 +88,6 @@ public class Creature : MonoBehaviour
 
     public CreatureClass CurrentClass { get; private set; } = CreatureClass.None;
 
-    [HideInInspector] public float attackDamage;
 
     [Header("Detection Settings")]
     public float[] dynamicVisionRanges = { 2.5f, 5f, 10f, 15f, 20f };  // Progressive ranges for dynamic vision
@@ -161,14 +159,6 @@ public class Creature : MonoBehaviour
     private float inSwordRange = 0f;
     private float inBowRange = 0f;
 
-    // Public properties to access range indicators
-    public bool InChopRange => inChopRange > 0.5f;
-    public bool InSwordRange => inSwordRange > 0.5f;
-    public bool InBowRange => inBowRange > 0.5f;
-
-    public Rock GetNearestRock() => nearestRock;
-    public Cupcake GetNearestCupcake() => nearestCupcake;
-
     private Interactable GetClosestInteractableInRange()
     {
         float minDist = float.MaxValue;
@@ -206,6 +196,8 @@ public class Creature : MonoBehaviour
     private Color originalColor;
     private SpriteRenderer renderer;
 
+
+
     private void Awake()
     {
         try //IMPROVEMENT: in general i think we can remove most if not all try catches
@@ -237,15 +229,6 @@ public class Creature : MonoBehaviour
             // Cache NEATTest reference if not already cached
             neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
 
-            // Initialize stats
-            maxHealth = maxHealthDefault;
-            energyRechargeRate = energyRechargeRateDefault;
-            attackDamage = attackDamageDefault;
-            moveSpeed = moveSpeedDefault;
-            health = maxHealth;
-            reproductionMeter = 0f; // Initialize reproduction meter to 0
-            lifetime = 0f;
-            canStartReproducing = false;
 
             originalScale = transform.localScale;
 
@@ -262,6 +245,94 @@ public class Creature : MonoBehaviour
         {
             Debug.LogError($"Error in Creature Awake: {e.Message}\n{e.StackTrace}");
         }
+
+    }
+
+    private void OnEnable()
+    {
+        ResetCreature();
+
+    }
+
+    private void ResetCreature()
+    {
+        // Initialize stats
+        maxHealth = maxHealthDefault;
+        health = maxHealth;
+        energyMeter = 0f;
+        energyRechargeRate = energyRechargeRateDefault;
+        attackDamage = attackDamageDefault;
+        generation = 0;
+        moveSpeed = moveSpeedDefault;
+
+
+        CurrentClass = CreatureClass.None;
+        reproductionMeter = 0f; // Initialize reproduction meter to 0
+        lifetime = 0f;
+        canStartReproducing = false;
+        disableBrainControl = false;
+        nearestOpponentHealthNormalized = 0f;
+        inChopRange = 0f;
+        inSwordRange = 0f;
+        inBowRange = 0f;
+        lastDetectionTime = 0f;
+
+        brain = null;
+
+
+        // Reset all the nearby collider lists and bowHitsBuffer
+        if (nearbyTreeColliders != null)
+        {
+            System.Array.Clear(nearbyTreeColliders, 0, nearbyTreeColliders.Length);
+        }
+        if (nearbyTeammateColliders != null)
+        {
+            System.Array.Clear(nearbyTeammateColliders, 0, nearbyTeammateColliders.Length);
+        }
+        if (nearbyOpponentColliders != null)
+        {
+            System.Array.Clear(nearbyOpponentColliders, 0, nearbyOpponentColliders.Length);
+        }
+        if (nearbyGroundColliders != null)
+        {
+            System.Array.Clear(nearbyGroundColliders, 0, nearbyGroundColliders.Length);
+        }
+        if (nearbyRockColliders != null)
+        {
+            System.Array.Clear(nearbyRockColliders, 0, nearbyRockColliders.Length);
+        }
+        if (nearbyCupcakeColliders != null)
+        {
+            System.Array.Clear(nearbyCupcakeColliders, 0, nearbyCupcakeColliders.Length);
+        }
+        if (nearbyColliders != null)
+        {
+            System.Array.Clear(nearbyColliders, 0, nearbyColliders.Length);
+        }
+        if (bowHitsBuffer != null)
+        {
+            System.Array.Clear(bowHitsBuffer, 0, bowHitsBuffer.Length);
+        }
+
+        // Reset all the nearby objects, and their positions and distances
+        nearestTree = null;
+        nearestRock = null;
+        nearestCupcake = null;
+        nearestOpponent = null;
+        nearestTeammate = null;
+        nearestGround = null;
+        nearestTreePos = Vector2.zero;
+        nearestRockPos = Vector2.zero;
+        nearestCupcakePos = Vector2.zero;
+        nearestGroundPos = Vector2.zero;
+        nearestTeammatePos = Vector2.zero;
+        nearestOpponentPos = Vector2.zero;
+        nearestTreeDistance = float.MaxValue;
+        nearestRockDistance = float.MaxValue;
+        nearestCupcakeDistance = float.MaxValue;
+        nearestOpponentDistance = float.MaxValue;
+        nearestGroundDistance = float.MaxValue;
+        nearestTeammateDistance = float.MaxValue;
     }
 
     public IEnumerator DelayedReproductionStart()
@@ -1201,6 +1272,11 @@ public class Creature : MonoBehaviour
                 health -= agingRate * Time.fixedDeltaTime;
             }
 
+            if (health <= 0f)
+            {
+                ObjectPoolManager.ReturnObjectToPool(gameObject);
+            }
+
             // Recharge energy gradually
             energyMeter = Mathf.Min(maxEnergy, energyMeter + energyRechargeRate * Time.fixedDeltaTime);
 
@@ -1274,6 +1350,10 @@ public class Creature : MonoBehaviour
 
     public void ProcessActionCommands(float[] actions)
     {
+        // Don't process actions if this GameObject is inactive (returned to pool)
+        if (!gameObject.activeInHierarchy)
+            return;
+
         try
         {
             // Log if the array length wasn't NEATTest.ACTION_COUNT
@@ -1322,6 +1402,10 @@ public class Creature : MonoBehaviour
                     // Get animation for the strongest desire
                     ToolAnimation toolAnim = GetComponentInChildren<ToolAnimation>();
 
+                    // Safety check: only proceed if toolAnim is available and active
+                    if (toolAnim == null || !toolAnim.gameObject.activeInHierarchy)
+                        return;
+
                     switch (strongestDesireIndex)
                     {
                         case 0:
@@ -1338,7 +1422,7 @@ public class Creature : MonoBehaviour
                             // Weapon attack
                             if (CurrentClass == CreatureClass.Archer)
                             {
-                                if (InBowRange)
+                                if (inBowRange > 0.5f)
                                 {
                                     toolAnim.SwingTool(ToolAnimation.ToolType.Bow);
                                     energyMeter -= actionEnergyCost;
@@ -1350,14 +1434,14 @@ public class Creature : MonoBehaviour
                                             bowRange
                                         );
                                     }
-                                    nearestOpponent.TakeDamage(bowDamage, this);
+                                    nearestOpponent.TakeDamage(attackDamage, this);
                                 }
                             }
                             else
                             {
-                                if (InSwordRange)
+                                if (inSwordRange > 0.5f)
                                 {
-                                    nearestOpponent.TakeDamage(swordDamage, this);
+                                    nearestOpponent.TakeDamage(attackDamage, this);
                                     energyMeter -= actionEnergyCost;
                                     toolAnim.SwingTool(ToolAnimation.ToolType.Sword);
                                 }
@@ -1407,7 +1491,7 @@ public class Creature : MonoBehaviour
             {
                 byWhom.ModifyAttackDamage();
             }
-            Destroy(gameObject);
+            ObjectPoolManager.ReturnObjectToPool(gameObject);
         }
     }
 
@@ -1418,32 +1502,6 @@ public class Creature : MonoBehaviour
             renderer.color = Color.red;
             yield return new WaitForSeconds(0.1f);
             renderer.color = originalColor;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        try
-        {
-            try
-            {
-                // Try to log, but catch any exceptions if LogManager is gone
-                if (LogManager.Instance != null)
-                {
-                    LogManager.LogMessage($"Creature being destroyed - Type: {type}, Health: {health}, Generation: {generation}");
-                }
-            }
-            catch (System.Exception)
-            {
-                // If LogManager is already cleaned up, just silently continue
-            }
-
-
-
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error in Creature OnDestroy: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
 

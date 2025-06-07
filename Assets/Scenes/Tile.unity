@@ -19122,13 +19122,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   albertCreaturePrefab: {fileID: 7896111451434077960, guid: de47279d2511ea348965ef0deaaa0376, type: 3}
   kaiCreaturePrefab: {fileID: 7896111451434077960, guid: e79e8be99df6542e7ad3a2fcc7a0c54f, type: 3}
-  MIN_ALBERTS: 5
-  MAX_ALBERTS: 5
+  MIN_ALBERTS: 15
+  MAX_ALBERTS: 20
   INITIAL_ALBERTS: 0
   MIN_STARTING_AGE_ALBERT: 0
   MAX_STARTING_AGE_ALBERT: 5
-  MIN_KAIS: 10
-  MAX_KAIS: 10
+  MIN_KAIS: 12
+  MAX_KAIS: 24
   INITIAL_KAIS: 0
   MIN_STARTING_AGE_KAI: 0
   MAX_STARTING_AGE_KAI: 5
@@ -19136,7 +19136,7 @@ MonoBehaviour:
   _current_kais: 0
   maxHiddenLayers: 10
   runTests: 1
-  currentTest: 5
+  currentTest: 1
   showTreeVisionRange: 0
   showTeammateVisionRange: 0
   showOpponentVisionRange: 0
@@ -19410,37 +19410,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 233269536}
   m_CullTransparentMesh: 1
---- !u!1 &235072206
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 235072207}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &235072207
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 235072206}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.4428716, y: -4.6247077, z: -6.904652}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &268985195
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30960,6 +30929,51 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1161969673379056834, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
   m_PrefabInstance: {fileID: 589423123}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &596681634
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 596681636}
+  - component: {fileID: 596681635}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &596681635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596681634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 918118aa3e1971541ba0c393772dfad9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pooledObjectInfos: []
+--- !u!4 &596681636
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 596681634}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1432.6569, y: 298.904, z: 1.7795084}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &596750448
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31679,6 +31693,11 @@ MonoBehaviour:
   nameText: {fileID: 2137468666}
   ageText: {fileID: 417709800}
   generationText: {fileID: 1716402761}
+  maxHealthText: {fileID: 0}
+  energyRechargeRateText: {fileID: 0}
+  attackDamageText: {fileID: 0}
+  movementSpeedText: {fileID: 0}
+  classText: {fileID: 0}
 --- !u!114 &777694460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73597,6 +73616,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   arrowPrefab: {fileID: 7384258518370218500, guid: 4690bddc8a13e4bcb91ceb27f15a3e25, type: 3}
   poolSize: 500
+  maxPoolSize: 500
   arrowSpeed: 50
   arrowSortingLayer: Arrows
 --- !u!4 &1880141608
@@ -74847,4 +74867,4 @@ SceneRoots:
   - {fileID: 302579215}
   - {fileID: 7016299647965348102}
   - {fileID: 1880141608}
-  - {fileID: 235072207}
+  - {fileID: 596681636}

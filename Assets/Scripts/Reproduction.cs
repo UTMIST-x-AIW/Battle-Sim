@@ -49,7 +49,7 @@ public class Reproduction : MonoBehaviour
     {
         // Skip if already in mating process
         if (isMating) return;
-        
+
         GameObject other_character = col.gameObject;
 
         if (other_character == gameObject)
@@ -125,7 +125,7 @@ public class Reproduction : MonoBehaviour
                     isMating = false;
                     return;
                 }
-                
+
                 // Check if reproduction is allowed based on creature type
                 bool canReproduce = false;
                 if (neatTest.currentTest == NEATTest.CurrentTest.AlbertsVsKais)
@@ -138,7 +138,7 @@ public class Reproduction : MonoBehaviour
                     // For other tests, use the old general check
                     canReproduce = neatTest.CanReproduce();
                 }
-                
+
                 if (!canReproduce)
                 {
                     if (LogManager.Instance != null)
@@ -213,20 +213,20 @@ public class Reproduction : MonoBehaviour
         }
 
         // Spawn the child creature
-        // var child = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-        var child = Instantiate(prefab, position, Quaternion.identity);
+        var child = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
+        // var child = Instantiate(prefab, position, Quaternion.identity);
         var childCreature = child.GetComponent<Creature>();
-        
+
         if (childCreature == null)
         {
-            // ObjectPoolManager.ReturnObjectToPool(child); //TODO-OBJECTPOOL: return to this after implementing reset
-            Destroy(child);
+            ObjectPoolManager.ReturnObjectToPool(child); //TODO-OBJECTPOOL: return to this after implementing reset
+            // Destroy(child);
             return null;
         }
 
         // Initialize the child's network
         childCreature.InitializeNetwork(childNetwork);
-        
+
         // Copy max hidden layers setting from parent
         childCreature.maxHiddenLayers = p1.maxHiddenLayers;
 
@@ -253,7 +253,7 @@ public class Reproduction : MonoBehaviour
 
         // Create a new genome for the child
         var childGenome = new NEAT.Genome.Genome(0);
-        
+
         // Get parent genomes with null checks
         var parent1Genome = parent1.GetGenome();
         var parent2Genome = parent2.GetGenome();
@@ -263,12 +263,12 @@ public class Reproduction : MonoBehaviour
             return null;
         }
 
-        if (parent1Genome.Nodes == null || parent2Genome.Nodes == null || 
+        if (parent1Genome.Nodes == null || parent2Genome.Nodes == null ||
             parent1Genome.Connections == null || parent2Genome.Connections == null)
         {
             return null;
         }
-        
+
         // First, ensure we copy all input and output nodes
         // These are essential nodes that should never be missing
 
@@ -277,13 +277,13 @@ public class Reproduction : MonoBehaviour
         {
             childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone()); //TODO: select randomly from parent1 or parent2 if this all works well    
         }
-        
+
         // Add all output nodes
         for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
-           childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
+            childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
         }
-        
+
         // Add remaining hidden nodes (taking randomly from either parent for matching nodes)
         var allNodeKeys = new HashSet<int>(parent1Genome.Nodes.Keys.Concat(parent2Genome.Nodes.Keys));
         foreach (var key in allNodeKeys)
@@ -293,7 +293,7 @@ public class Reproduction : MonoBehaviour
             {
                 continue;
             }
-            
+
             if (parent1Genome.Nodes.ContainsKey(key) && parent2Genome.Nodes.ContainsKey(key))
             {
                 // Both parents have this node, randomly choose one
@@ -318,14 +318,14 @@ public class Reproduction : MonoBehaviour
         foreach (var key in allConnectionKeys)
         {
             // Make sure the connection's input and output nodes exist in the child
-            var conn = parent1Genome.Connections.ContainsKey(key) ? 
+            var conn = parent1Genome.Connections.ContainsKey(key) ?
                 parent1Genome.Connections[key] : parent2Genome.Connections[key];
-                
+
             if (!childGenome.Nodes.ContainsKey(conn.InputKey) || !childGenome.Nodes.ContainsKey(conn.OutputKey))
             {
                 continue;
             }
-            
+
             if (parent1Genome.Connections.ContainsKey(key) && parent2Genome.Connections.ContainsKey(key))
             {
                 // Both parents have this connection, randomly choose one
@@ -351,7 +351,7 @@ public class Reproduction : MonoBehaviour
         {
             bool hasConnection = childGenome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
-                
+
             if (!hasConnection)
             {
                 // Find an input node to connect to this output
@@ -367,7 +367,7 @@ public class Reproduction : MonoBehaviour
 
         // Apply mutations to the child genome
         ApplyMutations(childGenome);
-        
+
         // Create a new network from the child genome
         return NEAT.NN.FeedForwardNetwork.Create(childGenome);
     }
@@ -406,14 +406,15 @@ public class Reproduction : MonoBehaviour
             // Pick a random connection to split
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToSplit = connList[Random.Range(0, connList.Count)];
-            
+
             // Create new node
             int newNodeKey = genome.Nodes.Count;
-            while (genome.Nodes.ContainsKey(newNodeKey)) {
+            while (genome.Nodes.ContainsKey(newNodeKey))
+            {
                 newNodeKey++; // Ensure we use a unique key
             }
             var newNode = new NEAT.Genes.NodeGene(newNodeKey, NEAT.Genes.NodeType.Hidden);
-            
+
             // Set layer between input and output nodes
             var inputNode = genome.Nodes[connToSplit.InputKey];
             var outputNode = genome.Nodes[connToSplit.OutputKey];
@@ -427,30 +428,30 @@ public class Reproduction : MonoBehaviour
 
             // Clamp layer to respect configured max hidden layers
             newNode.Layer = Mathf.Clamp(newNode.Layer, 1, maxHiddenLayers);
-            
+
             // Disable the original connection
             connToSplit.Enabled = false;
-            
+
             // Add the new node
             genome.AddNode(newNode);
-            
+
             // Add two new connections
             var conn1 = new NEAT.Genes.ConnectionGene(
                 genome.Connections.Count,
                 connToSplit.InputKey,
                 newNodeKey,
                 1.0);
-                
+
             var conn2 = new NEAT.Genes.ConnectionGene(
                 genome.Connections.Count + 1,
                 newNodeKey,
                 connToSplit.OutputKey,
                 connToSplit.Weight);
-                
+
             genome.AddConnection(conn1);
             genome.AddConnection(conn2);
 
-        SkipAddNode: ;
+        SkipAddNode:;
         }
 
         // 2. Delete node mutation
@@ -460,22 +461,22 @@ public class Reproduction : MonoBehaviour
             var hiddenNodes = genome.Nodes.Values
                 .Where(n => n.Type == NEAT.Genes.NodeType.Hidden)
                 .ToList();
-                
+
             if (hiddenNodes.Count > 0)
             {
                 // Pick a random hidden node to delete
                 var nodeToDelete = hiddenNodes[Random.Range(0, hiddenNodes.Count)];
-                
+
                 // Remove all connections to/from this node
                 var connectionsToRemove = genome.Connections.Values
                     .Where(c => c.InputKey == nodeToDelete.Key || c.OutputKey == nodeToDelete.Key)
                     .ToList();
-                    
+
                 foreach (var conn in connectionsToRemove)
                 {
                     genome.Connections.Remove(conn.Key);
                 }
-                
+
                 // Remove the node
                 genome.Nodes.Remove(nodeToDelete.Key);
             }
@@ -487,7 +488,7 @@ public class Reproduction : MonoBehaviour
             // Pick a random node
             var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
             var nodeToModify = nodeList[Random.Range(0, nodeList.Count)];
-            
+
             // Modify bias by a small random amount
             nodeToModify.Bias += Random.Range(-0.5f, 0.5f);
         }
@@ -501,7 +502,7 @@ public class Reproduction : MonoBehaviour
                 var nodeList = new List<NEAT.Genes.NodeGene>(genome.Nodes.Values);
                 var sourceNode = nodeList[Random.Range(0, nodeList.Count)];
                 var targetNode = nodeList[Random.Range(0, nodeList.Count)];
-                
+
                 // Skip invalid connections
                 if (sourceNode.Layer >= targetNode.Layer ||
                     sourceNode.Type == NEAT.Genes.NodeType.Output ||
@@ -509,11 +510,11 @@ public class Reproduction : MonoBehaviour
                 {
                     continue;
                 }
-                
+
                 // Check if connection already exists
                 bool exists = genome.Connections.Values.Any(c =>
                     c.InputKey == sourceNode.Key && c.OutputKey == targetNode.Key);
-                
+
                 // Check if adding this connection would create a cycle
                 if (!exists && !WouldCreateCycle(genome, sourceNode.Key, targetNode.Key))
                 {
@@ -522,7 +523,7 @@ public class Reproduction : MonoBehaviour
                         sourceNode.Key,
                         targetNode.Key,
                         Random.Range(-1f, 1f));
-                        
+
                     genome.AddConnection(newConn);
                     break;
                 }
@@ -534,15 +535,15 @@ public class Reproduction : MonoBehaviour
         {
             // Only consider connections that don't connect to input or output nodes for deletion
             var deletableConnections = genome.Connections.Values
-                .Where(c => 
+                .Where(c =>
                     // Don't delete connections to output nodes
-                    (!genome.Nodes.ContainsKey(c.OutputKey) || 
+                    (!genome.Nodes.ContainsKey(c.OutputKey) ||
                      genome.Nodes[c.OutputKey].Type != NEAT.Genes.NodeType.Output) &&
                     // Don't delete connections from input nodes
-                    (!genome.Nodes.ContainsKey(c.InputKey) || 
+                    (!genome.Nodes.ContainsKey(c.InputKey) ||
                      genome.Nodes[c.InputKey].Type != NEAT.Genes.NodeType.Input))
                 .ToList();
-            
+
             if (deletableConnections.Count > 0)
             {
                 // Pick a random connection to delete that doesn't affect input or output nodes
@@ -557,17 +558,17 @@ public class Reproduction : MonoBehaviour
             // Pick a random connection
             var connList = new List<NEAT.Genes.ConnectionGene>(genome.Connections.Values);
             var connToModify = connList[Random.Range(0, connList.Count)];
-            
+
             // Modify weight by a small random amount
             connToModify.Weight += Random.Range(-0.5f, 0.5f);
-            
+
             // Clamp weight to valid range
             connToModify.Weight = Mathf.Clamp((float)connToModify.Weight, -1f, 1f);
         }
-        
+
         // 7. Validation: Ensure all input and output nodes exist
         EnsureRequiredNodes(genome);
-        
+
         // 8. Final check: Remove any cycles in the network
         RemoveCycles(genome);
     }
@@ -576,39 +577,39 @@ public class Reproduction : MonoBehaviour
     private bool WouldCreateCycle(NEAT.Genome.Genome genome, int sourceKey, int targetKey)
     {
         // Simple check: if source layer is strictly less than target layer, no cycle is possible
-        if (genome.Nodes.ContainsKey(sourceKey) && 
-            genome.Nodes.ContainsKey(targetKey) && 
+        if (genome.Nodes.ContainsKey(sourceKey) &&
+            genome.Nodes.ContainsKey(targetKey) &&
             genome.Nodes[sourceKey].Layer < genome.Nodes[targetKey].Layer)
         {
             return false;
         }
-        
+
         // Otherwise, we need to do a depth-first search to check for cycles
         var visited = new HashSet<int>();
         var path = new HashSet<int>();
-        
+
         // Add the connection we're considering
         var tempConnections = new Dictionary<int, List<int>>();
-        
+
         // Build connection graph
         foreach (var conn in genome.Connections.Values)
         {
             if (!conn.Enabled) continue;
-            
+
             if (!tempConnections.ContainsKey(conn.InputKey))
             {
                 tempConnections[conn.InputKey] = new List<int>();
             }
             tempConnections[conn.InputKey].Add(conn.OutputKey);
         }
-        
+
         // Add the potential new connection
         if (!tempConnections.ContainsKey(sourceKey))
         {
             tempConnections[sourceKey] = new List<int>();
         }
         tempConnections[sourceKey].Add(targetKey);
-        
+
         // Check for cycles starting from the sourceKey
         return HasCycle(tempConnections, sourceKey, visited, path);
     }
@@ -618,33 +619,33 @@ public class Reproduction : MonoBehaviour
     {
         // If node is not in the graph, it can't be part of a cycle
         if (!connections.ContainsKey(nodeKey)) return false;
-        
+
         // If we've seen this node in the current path, we found a cycle
         if (path.Contains(nodeKey)) return true;
-        
+
         // If we've already visited this node and found no cycles, skip it
         if (visited.Contains(nodeKey)) return false;
-        
+
         // Mark node as visited and add to current path
         visited.Add(nodeKey);
         path.Add(nodeKey);
-        
+
         // Check all connections from this node
         foreach (var nextNodeKey in connections[nodeKey])
         {
             // Skip if there's no outgoing connections
             if (!connections.ContainsKey(nextNodeKey)) continue;
-            
+
             // Recursively check for cycles
             if (HasCycle(connections, nextNodeKey, visited, path))
             {
                 return true;
             }
         }
-        
+
         // Remove from current path as we backtrack
         path.Remove(nodeKey);
-        
+
         return false;
     }
 
@@ -653,23 +654,23 @@ public class Reproduction : MonoBehaviour
     {
         // Build a connection graph
         var connections = new Dictionary<int, List<int>>();
-        
+
         foreach (var conn in genome.Connections.Values)
         {
             if (!conn.Enabled) continue;
-            
+
             if (!connections.ContainsKey(conn.InputKey))
             {
                 connections[conn.InputKey] = new List<int>();
             }
             connections[conn.InputKey].Add(conn.OutputKey);
         }
-        
+
         // Try to find and break cycles
         var visited = new HashSet<int>();
         var path = new Stack<int>();
         var currentPath = new HashSet<int>();
-        
+
         // Start DFS from each unvisited node
         foreach (var node in genome.Nodes.Values)
         {
@@ -680,16 +681,16 @@ public class Reproduction : MonoBehaviour
         }
     }
 
-    private void FindAndBreakCycles(NEAT.Genome.Genome genome, Dictionary<int, List<int>> connections, 
+    private void FindAndBreakCycles(NEAT.Genome.Genome genome, Dictionary<int, List<int>> connections,
                                   int nodeKey, HashSet<int> visited, Stack<int> path, HashSet<int> currentPath)
     {
         // If node is not in the graph, it can't be part of a cycle
-        if (!connections.ContainsKey(nodeKey)) 
+        if (!connections.ContainsKey(nodeKey))
         {
             visited.Add(nodeKey);
             return;
         }
-        
+
         // If we've seen this node in current path, we found a cycle
         if (currentPath.Contains(nodeKey))
         {
@@ -697,15 +698,15 @@ public class Reproduction : MonoBehaviour
             BreakCycle(genome, path, nodeKey);
             return;
         }
-        
+
         // If we've already visited this node and found no cycles, skip it
         if (visited.Contains(nodeKey)) return;
-        
+
         // Mark node as visited and add to current path
         visited.Add(nodeKey);
         currentPath.Add(nodeKey);
         path.Push(nodeKey);
-        
+
         // Check all connections from this node
         if (connections.ContainsKey(nodeKey))
         {
@@ -714,7 +715,7 @@ public class Reproduction : MonoBehaviour
                 FindAndBreakCycles(genome, connections, nextNodeKey, visited, path, currentPath);
             }
         }
-        
+
         // Remove from current path as we backtrack
         currentPath.Remove(nodeKey);
         path.Pop();
@@ -725,7 +726,7 @@ public class Reproduction : MonoBehaviour
         // Create a list to track the cycle
         var cycle = new List<int>();
         var tempStack = new Stack<int>(path);
-        
+
         // Find the start of the cycle
         while (tempStack.Count > 0)
         {
@@ -733,19 +734,19 @@ public class Reproduction : MonoBehaviour
             cycle.Add(node);
             if (node == cycleStartNode) break;
         }
-        
+
         // Reverse to get the proper order
         cycle.Reverse();
-        
+
         // Identify connection to remove (use the one with highest layer difference)
         int connectionToRemove = -1;
         int maxLayerDiff = -1;
-        
+
         for (int i = 0; i < cycle.Count - 1; i++)
         {
             int from = cycle[i];
             int to = cycle[i + 1];
-            
+
             // Find the connection ID
             foreach (var conn in genome.Connections.Values)
             {
@@ -769,7 +770,7 @@ public class Reproduction : MonoBehaviour
                 }
             }
         }
-        
+
         // Remove the identified connection
         if (connectionToRemove != -1 && genome.Connections.ContainsKey(connectionToRemove))
         {
@@ -781,7 +782,7 @@ public class Reproduction : MonoBehaviour
             {
                 Debug.LogWarning($"Removing connection {connectionToRemove} to break a cycle");
             }
-            
+
             genome.Connections[connectionToRemove].Enabled = false; // Just disable rather than remove
         }
     }
@@ -803,21 +804,21 @@ public class Reproduction : MonoBehaviour
                 {
                     Debug.LogWarning($"Missing input node {i} detected during mutation. Recreating it.");
                 }
-                
+
                 // Create the input node
                 var inputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
                 inputNode.Layer = 0;
                 inputNode.Bias = 0.0;
-                
+
                 // If it already exists but with wrong type, remove it first
                 if (genome.Nodes.ContainsKey(i))
                 {
                     genome.Nodes.Remove(i);
                 }
-                
+
                 // Add the input node
                 genome.AddNode(inputNode);
-                
+
                 // Connect this input to at least one output to ensure it's used
                 for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
                 {
@@ -834,7 +835,7 @@ public class Reproduction : MonoBehaviour
                 }
             }
         }
-        
+
         // Check for output nodes (existing code)
         for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
@@ -849,21 +850,21 @@ public class Reproduction : MonoBehaviour
                 {
                     Debug.LogWarning($"Missing output node {i} detected during mutation. Recreating it.");
                 }
-                
+
                 // Create the output node
                 var outputNode = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
                 outputNode.Layer = 2;
                 outputNode.Bias = 0.0;
-                
+
                 // If it already exists but with wrong type, remove it first
                 if (genome.Nodes.ContainsKey(i))
                 {
                     genome.Nodes.Remove(i);
                 }
-                
+
                 // Add the output node
                 genome.AddNode(outputNode);
-                
+
                 // Add at least one connection to this output node to ensure it's used
                 // Find the first available input node and connect to it
                 var inputNode = genome.Nodes.Values.FirstOrDefault(n => n.Type == NEAT.Genes.NodeType.Input);
@@ -878,13 +879,13 @@ public class Reproduction : MonoBehaviour
                 }
             }
         }
-        
+
         // Ensure all output nodes have at least one incoming connection
         for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
-                
+
             if (!hasConnection)
             {
                 if (LogManager.Instance != null)
@@ -895,7 +896,7 @@ public class Reproduction : MonoBehaviour
                 {
                     Debug.LogWarning($"Output node {i} has no connections. Adding one.");
                 }
-                
+
                 // Find an appropriate node to connect to this output
                 var inputNode = genome.Nodes.Values.FirstOrDefault(n => n.Type == NEAT.Genes.NodeType.Input);
                 if (inputNode != null)
@@ -909,13 +910,13 @@ public class Reproduction : MonoBehaviour
                 }
             }
         }
-        
+
         // Ensure all input nodes have at least one outgoing connection
         for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.InputKey == i && c.Enabled);
-                
+
             if (!hasConnection)
             {
                 if (LogManager.Instance != null)
@@ -926,7 +927,7 @@ public class Reproduction : MonoBehaviour
                 {
                     Debug.LogWarning($"Input node {i} has no connections. Adding one.");
                 }
-                
+
                 // Connect to an output node
                 for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
                 {

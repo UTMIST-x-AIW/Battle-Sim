@@ -12,23 +12,23 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Creature creatureComponent;
-    
+
     void OnEnable()
     {
         rb = GetComponent<Rigidbody2D>();
         creatureComponent = GetComponent<Creature>();
-        
+
         if (creatureComponent == null)
         {
             Debug.LogError("PlayerController requires a Creature component!");
             enabled = false;
             return;
         }
-        
+
         // Disable the brain control when player control is enabled
         creatureComponent.disableBrainControl = true;
     }
-    
+
     void OnDisable()
     {
         // Re-enable brain control when player control is disabled
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
             creatureComponent.disableBrainControl = false;
         }
     }
-    
+
     void FixedUpdate()
     {
         if (creatureComponent == null) return;
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         // Get keyboard input
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
-        
+
         // Determine action desires (0 = no desire, 1 = full desire)
         float interactDesire = Input.GetKey(chopKey) ? 1.0f : -1.0f;
         float attackDesire = Input.GetKey(swordKey) ? 1.0f : -1.0f;
@@ -69,4 +69,4 @@ public class PlayerController : MonoBehaviour
         // Pass the actions to the creature's processing method
         creatureComponent.ProcessActionCommands(actions);
     }
-} 
+}
