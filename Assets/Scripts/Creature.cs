@@ -250,6 +250,12 @@ public class Creature : MonoBehaviour
 
     private void OnEnable()
     {
+        ResetCreature();
+
+    }
+
+    private void ResetCreature()
+    {
         // Initialize stats
         maxHealth = maxHealthDefault;
         health = maxHealth;
@@ -327,7 +333,6 @@ public class Creature : MonoBehaviour
         nearestOpponentDistance = float.MaxValue;
         nearestGroundDistance = float.MaxValue;
         nearestTeammateDistance = float.MaxValue;
-
     }
 
     public IEnumerator DelayedReproductionStart()
