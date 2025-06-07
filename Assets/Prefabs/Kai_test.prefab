@@ -352,10 +352,9 @@ MonoBehaviour:
   maxHiddenLayers: 10
   actionEnergyCost: 1
   chopDamage: 1
-  swordDamage: 2.3
+  attackDamage: 1
   closeRange: 1.5
   bowRange: 5
-  bowDamage: 1
   maxHealthDefault: 3
   energyRechargeRateDefault: 1.2
   attackDamageDefault: 1
@@ -376,7 +375,6 @@ MonoBehaviour:
   tankScale: 1.3
   scoutScale: 0.8
   swordsmanSwordScale: 1.3
-  attackDamage: 0
   dynamicVisionRanges: []
   preAllocCollidersCount: 200
   useRayDetection: 1
