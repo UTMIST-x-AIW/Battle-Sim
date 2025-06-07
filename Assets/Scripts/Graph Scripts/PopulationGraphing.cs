@@ -60,7 +60,7 @@ public class PopulationGraphing : MonoBehaviour
     void UpdateGraph(GraphInfo graphInfo, int index, Color color)
     {
         // Count creatures by tag
-        var creatureCount = GetChildCount(graphInfo); //TODO: update to count the extra trees as well later
+        var objectCount = ObjectPoolManager.GetActiveChildCount(graphInfo.prefab); //TODO: update to count the extra objects as well later
         if (graphInfo.serie.dataCount >= maxSeconds)
         {
             graphInfo.serie.data.RemoveAt(0);
@@ -74,20 +74,12 @@ public class PopulationGraphing : MonoBehaviour
 
         // Add new data
         chart.AddXAxisData($"{timeCounter}s");
-        chart.AddData(index, creatureCount, graphInfo.Name);
+        chart.AddData(index, objectCount, graphInfo.Name);
 
         // Auto-scale Y-axis to peak value
         float max = Mathf.Max(graphInfo.serie.maxCache, 2f);
         yAxis.max = Mathf.Ceil(max * 1.0f + 10); // Add 10% padding
 
         chart.RefreshChart(); // Trigger render
-    }
-
-    private static int GetChildCount(GraphInfo info)
-    {
-        Transform parentTransform = ParenthoodManager.GetParent(info.prefab);
-        if (parentTransform == null) return 0;
-        int creatureCount = parentTransform.childCount;
-        return creatureCount;
     }
 }
