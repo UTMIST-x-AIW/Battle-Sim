@@ -22,22 +22,22 @@ public class Creature : MonoBehaviour
     }
 
     [Header("Basic Stats")]
-    public float health = 3f;
-    public float energyMeter = 0f;  // Renamed from energy
-    public float maxHealth = 3f;
-    public float maxEnergy = 1f;
-    public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
+    [HideInInspector] public float health = 3f;
+    [HideInInspector] public float energyMeter = 0f;  // Renamed from energy
+    [HideInInspector] public float maxHealth = 3f;
+    [HideInInspector] public float maxEnergy = 1f;
+    [HideInInspector] public float energyRechargeRate = 1.2f; // Fill from 0 to 1 in 1/1.2 seconds
     public float reproductionRechargeRate = 0.444f; // Fill from 0 to 1 in 10 seconds
 
     [Header("Aging Settings")]
     public float agingStartTime = 20f;  // Start aging after 20 seconds
     public float agingRate = 0.005f;    // Reduced from 0.01 to 0.005 for slower aging
     private float lifetime = 0f;        // How long the creature has lived
-    public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
-    public int generation = 0;          // The generation number of this creature
+    [HideInInspector] public float Lifetime { get { return lifetime; } set { lifetime = value; } }  // Public property to access lifetime
+    [HideInInspector] public int generation = 0;          // The generation number of this creature
 
     [Header("Movement Settings")]
-    public float moveSpeed = 5f;  // Maximum speed in any direction
+    [HideInInspector] public float moveSpeed = 5f;  // Maximum speed in any direction
     public float pushForce = 20f; // Force applied for pushing, higher value means stronger pushing
 
     [Header("Reproduction Settings")]
@@ -53,7 +53,7 @@ public class Creature : MonoBehaviour
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
     public float chopDamage = 1.0f;
-    public float attackDamage = 2.3f;
+    [HideInInspector] public float attackDamage = 2.3f;
     public float closeRange = 1.5f;   // Range at which creatures can chop trees
     public float bowRange = 2.5f;  // Range at which creatures can bow attack other entities
 
