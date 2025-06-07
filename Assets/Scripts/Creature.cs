@@ -258,8 +258,6 @@ public class Creature : MonoBehaviour
         attackDamage = attackDamageDefault;
         generation = 0;
         moveSpeed = moveSpeedDefault;
-        health = maxHealth;
-        attackDamage = attackDamageDefault;
 
 
         CurrentClass = CreatureClass.None;
