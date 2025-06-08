@@ -60,7 +60,11 @@ public class PopulationGraphing : MonoBehaviour
     void UpdateGraph(GraphInfo graphInfo, int index, Color color)
     {
         // Count creatures by tag
-        var objectCount = ObjectPoolManager.GetActiveChildCount(graphInfo.prefab); //TODO: update to count the extra objects as well later
+        var objectCount = 0;
+        foreach (var prefab in graphInfo.prefabs)
+        {
+            objectCount += ObjectPoolManager.GetActiveChildCount(prefab);
+        }
         if (graphInfo.serie.dataCount >= maxSeconds)
         {
             graphInfo.serie.data.RemoveAt(0);
