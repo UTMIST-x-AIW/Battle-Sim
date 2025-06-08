@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
+using Utils;
 
 public class SpawnEntities : MonoBehaviour
 {
@@ -37,7 +38,6 @@ public class SpawnEntities : MonoBehaviour
     }
     private void ShootRays(GameObject instance)
     {
-        RaycastHit2D[] rayHits = new RaycastHit2D[2];
         var contactFilter = new ContactFilter2D
         {
             useLayerMask = false,
@@ -49,19 +49,16 @@ public class SpawnEntities : MonoBehaviour
             float rotationAngle = Mathf.Lerp(-180, 180, t);
             Vector2 direction = Quaternion.Euler(0, 0, rotationAngle) * Vector2.right;
            
-            int hitCount = Physics2D.Raycast(instance.transform.position, direction, 
-                contactFilter, rayHits, maxDistance);
-            if (hitCount <= 1 || rayHits[1].collider.gameObject == instance)
+            RaycastHit2D hit = Physics2DExtensions.RaycastWithoutSelfCollision(instance.transform.position, direction,maxDistance,
+                instance);
+            if (!hit)
             {
                 Debug.DrawRay(instance.transform.position, direction * maxDistance, Color.red );
             }
             else
             {
-                Debug.DrawLine(instance.transform.position, rayHits[1].transform.position, Color.green ); 
+                Debug.DrawLine(instance.transform.position, hit.transform.position, Color.green ); 
             }
-
-            
-            
         }
     }
 }
