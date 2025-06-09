@@ -118,7 +118,7 @@ SortingGroup:
   m_GameObject: {fileID: 1410330528408215769}
   m_Enabled: 1
   m_SortingLayerID: -969123415
-  m_SortingLayer: 5
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &-3477837062015519171
