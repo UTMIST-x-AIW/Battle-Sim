@@ -43,8 +43,8 @@ public class SavedCreature
     public int generation;
     public float moveSpeed;
     public float pushForce;
-    public float visionRange;
-    public float chopRange;
+    public float closeRange;
+    public float bowRange;
     public float actionEnergyCost;
     public float chopDamage;
     public float attackDamage;
@@ -60,7 +60,7 @@ public class SavedCreature
 public static class CreatureSaver
 {
     private static string SaveDirectory => Path.Combine(Application.persistentDataPath, "SavedCreatures");
-    
+
     private static void EnsureSaveDirectoryExists()
     {
         try
@@ -77,21 +77,17 @@ public static class CreatureSaver
             throw; // Re-throw the exception to be handled by the caller
         }
     }
-    
+
     private static SerializedBrain SerializeBrain(NEAT.NN.FeedForwardNetwork brain)
     {
         if (brain == null) return null;
-        
-        var nodesField = brain.GetType().GetField("_nodes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var connectionsField = brain.GetType().GetField("_connections", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
-        if (nodesField == null || connectionsField == null) return null;
-        
-        var nodes = nodesField.GetValue(brain) as Dictionary<int, NodeGene>;
-        var connections = connectionsField.GetValue(brain) as Dictionary<int, ConnectionGene>;
-        
+
+        // Use public methods instead of reflection - fixes build serialization issues
+        var nodes = brain.GetNodes();
+        var connections = brain.GetConnections();
+
         if (nodes == null || connections == null) return null;
-        
+
         var serializedBrain = new SerializedBrain
         {
             nodes = nodes.Values.Select(n => new SerializedNode
@@ -101,7 +97,7 @@ public static class CreatureSaver
                 layer = n.Layer,
                 bias = n.Bias
             }).ToArray(),
-            
+
             connections = connections.Values.Select(c => new SerializedConnection
             {
                 key = c.Key,
@@ -111,19 +107,19 @@ public static class CreatureSaver
                 enabled = c.Enabled
             }).ToArray()
         };
-        
+
         return serializedBrain;
     }
-    
+
     public static void SaveCreature(Creature creature)
     {
         if (creature == null) return;
-        
+
         try
         {
             // Ensure save directory exists
             EnsureSaveDirectoryExists();
-            
+
             var savedCreature = new SavedCreature
             {
                 type = creature.type,
@@ -135,8 +131,8 @@ public static class CreatureSaver
                 generation = creature.generation,
                 moveSpeed = creature.moveSpeed,
                 pushForce = creature.pushForce,
-                visionRange = creature.visionRange,
-                chopRange = creature.chopRange,
+                closeRange = creature.closeRange,
+                bowRange = creature.bowRange,
                 actionEnergyCost = creature.actionEnergyCost,
                 chopDamage = creature.chopDamage,
                 attackDamage = creature.attackDamage,
@@ -148,16 +144,16 @@ public static class CreatureSaver
                 maxHiddenLayers = creature.maxHiddenLayers,
                 brain = SerializeBrain(creature.GetBrain())
             };
-            
+
             // Generate a unique filename based on creature type, generation, and timestamp
             string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             string filename = $"{creature.type}_Gen{creature.generation}_{timestamp}.json";
             string filepath = Path.Combine(SaveDirectory, filename);
-            
+
             // Convert to JSON and save
             string json = JsonUtility.ToJson(savedCreature, true);
             File.WriteAllText(filepath, json);
-            
+
             Debug.Log($"Successfully saved creature to: {filepath}");
         }
         catch (Exception e)
@@ -165,4 +161,4 @@ public static class CreatureSaver
             Debug.LogError($"Failed to save creature: {e.Message}\nStack trace: {e.StackTrace}");
         }
     }
-} 
+}

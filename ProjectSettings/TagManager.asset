@@ -10,6 +10,13 @@ TagManager:
   - Cherry
   - Tree
   - Ground
+  - AlbertSpawnPoint
+  - KaiSpawnPoint
+  - Creature
+  - Albert
+  - Kai
+  - Cupcake
+  - Rock
   layers:
   - Default
   - TransparentFX
@@ -18,10 +25,10 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
-  - 
-  - Phasing
+  - Trees
+  - Alberts
+  - Kais
+  - Selection
   - 
   - 
   - 
@@ -47,8 +54,8 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Water
-    uniqueID: 2275638277
+  - name: Top ground
+    uniqueID: 3325843881
     locked: 0
   - name: Ground
     uniqueID: 2772781179
@@ -59,6 +66,9 @@ TagManager:
   - name: Player
     uniqueID: 1965130115
     locked: 0
-  - name: New Layer 5
-    uniqueID: 3325843881
+  - name: Water
+    uniqueID: 497048975
+    locked: 0
+  - name: Arrows
+    uniqueID: 666154021
     locked: 0

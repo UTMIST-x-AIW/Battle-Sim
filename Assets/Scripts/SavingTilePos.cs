@@ -8,6 +8,7 @@ public class SavingTilePos : MonoBehaviour
 
     public TilePosData tiledata;
     [SerializeField] Tilemap[] tilemaps;
+    [SerializeField] int boundaryLength;
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -15,7 +16,7 @@ public class SavingTilePos : MonoBehaviour
         if (tiledata != null && tiledata.TilePositions.Count == 0)
         {
             Debug.Log("No saved tile positions found. Initializing now...");
-            tiledata.Initialize(tilemaps[0], 50);
+            tiledata.Initialize(tilemaps[0], boundaryLength);
         }
         else
         {
@@ -26,14 +27,14 @@ public class SavingTilePos : MonoBehaviour
     void RecalculatePos(int tilemapNum)
     {
         if (tilemapNum < tilemaps.Length && tilemapNum >= 0)
-        { 
+        {
             Debug.Log($"Recalculating positions for tilemap {tilemapNum}...");
-            tiledata.Initialize(tilemaps[tilemapNum], 50);
+            tiledata.Initialize(tilemaps[tilemapNum], boundaryLength);
             Debug.Log($"Recalculation complete. Stored {tiledata.TilePositions.Count} tile positions.");
         }
         else
         {
-            Debug.LogError($"Invalid tilemap index: {tilemapNum}. Valid range is 0-{tilemaps.Length-1}");
+            Debug.LogError($"Invalid tilemap index: {tilemapNum}. Valid range is 0-{tilemaps.Length - 1}");
         }
     }
 

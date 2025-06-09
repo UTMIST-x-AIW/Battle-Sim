@@ -22,7 +22,6 @@ public static class CreatureLoader
             // Create the creature instance
             var creature = GameObject.Instantiate(prefab, position, Quaternion.identity);
             var creatureComponent = creature.GetComponent<Creature>();
-
             // Load basic properties
             creatureComponent.type = savedCreature.type;
             creatureComponent.health = savedCreature.health;
@@ -33,8 +32,8 @@ public static class CreatureLoader
             creatureComponent.generation = savedCreature.generation;
             creatureComponent.moveSpeed = savedCreature.moveSpeed;
             creatureComponent.pushForce = savedCreature.pushForce;
-            creatureComponent.visionRange = savedCreature.visionRange;
-            creatureComponent.chopRange = savedCreature.chopRange;
+            creatureComponent.closeRange = savedCreature.closeRange;
+            creatureComponent.bowRange = savedCreature.bowRange;
             creatureComponent.actionEnergyCost = savedCreature.actionEnergyCost;
             creatureComponent.chopDamage = savedCreature.chopDamage;
             creatureComponent.attackDamage = savedCreature.attackDamage;
@@ -90,4 +89,4 @@ public static class CreatureLoader
             return null;
         }
     }
-} 
+}
