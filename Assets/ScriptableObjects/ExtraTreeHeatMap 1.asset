@@ -13,4 +13,88 @@ MonoBehaviour:
   m_Name: ExtraTreeHeatMap 1
   m_EditorClassIdentifier: 
   tilePosData: {fileID: 11400000, guid: 0234528602924614b90b65a6148ba1f5, type: 2}
-  heatMapEntries: []
+  heatMapEntries:
+  - position: {x: -2, y: 16}
+    value: 100
+  - position: {x: -2.5, y: 16.25}
+    value: 100
+  - position: {x: -2, y: 16.5}
+    value: 100
+  - position: {x: -2.5, y: 16.75}
+    value: 100
+  - position: {x: -2, y: 17}
+    value: 100
+  - position: {x: -3, y: 16.5}
+    value: 100
+  - position: {x: -3, y: 17}
+    value: 100
+  - position: {x: -2.5, y: 17.25}
+    value: 100
+  - position: {x: -1.5, y: 16.75}
+    value: 100
+  - position: {x: -1, y: 17}
+    value: 0.9484255
+  - position: {x: -1.5, y: 17.25}
+    value: 100
+  - position: {x: -2.5, y: 15.75}
+    value: 100
+  - position: {x: -2, y: 17.5}
+    value: 0.1791197
+  - position: {x: -1.5, y: 17.75}
+    value: 100
+  - position: {x: -1.5, y: 16.25}
+    value: 100
+  - position: {x: -1, y: 16.5}
+    value: 0.39146978
+  - position: {x: -1, y: 17.5}
+    value: 63.32538
+  - position: {x: -3.5, y: 17.25}
+    value: 100
+  - position: {x: -3, y: 17.5}
+    value: 100
+  - position: {x: -3.5, y: 16.75}
+    value: 100
+  - position: {x: -3.5, y: 16.25}
+    value: 100
+  - position: {x: -3.5, y: 17.75}
+    value: 100
+  - position: {x: -3, y: 18}
+    value: 100
+  - position: {x: -2.5, y: 17.75}
+    value: 100
+  - position: {x: -4, y: 16.5}
+    value: 100
+  - position: {x: -4, y: 17}
+    value: 100
+  - position: {x: -4, y: 17.5}
+    value: 100
+  - position: {x: -4.5, y: 15.75}
+    value: 74.86935
+  - position: {x: -4, y: 16}
+    value: 100
+  - position: {x: -4.5, y: 16.25}
+    value: 100
+  - position: {x: -3.5, y: 15.75}
+    value: 100
+  - position: {x: -1, y: 18}
+    value: 100
+  - position: {x: -1.5, y: 18.25}
+    value: 100
+  - position: {x: -1, y: 18.5}
+    value: 52.59821
+  - position: {x: -2, y: 15.5}
+    value: 100
+  - position: {x: -1.5, y: 15.75}
+    value: 100
+  - position: {x: -2, y: 15}
+    value: 100
+  - position: {x: -2.5, y: 15.25}
+    value: 100
+  - position: {x: -3.5, y: 15.25}
+    value: 100
+  - position: {x: -4, y: 15.5}
+    value: 43.580235
+  - position: {x: -3, y: 15.5}
+    value: 54.08693
+  - position: {x: -3, y: 16}
+    value: 100
