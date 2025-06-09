@@ -8,7 +8,6 @@ using Unity.VisualScripting;
 
 public class Reproduction : MonoBehaviour
 {
-    public List<GameObject> gameObject_mated_with = new List<GameObject>();
     public float pReproduction = 0.25f;
     public GameObject Reproduction_prefab;
     private bool isMating = false;
@@ -92,8 +91,6 @@ public class Reproduction : MonoBehaviour
         // Set mating flag
         isMating = true;
 
-        // Still tracking past mates for reference, but not restricting repeat mating
-        gameObject_mated_with.Add(other);
 
         Reproduction otherScript = other.GetComponent<Reproduction>();
         if (otherScript == null)
@@ -167,9 +164,6 @@ public class Reproduction : MonoBehaviour
 
                     ParenthoodManager.AssignParent(child);
                     AnimatingDoTweenUtilities.PlayGrow(child);
-
-                    // Still tracking past mates for reference, but not restricting repeat mating
-                    otherScript.gameObject_mated_with.Add(this.gameObject);
                 }
             }
         }
