@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2318105875517553922}
   - component: {fileID: 1897197228789210369}
   - component: {fileID: 3460803280884159236}
+  - component: {fileID: 1020408613299364797}
   m_Layer: 7
   m_Name: Cupcake
   m_TagString: Cupcake
@@ -130,3 +131,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 5.0885944, y: 5.632019}
   m_EdgeRadius: 0
+--- !u!114 &1020408613299364797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4383530603220594374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b858d308c33e68140bbb1c45c9772a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPoints: 1
