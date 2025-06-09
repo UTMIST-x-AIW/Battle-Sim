@@ -5,7 +5,8 @@ using XCharts.Runtime;
 public class HighestGenerationGraph : MonoBehaviour
 {
     public LineChart chart;
-    [SerializeField][Range(.1f,1)]
+    [SerializeField]
+    [Range(.1f, 1)]
     private float updateInterval = 0.2f;
     public float maxSeconds = 30f;
     private float timer = 0f;
@@ -28,12 +29,13 @@ public class HighestGenerationGraph : MonoBehaviour
         yAxis.type = Axis.AxisType.Value;
         yAxis.min = 0;
 
-        foreach (GraphInfo graph in graphs){
+        foreach (GraphInfo graph in graphs)
+        {
             graph.serie = chart.AddSerie<Line>(graph.Name);
             graph.serie.EnsureComponent<AreaStyle>().show = true;
             graph.serie.symbol.show = false;
         }
-		
+
         chart.RefreshChart();
 
     }
@@ -44,31 +46,41 @@ public class HighestGenerationGraph : MonoBehaviour
         if (timer >= updateInterval)
         {
             timer = 0f;
-            for (int i =0; i < graphs.Count; i++) 
+
+            // Check if we need to remove old x-axis data (check against any serie)
+            bool shouldRemoveOldData = graphs.Count > 0 && graphs[0].serie.dataCount >= maxSeconds;
+            if (shouldRemoveOldData)
             {
-                UpdateGraph(graphs[i], i, graphs[i].color);
+                xAxis.data.RemoveAt(0);
+            }
+
+            // Add new x-axis data once per update
+            chart.AddXAxisData($"{timeCounter}s");
+
+            for (int i = 0; i < graphs.Count; i++)
+            {
+                UpdateGraph(graphs[i], i, graphs[i].color, shouldRemoveOldData);
             }
 
             timeCounter++;
         }
     }
 
-    void UpdateGraph(GraphInfo graphInfo, int index, Color color){
+    void UpdateGraph(GraphInfo graphInfo, int index, Color color, bool shouldRemoveOldData)
+    {
 
         int highestGeneration = GetHighestGeneration(graphInfo);
         // Keep X-axis and Y-data within time window
-        if (graphInfo.serie.dataCount >= maxSeconds)
+        if (shouldRemoveOldData)
         {
             graphInfo.serie.data.RemoveAt(0);
-            xAxis.data.RemoveAt(0);
         }
 
-        graphInfo.serie.lineStyle.color = new Color(color.r,color.g,color.b);
+        graphInfo.serie.lineStyle.color = new Color(color.r, color.g, color.b);
         graphInfo.serie.areaStyle.color = new Color(color.r, color.g, color.b);
         graphInfo.serie.areaStyle.opacity = graphInfo.Opacity;
 
         // Add new data
-        chart.AddXAxisData($"{timeCounter}s");
         chart.AddData(index, highestGeneration, graphInfo.Name);
 
         // Auto-scale Y-axis to peak value
@@ -77,7 +89,7 @@ public class HighestGenerationGraph : MonoBehaviour
 
         chart.RefreshChart(); // Trigger render
     }
-    
+
 
     private int GetHighestGeneration(GraphInfo info)
     {
