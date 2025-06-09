@@ -4,17 +4,17 @@ using UnityEditor;
 public class AddTesterComponent
 {
     [MenuItem("UTMIST/Add NEAT Tester")]
-    static void AddNEATTester()
+    static void AddGameManagerer()
     {
         // Find the GameManager GameObject
-        var neatTestObj = GameObject.FindObjectOfType<GameManager>();
-        
-        if (neatTestObj != null)
+        var gameManagerObj = GameObject.FindObjectOfType<GameManager>();
+
+        if (gameManagerObj != null)
         {
             // Add our tester component if it doesn't already exist
-            if (neatTestObj.GetComponent<NEATNetworkTester>() == null)
+            if (gameManagerObj.GetComponent<NEATNetworkTester>() == null)
             {
-                neatTestObj.gameObject.AddComponent<NEATNetworkTester>();
+                gameManagerObj.gameObject.AddComponent<NEATNetworkTester>();
                 Debug.Log("Added NEATNetworkTester to GameManager GameObject.");
             }
             else
@@ -27,4 +27,4 @@ public class AddTesterComponent
             Debug.LogError("Could not find GameManager GameObject in the scene. Please make sure it exists.");
         }
     }
-} 
+}
