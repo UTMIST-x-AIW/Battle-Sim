@@ -18,18 +18,18 @@ public class GameManager : MonoBehaviour
 
 
     [Header("Albert Population Settings")]
-    public int MIN_ALBERTS = 20;  // Minimum number of Alberts to maintain
-    public int MAX_ALBERTS = 100; // Maximum number of Alberts allowed
-    public int INITIAL_ALBERTS = 10; // Number of Alberts to spawn initially
-    public float MIN_STARTING_AGE_ALBERT = 0f; // Minimum starting age for initial Alberts
-    public float MAX_STARTING_AGE_ALBERT = 5f; // Maximum starting age for initial Alberts
+    public int MinAlberts = 20;  // Minimum number of Alberts to maintain
+    public int MaxAlberts = 100; // Maximum number of Alberts allowed
+    public int InitialAlberts = 10; // Number of Alberts to spawn initially
+    public float MinStartingAgeAlbert = 0f; // Minimum starting age for initial Alberts
+    public float MaxStartingAgeAlbert = 5f; // Maximum starting age for initial Alberts
 
     [Header("Kai Population Settings")]
-    public int MIN_KAIS = 20;  // Minimum number of Kais to maintain
-    public int MAX_KAIS = 100; // Maximum number of Kais allowed
-    public int INITIAL_KAIS = 10; // Number of Kais to spawn initially
-    public float MIN_STARTING_AGE_KAI = 0f; // Minimum starting age for initial Kais
-    public float MAX_STARTING_AGE_KAI = 5f; // Maximum starting age for initial Kais
+    public int MinKais = 20;  // Minimum number of Kais to maintain
+    public int MaxKais = 100; // Maximum number of Kais allowed
+    public int InitialKais = 10; // Number of Kais to spawn initially
+    public float MinStartingAgeKai = 0f; // Minimum starting age for initial Kais
+    public float MaxStartingAgeKai = 5f; // Maximum starting age for initial Kais
 
     // Property to display current creature counts in Inspector
     [SerializeField]
@@ -50,8 +50,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
-    public const int OBSERVATION_COUNT = 18;
-    public const int ACTION_COUNT = 5;
+    public const int k_ObservationCount = 18;
+    public const int k_ActionCount = 5;
 
 
     [Header("Test Settings")]
@@ -311,9 +311,9 @@ public class GameManager : MonoBehaviour
             LogManager.LogMessage($"Current Albert population: {currentAlberts}");
 
             // Check if we need to spawn more Alberts and if enough time has passed since last spawn
-            if (currentAlberts < MIN_ALBERTS && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
+            if (currentAlberts < MinAlberts && Time.time - lastSpawnTime >= spawnCooldown && !isSpawning)
             {
-                LogManager.LogMessage($"Albert population below minimum ({MIN_ALBERTS}). Spawning new Albert with staggered timing.");
+                LogManager.LogMessage($"Albert population below minimum ({MinAlberts}). Spawning new Albert with staggered timing.");
 
                 // Start a coroutine to spawn a new Albert with a random delay
                 StartCoroutine(SpawnNewAlbertStaggered());
@@ -332,9 +332,9 @@ public class GameManager : MonoBehaviour
                 LogManager.LogMessage($"Current Kai population: {currentKais}");
 
                 // Check if we need to spawn more Kais
-                if (currentKais < MIN_KAIS && Time.time - lastKaiSpawnTime >= spawnCooldown && !isSpawningKai)
+                if (currentKais < MinKais && Time.time - lastKaiSpawnTime >= spawnCooldown && !isSpawningKai)
                 {
-                    LogManager.LogMessage($"Kai population below minimum ({MIN_KAIS}). Spawning new Kai with staggered timing.");
+                    LogManager.LogMessage($"Kai population below minimum ({MinKais}). Spawning new Kai with staggered timing.");
 
                     // Start a coroutine to spawn a new Kai with a random delay
                     StartCoroutine(SpawnNewKaiStaggered());
@@ -378,7 +378,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Initialize with random age
-            float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
+            float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
             creature.Lifetime = startingAge;
 
             // If the creature starts with an age past the aging threshold, give it appropriate health
@@ -442,7 +442,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Initialize with random age
-            float startingAge = Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
+            float startingAge = Random.Range(MinStartingAgeKai, MaxStartingAgeKai);
             creature.Lifetime = startingAge;
 
             // If the creature starts with an age past the aging threshold, give it appropriate health
@@ -480,11 +480,11 @@ public class GameManager : MonoBehaviour
     {
         if (type == Creature.CreatureType.Albert)
         {
-            return CurrentAlberts < MAX_ALBERTS;
+            return CurrentAlberts < MaxAlberts;
         }
         else if (type == Creature.CreatureType.Kai)
         {
-            return CurrentKais < MAX_KAIS;
+            return CurrentKais < MaxKais;
         }
         return true; // Allow other types to reproduce without limit
     }
@@ -492,7 +492,7 @@ public class GameManager : MonoBehaviour
     // Keep the old method for backward compatibility
     public bool CanReproduce()
     {
-        return CurrentAlberts < MAX_ALBERTS;
+        return CurrentAlberts < MaxAlberts;
     }
 
     private int CountKais()
@@ -560,7 +560,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Starting Test: Alberts Only - Spawning initial Alberts");
 
         // Spawn initial Alberts as specified by INITIAL_ALBERTS parameter
-        for (int i = 0; i < INITIAL_ALBERTS; i++)
+        for (int i = 0; i < InitialAlberts; i++)
         {
             // Calculate a position with some randomness within the spawn area
             Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
@@ -576,7 +576,7 @@ public class GameManager : MonoBehaviour
             if (creature != null)
             {
                 // Initialize with random age based on parameters
-                float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
+                float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
                 creature.Lifetime = startingAge;
 
                 // If the creature starts with an age past the aging threshold, adjust health
@@ -593,14 +593,14 @@ public class GameManager : MonoBehaviour
                 // Set generation to 0 for initial Alberts
                 creature.generation = 0;
 
-                LogManager.LogMessage($"Spawned initial Albert {i + 1}/{INITIAL_ALBERTS} at {position}, age: {startingAge:F1}");
+                LogManager.LogMessage($"Spawned initial Albert {i + 1}/{InitialAlberts} at {position}, age: {startingAge:F1}");
             }
         }
 
         // Report on the setup
-        LogManager.LogMessage($"Initial setup complete: {INITIAL_ALBERTS} Alberts spawned");
-        LogManager.LogMessage($"Age range: {MIN_STARTING_AGE_ALBERT}-{MAX_STARTING_AGE_ALBERT}");
-        LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
+        LogManager.LogMessage($"Initial setup complete: {InitialAlberts} Alberts spawned");
+        LogManager.LogMessage($"Age range: {MinStartingAgeAlbert}-{MaxStartingAgeAlbert}");
+        LogManager.LogMessage($"Population management: MIN_ALBERTS={MinAlberts}, MAX_ALBERTS={MaxAlberts}");
 
         // Check current count
         CountAlberts();
@@ -666,7 +666,7 @@ public class GameManager : MonoBehaviour
         var genome = new NEAT.Genome.Genome(0);
 
         // Add input nodes
-        for (int i = 0; i < OBSERVATION_COUNT; i++)
+        for (int i = 0; i < k_ObservationCount; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;  // Input layer
@@ -675,7 +675,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Add output nodes
-        for (int i = OBSERVATION_COUNT; i < OBSERVATION_COUNT + ACTION_COUNT; i++)
+        for (int i = k_ObservationCount; i < k_ObservationCount + k_ActionCount; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Output);
             node.Layer = 2;
@@ -684,9 +684,9 @@ public class GameManager : MonoBehaviour
         }
 
 
-        for (int i = 0; i < OBSERVATION_COUNT; i++)
+        for (int i = 0; i < k_ObservationCount; i++)
         {
-            for (int j = OBSERVATION_COUNT; j < OBSERVATION_COUNT + ACTION_COUNT; j++)
+            for (int j = k_ObservationCount; j < k_ObservationCount + k_ActionCount; j++)
             {
                 genome.AddConnection(new NEAT.Genes.ConnectionGene(genome.Connections.Count, i, j, Random.Range(-1f, 1f)));
             }
@@ -700,7 +700,7 @@ public class GameManager : MonoBehaviour
         var genome = new NEAT.Genome.Genome(0);
 
         // Add input nodes
-        for (int i = 0; i < OBSERVATION_COUNT; i++)
+        for (int i = 0; i < k_ObservationCount; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -709,11 +709,11 @@ public class GameManager : MonoBehaviour
         }
 
         // Add output nodes (5 outputs: x,y velocity, interact, attack, reproduce)
-        var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
-        var outputNode4 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 3, NEAT.Genes.NodeType.Output); // Attack action
-        var outputNode5 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 4, NEAT.Genes.NodeType.Output); // Reproduce action
+        var outputNode1 = new NEAT.Genes.NodeGene(k_ObservationCount, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NEAT.Genes.NodeGene(k_ObservationCount + 1, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NEAT.Genes.NodeGene(k_ObservationCount + 2, NEAT.Genes.NodeType.Output); // Interact action
+        var outputNode4 = new NEAT.Genes.NodeGene(k_ObservationCount + 3, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(k_ObservationCount + 4, NEAT.Genes.NodeType.Output); // Reproduce action
 
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
@@ -738,40 +738,40 @@ public class GameManager : MonoBehaviour
         // Kais are more aggressive (stronger response to opposite type)
 
         // Health to horizontal velocity (more defensive)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, OBSERVATION_COUNT, -0.7f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, k_ObservationCount, -0.7f));
         // ReproductionMeter to vertical velocity (less priority)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 2, OBSERVATION_COUNT + 1, -0.3f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 2, k_ObservationCount + 1, -0.3f));
         // Same type x,y position (slightly weaker attraction)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, OBSERVATION_COUNT, 0.4f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, OBSERVATION_COUNT + 1, 0.4f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 3, k_ObservationCount, 0.4f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 4, k_ObservationCount + 1, 0.4f));
         // Opposite type x,y position (stronger reaction)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 5, OBSERVATION_COUNT, 0.8f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 6, OBSERVATION_COUNT + 1, 0.8f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 5, k_ObservationCount, 0.8f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 6, k_ObservationCount + 1, 0.8f));
         // Cherry position (more food-focused)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 7, OBSERVATION_COUNT, 0.6f));
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 8, OBSERVATION_COUNT + 1, 0.6f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 7, k_ObservationCount, 0.6f));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 8, k_ObservationCount + 1, 0.6f));
 
         // Add base connections for chop action - connect to tree observations
         // Kai is more aggressive about chopping
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 9, OBSERVATION_COUNT + 2, 0.8f)); // Tree x to interact
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(11, 10, OBSERVATION_COUNT + 2, 0.8f)); // Tree y to interact
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 9, k_ObservationCount + 2, 0.8f)); // Tree x to interact
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(11, 10, k_ObservationCount + 2, 0.8f)); // Tree y to interact
 
         // Add base connections for attack action - connect to opposite type observations
         // Kai is very aggressive about attacking
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(13, 5, OBSERVATION_COUNT + 3, 0.9f)); // Opposite x to attack
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(14, 6, OBSERVATION_COUNT + 3, 0.9f)); // Opposite y to attack
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(13, 5, k_ObservationCount + 3, 0.9f)); // Opposite x to attack
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(14, 6, k_ObservationCount + 3, 0.9f)); // Opposite y to attack
 
         // EnergyMeter level to actions - enables actions only when energy is high
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 1, OBSERVATION_COUNT + 2, 0.6f)); // EnergyMeter to interact
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 1, OBSERVATION_COUNT + 3, 0.7f)); // EnergyMeter to attack - higher weight makes Kai more likely to attack
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(16, 1, k_ObservationCount + 2, 0.6f)); // EnergyMeter to interact
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(17, 1, k_ObservationCount + 3, 0.7f)); // EnergyMeter to attack - higher weight makes Kai more likely to attack
 
         // Ground avoidance/attraction connections
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 11, OBSERVATION_COUNT, 0.5f)); // Ground x to horizontal velocity
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, OBSERVATION_COUNT + 1, 0.5f)); // Ground y to vertical velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(18, 11, k_ObservationCount, 0.5f)); // Ground x to horizontal velocity
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(19, 12, k_ObservationCount + 1, 0.5f)); // Ground y to vertical velocity
 
         // Bias reproduction output using the reproduction meter
         const float reproductionBias = 0.5f;
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 2, OBSERVATION_COUNT + 4, reproductionBias));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(20, 2, k_ObservationCount + 4, reproductionBias));
 
         return genome;
     }
@@ -848,7 +848,7 @@ public class GameManager : MonoBehaviour
 
         // Add input nodes
 
-        for (int i = 0; i < OBSERVATION_COUNT; i++)
+        for (int i = 0; i < k_ObservationCount; i++)
         {
             var node = new NEAT.Genes.NodeGene(i, NEAT.Genes.NodeType.Input);
             node.Layer = 0;
@@ -857,11 +857,11 @@ public class GameManager : MonoBehaviour
         }
 
         // Add output nodes (including reproduction action)
-        var outputNode1 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT, NEAT.Genes.NodeType.Output); // X velocity
-        var outputNode2 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 1, NEAT.Genes.NodeType.Output); // Y velocity
-        var outputNode3 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 2, NEAT.Genes.NodeType.Output); // Interact action
-        var outputNode4 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 3, NEAT.Genes.NodeType.Output); // Attack action
-        var outputNode5 = new NEAT.Genes.NodeGene(OBSERVATION_COUNT + 4, NEAT.Genes.NodeType.Output); // Reproduce action
+        var outputNode1 = new NEAT.Genes.NodeGene(k_ObservationCount, NEAT.Genes.NodeType.Output); // X velocity
+        var outputNode2 = new NEAT.Genes.NodeGene(k_ObservationCount + 1, NEAT.Genes.NodeType.Output); // Y velocity
+        var outputNode3 = new NEAT.Genes.NodeGene(k_ObservationCount + 2, NEAT.Genes.NodeType.Output); // Interact action
+        var outputNode4 = new NEAT.Genes.NodeGene(k_ObservationCount + 3, NEAT.Genes.NodeType.Output); // Attack action
+        var outputNode5 = new NEAT.Genes.NodeGene(k_ObservationCount + 4, NEAT.Genes.NodeType.Output); // Reproduce action
 
         outputNode1.Layer = 2;
         outputNode2.Layer = 2;
@@ -882,27 +882,27 @@ public class GameManager : MonoBehaviour
         genome.AddNode(outputNode5);
 
         // Add connections for basic movement (low weights)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, OBSERVATION_COUNT, 0.2f)); // Health to x movement
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 0, OBSERVATION_COUNT + 1, 0.2f)); // Health to y movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(0, 0, k_ObservationCount, 0.2f)); // Health to x movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(1, 0, k_ObservationCount + 1, 0.2f)); // Health to y movement
 
         // Add connections for basic actions (medium weights)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 1, OBSERVATION_COUNT + 2, 0.5f)); // EnergyMeter to interact
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 1, OBSERVATION_COUNT + 3, 0.5f)); // EnergyMeter to attack
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(2, 1, k_ObservationCount + 2, 0.5f)); // EnergyMeter to interact
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(3, 1, k_ObservationCount + 3, 0.5f)); // EnergyMeter to attack
 
         // Add influence from reproduction meter to movement (bias towards finding mates)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 2, OBSERVATION_COUNT, reproBias));  // ReproductionMeter to x movement
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 2, OBSERVATION_COUNT + 1, reproBias));  // ReproductionMeter to y movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(4, 2, k_ObservationCount, reproBias));  // ReproductionMeter to x movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(5, 2, k_ObservationCount + 1, reproBias));  // ReproductionMeter to y movement
 
         // Directly link reproduction meter to reproduction action
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 2, OBSERVATION_COUNT + 4, reproBias));
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(6, 2, k_ObservationCount + 4, reproBias));
 
         // Add connections to make creatures see each other
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 3, OBSERVATION_COUNT, 0.4f * reproBias));  // Same creature x to x movement (weighted by repro bias)
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 4, OBSERVATION_COUNT + 1, 0.4f * reproBias));  // Same creature y to y movement (weighted by repro bias)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(7, 3, k_ObservationCount, 0.4f * reproBias));  // Same creature x to x movement (weighted by repro bias)
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(8, 4, k_ObservationCount + 1, 0.4f * reproBias));  // Same creature y to y movement (weighted by repro bias)
 
         // Add connections for ground detection
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 11, OBSERVATION_COUNT, 0.3f));  // Ground x to x movement
-        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 12, OBSERVATION_COUNT + 1, 0.3f));  // Ground y to y movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(9, 11, k_ObservationCount, 0.3f));  // Ground x to x movement
+        genome.AddConnection(new NEAT.Genes.ConnectionGene(10, 12, k_ObservationCount + 1, 0.3f));  // Ground y to y movement
 
         // Create the neural network and initialize the creature
         var network = NEAT.NN.FeedForwardNetwork.Create(genome);
@@ -1460,7 +1460,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
 
         // Spawn Alberts 
-        for (int i = 0; i < INITIAL_ALBERTS; i++)
+        for (int i = 0; i < InitialAlberts; i++)
         {
             // Calculate a position with randomness within the left spawn area
             Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
@@ -1476,7 +1476,7 @@ public class GameManager : MonoBehaviour
             if (albert != null)
             {
                 // Initialize with random age
-                float startingAge = Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT);
+                float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
                 albert.Lifetime = startingAge;
 
                 // Set starting reproduction meter to a random value
@@ -1485,12 +1485,12 @@ public class GameManager : MonoBehaviour
                 // Set generation to 0 for initial Alberts
                 albert.generation = 0;
 
-                LogManager.LogMessage($"Spawned Albert {i + 1}/{INITIAL_ALBERTS} at {position}, age: {startingAge:F1}");
+                LogManager.LogMessage($"Spawned Albert {i + 1}/{InitialAlberts} at {position}, age: {startingAge:F1}");
             }
         }
 
         // Spawn Kais
-        for (int i = 0; i < INITIAL_KAIS; i++)
+        for (int i = 0; i < InitialKais; i++)
         {
             // Calculate a position with randomness within the right spawn area
             Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
@@ -1506,7 +1506,7 @@ public class GameManager : MonoBehaviour
             if (kai != null)
             {
                 // Initialize with random age
-                float startingAge = Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
+                float startingAge = Random.Range(MinStartingAgeKai, MaxStartingAgeKai);
                 kai.Lifetime = startingAge;
 
                 // Set starting reproduction meter to a random value
@@ -1515,7 +1515,7 @@ public class GameManager : MonoBehaviour
                 // Set generation to 0 for initial Kais
                 kai.generation = 0;
 
-                LogManager.LogMessage($"Spawned Kai {i + 1}/{INITIAL_KAIS} at {position}, age: {startingAge:F1}");
+                LogManager.LogMessage($"Spawned Kai {i + 1}/{InitialKais} at {position}, age: {startingAge:F1}");
             }
         }
 
@@ -1524,10 +1524,10 @@ public class GameManager : MonoBehaviour
         CountKais();
 
         LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
-        LogManager.LogMessage($"Left side (Alberts): {INITIAL_ALBERTS} creatures near {spawnCenter}");
-        LogManager.LogMessage($"Right side (Kais): {INITIAL_KAIS} creatures near {rightSpawnCenter}");
-        LogManager.LogMessage($"Population management: MIN_ALBERTS={MIN_ALBERTS}, MAX_ALBERTS={MAX_ALBERTS}");
-        LogManager.LogMessage($"Population management: MIN_KAIS={MIN_KAIS}, MAX_KAIS={MAX_KAIS}");
+        LogManager.LogMessage($"Left side (Alberts): {InitialAlberts} creatures near {spawnCenter}");
+        LogManager.LogMessage($"Right side (Kais): {InitialKais} creatures near {rightSpawnCenter}");
+        LogManager.LogMessage($"Population management: MIN_ALBERTS={MinAlberts}, MAX_ALBERTS={MaxAlberts}");
+        LogManager.LogMessage($"Population management: MIN_KAIS={MinKais}, MAX_KAIS={MaxKais}");
     }
 
     private void SetupLoadCreaturesBattleTest()
@@ -1540,8 +1540,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        int albertTarget = INITIAL_ALBERTS;
-        int kaisTarget = INITIAL_KAIS;
+        int albertTarget = InitialAlberts;
+        int kaisTarget = InitialKais;
 
         // Load and spawn Alberts from folder
         int albertsLoaded = LoadAndSpawnCreaturesFromFolder(
@@ -1648,8 +1648,8 @@ public class GameManager : MonoBehaviour
                     {
                         // Initialize with creature's values but adjust age if needed
                         float startingAge = type == Creature.CreatureType.Albert ?
-                            Random.Range(MIN_STARTING_AGE_ALBERT, MAX_STARTING_AGE_ALBERT) :
-                            Random.Range(MIN_STARTING_AGE_KAI, MAX_STARTING_AGE_KAI);
+                            Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert) :
+                            Random.Range(MinStartingAgeKai, MaxStartingAgeKai);
 
                         // Override age if desired (comment out to keep saved ages)
                         creature.Lifetime = startingAge;

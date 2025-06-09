@@ -1052,7 +1052,7 @@ public class Creature : MonoBehaviour
     // Generate observations for neural network using cached detection data
     public float[] GetObservations()
     {
-        float[] obs = new float[GameManager.OBSERVATION_COUNT];
+        float[] obs = new float[GameManager.k_ObservationCount];
 
         // Basic stats - normalize health to 0-1 range
         obs[0] = health / maxHealth; // Normalized health
@@ -1214,7 +1214,7 @@ public class Creature : MonoBehaviour
             if (LogManager.Instance != null)
             {
                 // Only log if the output length is not what we expect (to avoid too many log entries)
-                if (outputs.Length != GameManager.ACTION_COUNT)
+                if (outputs.Length != GameManager.k_ActionCount)
                 {
                     LogManager.LogError(outputInfo);
                 }
@@ -1231,9 +1231,9 @@ public class Creature : MonoBehaviour
             }
 
             // Double-check that we're getting the expected number of outputs
-            if (outputs.Length != GameManager.ACTION_COUNT)
+            if (outputs.Length != GameManager.k_ActionCount)
             {
-                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of {GameManager.ACTION_COUNT}. Creating adjusted array.";
+                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of {GameManager.k_ActionCount}. Creating adjusted array.";
                 if (LogManager.Instance != null)
                 {
                     LogManager.LogError(errorMsg);
@@ -1244,10 +1244,10 @@ public class Creature : MonoBehaviour
                 }
 
                 // Create a new array of exactly GameManager.ACTION_COUNT elements
-                float[] adjustedOutputs = new float[GameManager.ACTION_COUNT];
+                float[] adjustedOutputs = new float[GameManager.k_ActionCount];
 
                 // Copy the values we have
-                for (int i = 0; i < Mathf.Min(outputs.Length, GameManager.ACTION_COUNT); i++)
+                for (int i = 0; i < Mathf.Min(outputs.Length, GameManager.k_ActionCount); i++)
                 {
                     adjustedOutputs[i] = outputs[i];
                 }
@@ -1371,7 +1371,7 @@ public class Creature : MonoBehaviour
         try
         {
             // Log if the array length wasn't GameManager.ACTION_COUNT
-            if (actions.Length != GameManager.ACTION_COUNT)
+            if (actions.Length != GameManager.k_ActionCount)
             {
                 string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}";
                 if (LogManager.Instance != null)
