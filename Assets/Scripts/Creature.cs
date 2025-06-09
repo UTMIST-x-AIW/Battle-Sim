@@ -12,12 +12,12 @@ public enum CreatureClass { None, Tank, Scout, Swordsman, Archer }
 public class Creature : MonoBehaviour
 {
     // Add static counter at the top of the class
-    [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
+    [SerializeField] private static GameManager _gameManager;  // Cache GameManager reference
 
     // Method to reset the static reference when scene changes
     public static void ClearStaticReferences()
     {
-        neatTest = null;
+        _gameManager = null;
         Debug.Log("Creature static references cleared");
     }
 
@@ -48,7 +48,7 @@ public class Creature : MonoBehaviour
     public float deleteConnectionRate = 0.2f; // Chance of deleting a connection
 
     [Header("Network Settings")]
-    public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed (set by NEATTest)
+    public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed (set by GameManager)
 
     [Header("Action Settings")]
     public float actionEnergyCost = 1.0f;
@@ -226,8 +226,8 @@ public class Creature : MonoBehaviour
 
             }
 
-            // Cache NEATTest reference if not already cached
-            neatTest = FindObjectOfType<NEATTest>(); //IMPROVEMENT: probably don't need this, make it static or something
+            // Cache GameManager reference if not already cached
+            _gameManager = FindObjectOfType<GameManager>(); //IMPROVEMENT: probably don't need this, make it static or something
 
 
             originalScale = transform.localScale;
@@ -1052,7 +1052,7 @@ public class Creature : MonoBehaviour
     // Generate observations for neural network using cached detection data
     public float[] GetObservations()
     {
-        float[] obs = new float[NEATTest.OBSERVATION_COUNT];
+        float[] obs = new float[GameManager.OBSERVATION_COUNT];
 
         // Basic stats - normalize health to 0-1 range
         obs[0] = health / maxHealth; // Normalized health
@@ -1214,7 +1214,7 @@ public class Creature : MonoBehaviour
             if (LogManager.Instance != null)
             {
                 // Only log if the output length is not what we expect (to avoid too many log entries)
-                if (outputs.Length != NEATTest.ACTION_COUNT)
+                if (outputs.Length != GameManager.ACTION_COUNT)
                 {
                     LogManager.LogError(outputInfo);
                 }
@@ -1231,9 +1231,9 @@ public class Creature : MonoBehaviour
             }
 
             // Double-check that we're getting the expected number of outputs
-            if (outputs.Length != NEATTest.ACTION_COUNT)
+            if (outputs.Length != GameManager.ACTION_COUNT)
             {
-                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of {NEATTest.ACTION_COUNT}. Creating adjusted array.";
+                string errorMsg = $"Neural network returned {outputs.Length} outputs instead of {GameManager.ACTION_COUNT}. Creating adjusted array.";
                 if (LogManager.Instance != null)
                 {
                     LogManager.LogError(errorMsg);
@@ -1243,11 +1243,11 @@ public class Creature : MonoBehaviour
                     Debug.LogError(errorMsg);
                 }
 
-                // Create a new array of exactly NEATTest.ACTION_COUNT elements
-                float[] adjustedOutputs = new float[NEATTest.ACTION_COUNT];
+                // Create a new array of exactly GameManager.ACTION_COUNT elements
+                float[] adjustedOutputs = new float[GameManager.ACTION_COUNT];
 
                 // Copy the values we have
-                for (int i = 0; i < Mathf.Min(outputs.Length, NEATTest.ACTION_COUNT); i++)
+                for (int i = 0; i < Mathf.Min(outputs.Length, GameManager.ACTION_COUNT); i++)
                 {
                     adjustedOutputs[i] = outputs[i];
                 }
@@ -1370,8 +1370,8 @@ public class Creature : MonoBehaviour
 
         try
         {
-            // Log if the array length wasn't NEATTest.ACTION_COUNT
-            if (actions.Length != NEATTest.ACTION_COUNT)
+            // Log if the array length wasn't GameManager.ACTION_COUNT
+            if (actions.Length != GameManager.ACTION_COUNT)
             {
                 string errorMsg = $"ProcessActionCommands for {gameObject.name}: actions array length {actions.Length}";
                 if (LogManager.Instance != null)
@@ -1536,11 +1536,11 @@ public class Creature : MonoBehaviour
         // Safety check - if no camera, exit early
         if (Camera.main == null) return;
 
-        // Only check for NEATTest reference once
+        // Only check for GameManager reference once
         if (!hasCheckedNeatTest) hasCheckedNeatTest = true;
 
-        // If we still don't have a NEATTest reference or labels are disabled, return early
-        if (neatTest == null || !neatTest.showCreatureLabels) return;
+        // If we still don't have a GameManager reference or labels are disabled, return early
+        if (_gameManager == null || !_gameManager.showCreatureLabels) return;
 
         // Get screen position for this creature
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
@@ -1575,10 +1575,10 @@ public class Creature : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Only draw if visualization is enabled and NEATTest reference exists
-        if (neatTest != null)
+        // Only draw if visualization is enabled and GameManager reference exists
+        if (_gameManager != null)
         {
-            if (neatTest.showTreeVisionRange)
+            if (_gameManager.showTreeVisionRange)
             {
                 // Draw tree vision range (green)
                 if (dynamicVisionRanges.Length > 0)
@@ -1594,7 +1594,7 @@ public class Creature : MonoBehaviour
                 }
             }
 
-            if (neatTest.showTeammateVisionRange)
+            if (_gameManager.showTeammateVisionRange)
             {
                 // Draw teammate vision range (orange)
                 Color teammateRangeColor = new Color(1f, 0.5f, 0f, 0.05f);
@@ -1607,7 +1607,7 @@ public class Creature : MonoBehaviour
                 Gizmos.DrawWireSphere(transform.position, currentTeammateVisionRange);
             }
 
-            if (neatTest.showOpponentVisionRange)
+            if (_gameManager.showOpponentVisionRange)
             {
                 // Draw opponent vision range (red)
                 Color opponentRangeColor = new Color(1f, 0f, 0f, 0.05f);
@@ -1620,7 +1620,7 @@ public class Creature : MonoBehaviour
                 Gizmos.DrawWireSphere(transform.position, currentOpponentVisionRange);
             }
 
-            if (neatTest.showGroundVisionRange)
+            if (_gameManager.showGroundVisionRange)
             {
                 // Draw ground vision range (yellow)
                 Color groundRangeColor = new Color(1f, 1f, 0f, 0.03f);
@@ -1634,16 +1634,16 @@ public class Creature : MonoBehaviour
             }
 
             // Draw close range if enabled
-            if (neatTest.showCloseRange)
+            if (_gameManager.showCloseRange)
             {
-                Gizmos.color = neatTest.closeRangeColor;
+                Gizmos.color = _gameManager.closeRangeColor;
                 Gizmos.DrawWireSphere(transform.position, closeRange);
             }
 
             // Draw bow range if enabled
-            if (neatTest.showBowRange)
+            if (_gameManager.showBowRange)
             {
-                Gizmos.color = neatTest.bowRangeColor;
+                Gizmos.color = _gameManager.bowRangeColor;
                 Gizmos.DrawWireSphere(transform.position, bowRange);
             }
         }

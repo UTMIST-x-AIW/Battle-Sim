@@ -57,7 +57,7 @@ public class PlayerController : MonoBehaviour
         // [2] = interact desire (0 to 1)
         // [3] = attack desire (0 to 1)
         // [4] = reproduction desire (0 to 1)
-        float[] actions = new float[NEATTest.ACTION_COUNT];
+        float[] actions = new float[GameManager.ACTION_COUNT];
         actions[0] = horizontal;
         actions[1] = vertical;
         actions[2] = interactDesire;

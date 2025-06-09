@@ -8,9 +8,9 @@ using System;
 // Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
 using Random = UnityEngine.Random;
 
-public class NEATTest : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    private static NEATTest instance; //IMPROVEMENT: make this public instead, better for performance and readability
+    private static GameManager instance; //IMPROVEMENT: make this public instead, better for performance and readability
 
     [Header("Creature Prefabs")]
     public GameObject albertCreaturePrefab;  // Assign in inspector
@@ -134,7 +134,7 @@ public class NEATTest : MonoBehaviour
         // Check if there's already an instance
         if (instance != null && instance != this) //IMPROVEMENT: i think we have a lot of null checks in the codebase that might be unnecessary like this one, can look into removing them if it doesn't cause issues
         {
-            Debug.LogError($"Found duplicate NEATTest on {gameObject.name}. There should only be one NEATTest component in the scene!");
+            Debug.LogError($"Found duplicate GameManager on {gameObject.name}. There should only be one GameManager component in the scene!");
             Destroy(this);
             return;
         }
@@ -159,7 +159,7 @@ public class NEATTest : MonoBehaviour
             CreateRunSaveFolder();
         }
 
-        // Debug.Log($"NEATTest starting on GameObject: {gameObject.name}");
+        // Debug.Log($"GameManager starting on GameObject: {gameObject.name}");
 
         // Clear any existing creatures first
         var existingCreatures = GameObject.FindObjectsOfType<Creature>();
@@ -288,11 +288,11 @@ public class NEATTest : MonoBehaviour
         {
             if (LogManager.Instance != null)
             {
-                LogManager.LogError($"CRITICAL ERROR in NEATTest.Update: {e.Message}\nStack trace: {e.StackTrace}");
+                LogManager.LogError($"CRITICAL ERROR in GameManager.Update: {e.Message}\nStack trace: {e.StackTrace}");
             }
             else
             {
-                Debug.LogError($"CRITICAL ERROR in NEATTest.Update: {e.Message}\nStack trace: {e.StackTrace}");
+                Debug.LogError($"CRITICAL ERROR in GameManager.Update: {e.Message}\nStack trace: {e.StackTrace}");
             }
         }
     }
@@ -955,22 +955,22 @@ public class NEATTest : MonoBehaviour
     {
         try
         {
-            Debug.Log($"NEATTest OnDestroy called on {gameObject.name}");
+            Debug.Log($"GameManager OnDestroy called on {gameObject.name}");
 
             // Only clear the static instance if this is the instance being destroyed
             if (instance == this)
             {
-                Debug.Log("NEATTest: Main instance being destroyed");
+                Debug.Log("GameManager: Main instance being destroyed");
 
                 try
                 {
                     // Clear static references in Creature class
                     Creature.ClearStaticReferences();
-                    Debug.Log("NEATTest: Successfully cleared Creature static references");
+                    Debug.Log("GameManager: Successfully cleared Creature static references");
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError($"NEATTest: Error clearing Creature static references: {e.Message}");
+                    Debug.LogError($"GameManager: Error clearing Creature static references: {e.Message}");
                 }
 
                 // Clear the instance reference
@@ -982,40 +982,40 @@ public class NEATTest : MonoBehaviour
                 {
                     try
                     {
-                        LogManager.LogMessage("NEATTest instance has been destroyed and static references cleared.");
-                        Debug.Log("NEATTest: Successfully logged final message");
+                        LogManager.LogMessage("GameManager instance has been destroyed and static references cleared.");
+                        Debug.Log("GameManager: Successfully logged final message");
                     }
                     catch (System.Exception e)
                     {
-                        Debug.LogError($"NEATTest: Error logging final message: {e.Message}");
+                        Debug.LogError($"GameManager: Error logging final message: {e.Message}");
                     }
 
                     try
                     {
                         // Call cleanup separately
                         LogManager.Cleanup();
-                        Debug.Log("NEATTest: LogManager cleanup completed");
+                        Debug.Log("GameManager: LogManager cleanup completed");
                     }
                     catch (System.Exception e)
                     {
-                        Debug.LogError($"NEATTest: Error during LogManager cleanup: {e.Message}");
+                        Debug.LogError($"GameManager: Error during LogManager cleanup: {e.Message}");
                     }
                 }
                 else
                 {
-                    Debug.Log("NEATTest: LogManager instance is null, skipping cleanup");
+                    Debug.Log("GameManager: LogManager instance is null, skipping cleanup");
                 }
 
                 ObjectPoolManager.ClearPools();
             }
             else
             {
-                Debug.Log("NEATTest: Not the main instance, skipping cleanup");
+                Debug.Log("GameManager: Not the main instance, skipping cleanup");
             }
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"NEATTest: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
+            Debug.LogError($"GameManager: Unhandled error in OnDestroy: {e.Message}\n{e.StackTrace}");
         }
     }
 
@@ -1097,7 +1097,7 @@ public class NEATTest : MonoBehaviour
         }
     }
 
-    // Add this method in the NEATTest class, ideally near other genome-related methods
+    // Add this method in the GameManager class, ideally near other genome-related methods
     private void ValidateGenome(NEAT.Genome.Genome genome)
     {
         if (genome == null)

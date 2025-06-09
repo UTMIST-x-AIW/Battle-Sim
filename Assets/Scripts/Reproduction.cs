@@ -102,8 +102,8 @@ public class Reproduction : MonoBehaviour
         float matingChance = Random.value;
         if (matingChance < pReproduction)
         {
-            // Get reference to NEATTest
-            var neatTest = FindObjectOfType<NEATTest>();
+            // Get reference to GameManager
+            var neatTest = FindObjectOfType<GameManager>();
             if (neatTest != null)
             {
                 // Get parent creatures
@@ -118,7 +118,7 @@ public class Reproduction : MonoBehaviour
 
                 // Check if reproduction is allowed based on creature type
                 bool canReproduce = false;
-                if (neatTest.currentTest == NEATTest.CurrentTest.AlbertsVsKais)
+                if (neatTest.currentTest == GameManager.CurrentTest.AlbertsVsKais)
                 {
                     // For Alberts vs Kais test, use type-specific population check
                     canReproduce = neatTest.CanReproduce(p1.type);
@@ -225,10 +225,10 @@ public class Reproduction : MonoBehaviour
         childCreature.generation = Mathf.Max(p1.generation, p2.generation) + 1;
 
         // Check if this creature should be saved (milestone generation)
-        NEATTest neatTest = FindObjectOfType<NEATTest>();
-        if (neatTest != null)
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        if (gameManager != null)
         {
-            neatTest.CheckCreatureForSaving(childCreature);
+            gameManager.CheckCreatureForSaving(childCreature);
         }
 
         return child;
@@ -264,13 +264,13 @@ public class Reproduction : MonoBehaviour
         // These are essential nodes that should never be missing
 
         // Add all input nodes
-        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
+        for (int i = 0; i < GameManager.OBSERVATION_COUNT; i++)
         {
             childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone()); //TODO: select randomly from parent1 or parent2 if this all works well    
         }
 
         // Add all output nodes
-        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
+        for (int i = GameManager.OBSERVATION_COUNT; i < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; i++)
         {
             childGenome.AddNode((NEAT.Genes.NodeGene)parent1Genome.Nodes[i].Clone());
         }
@@ -280,7 +280,7 @@ public class Reproduction : MonoBehaviour
         foreach (var key in allNodeKeys)
         {
             // Skip input and output nodes which we've already handled
-            if (key <= NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT)
+            if (key <= GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT)
             {
                 continue;
             }
@@ -338,7 +338,7 @@ public class Reproduction : MonoBehaviour
 
         // Ensure all output nodes have at least one connection
         //TODO: check if this is really necessary
-        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
+        for (int i = GameManager.OBSERVATION_COUNT; i < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; i++)
         {
             bool hasConnection = childGenome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
@@ -346,7 +346,7 @@ public class Reproduction : MonoBehaviour
             if (!hasConnection)
             {
                 // Find an input node to connect to this output
-                for (int j = 0; j < NEATTest.OBSERVATION_COUNT; j++)
+                for (int j = 0; j < GameManager.OBSERVATION_COUNT; j++)
                 {
                     int connKey = childGenome.Connections.Count;
                     childGenome.AddConnection(new NEAT.Genes.ConnectionGene(
@@ -373,9 +373,9 @@ public class Reproduction : MonoBehaviour
         const float DELETE_CONNECTION_PROB = 0.2f; // Was 0.1f
         const float MODIFY_WEIGHT_PROB = 0.6f;   // Was 0.3f
 
-        // Retrieve max hidden layer setting from NEATTest (fallback to 10)
+        // Retrieve max hidden layer setting from GameManager (fallback to 10)
         int maxHiddenLayers = 10;
-        var neatTest = FindObjectOfType<NEATTest>();
+        var neatTest = FindObjectOfType<GameManager>();
         if (neatTest != null)
         {
             maxHiddenLayers = neatTest.maxHiddenLayers;
@@ -782,7 +782,7 @@ public class Reproduction : MonoBehaviour
     private void EnsureRequiredNodes(NEAT.Genome.Genome genome)
     {
         // Ensure all input nodes exist
-        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
+        for (int i = 0; i < GameManager.OBSERVATION_COUNT; i++)
         {
             // If the input node doesn't exist, recreate it
             if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Input)
@@ -811,7 +811,7 @@ public class Reproduction : MonoBehaviour
                 genome.AddNode(inputNode);
 
                 // Connect this input to at least one output to ensure it's used
-                for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
+                for (int j = GameManager.OBSERVATION_COUNT; j < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; j++)
                 {
                     if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
                     {
@@ -828,7 +828,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // Check for output nodes (existing code)
-        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
+        for (int i = GameManager.OBSERVATION_COUNT; i < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; i++)
         {
             // If the output node doesn't exist, recreate it
             if (!genome.Nodes.ContainsKey(i) || genome.Nodes[i].Type != NEAT.Genes.NodeType.Output)
@@ -872,7 +872,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // Ensure all output nodes have at least one incoming connection
-        for (int i = NEATTest.OBSERVATION_COUNT; i < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; i++)
+        for (int i = GameManager.OBSERVATION_COUNT; i < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.OutputKey == i && c.Enabled);
@@ -903,7 +903,7 @@ public class Reproduction : MonoBehaviour
         }
 
         // Ensure all input nodes have at least one outgoing connection
-        for (int i = 0; i < NEATTest.OBSERVATION_COUNT; i++)
+        for (int i = 0; i < GameManager.OBSERVATION_COUNT; i++)
         {
             bool hasConnection = genome.Connections.Values
                 .Any(c => c.InputKey == i && c.Enabled);
@@ -920,7 +920,7 @@ public class Reproduction : MonoBehaviour
                 }
 
                 // Connect to an output node
-                for (int j = NEATTest.OBSERVATION_COUNT; j < NEATTest.OBSERVATION_COUNT + NEATTest.ACTION_COUNT; j++)
+                for (int j = GameManager.OBSERVATION_COUNT; j < GameManager.OBSERVATION_COUNT + GameManager.ACTION_COUNT; j++)
                 {
                     if (genome.Nodes.ContainsKey(j) && genome.Nodes[j].Type == NEAT.Genes.NodeType.Output)
                     {

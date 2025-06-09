@@ -6,8 +6,8 @@ public class AddTesterComponent
     [MenuItem("UTMIST/Add NEAT Tester")]
     static void AddNEATTester()
     {
-        // Find the NEATTest GameObject
-        var neatTestObj = GameObject.FindObjectOfType<NEATTest>();
+        // Find the GameManager GameObject
+        var neatTestObj = GameObject.FindObjectOfType<GameManager>();
         
         if (neatTestObj != null)
         {
@@ -15,16 +15,16 @@ public class AddTesterComponent
             if (neatTestObj.GetComponent<NEATNetworkTester>() == null)
             {
                 neatTestObj.gameObject.AddComponent<NEATNetworkTester>();
-                Debug.Log("Added NEATNetworkTester to NEATTest GameObject.");
+                Debug.Log("Added NEATNetworkTester to GameManager GameObject.");
             }
             else
             {
-                // Debug.Log("NEATNetworkTester already exists on NEATTest GameObject.");
+                // Debug.Log("NEATNetworkTester already exists on GameManager GameObject.");
             }
         }
         else
         {
-            Debug.LogError("Could not find NEATTest GameObject in the scene. Please make sure it exists.");
+            Debug.LogError("Could not find GameManager GameObject in the scene. Please make sure it exists.");
         }
     }
 } 
