@@ -41,11 +41,11 @@ public class SpawnEntities : MonoBehaviour
 
     private void LateUpdate()
     {
-        // foreach (var instance in instances)
-        // {
-        //     ShootRays(instance);
-        // }
-        int instancesLength = instances.Count;
+        foreach (var instance in instances)
+        {
+            ShootRays(instance);
+        }
+        /*int instancesLength = instances.Count;
         var positions = new NativeArray<float3>(instancesLength, Allocator.TempJob);
         //var rayInInstances = new NativeArray<RaycastHit>(instancesLength * rayCount, Allocator.TempJob);
 
@@ -60,15 +60,14 @@ public class SpawnEntities : MonoBehaviour
             var creature = instances[index];
             NativeArray<RaycastHit> creatureHits = hits.GetSubArray(index * rayCount, rayCount);
             creature.Hits = creatureHits;
-            ProcessHitsForCreature(creature, creatureHits);
 
            // creatureHits.Dispose();
         }
 
-        positions.Dispose();
+        positions.Dispose();*/
     }
     
-    private void ProcessHitsForCreature(MinimalCreature creature, NativeArray<RaycastHit> hits)
+    /*private void ProcessHitsForCreature(MinimalCreature creature, NativeArray<RaycastHit> hits)
     {
         for (int i = 0; i < hits.Length; i++)
         {
@@ -82,7 +81,7 @@ public class SpawnEntities : MonoBehaviour
                 Debug.DrawRay(creature.transform.position, Vector3.up, Color.red);
             }
         }
-    }
+    }*/
     private void ShootRays(MinimalCreature instance)
     {
 

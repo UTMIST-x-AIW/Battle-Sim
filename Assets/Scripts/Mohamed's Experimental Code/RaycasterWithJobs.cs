@@ -54,7 +54,7 @@ public class RaycastsWithJobs
             var hit = _results[i];
             if (hit.collider != null)
             {
-                Debug.DrawRay(_commands[i].from, hit.transform.position, Color.green);
+                Debug.DrawRay(_commands[i].from, hit.point, Color.green);
             }
             else
             {
