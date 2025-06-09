@@ -155,25 +155,29 @@ public class Reproduction : MonoBehaviour
                     LogManager.LogMessage($"Mating between {p1.type} (Age: {p1.Lifetime:F1}, Gen: {p1.generation}) and {p2.type} (Age: {p2.Lifetime:F1}, Gen: {p2.generation})");
                 }
 
-                // Reset reproduction meter for both parents
-                p1.reproductionMeter = 0f;
-                p1.canStartReproducing = false;
-                p2.reproductionMeter = 0f;
-                p2.canStartReproducing = false;
-
-                // Spawn child
-                GameObject child = SpawnChild(p1, p2, Reproduction_prefab, (this.transform.position + other.transform.position) / 2);
-                if (child == null)
+                // Spawn child only if path is clear
+                Vector3 spawnPosition = (this.transform.position + other.transform.position) / 2;
+                if (IsSpawnLocationValid(this.transform.position, other.transform.position, spawnPosition))
                 {
-                    isMating = false;
-                    return;
+                    // Reset reproduction meter for both parents
+                    p1.reproductionMeter = 0f;
+                    p1.canStartReproducing = false;
+                    p2.reproductionMeter = 0f;
+                    p2.canStartReproducing = false;
+
+                    GameObject child = SpawnChild(p1, p2, Reproduction_prefab, spawnPosition);
+                    if (child == null)
+                    {
+                        isMating = false;
+                        return;
+                    }
+
+                    ParenthoodManager.AssignParent(child);
+                    AnimatingDoTweenUtilities.PlayGrow(child);
+
+                    // Still tracking past mates for reference, but not restricting repeat mating
+                    otherScript.gameObject_mated_with.Add(this.gameObject);
                 }
-
-                ParenthoodManager.AssignParent(child);
-                AnimatingDoTweenUtilities.PlayGrow(child);
-
-                // Still tracking past mates for reference, but not restricting repeat mating
-                otherScript.gameObject_mated_with.Add(this.gameObject);
             }
         }
 
@@ -944,5 +948,23 @@ public class Reproduction : MonoBehaviour
                 }
             }
         }
+    }
+
+    private bool IsSpawnLocationValid(Vector3 from, Vector3 to, Vector3 spawnPosition)
+    {
+        // Check if there's ground between the two parents that would interfere with spawning
+        Vector2 direction = (to - from).normalized;
+        float distance = Vector2.Distance(from, to);
+
+        // Raycast from parent 1 to parent 2 to check for ground collision
+        RaycastHit2D hit = Physics2D.Raycast(from, direction, distance, LayerMask.GetMask("Ground"));
+
+        // If ray hits ground, the spawn location is invalid
+        if (hit.collider != null)
+        {
+            return false;
+        }
+
+        return true;
     }
 }
