@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 1276911961630543896}
   - component: {fileID: -2190525722626331420}
   m_Layer: 9
-  m_Name: Kai_test
+  m_Name: Kai
   m_TagString: Kai
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
