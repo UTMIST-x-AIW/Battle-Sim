@@ -339,6 +339,18 @@ public class Creature : MonoBehaviour
         {
             renderer.color = originalColor;
         }
+
+        // Reinitialize rayShooter reference for object pooling
+        if (rayShooter == null)
+        {
+            rayShooter = GetComponent<MultiRayShooter>();
+        }
+
+        // Reset the ray shooter component for object pooling
+        if (rayShooter != null)
+        {
+            rayShooter.ResetRayShooter();
+        }
     }
 
     public IEnumerator DelayedReproductionStart()

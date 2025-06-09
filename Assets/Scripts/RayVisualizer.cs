@@ -170,4 +170,32 @@ public class MultiRayShooter : MonoBehaviour
     {
         return nearestHitsByTag.ContainsKey(tag) ? nearestHitsByTag[tag] : new RaycastHit2D();
     }
+
+    // Public method to reset the ray shooter when reused from object pool
+    public void ResetRayShooter()
+    {
+        // Reinitialize arrays and references
+        characterMovement = GetComponent<Movement>();
+        raycastResults = new RaycastHit2D[maxRaycastHits];
+
+        // Clear any existing line objects
+        foreach (var line in lines)
+        {
+            if (line != null)
+                Destroy(line);
+        }
+        lines.Clear();
+
+        // Create new line objects
+        for (int i = 0; i < _rayCount; i++)
+        {
+            GameObject line = Instantiate(linePrefab);
+            line.hideFlags = HideFlags.HideInHierarchy;
+            lines.Add(line);
+        }
+
+        // Clear hit data
+        allHits.Clear();
+        nearestHitsByTag.Clear();
+    }
 }
