@@ -71,3 +71,12 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+.DS_Store
+/Assets/Logs
+/Assets/Logs
+.DS_Store
+Assets/.DS_Store
+Packages/manifest.json
+Packages/packages-lock.json
+/.vscode
+/Assets/Recordings

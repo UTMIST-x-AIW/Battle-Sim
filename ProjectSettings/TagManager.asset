@@ -6,6 +6,17 @@ TagManager:
   tags:
   - bounds
   - river
+  - Floor
+  - Cherry
+  - Tree
+  - Ground
+  - AlbertSpawnPoint
+  - KaiSpawnPoint
+  - Creature
+  - Albert
+  - Kai
+  - Cupcake
+  - Rock
   layers:
   - Default
   - TransparentFX
@@ -14,10 +25,10 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
-  - 
-  - 
+  - Trees
+  - Alberts
+  - Kais
+  - Selection
   - 
   - 
   - 
@@ -55,6 +66,6 @@ TagManager:
   - name: Player
     uniqueID: 1965130115
     locked: 0
-  - name: Water
-    uniqueID: 2275638277
+  - name: Arrows
+    uniqueID: 3325843881
     locked: 0
