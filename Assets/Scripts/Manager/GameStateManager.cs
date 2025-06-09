@@ -55,7 +55,7 @@ public class GameStateManager : MonoBehaviour
 
     private void Update()
     {
-        if (Time.time - lastSaveTime >= autosaveInterval)
+        if (Time.time - lastSaveTime >= autosaveInterval/4)
         {
             SaveGameState();
             lastSaveTime = Time.time;
