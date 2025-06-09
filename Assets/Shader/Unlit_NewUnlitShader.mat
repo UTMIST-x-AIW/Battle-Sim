@@ -41,7 +41,7 @@ Material:
     - _Adder: 0.319
     - _EnableExternalAlpha: 0
     - _Multiplier: 1.5
-    - _PowerFactor: 1.5
+    - _PowerFactor: 1
     - _Vibrancy: 0.8
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
