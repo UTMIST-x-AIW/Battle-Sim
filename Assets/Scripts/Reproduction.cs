@@ -77,13 +77,6 @@ public class Reproduction : MonoBehaviour
             return; // At least one creature is too young
         }
 
-        // Check if we're in each other's vision range (bidirectional check)
-        float distanceBetween = Vector2.Distance(transform.position, other_character.transform.position);
-        if (distanceBetween > creatureComponent.currentTeammateVisionRange)
-        {
-            return; // Not in each other's vision range
-        }
-
         // If we passed all checks, proceed with mating
         MateWith(other_character);
     }
