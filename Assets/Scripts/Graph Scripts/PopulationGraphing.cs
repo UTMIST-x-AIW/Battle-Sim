@@ -48,16 +48,27 @@ public class PopulationGraphing : MonoBehaviour
         if (timer >= updateInterval)
         {
             timer = 0f;
+
+            // Check if we need to remove old x-axis data (check against any serie)
+            bool shouldRemoveOldData = graphs.Count > 0 && graphs[0].serie.dataCount >= maxSeconds;
+            if (shouldRemoveOldData)
+            {
+                xAxis.data.RemoveAt(0);
+            }
+
+            // Add new x-axis data once per update
+            chart.AddXAxisData($"{timeCounter}s");
+
             for (int i = 0; i < graphs.Count; i++)
             {
-                UpdateGraph(graphs[i], i, graphs[i].color);
+                UpdateGraph(graphs[i], i, graphs[i].color, shouldRemoveOldData);
             }
 
             timeCounter++;
         }
     }
 
-    void UpdateGraph(GraphInfo graphInfo, int index, Color color)
+    void UpdateGraph(GraphInfo graphInfo, int index, Color color, bool shouldRemoveOldData)
     {
         // Count creatures by tag
         var objectCount = 0;
@@ -65,11 +76,12 @@ public class PopulationGraphing : MonoBehaviour
         {
             objectCount += ObjectPoolManager.GetActiveChildCount(prefab);
         }
-        if (graphInfo.serie.dataCount >= maxSeconds)
+
+        if (shouldRemoveOldData)
         {
             graphInfo.serie.data.RemoveAt(0);
-            xAxis.data.RemoveAt(0);
         }
+
         Color color1 = color;
 
         graphInfo.serie.lineStyle.color = new Color(color.r, color.g, color.b);
@@ -77,7 +89,6 @@ public class PopulationGraphing : MonoBehaviour
         graphInfo.serie.areaStyle.opacity = graphInfo.Opacity;
 
         // Add new data
-        chart.AddXAxisData($"{timeCounter}s");
         chart.AddData(index, objectCount, graphInfo.Name);
 
         // Auto-scale Y-axis to peak value
