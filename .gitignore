@@ -80,3 +80,5 @@ Packages/manifest.json
 Packages/packages-lock.json
 /.vscode
 /Assets/Recordings
+.DS_Store
+Assets/.DS_Store
