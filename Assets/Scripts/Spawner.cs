@@ -182,14 +182,14 @@ public class Spawner : MonoBehaviour
         // Ensure tile positions are available for regular objects
         if (highProbabilityPositions == null || highProbabilityPositions.Count == 0)
         {
-            Debug.LogError("Error: No valid spawn positions available for regular objects", this);
+            // Debug.LogError("Error: No valid spawn positions available for regular objects", this);
             yield break;
         }
 
         // Ensure tile positions are available for extra objects
         if (extraHighProbabilityPositions == null || extraHighProbabilityPositions.Count == 0)
         {
-            Debug.LogError("Error: No valid spawn positions available for extra objects", this);
+            // Debug.LogError("Error: No valid spawn positions available for extra objects", this);
             yield break;
         }
 
