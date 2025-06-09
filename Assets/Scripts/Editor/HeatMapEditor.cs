@@ -82,7 +82,7 @@ public class HeatMapEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel($"Brush Radius ({brushRadius:F1})");
-        brushRadius = EditorGUILayout.Slider(brushRadius, 0.1f, 20.0f);
+        brushRadius = EditorGUILayout.Slider(brushRadius, 0.1f, 100.0f);
         EditorGUILayout.EndHorizontal();
     }
 
