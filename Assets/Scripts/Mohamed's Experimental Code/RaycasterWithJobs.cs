@@ -1,55 +1,97 @@
 using System;
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
-public class RaycasterWithJobs : MonoBehaviour
+
+[BurstCompile]
+public class RaycastsWithJobs
 {
-    [SerializeField] private int rayCount = 10;
-    [SerializeField, Min(0f)] private float maxDistance = 10;
-    
-    public Dictionary<int, RaycastHit2D> NearestHitsByTag;
+    private NativeArray<RaycastCommand> _commands;
+    private NativeArray<RaycastHit> _results;
+    private bool _initialized;
+    private int _lastTotalRayCount;
 
-    private void Start()
+    public void Initialize(int totalRayCount)
     {
-        NearestHitsByTag = new Dictionary<int, RaycastHit2D>();
+        if (_initialized && _lastTotalRayCount == totalRayCount)
+            return;
+
+        Dispose();
+        _commands = new NativeArray<RaycastCommand>(totalRayCount, Allocator.Persistent);
+        _results = new NativeArray<RaycastHit>(totalRayCount, Allocator.Persistent);
+        _initialized = true;
+        _lastTotalRayCount = totalRayCount;
     }
 
-    private void LateUpdate()
+    public NativeArray<RaycastHit> RayCastCommand(
+        NativeArray<float3> creaturePositions,
+        int raysPerCreature,
+        float maxDistance,
+        int minCommandsPerJob = 4)
     {
-      //  ShootRays();
-    }
+        int numCreatures = creaturePositions.Length;
+        int totalRayCount = numCreatures * raysPerCreature;
 
-    /*private void ShootRays()
-    {
-        for (int i = 0; i < rayCount; i++)
+        Initialize(totalRayCount);
+
+        var buildJob = new BuildRayCommandsJob
         {
-            float t = rayCount > 1 ? i / (float)(rayCount - 1) : 0.5f;
-            float rotationAngle = Mathf.Lerp(-180, 180, t);
-            Vector2 direction = Quaternion.Euler(0, 0, rotationAngle) * Vector2.right;
-            int excludeSelfMask = ~(1 << LayerMask.NameToLayer("Alberts"));
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction,
-                maxDistance, excludeSelfMask);
-            if (hit)
+            Commands = _commands,
+            Origins = creaturePositions,
+            MaxDistance = maxDistance,
+            RaysPerCreature = raysPerCreature
+        };
+
+        JobHandle buildHandle = buildJob.Schedule(totalRayCount, minCommandsPerJob);
+        JobHandle raycastHandle = RaycastCommand.ScheduleBatch(_commands, _results, minCommandsPerJob, buildHandle);
+        raycastHandle.Complete();
+        for (var i = 0; i < _results.Length; i++)
+        {
+            var hit = _results[i];
+            if (hit.collider != null)
             {
-               // if (hit.collider == GetComponent<Collider2D>()) return;
-                Debug.DrawLine(transform.position, hit.transform.position, Color.green ); 
+                Debug.DrawRay(_commands[i].from, hit.transform.position, Color.green);
             }
             else
             {
-                Debug.DrawRay(transform.position, direction * maxDistance, Color.red );
+                Debug.DrawRay(_commands[i].from, Vector3.up, Color.magenta);
             }
-            
-            
         }
-    }*/
-
-    int StringToID(string tagName)
-    {
-        return tagName.GetHashCode();
+        return _results;
     }
-    
-    public RaycastHit2D GetNearestHitByTag(int tagID)
+
+    public void Dispose()
     {
-        return NearestHitsByTag.TryGetValue(tagID, out var value) ? value : new RaycastHit2D();
+        if (_initialized)
+        {
+            if (_commands.IsCreated) _commands.Dispose();
+            if (_results.IsCreated) _results.Dispose();
+            _initialized = false;
+        }
+    }
+
+}
+[BurstCompile]
+public struct BuildRayCommandsJob : IJobParallelFor
+{
+    public NativeArray<RaycastCommand> Commands;
+    [ReadOnly] public NativeArray<float3> Origins;
+    public float MaxDistance;
+    public int RaysPerCreature;
+
+    public void Execute(int i)
+    {
+        int creatureIndex = i / RaysPerCreature;
+        int rayIndex = i % RaysPerCreature;
+
+        float t = RaysPerCreature > 1 ? rayIndex / (float)(RaysPerCreature - 1) : 0.5f;
+        float angle = math.lerp(-math.PI, math.PI, t);
+        float3 direction = math.mul(quaternion.AxisAngle(math.up(), angle), math.right());
+
+        Commands[i] = new RaycastCommand(Origins[creatureIndex], direction, QueryParameters.Default, MaxDistance);
     }
 }

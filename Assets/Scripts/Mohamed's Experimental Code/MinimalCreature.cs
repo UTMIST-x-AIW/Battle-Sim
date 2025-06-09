@@ -6,11 +6,14 @@ using System;
 // Explicitly use UnityEngine.Random to avoid ambiguity with System.Random
 using Random = UnityEngine.Random;
 using NEAT.Genes;
+using Unity.Collections;
 
 public class MinimalCreature : MonoBehaviour
 {
         // Add static counter at the top of the class
     [SerializeField] private static NEATTest neatTest;  // Cache NEATTest reference
+
+    public NativeArray<RaycastHit> Hits;
 
     // Method to reset the static reference when scene changes
     public static void ClearStaticReferences()
@@ -1264,7 +1267,11 @@ public class MinimalCreature : MonoBehaviour
     // Note: The ApplyMutations method has been moved to Reproduction.cs and is no longer used here.
     // All mutations are now handled during reproduction in the Reproduction.cs script.
     // This includes weight mutations, node additions/deletions, and connection mutations.
-
+    private void LateUpdate()
+    {
+        //Debug.Log(Hits.Length);
+        Hits.Dispose();
+    }
     /*
     private void FixedUpdate()
     {

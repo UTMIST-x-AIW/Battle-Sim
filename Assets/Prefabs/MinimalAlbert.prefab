@@ -173,7 +173,6 @@ GameObject:
   - component: {fileID: 7341221049699844455}
   - component: {fileID: 1276911961630543896}
   - component: {fileID: 5358356295740211874}
-  - component: {fileID: 4623137152408514245}
   - component: {fileID: -2152655654842315617}
   m_Layer: 8
   m_Name: MinimalAlbert
@@ -344,7 +343,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08873420469f42d6b05087f7a280629d, type: 3}
   m_Name: 
@@ -409,20 +408,6 @@ MonoBehaviour:
   currentOpponentVisionRange: 0
   currentGroundVisionRange: 0
   maxDetectionRange: 20
---- !u!114 &4623137152408514245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7896111451434077960}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f06dd0bfa0244670bbbdaa5e82330e14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rayCount: 10
-  maxDistance: 8.48
 --- !u!58 &-2152655654842315617
 CircleCollider2D:
   m_ObjectHideFlags: 0

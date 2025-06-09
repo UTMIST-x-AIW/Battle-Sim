@@ -77,6 +77,25 @@ public static class ParenthoodManager
             return null;
         }
     }
+    
+    public static Transform GetParent(string goName)
+    {
+        if (ParentsTransformNameDict.TryGetValue(goName, out var value) && value != null)
+        {
+            return value;
+        }
+        else
+        {
+            // Remove destroyed reference if it exists
+            if (value == null && ParentsTransformNameDict.ContainsKey(goName))
+            {
+                ParentsTransformNameDict.Remove(goName);
+            }
+
+            // Don't log warning - parent objects are created on-demand when creatures are spawned
+            return null;
+        }
+    }
 
     public static int GetTotalChildCount(GameObject child)
     {

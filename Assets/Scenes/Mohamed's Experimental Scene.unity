@@ -224,7 +224,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1151354771}
-  - component: {fileID: 1151354770}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -232,20 +231,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1151354770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1151354769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f06dd0bfa0244670bbbdaa5e82330e14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rayCount: 10
-  maxDistance: 10
 --- !u!4 &1151354771
 Transform:
   m_ObjectHideFlags: 0
@@ -313,6 +298,7 @@ MonoBehaviour:
   rayCount: 20
   maxDistance: 10
   instances: []
+  minCommandsPerJob: 21
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
