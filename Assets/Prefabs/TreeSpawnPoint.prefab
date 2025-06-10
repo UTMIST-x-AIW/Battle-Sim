@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8026370306721612167}
   - component: {fileID: 7318173359843721849}
   m_Layer: 0
-  m_Name: TreeSpaawnPoint
+  m_Name: TreeSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,7 +96,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968ef5293c9f8364ca501140cd0583f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 8827735956283543281, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
+  regularPrefab: {fileID: 8827735956283543281, guid: 2f26c5fd0eb3a4d819ef16aa708c1185, type: 3}
+  extraPrefab: {fileID: 8827735956283543281, guid: 50c7e97ae7c8548dd9cd239af6ae397c, type: 3}
   heatmapData: {fileID: 11400000, guid: fbb78506cbf98b34390a312df3cfa433, type: 2}
+  extraHeatmapData: {fileID: 11400000, guid: 64dc32f86f0e2453787a3063f42279c8, type: 2}
   spawnInterval: 0.5
   maxNumOfSpawns: 10
+  numExtraObjects: 5
+  extraObjectRespawnRate: 0
+  checkInterval: 0.5
+  useDistinctHeatmaps: 1
+  extraObjectMinutesToExtinction: 0
+  debugLogging: 0
