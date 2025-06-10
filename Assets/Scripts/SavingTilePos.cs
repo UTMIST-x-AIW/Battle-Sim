@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class SavingTilePos : MonoBehaviour
 {
 
     public TilePosData tiledata;
-    [SerializeField] Tilemap[] tilemaps;
-    [SerializeField] int boundaryLength;
+    public Tilemap tilemap;
+    [SerializeField]public  int boundaryLength;
     // Start is called before the first frame update
     void OnEnable()
     {
@@ -16,7 +17,7 @@ public class SavingTilePos : MonoBehaviour
         if (tiledata != null && tiledata.TilePositions.Count == 0)
         {
             Debug.Log("No saved tile positions found. Initializing now...");
-            tiledata.Initialize(tilemaps[0], boundaryLength);
+            tiledata.Initialize(tilemap, boundaryLength);
         }
         else
         {
@@ -24,17 +25,16 @@ public class SavingTilePos : MonoBehaviour
         }
     }
 
-    void RecalculatePos(int tilemapNum)
+    void RecalculatePos()
     {
-        if (tilemapNum < tilemaps.Length && tilemapNum >= 0)
+        if (tilemap != null)
         {
-            Debug.Log($"Recalculating positions for tilemap {tilemapNum}...");
-            tiledata.Initialize(tilemaps[tilemapNum], boundaryLength);
+            tiledata.Initialize(tilemap, boundaryLength);
             Debug.Log($"Recalculation complete. Stored {tiledata.TilePositions.Count} tile positions.");
         }
         else
         {
-            Debug.LogError($"Invalid tilemap index: {tilemapNum}. Valid range is 0-{tilemaps.Length - 1}");
+            Debug.LogError("Tilemap was not assigned in the Inspector");
         }
     }
 
@@ -42,7 +42,7 @@ public class SavingTilePos : MonoBehaviour
     public void ForceRecalculatePositions()
     {
         Debug.Log("Forcing recalculation of tile positions...");
-        RecalculatePos(0); // Use the first tilemap by default
+        RecalculatePos(); // Use the first tilemap by default
     }
 
 }
