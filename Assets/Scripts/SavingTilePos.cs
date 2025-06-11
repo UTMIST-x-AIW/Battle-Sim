@@ -6,10 +6,12 @@ using UnityEngine.Tilemaps;
 
 public class SavingTilePos : MonoBehaviour
 {
-
+    [Tooltip("Scriptable object that stores the tile positions")]
     public TilePosData tiledata;
+    [Tooltip("Tilemap that the tile positions are saved to")]
     public Tilemap tilemap;
-    [SerializeField]public  int boundaryLength;
+    [Tooltip("Boundary length of the tilemap")]
+    [SerializeField] public int boundaryLength;
     // Start is called before the first frame update
     void OnEnable()
     {
