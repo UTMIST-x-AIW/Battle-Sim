@@ -54,16 +54,14 @@ public class GameManager : MonoBehaviour
     public const int k_ActionCount = 5;
 
 
-    [Header("Test Settings")]
-    public bool runTests = true;
-
-    public enum CurrentTest
+    public enum CurrentRun
     {
-        LoadCreature,
-        AlbertsVsKais,
-        LoadCreaturesBattle
+        [InspectorName("New Run (From Scratch)")] NewRunFromScratch,
+        [InspectorName("New Run (With Saved Creatures)")] NewRunWithSavedCreatures
     }
-    public CurrentTest currentTest;
+
+    [Header("Run Settings")]
+    public CurrentRun currentRun;
 
     [Header("Visualization Settings")]
     public bool showTreeVisionRange = false;  // Toggle for tree vision range visualization
@@ -84,7 +82,7 @@ public class GameManager : MonoBehaviour
     public Vector2 spawnCenter = new Vector2(-25f, -0f);  // Center of the spawn area
     public float spawnSpreadRadius = 2f;  // Radius of the spawn area
 
-    // Additional spawn area for Kais in the dual-species test
+    // Additional spawn area for Kais in the dual-species run
     public Vector2 rightSpawnCenter = new Vector2(25f, 0f);  // Center of the Kai spawn area (right side)
     public float rightSpawnSpreadRadius = 2f;  // Radius of the right spawn area
 
@@ -164,70 +162,51 @@ public class GameManager : MonoBehaviour
             // Destroy(creature.gameObject);
         }
 
-        if (runTests)
+
+        switch (currentRun)
         {
-            switch (currentTest)
-            {
-                case CurrentTest.LoadCreature:
-                    SetupLoadCreaturesTest(); // Now handles both single files and folders
-                    break;
-                case CurrentTest.AlbertsVsKais:
-                    SetupAlbertsVsKaisTest();
-                    break;
-                case CurrentTest.LoadCreaturesBattle:
-                    SetupLoadCreaturesTest();
-                    break;
-                default:
-                    SetupAlbertsVsKaisTest();
-                    break;
-            }
+            case CurrentRun.NewRunFromScratch:
+                SetupNewRunFromScratch();
+                break;
+            case CurrentRun.NewRunWithSavedCreatures:
+                SetupNewRunWithSavedCreatures();
+                break;
+            default:
+                SetupNewRunFromScratch();
+                break;
         }
-        else
-        {
-            SetupAlbertsVsKaisTest();
-        }
+
     }
 
     private void Update()
     {
         try
         {
-            // Check for population management (only for specific tests)
-            if (
-                currentTest == CurrentTest.AlbertsVsKais ||
-                currentTest == CurrentTest.LoadCreaturesBattle)  // Add LoadCreaturesBattle test
-            {
-                // Check current creature counts periodically
-                countTimer += Time.deltaTime;
-                if (countTimer >= 0.4f)
-                {
-                    CountAlberts();
-                    if (currentTest == CurrentTest.AlbertsVsKais ||
-                        currentTest == CurrentTest.LoadCreaturesBattle)  // Also count Kais for LoadCreaturesBattle
-                    {
-                        CountKais();
-                    }
-                    countTimer = 0f;
-                }
+            // Check for population management (only for specific runs)
 
-                // Automatic population management
-                ManagePopulation();
+
+            // Check current creature counts periodically
+            countTimer += Time.deltaTime;
+            if (countTimer >= 0.4f)
+            {
+                CountAlberts();
+                CountKais();
+                countTimer = 0f;
             }
+
+            // Automatic population management
+            ManagePopulation();
+
 
             // Testing controls
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                currentTest = CurrentTest.LoadCreature;
-                RestartTest();
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                currentTest = CurrentTest.AlbertsVsKais;
+                currentRun = CurrentRun.NewRunFromScratch;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
-                currentTest = CurrentTest.LoadCreaturesBattle;
+                currentRun = CurrentRun.NewRunWithSavedCreatures;
                 RestartTest();
             }
 
@@ -281,7 +260,7 @@ public class GameManager : MonoBehaviour
             }
 
             // If this is an Alberts vs Kais test, also manage Kai population
-            if (currentTest == CurrentTest.AlbertsVsKais)
+            if (currentRun == CurrentRun.NewRunFromScratch)
             {
                 // Count current Kais
                 int currentKais = CountKais();
@@ -535,7 +514,7 @@ public class GameManager : MonoBehaviour
             Gizmos.DrawWireSphere(new Vector3(spawnCenter.x, spawnCenter.y, 0), spawnSpreadRadius);
 
             // Draw the right spawn area as well (for Alberts vs Kais test)
-            if (currentTest == CurrentTest.AlbertsVsKais)
+            if (currentRun == CurrentRun.NewRunFromScratch)
             {
                 // Use a different color tint for the right spawn area (more blue)
                 Color rightSpawnColor = new Color(spawnAreaColor.r * 0.7f, spawnAreaColor.g, spawnAreaColor.b * 1.3f, spawnAreaColor.a);
@@ -628,7 +607,7 @@ public class GameManager : MonoBehaviour
     {
         try
         {
-            LogManager.LogMessage($"Restarting test {currentTest}...");
+            LogManager.LogMessage($"Restarting test {currentRun}...");
 
             // Clear any existing creatures
             var existingCreatures = GameObject.FindObjectsOfType<Creature>();
@@ -658,31 +637,22 @@ public class GameManager : MonoBehaviour
         try
         {
             // Re-initialize based on current test
-            if (runTests)
-            {
-                switch (currentTest)
-                {
-                    case CurrentTest.LoadCreature:
-                        SetupLoadCreaturesTest(); // Now handles both single files and folders
-                        break;
-                    case CurrentTest.AlbertsVsKais:
-                        SetupAlbertsVsKaisTest();
-                        break;
-                    case CurrentTest.LoadCreaturesBattle:
-                        SetupLoadCreaturesTest();
-                        break;
-                    default:
-                        SetupAlbertsVsKaisTest();
-                        break;
-                }
 
-                LogManager.LogMessage($"Test {currentTest} restarted successfully");
-            }
-            else
+            switch (currentRun)
             {
-                SetupAlbertsVsKaisTest();
-                LogManager.LogMessage("Normal game restarted successfully");
+                case CurrentRun.NewRunFromScratch:
+                    SetupNewRunFromScratch();
+                    break;
+                case CurrentRun.NewRunWithSavedCreatures:
+                    SetupNewRunWithSavedCreatures();
+                    break;
+                default:
+                    SetupNewRunFromScratch();
+                    break;
             }
+
+            LogManager.LogMessage($"Run {currentRun} restarted successfully");
+
         }
         catch (System.Exception e)
         {
@@ -691,7 +661,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void SetupAlbertsVsKaisTest()
+    private void SetupNewRunFromScratch()
     {
         Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
 
@@ -768,7 +738,7 @@ public class GameManager : MonoBehaviour
 
 
 
-    private void SetupLoadCreaturesTest()
+    private void SetupNewRunWithSavedCreatures()
     {
         Debug.Log("Starting Test: Load Creatures");
 

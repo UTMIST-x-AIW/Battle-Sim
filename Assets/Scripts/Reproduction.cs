@@ -118,7 +118,7 @@ public class Reproduction : MonoBehaviour
 
                 // Check if reproduction is allowed based on creature type
                 bool canReproduce = false;
-                if (gameManager.currentTest == GameManager.CurrentTest.AlbertsVsKais)
+                if (gameManager.currentRun == GameManager.CurrentRun.NewRunFromScratch)
                 {
                     // For Alberts vs Kais test, use type-specific population check
                     canReproduce = gameManager.CanReproduce(p1.type);
