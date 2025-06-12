@@ -59,9 +59,6 @@ public class GameManager : MonoBehaviour
 
     public enum CurrentTest
     {
-        NormalGame,
-        AlbertsOnly,
-        Reproduction,
         LoadCreature,
         AlbertsVsKais,
         LoadCreaturesBattle
@@ -173,15 +170,6 @@ public class GameManager : MonoBehaviour
         {
             switch (currentTest)
             {
-                case CurrentTest.NormalGame:
-                    SetupNormalGame();
-                    break;
-                case CurrentTest.AlbertsOnly:
-                    SetupAlbertsOnlyTest();
-                    break;
-                case CurrentTest.Reproduction:
-                    SetupReproductionTest();
-                    break;
                 case CurrentTest.LoadCreature:
                     SetupLoadCreatureTest();
                     break;
@@ -192,13 +180,13 @@ public class GameManager : MonoBehaviour
                     SetupLoadCreaturesBattleTest();
                     break;
                 default:
-                    SetupNormalGame();
+                    SetupAlbertsVsKaisTest();
                     break;
             }
         }
         else
         {
-            SetupNormalGame();
+            SetupAlbertsVsKaisTest();
         }
     }
 
@@ -208,7 +196,6 @@ public class GameManager : MonoBehaviour
         {
             // Check for population management (only for specific tests)
             if (
-                currentTest == CurrentTest.AlbertsOnly ||
                 currentTest == CurrentTest.AlbertsVsKais ||
                 currentTest == CurrentTest.LoadCreaturesBattle)  // Add LoadCreaturesBattle test
             {
@@ -230,21 +217,6 @@ public class GameManager : MonoBehaviour
             }
 
             // Testing controls
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                currentTest = CurrentTest.AlbertsOnly;
-                RestartTest();
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                currentTest = CurrentTest.Reproduction;
-                RestartTest();
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                currentTest = CurrentTest.NormalGame;
-                RestartTest();
-            }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 currentTest = CurrentTest.LoadCreature;
@@ -489,124 +461,6 @@ public class GameManager : MonoBehaviour
     private int CountKais()
     {
         return ObjectPoolManager.GetActiveChildCount(kaiCreaturePrefab);
-    }
-
-    private void SetupNormalGame()
-    {
-        // Debug.Log("Setting up normal game");
-
-        // Spawn three Alberts in top left
-        Vector3[] albertPositions = {
-            new Vector3(-12f, 6f, 0f),
-            new Vector3(-10f, 4f, 0f),
-            new Vector3(-11f, 2f, 0f)
-        };
-
-        foreach (var basePos in albertPositions)
-        {
-            Vector3 position = basePos + Random.insideUnitSphere * 2f;
-            position.z = 0f;
-            SpawnCreature(albertCreaturePrefab, position, Creature.CreatureType.Albert, false);
-        }
-
-        // Spawn three Kais in bottom right
-        Vector3[] kaiPositions = {
-            new Vector3(12f, -6f, 0f),
-            new Vector3(10f, -4f, 0f),
-            new Vector3(11f, -2f, 0f)
-        };
-
-        foreach (var basePos in kaiPositions)
-        {
-            Vector3 position = basePos + Random.insideUnitSphere * 2f;
-            position.z = 0f;
-            SpawnCreature(kaiCreaturePrefab, position, Creature.CreatureType.Kai, true);
-        }
-    }
-    private void SetupAlbertsOnlyTest()
-    {
-        Debug.Log("Starting Test: Alberts Only - Spawning initial Alberts");
-
-        // Spawn initial Alberts as specified by INITIAL_ALBERTS parameter
-        for (int i = 0; i < InitialAlberts; i++)
-        {
-            // Calculate a position with some randomness within the spawn area
-            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
-            Vector3 position = new Vector3(
-                spawnCenter.x + offset.x,
-                spawnCenter.y + offset.y,
-                0f
-            );
-
-            // Spawn the creature with a randomized brain
-            var creature = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-
-            if (creature != null)
-            {
-                // Initialize with random age based on parameters
-                float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
-                creature.Lifetime = startingAge;
-
-                // If the creature starts with an age past the aging threshold, adjust health
-                if (startingAge > creature.agingStartTime)
-                {
-                    float ageBeyondThreshold = startingAge - creature.agingStartTime;
-                    float healthLost = ageBeyondThreshold * creature.agingRate;
-                    creature.health = Mathf.Max(0.5f, creature.maxHealth - healthLost);
-                }
-
-                // Set starting reproduction meter to a random value
-                creature.reproductionMeter = Random.Range(0f, 1f);
-
-                // Set generation to 0 for initial Alberts
-                creature.generation = 0;
-
-                LogManager.LogMessage($"Spawned initial Albert {i + 1}/{InitialAlberts} at {position}, age: {startingAge:F1}");
-            }
-        }
-
-        // Report on the setup
-        LogManager.LogMessage($"Initial setup complete: {InitialAlberts} Alberts spawned");
-        LogManager.LogMessage($"Age range: {MinStartingAgeAlbert}-{MaxStartingAgeAlbert}");
-        LogManager.LogMessage($"Population management: MIN_ALBERTS={MinAlberts}, MAX_ALBERTS={MaxAlberts}");
-
-        // Check current count
-        CountAlberts();
-    }
-
-    private void SetupReproductionTest()
-    {
-        Debug.Log("Starting Test 3: Reproduction Action Test");
-
-        // Create four creatures: two with high reproduction desire, two with low
-
-        // Spawn creatures in a square pattern
-        Vector2[] positions = {
-            new Vector2(-5f, 5f),   // Top left - High reproduction creature
-            new Vector2(5f, 5f),    // Top right - Low reproduction creature
-            new Vector2(-5f, -5f),  // Bottom left - High reproduction creature
-            new Vector2(5f, -5f)    // Bottom right - Low reproduction creature
-        };
-
-        // Spawn high reproduction desire creatures (Albert)
-        var highRepro1 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[0], Creature.CreatureType.Albert, 0.9f);
-        var highRepro2 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[2], Creature.CreatureType.Albert, 0.9f);
-
-        // Spawn low reproduction desire creatures (Albert)
-        var lowRepro1 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[1], Creature.CreatureType.Albert, 0.1f);
-        var lowRepro2 = SpawnCreatureWithReproductionBias(albertCreaturePrefab, positions[3], Creature.CreatureType.Albert, 0.1f);
-
-        // Set full energy for all creatures
-        highRepro1.energyMeter = highRepro1.maxEnergy;
-        highRepro2.energyMeter = highRepro2.maxEnergy;
-        lowRepro1.energyMeter = lowRepro1.maxEnergy;
-        lowRepro2.energyMeter = lowRepro2.maxEnergy;
-
-        Debug.Log("Test 3 Setup Complete:");
-        Debug.Log("- Top left & Bottom left: High reproduction desire (0.9)");
-        Debug.Log("- Top right & Bottom right: Low reproduction desire (0.1)");
-        Debug.Log("Expected behavior: High reproduction creatures should prioritize reproduction and create offspring");
-        Debug.Log("Low reproduction creatures should prioritize other actions (like movement)");
     }
 
     private Creature SpawnCreature(GameObject prefab, Vector3 position, Creature.CreatureType type, bool isKai)
@@ -1025,15 +879,6 @@ public class GameManager : MonoBehaviour
             {
                 switch (currentTest)
                 {
-                    case CurrentTest.NormalGame:
-                        SetupNormalGame();
-                        break;
-                    case CurrentTest.AlbertsOnly:
-                        SetupAlbertsOnlyTest();
-                        break;
-                    case CurrentTest.Reproduction:
-                        SetupReproductionTest();
-                        break;
                     case CurrentTest.LoadCreature:
                         SetupLoadCreatureTest();
                         break;
@@ -1044,7 +889,7 @@ public class GameManager : MonoBehaviour
                         SetupLoadCreaturesBattleTest();
                         break;
                     default:
-                        SetupNormalGame();
+                        SetupAlbertsVsKaisTest();
                         break;
                 }
 
@@ -1052,7 +897,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                SetupNormalGame();
+                SetupAlbertsVsKaisTest();
                 LogManager.LogMessage("Normal game restarted successfully");
             }
         }
