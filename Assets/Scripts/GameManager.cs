@@ -60,7 +60,6 @@ public class GameManager : MonoBehaviour
     public enum CurrentTest
     {
         NormalGame,
-        MatingMovement,
         AlbertsOnly,
         Reproduction,
         LoadCreature,
@@ -177,9 +176,6 @@ public class GameManager : MonoBehaviour
                 case CurrentTest.NormalGame:
                     SetupNormalGame();
                     break;
-                case CurrentTest.MatingMovement:
-                    SetupMatingMovementTest();
-                    break;
                 case CurrentTest.AlbertsOnly:
                     SetupAlbertsOnlyTest();
                     break;
@@ -211,7 +207,7 @@ public class GameManager : MonoBehaviour
         try
         {
             // Check for population management (only for specific tests)
-            if (currentTest == CurrentTest.MatingMovement ||
+            if (
                 currentTest == CurrentTest.AlbertsOnly ||
                 currentTest == CurrentTest.AlbertsVsKais ||
                 currentTest == CurrentTest.LoadCreaturesBattle)  // Add LoadCreaturesBattle test
@@ -236,35 +232,30 @@ public class GameManager : MonoBehaviour
             // Testing controls
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                currentTest = CurrentTest.MatingMovement;
+                currentTest = CurrentTest.AlbertsOnly;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                currentTest = CurrentTest.AlbertsOnly;
+                currentTest = CurrentTest.Reproduction;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                currentTest = CurrentTest.Reproduction;
+                currentTest = CurrentTest.NormalGame;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                currentTest = CurrentTest.NormalGame;
+                currentTest = CurrentTest.LoadCreature;
                 RestartTest();
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                currentTest = CurrentTest.LoadCreature;
-                RestartTest();
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha6))
-            {
                 currentTest = CurrentTest.AlbertsVsKais;
                 RestartTest();
             }
-            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 currentTest = CurrentTest.LoadCreaturesBattle;
                 RestartTest();
@@ -532,29 +523,6 @@ public class GameManager : MonoBehaviour
             SpawnCreature(kaiCreaturePrefab, position, Creature.CreatureType.Kai, true);
         }
     }
-
-    private void SetupMatingMovementTest()
-    {
-        // Debug.Log("Starting Test 1: Basic Mating Movement");
-
-        // Create two Alberts far from each other but still within detection radius
-        Vector3 olderPosition = new Vector3(-2.5f, -2.5f, 0f);
-        Vector3 youngerPosition = new Vector3(2.5f, 2.5f, 0f); // 8 units diagonal distance
-
-        // Spawn older creature
-        var olderCreature = SpawnCreature(albertCreaturePrefab, olderPosition, Creature.CreatureType.Albert, false);
-
-        // Spawn younger creature
-        var youngerCreature = SpawnCreature(albertCreaturePrefab, youngerPosition, Creature.CreatureType.Albert, false);
-
-
-        // Debug.Log("Test 1 Setup Complete:");
-        // Debug.Log($"- Older creature at {olderPosition}, age: 20");
-        // Debug.Log($"- Younger creature at {youngerPosition}, age: 10");
-        // Debug.Log("Expected behavior: Younger creature should move toward older creature, older creature should stay still");
-        // Debug.Log("Note: Reproduction will be enabled after a 2-second delay");
-    }
-
     private void SetupAlbertsOnlyTest()
     {
         Debug.Log("Starting Test: Alberts Only - Spawning initial Alberts");
@@ -1059,9 +1027,6 @@ public class GameManager : MonoBehaviour
                 {
                     case CurrentTest.NormalGame:
                         SetupNormalGame();
-                        break;
-                    case CurrentTest.MatingMovement:
-                        SetupMatingMovementTest();
                         break;
                     case CurrentTest.AlbertsOnly:
                         SetupAlbertsOnlyTest();
