@@ -277,6 +277,9 @@ public class Creature : MonoBehaviour
         inBowRange = 0f;
         lastDetectionTime = 0f;
 
+        rb.velocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+
         brain = null;
 
 
