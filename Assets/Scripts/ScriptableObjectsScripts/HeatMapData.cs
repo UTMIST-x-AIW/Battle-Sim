@@ -10,7 +10,7 @@ public class HeatMapData : ScriptableObject
     public Dictionary<Vector2, float> heatmap = new Dictionary<Vector2, float>();
 
     [Serializable]
-    public class HeatMapEntry  
+    public class HeatMapEntry
     {
         public Vector2 position;
         public float value;
@@ -20,7 +20,7 @@ public class HeatMapData : ScriptableObject
 
     private void OnEnable()
     {
-        LoadHeatmap(); 
+        LoadHeatmap();
         if (heatMapEntries == null)
         {
             Initialize();
@@ -58,7 +58,7 @@ public class HeatMapData : ScriptableObject
 
     public void SetValue(Vector2 valuePos, float value)
     {
-        value = Mathf.Clamp(value, 0, 100); 
+        value = Mathf.Clamp(value, 0, 100);
         if (heatmap.ContainsKey(valuePos))
         {
             heatmap[valuePos] = value;

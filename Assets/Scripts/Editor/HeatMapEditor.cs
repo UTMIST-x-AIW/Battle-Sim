@@ -61,15 +61,10 @@ public class HeatMapEditor : Editor
 
         EditorGUILayout.Space();
 
-        // Manual mode toggle
-        if (GUILayout.Button(EraserOn ? "Switch to Paint Mode" : "Switch to Erase Mode"))
-        {
-            EraserOn = !EraserOn;
-        }
-
-        if (GUILayout.Button("Reset Heatmap"))
+        if (GUILayout.Button("Reinitialize Heatmap"))
         {
             visualizer.heatMapData.ClearHeatmap();
+            SceneView.RepaintAll();
         }
 
         EditorGUILayout.Space();
