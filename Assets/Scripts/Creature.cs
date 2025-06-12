@@ -280,6 +280,8 @@ public class Creature : MonoBehaviour
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
+        transform.localScale = originalScale;
+
         brain = null;
 
 
