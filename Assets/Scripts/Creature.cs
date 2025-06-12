@@ -107,6 +107,7 @@ public class Creature : MonoBehaviour
     private Transform swordModel;
     private Transform bowModel;
     private Vector3 originalScale;
+    private Vector3 originalSwordScale;
 
     // Add method to get brain
     public NEAT.NN.FeedForwardNetwork GetBrain()
@@ -231,6 +232,7 @@ public class Creature : MonoBehaviour
 
 
             originalScale = transform.localScale;
+            originalSwordScale = swordModel.localScale;
 
             ToolAnimation tool = GetComponentInChildren<ToolAnimation>();
             if (tool != null)
@@ -281,6 +283,7 @@ public class Creature : MonoBehaviour
         rb.angularVelocity = 0f;
 
         transform.localScale = originalScale;
+        swordModel.localScale = originalSwordScale;
 
         brain = null;
 
@@ -1043,7 +1046,7 @@ public class Creature : MonoBehaviour
                 break;
             case CreatureClass.Swordsman:
                 if (swordModel != null)
-                    swordModel.localScale *= swordsmanSwordScale;
+                    swordModel.localScale = originalSwordScale * swordsmanSwordScale;
                 break;
             case CreatureClass.Archer:
                 if (swordModel != null)
