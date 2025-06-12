@@ -101,8 +101,6 @@ public class GameManager : MonoBehaviour
 
     private float countTimer = 0f;
 
-    [Header("Creature Loading Settings")]
-    public string savedCreaturePath = "";  // Path to the saved creature JSON file
 
     [Header("Creatures Battle Loading Settings")]
     public string albertsFolderPath = "";  // Folder containing JSONs for Alberts
@@ -171,13 +169,13 @@ public class GameManager : MonoBehaviour
             switch (currentTest)
             {
                 case CurrentTest.LoadCreature:
-                    SetupLoadCreatureTest();
+                    SetupLoadCreaturesTest(); // Now handles both single files and folders
                     break;
                 case CurrentTest.AlbertsVsKais:
                     SetupAlbertsVsKaisTest();
                     break;
                 case CurrentTest.LoadCreaturesBattle:
-                    SetupLoadCreaturesBattleTest();
+                    SetupLoadCreaturesTest();
                     break;
                 default:
                     SetupAlbertsVsKaisTest();
@@ -665,13 +663,13 @@ public class GameManager : MonoBehaviour
                 switch (currentTest)
                 {
                     case CurrentTest.LoadCreature:
-                        SetupLoadCreatureTest();
+                        SetupLoadCreaturesTest(); // Now handles both single files and folders
                         break;
                     case CurrentTest.AlbertsVsKais:
                         SetupAlbertsVsKaisTest();
                         break;
                     case CurrentTest.LoadCreaturesBattle:
-                        SetupLoadCreaturesBattleTest();
+                        SetupLoadCreaturesTest();
                         break;
                     default:
                         SetupAlbertsVsKaisTest();
@@ -692,35 +690,190 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SetupLoadCreatureTest()
+
+    private void SetupAlbertsVsKaisTest()
     {
-        if (string.IsNullOrEmpty(savedCreaturePath))
+        Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
+
+        // Spawn Alberts 
+        for (int i = 0; i < InitialAlberts; i++)
         {
-            Debug.LogError("No saved creature path specified. Please set the path in the inspector.");
-            return;
+            // Calculate a position with randomness within the left spawn area
+            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+            Vector3 position = new Vector3(
+                spawnCenter.x + offset.x,
+                spawnCenter.y + offset.y,
+                0f
+            );
+
+            // Spawn Albert with a randomized brain
+            var albert = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
+
+            if (albert != null)
+            {
+                // Initialize with random age
+                float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
+                albert.Lifetime = startingAge;
+
+                // Set starting reproduction meter to a random value
+                albert.reproductionMeter = Random.Range(0f, 0.2f);
+
+                // Set generation to 0 for initial Alberts
+                albert.generation = 0;
+
+                LogManager.LogMessage($"Spawned Albert {i + 1}/{InitialAlberts} at {position}, age: {startingAge:F1}");
+            }
         }
 
-        Debug.Log($"Starting Test: Load Creature - Loading from {savedCreaturePath}");
-
-        // Calculate spawn position
-        Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
-        Vector3 position = new Vector3(
-            spawnCenter.x + offset.x,
-            spawnCenter.y + offset.y,
-            0f
-        );
-
-        // Load the creature
-        var creature = CreatureLoader.LoadCreature(albertCreaturePrefab, position, savedCreaturePath);
-
-        if (creature != null)
+        // Spawn Kais
+        for (int i = 0; i < InitialKais; i++)
         {
-            Debug.Log($"Successfully loaded creature at position {position}");
-            Debug.Log($"Creature properties: Type={creature.type}, Generation={creature.generation}, Age={creature.Lifetime:F1}");
+            // Calculate a position with randomness within the right spawn area
+            Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
+            Vector3 position = new Vector3(
+                rightSpawnCenter.x + offset.x,
+                rightSpawnCenter.y + offset.y,
+                0f
+            );
+
+            // Spawn Kai with a randomized brain
+            var kai = SpawnCreatureWithRandomizedBrain(kaiCreaturePrefab, position, Creature.CreatureType.Kai);
+
+            if (kai != null)
+            {
+                // Initialize with random age
+                float startingAge = Random.Range(MinStartingAgeKai, MaxStartingAgeKai);
+                kai.Lifetime = startingAge;
+
+                // Set starting reproduction meter to a random value
+                kai.reproductionMeter = Random.Range(0f, 0.2f);
+
+                // Set generation to 0 for initial Kais
+                kai.generation = 0;
+
+                LogManager.LogMessage($"Spawned Kai {i + 1}/{InitialKais} at {position}, age: {startingAge:F1}");
+            }
         }
-        else
+
+        // Update counts
+        CountAlberts();
+        CountKais();
+
+        LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
+        LogManager.LogMessage($"Left side (Alberts): {InitialAlberts} creatures near {spawnCenter}");
+        LogManager.LogMessage($"Right side (Kais): {InitialKais} creatures near {rightSpawnCenter}");
+        LogManager.LogMessage($"Population management: MIN_ALBERTS={MinAlberts}, MAX_ALBERTS={MaxAlberts}");
+        LogManager.LogMessage($"Population management: MIN_KAIS={MinKais}, MAX_KAIS={MaxKais}");
+    }
+
+
+
+    private void SetupLoadCreaturesTest()
+    {
+        Debug.Log("Starting Test: Load Creatures");
+
+        int albertsLoaded = 0;
+        int kaisLoaded = 0;
+
+        // Handle Alberts loading
+        if (!string.IsNullOrEmpty(albertsFolderPath))
         {
-            Debug.LogError("Failed to load creature");
+            if (albertsFolderPath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                // Single file - load one Albert
+                Debug.Log($"Loading single Albert from file: {albertsFolderPath}");
+
+                Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
+                Vector3 position = new Vector3(
+                    spawnCenter.x + offset.x,
+                    spawnCenter.y + offset.y,
+                    0f
+                );
+
+                var creature = LoadCreatureFromFile(albertsFolderPath, albertCreaturePrefab, position, Creature.CreatureType.Albert);
+                if (creature != null)
+                {
+                    albertsLoaded = 1;
+                    Debug.Log($"Successfully loaded Albert from {System.IO.Path.GetFileName(albertsFolderPath)}");
+                }
+            }
+            else
+            {
+                // Folder - load multiple Alberts
+                Debug.Log($"Loading Alberts from folder: {albertsFolderPath}");
+                albertsLoaded = LoadAndSpawnCreaturesFromFolder(
+                    albertsFolderPath,
+                    spawnCenter,
+                    spawnSpreadRadius,
+                    albertCreaturePrefab,
+                    Creature.CreatureType.Albert,
+                    InitialAlberts,
+                    resampleCreatures,
+                    respectTypeInFiles
+                );
+            }
+        }
+
+        // Handle Kais loading
+        if (!string.IsNullOrEmpty(kaisFolderPath))
+        {
+            if (kaisFolderPath.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            {
+                // Single file - load one Kai
+                Debug.Log($"Loading single Kai from file: {kaisFolderPath}");
+
+                Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
+                Vector3 position = new Vector3(
+                    rightSpawnCenter.x + offset.x,
+                    rightSpawnCenter.y + offset.y,
+                    0f
+                );
+
+                var creature = LoadCreatureFromFile(kaisFolderPath, kaiCreaturePrefab, position, Creature.CreatureType.Kai);
+                if (creature != null)
+                {
+                    kaisLoaded = 1;
+                    Debug.Log($"Successfully loaded Kai from {System.IO.Path.GetFileName(kaisFolderPath)}");
+                }
+            }
+            else
+            {
+                // Folder - load multiple Kais
+                Debug.Log($"Loading Kais from folder: {kaisFolderPath}");
+                kaisLoaded = LoadAndSpawnCreaturesFromFolder(
+                    kaisFolderPath,
+                    rightSpawnCenter,
+                    rightSpawnSpreadRadius,
+                    kaiCreaturePrefab,
+                    Creature.CreatureType.Kai,
+                    InitialKais,
+                    resampleCreatures,
+                    respectTypeInFiles
+                );
+            }
+        }
+
+        // Update creature counts
+        CurrentAlberts = albertsLoaded;
+        CurrentKais = kaisLoaded;
+
+        Debug.Log($"Load Creatures Test Complete: Loaded {albertsLoaded} Alberts and {kaisLoaded} Kais");
+
+        if (albertsLoaded == 0 && kaisLoaded == 0)
+        {
+            Debug.LogWarning("No creatures were loaded. Please check the file/folder paths.");
+        }
+        else if (albertsLoaded > 0 && kaisLoaded > 0)
+        {
+            Debug.Log("Battle setup ready with both Albert and Kai creatures!");
+        }
+        else if (albertsLoaded > 0)
+        {
+            Debug.Log("Single-species test ready with Albert creatures.");
+        }
+        else if (kaisLoaded > 0)
+        {
+            Debug.Log("Single-species test ready with Kai creatures.");
         }
     }
 
@@ -908,130 +1061,6 @@ public class GameManager : MonoBehaviour
         return serializedBrain;
     }
 
-    private void SetupAlbertsVsKaisTest()
-    {
-        Debug.Log("Starting Test: Alberts vs Kais - Battle Simulation");
-
-        // Spawn Alberts 
-        for (int i = 0; i < InitialAlberts; i++)
-        {
-            // Calculate a position with randomness within the left spawn area
-            Vector2 offset = Random.insideUnitCircle * spawnSpreadRadius;
-            Vector3 position = new Vector3(
-                spawnCenter.x + offset.x,
-                spawnCenter.y + offset.y,
-                0f
-            );
-
-            // Spawn Albert with a randomized brain
-            var albert = SpawnCreatureWithRandomizedBrain(albertCreaturePrefab, position, Creature.CreatureType.Albert);
-
-            if (albert != null)
-            {
-                // Initialize with random age
-                float startingAge = Random.Range(MinStartingAgeAlbert, MaxStartingAgeAlbert);
-                albert.Lifetime = startingAge;
-
-                // Set starting reproduction meter to a random value
-                albert.reproductionMeter = Random.Range(0f, 0.2f);
-
-                // Set generation to 0 for initial Alberts
-                albert.generation = 0;
-
-                LogManager.LogMessage($"Spawned Albert {i + 1}/{InitialAlberts} at {position}, age: {startingAge:F1}");
-            }
-        }
-
-        // Spawn Kais
-        for (int i = 0; i < InitialKais; i++)
-        {
-            // Calculate a position with randomness within the right spawn area
-            Vector2 offset = Random.insideUnitCircle * rightSpawnSpreadRadius;
-            Vector3 position = new Vector3(
-                rightSpawnCenter.x + offset.x,
-                rightSpawnCenter.y + offset.y,
-                0f
-            );
-
-            // Spawn Kai with a randomized brain
-            var kai = SpawnCreatureWithRandomizedBrain(kaiCreaturePrefab, position, Creature.CreatureType.Kai);
-
-            if (kai != null)
-            {
-                // Initialize with random age
-                float startingAge = Random.Range(MinStartingAgeKai, MaxStartingAgeKai);
-                kai.Lifetime = startingAge;
-
-                // Set starting reproduction meter to a random value
-                kai.reproductionMeter = Random.Range(0f, 0.2f);
-
-                // Set generation to 0 for initial Kais
-                kai.generation = 0;
-
-                LogManager.LogMessage($"Spawned Kai {i + 1}/{InitialKais} at {position}, age: {startingAge:F1}");
-            }
-        }
-
-        // Update counts
-        CountAlberts();
-        CountKais();
-
-        LogManager.LogMessage("Alberts vs Kais battle simulation setup complete!");
-        LogManager.LogMessage($"Left side (Alberts): {InitialAlberts} creatures near {spawnCenter}");
-        LogManager.LogMessage($"Right side (Kais): {InitialKais} creatures near {rightSpawnCenter}");
-        LogManager.LogMessage($"Population management: MIN_ALBERTS={MinAlberts}, MAX_ALBERTS={MaxAlberts}");
-        LogManager.LogMessage($"Population management: MIN_KAIS={MinKais}, MAX_KAIS={MaxKais}");
-    }
-
-    private void SetupLoadCreaturesBattleTest()
-    {
-        Debug.Log("Starting Test: Load Creatures Battle");
-
-        if (string.IsNullOrEmpty(albertsFolderPath) || string.IsNullOrEmpty(kaisFolderPath))
-        {
-            Debug.LogError("Please specify folder paths for both Alberts and Kais in the inspector!");
-            return;
-        }
-
-        int albertTarget = InitialAlberts;
-        int kaisTarget = InitialKais;
-
-        // Load and spawn Alberts from folder
-        int albertsLoaded = LoadAndSpawnCreaturesFromFolder(
-            albertsFolderPath,
-            spawnCenter,
-            spawnSpreadRadius,
-            albertCreaturePrefab,
-            Creature.CreatureType.Albert,
-            albertTarget,
-            resampleCreatures,
-            respectTypeInFiles
-        );
-
-        // Load and spawn Kais from folder
-        int kaisLoaded = LoadAndSpawnCreaturesFromFolder(
-            kaisFolderPath,
-            rightSpawnCenter,
-            rightSpawnSpreadRadius,
-            kaiCreaturePrefab,
-            Creature.CreatureType.Kai,
-            kaisTarget,
-            resampleCreatures,
-            respectTypeInFiles
-        );
-
-        // Update creature counts
-        CurrentAlberts = albertsLoaded;
-        CurrentKais = kaisLoaded;
-
-        Debug.Log($"Creatures Battle Setup Complete: Loaded {albertsLoaded} Alberts and {kaisLoaded} Kais");
-
-        if (albertsLoaded == 0 && kaisLoaded == 0)
-        {
-            Debug.LogWarning("No creatures were loaded from either folder. Please check the folder paths.");
-        }
-    }
-
     private int LoadAndSpawnCreaturesFromFolder(
         string folderPath,
         Vector2 spawnCenter,
@@ -1154,14 +1183,14 @@ public class GameManager : MonoBehaviour
 
             // Instantiate the creature prefab at the specified position
             GameObject creatureObj = ObjectPoolManager.SpawnObject(prefab, position, Quaternion.identity); //TODO-OBJECTPOOL: return to this after implementing reset
-            // GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
+                                                                                                           // GameObject creatureObj = Instantiate(prefab, position, Quaternion.identity);
             Creature creatureComponent = creatureObj.GetComponent<Creature>();
 
             if (creatureComponent == null)
             {
                 Debug.LogError("Prefab does not have a Creature component");
                 ObjectPoolManager.ReturnObjectToPool(creatureObj); //TODO-OBJECTPOOL: return to this after implementing reset
-                // Destroy(creatureObj);
+                                                                   // Destroy(creatureObj);
                 return null;
             }
 
