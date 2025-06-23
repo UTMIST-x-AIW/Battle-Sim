@@ -230,15 +230,21 @@ public class Creature : MonoBehaviour
             // Cache GameManager reference if not already cached
             _gameManager = FindObjectOfType<GameManager>(); //IMPROVEMENT: probably don't need this, make it static or something
 
-
+            // Cache original scale
             originalScale = transform.localScale;
-            originalSwordScale = swordModel.localScale;
 
+            // Initialize tool references first
             ToolAnimation tool = GetComponentInChildren<ToolAnimation>();
             if (tool != null)
             {
                 swordModel = tool.transform.Find("sword");
                 bowModel = tool.transform.Find("bow");
+
+                // Now that swordModel is initialized, we can get its original scale
+                if (swordModel != null)
+                {
+                    originalSwordScale = swordModel.localScale;
+                }
             }
 
             CheckClassChange();
@@ -279,11 +285,17 @@ public class Creature : MonoBehaviour
         inBowRange = 0f;
         lastDetectionTime = 0f;
 
-        rb.velocity = Vector2.zero;
-        rb.angularVelocity = 0f;
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
 
         transform.localScale = originalScale;
-        swordModel.localScale = originalSwordScale;
+        if (swordModel != null)
+        {
+            swordModel.localScale = originalSwordScale;
+        }
 
         brain = null;
 
