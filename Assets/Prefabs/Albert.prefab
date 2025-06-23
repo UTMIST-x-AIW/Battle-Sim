@@ -244,12 +244,12 @@ SpriteRenderer:
   m_SortingLayerID: 1965130115
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 3bd3de2d03e24436997608807141dd85, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3534a99c7da84a14bbde6b0f73217f48, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 4.36, y: 4.36}
+  m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -328,12 +328,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f585aa1579b4f11b9c90a12c24eb46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  reproductionRechargeRate: 1.2
   health: 3
   energyMeter: 0
   maxHealth: 3
   maxEnergy: 1
   energyRechargeRate: 1.2
-  reproductionRechargeRate: 1.2
   agingStartTime: 5.81
   agingRate: 0.25
   generation: 0
@@ -395,7 +395,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bca146219c1a5ad48bee2cb58c5b2301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObject_mated_with: []
   pReproduction: 0.95
   Reproduction_prefab: {fileID: 7896111451434077960}
   creatureLayer:
