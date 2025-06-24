@@ -24,13 +24,6 @@ public class GameManager : MonoBehaviour
     public float MinStartingAgeAlbert = 0f; // Minimum starting age for initial Alberts
     public float MaxStartingAgeAlbert = 5f; // Maximum starting age for initial Alberts
 
-    [Header("Kai Population Settings")]
-    public int MinKais = 20;  // Minimum number of Kais to maintain
-    public int MaxKais = 100; // Maximum number of Kais allowed
-    public int InitialKais = 10; // Number of Kais to spawn initially
-    public float MinStartingAgeKai = 0f; // Minimum starting age for initial Kais
-    public float MaxStartingAgeKai = 5f; // Maximum starting age for initial Kais
-
     // Property to display current creature counts in Inspector
     [SerializeField]
     private int _current_alberts = 0;
@@ -39,6 +32,13 @@ public class GameManager : MonoBehaviour
         get { return _current_alberts; }
         private set { _current_alberts = value; }
     }
+
+    [Header("Kai Population Settings")]
+    public int MinKais = 20;  // Minimum number of Kais to maintain
+    public int MaxKais = 100; // Maximum number of Kais allowed
+    public int InitialKais = 10; // Number of Kais to spawn initially
+    public float MinStartingAgeKai = 0f; // Minimum starting age for initial Kais
+    public float MaxStartingAgeKai = 5f; // Maximum starting age for initial Kais
 
     [SerializeField]
     private int _current_kais = 0;

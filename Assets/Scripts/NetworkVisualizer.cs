@@ -510,22 +510,89 @@ public class NetworkVisualizer : MonoBehaviour
             NodeTooltip tooltipComponent = activeTooltip.GetComponent<NodeTooltip>();
             if (tooltipComponent != null)
             {
-                string nodeType = node.Type.ToString();
+                string nodeName;
+
+                switch (nodeId)
+                {
+                    case 0:
+                        nodeName = "Health";
+                        break;
+                    case 1:
+                        nodeName = "Energy Meter";
+                        break;
+                    case 2:
+                        nodeName = "Reproduction Meter";
+                        break;
+                    case 3:
+                        nodeName = "Nearest Teammate X";
+                        break;
+                    case 4:
+                        nodeName = "Nearest Teammate Y";
+                        break;
+                    case 5:
+                        nodeName = "Nearest Opponent X";
+                        break;
+                    case 6:
+                        nodeName = "Nearest Opponent Y";
+                        break;
+                    case 7:
+                        nodeName = "Nearest Tree X";
+                        break;
+                    case 8:
+                        nodeName = "Nearest Tree Y";
+                        break;
+                    case 9:
+                        nodeName = "Nearest Ground X";
+                        break;
+                    case 10:
+                        nodeName = "Nearest Ground Y";
+                        break;
+                    case 11:
+                        nodeName = "Object in Interaction Range";
+                        break;
+                    case 12:
+                        nodeName = "Opponent in Sword Range";
+                        break;
+                    case 13:
+                        nodeName = "Opponent in Bow Range";
+                        break;
+                    case 14:
+                        nodeName = "Opponent Health";
+                        break;
+                    case 15:
+                        nodeName = "Nearest Tree Distance";
+                        break;
+                    case 16:
+                        nodeName = "Nearest Rock Distance";
+                        break;
+                    case 17:
+                        nodeName = "Nearest Cupcake Distance";
+                        break;
+                    case 18:
+                        nodeName = "Move X";
+                        break;
+                    case 19:
+                        nodeName = "Move Y";
+                        break;
+                    case 20:
+                        nodeName = "Interact";
+                        break;
+                    case 21:
+                        nodeName = "Attack";
+                        break;
+                    case 22:
+                        nodeName = "Reproduce";
+                        break;
+                    default:
+                        nodeName = "Hidden";
+                        break;
+                }
+
                 float roundedBias = Mathf.Round((float)node.Bias * 100f) / 100f;
                 string biasText = $"Bias: {roundedBias:F2}";
-                tooltipComponent.SetTooltipText($"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}");
-            }
-            else
-            {
-                // Fallback to standard Text component if NodeTooltip not found
-                TextMeshProUGUI tooltipText = activeTooltip.GetComponentInChildren<TextMeshProUGUI>();
-                if (tooltipText != null)
-                {
-                    string nodeType = node.Type.ToString();
-                    float roundedBias = Mathf.Round((float)node.Bias * 100f) / 100f;
-                    string biasText = $"Bias: {roundedBias:F2}";
-                    tooltipText.text = $"Node {nodeId} ({nodeType})\n{valueText}\n{biasText}";
-                }
+                string toolTipText = $"Node {nodeId}\n({nodeName})\n{valueText}\n{biasText}";
+
+                tooltipComponent.SetTooltipText(toolTipText);
             }
         }
     }

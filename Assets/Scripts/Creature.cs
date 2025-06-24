@@ -156,7 +156,7 @@ public class Creature : MonoBehaviour
     private float nearestOpponentHealthNormalized = 0f;
 
     // Cached range indicators - accessible as properties
-    private float inChopRange = 0f;
+    private float inInteractRange = 0f;
     private float inSwordRange = 0f;
     private float inBowRange = 0f;
 
@@ -280,7 +280,7 @@ public class Creature : MonoBehaviour
         canStartReproducing = false;
         disableBrainControl = false;
         nearestOpponentHealthNormalized = 0f;
-        inChopRange = 0f;
+        inInteractRange = 0f;
         inSwordRange = 0f;
         inBowRange = 0f;
         lastDetectionTime = 0f;
@@ -431,7 +431,7 @@ public class Creature : MonoBehaviour
             nearestOpponentHealthNormalized = 0f;
 
             // Reset range indicators
-            inChopRange = 0f;
+            inInteractRange = 0f;
             inSwordRange = 0f;
             inBowRange = 0f;
 
@@ -943,9 +943,9 @@ public class Creature : MonoBehaviour
     private void CalculateRangeIndicators()
     {
         // Calculate range indicators
-        if (nearestTreeDistance <= closeRange)
+        if (nearestTreeDistance <= closeRange || nearestRockDistance <= closeRange || nearestCupcakeDistance <= closeRange)
         {
-            inChopRange = 1f;
+            inInteractRange = 1f;
         }
         if (nearestOpponentDistance <= closeRange)
         {
@@ -1135,7 +1135,7 @@ public class Creature : MonoBehaviour
         obs[9] = groundObs.x;
         obs[10] = groundObs.y;
 
-        obs[11] = this.inChopRange;
+        obs[11] = this.inInteractRange;
         obs[12] = this.inSwordRange;
         obs[13] = this.inBowRange;
 
