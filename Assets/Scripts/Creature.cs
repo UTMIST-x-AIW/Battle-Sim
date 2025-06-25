@@ -1436,7 +1436,7 @@ public class Creature : MonoBehaviour
 
             // Process action commands
             float[] desires = { actions[2], actions[3] };
-            float reproductionDesire = actions.Length > 4 ? actions[4] : -1f;
+            float reproductionDesire = actions[4];
 
 
             // Energy-limited action: Allow action only if we have sufficient energy
