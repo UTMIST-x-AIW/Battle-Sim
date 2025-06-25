@@ -542,45 +542,48 @@ public class NetworkVisualizer : MonoBehaviour
                         nodeName = "Nearest Tree Y";
                         break;
                     case 9:
-                        nodeName = "Nearest Ground X";
+                        nodeName = "Nearest Rock X";
                         break;
                     case 10:
-                        nodeName = "Nearest Ground Y";
+                        nodeName = "Nearest Rock Y";
                         break;
                     case 11:
-                        nodeName = "Object in Interaction Range";
+                        nodeName = "Nearest Cupcake X";
                         break;
                     case 12:
-                        nodeName = "Opponent in Sword Range";
+                        nodeName = "Nearest Cupcake Y";
                         break;
                     case 13:
-                        nodeName = "Opponent in Bow Range";
+                        nodeName = "Nearest Ground X";
                         break;
                     case 14:
-                        nodeName = "Opponent Health";
+                        nodeName = "Nearest Ground Y";
                         break;
                     case 15:
-                        nodeName = "Nearest Tree Distance";
+                        nodeName = "Object in Interaction Range";
                         break;
                     case 16:
-                        nodeName = "Nearest Rock Distance";
+                        nodeName = "Opponent in Sword Range";
                         break;
                     case 17:
-                        nodeName = "Nearest Cupcake Distance";
+                        nodeName = "Opponent in Bow Range";
                         break;
                     case 18:
-                        nodeName = "Move X";
+                        nodeName = "Opponent Health";
                         break;
                     case 19:
-                        nodeName = "Move Y";
+                        nodeName = "Move X";
                         break;
                     case 20:
-                        nodeName = "Interact";
+                        nodeName = "Move Y";
                         break;
                     case 21:
-                        nodeName = "Attack";
+                        nodeName = "Interact";
                         break;
                     case 22:
+                        nodeName = "Attack";
+                        break;
+                    case 23:
                         nodeName = "Reproduce";
                         break;
                     default:

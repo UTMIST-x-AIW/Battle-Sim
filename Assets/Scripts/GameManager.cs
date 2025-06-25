@@ -50,7 +50,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Network Settings")]
     public int maxHiddenLayers = 10;  // Maximum number of hidden layers allowed
-    public const int k_ObservationCount = 18;
+    public const int k_ObservationCount = 19;
     public const int k_ActionCount = 5;
 
 

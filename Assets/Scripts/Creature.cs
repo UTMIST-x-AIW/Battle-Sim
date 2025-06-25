@@ -1109,6 +1109,20 @@ public class Creature : MonoBehaviour
             treeObs = nearestTreePos.normalized * intensity;
         }
 
+        Vector2 rockObs = Vector2.zero;
+        if (nearestRockDistance <= maxDetectionRange && nearestRockDistance > 0)
+        {
+            float intensity = 1.0f - nearestRockDistance / maxDetectionRange;
+            rockObs = nearestRockPos.normalized * intensity;
+        }
+
+        Vector2 cupcakeObs = Vector2.zero;
+        if (nearestCupcakeDistance <= maxDetectionRange && nearestCupcakeDistance > 0)
+        {
+            float intensity = 1.0f - nearestCupcakeDistance / maxDetectionRange;
+            cupcakeObs = nearestCupcakePos.normalized * intensity;
+        }
+
         // Ground observations (x,y components) - normalize by max range
         Vector2 groundObs = Vector2.zero;
         if (nearestGroundDistance <= maxDetectionRange && nearestGroundDistance > 0)
@@ -1126,25 +1140,28 @@ public class Creature : MonoBehaviour
         obs[5] = oppositeTypeObs.x;
         obs[6] = oppositeTypeObs.y;
 
-        // obs[7] = cherryObs.x;
-        // obs[8] = cherryObs.y;
-
         obs[7] = treeObs.x;
         obs[8] = treeObs.y;
 
-        obs[9] = groundObs.x;
-        obs[10] = groundObs.y;
+        obs[9] = rockObs.x;
+        obs[10] = rockObs.y;
 
-        obs[11] = this.inInteractRange;
-        obs[12] = this.inSwordRange;
-        obs[13] = this.inBowRange;
+        obs[11] = cupcakeObs.x;
+        obs[12] = cupcakeObs.y;
 
-        obs[14] = nearestOpponentHealthNormalized;
+        obs[13] = groundObs.x;
+        obs[14] = groundObs.y;
 
-        // Normalized distances to nearby objects
-        obs[15] = Mathf.Clamp01(nearestTreeDistance / maxDetectionRange);
-        obs[16] = Mathf.Clamp01(nearestRockDistance / maxDetectionRange);
-        obs[17] = Mathf.Clamp01(nearestCupcakeDistance / maxDetectionRange);
+        obs[15] = this.inInteractRange;
+        obs[16] = this.inSwordRange;
+        obs[17] = this.inBowRange;
+
+        obs[18] = nearestOpponentHealthNormalized;
+
+        // // Normalized distances to nearby objects
+        // obs[15] = Mathf.Clamp01(nearestTreeDistance / maxDetectionRange);
+        // obs[16] = Mathf.Clamp01(nearestRockDistance / maxDetectionRange);
+        // obs[17] = Mathf.Clamp01(nearestCupcakeDistance / maxDetectionRange);
 
         return obs;
     }
